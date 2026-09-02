@@ -61,9 +61,33 @@ cell the numbers justify. Keep the unused pair sealed and terminal-protected.
 | XFJYMXDM **fish paper**, 16.4 ft | The flame-rated cell barrier — mandatory under/around the pack |
 | ELEGOO **polyimide (Kapton) tape**, 4-pack | Module backs, frame crossings |
 | Pointool **heat-shrink kit**, 14 sizes, **white** | Every splice — and it matches the white/silver direction |
-| CBAZY **30 AWG** silicone hookup wire, 6 colors | Signals only (I²C, I²S, button) |
+| CBAZY **30 AWG** silicone hookup wire, 6 colors | Signals **and** the power bus — see the gauge note below. Adequate for this frame size |
 | **1.5 mm brass tube** (K&S #9831) | ☐ **Not bought — see below** |
-| **26 AWG** power wire | ☐ Not bought |
+
+### Wire-gauge note — why 30 AWG is enough here
+
+The "26 AWG for power" rule came from the withdrawn R0 design, which pushed
+~1.15 A through a long chain (holder + fuse + converter + two FETs). The
+current frame is ~45 mm and the chain is three parts, so:
+
+| | 30 AWG | 26 AWG |
+| --- | ---: | ---: |
+| Resistance | ~0.34 Ω/m | ~0.13 Ω/m |
+| Loop drop @ 0.8 A peak, 160 mm | **43 mV** | 17 mV |
+| Loop drop @ 150 mA average | 8 mV | 3 mV |
+
+Both are far inside the ≤300 mV upstream-drop screen, and resistive heating is
+tens of milliwatts. **The speaker needs no wire at all** — the
+`CES-20134-088PM` ships with 60 mm of 32 AWG leads, longer than the whole
+device, so they reach the amplifier terminal directly with no splice.
+
+Where 30 AWG is genuinely weaker is *mechanical*, not electrical: it nicks
+easily when stripped (it is the finest setting on the CSP-30-1), its strands
+fatigue with flexing, and its solder joints have less pull strength. The
+battery bus is the connection you least want failing inside a sealed frame, so
+26 AWG there is a reasonable robustness upgrade —
+[TUOFENG 26 AWG silicone, 6 colors, 33 ft each](https://www.amazon.com/dp/B07G2LRX68),
+~$15.59. Either gauge passes; strain-relieve both ends regardless.
 
 ## Tools
 
@@ -101,7 +125,6 @@ actually remains is short:
 
 | Item | Why | Approx. |
 | --- | --- | ---: |
-| **26 AWG** silicone wire | Battery bus + twisted speaker pair; 30 AWG is signal-only | $16 |
 | **IPA 90 %+ · swabs · baking soda** | **Safety-relevant** — neutralizes the Harris acid flux. Residue left on brass corrodes joints and blisters paint | ~$15 |
 | **Heat gun** | You have white heat-shrink and nothing to shrink it with | ~$20 |
 | Solder wick | Undoing mistakes on fine pads | ~$8 |
