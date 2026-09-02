@@ -18,6 +18,59 @@ after the cardstock dry-fit closes, and staged final assembly per
 attended charge, and pocket carry (after the acceptance checks in
 [edu/06_ACCEPTANCE_TESTS.md](../edu/06_ACCEPTANCE_TESTS.md)).
 
+## Quick shopping list — one line per item
+
+Prices checked 2026-09-01/02; re-verify in the cart. Rationale for every line
+is in the detailed tables further down.
+
+### Adafruit (one order)
+
+- [ ] 2 × Battery — protected 500 mAh LiPo **#1578** — $7.95 ea — <https://www.adafruit.com/product/1578>
+- [ ] 1 × Charger — USB-C Micro-Lipo **#4410** — $5.95 — <https://www.adafruit.com/product/4410>
+
+### DigiKey
+
+- [ ] 2 × Speaker — Same Sky **CES-20134-088PM** 8 Ω 0.8 W enclosed — ~$8 ea — <https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309>
+
+### Amazon — electronics
+
+- [ ] 1 × ESP32-C3 SuperMini 3-pack — $12.97 — <https://www.amazon.com/dp/B0G5XS345R> *(or 10-pack — $28.99 — <https://www.amazon.com/dp/B0F888JQ91>)*
+- [ ] 1 × OLED 0.96" SSD1306 white I²C 5-pack — $14.99 — <https://www.amazon.com/dp/B09T6SJBV5>
+- [ ] 1 × INMP441 microphone 5-pack — $11.99 — <https://www.amazon.com/dp/B092HWW4RS>
+- [ ] 1 × MAX98357A amplifier 3-pack — $9.49 — <https://www.amazon.com/dp/B0CDWXZZCH>
+- [ ] 1 × Tact button kit (6×6 mm + caps) — $15.99 — <https://www.amazon.com/dp/B0FHW6HMG4>
+- [ ] 1 × SPDT slide switch 25-pack — ~$8 — <https://www.amazon.com/dp/B09R434VJQ>
+- [ ] 1 × JST-PH **2.0 mm** pigtail set (any Prime listing; caliper the pitch) — ~$7
+- [ ] 1 × Resistor kit (10 k / 100 k) — $6.39 — <https://www.amazon.com/dp/B0F4P352BB>
+- [ ] 1 × Ceramic capacitor kit (100 nF / 10 µF) — $14.99 — <https://www.amazon.com/dp/B07P7HRGT9>
+- [ ] 1 × Electrolytic capacitor kit (220 µF) — $9.99 — <https://www.amazon.com/dp/B0C1VBXCQM>
+
+### Amazon — frame, insulation, wire
+
+- [ ] 1 × Fish paper 0.2 mm — $15.88 — <https://www.amazon.com/dp/B0GZVDKBBS> *(slowest item — order first)*
+- [ ] 1 × Kapton tape 4-pack — $9.99 — <https://www.amazon.com/dp/B072Z92QZ2>
+- [ ] 1 × Heat-shrink kit — $9.99 — <https://www.amazon.com/dp/B08N4W4K9X>
+- [ ] 1 × 30 AWG silicone wire kit — $13.99 — <https://www.amazon.com/dp/B073RDGTPB>
+- [ ] 1 × 26 AWG silicone wire — $15.59 — <https://www.amazon.com/dp/B07G2LRX68>
+- [ ] 1 × Brass tube K&S #9831 (1.5 mm OD ×4) — $7.80 — <https://www.amazon.com/dp/B005WPAW9M> *(or direct: <https://ksmetals.com/products/br225mm-1h>)*
+- [ ] 1 × Brass rod K&S #9861 (1.0 mm ×5) — $8.59 — <https://www.amazon.com/dp/B005WPB7YG> *(or direct: <https://ksmetals.com/products/brrmet-1>)*
+
+### Tools still to buy (skip anything you own)
+
+- [ ] Multimeter KAIWEETS HT118A — $41.23 — <https://www.amazon.com/dp/B08BL288LW>
+- [ ] Bench supply (current-limited) PS305H — $47.49 — <https://www.amazon.com/dp/B0BN1F6CGZ>
+- [ ] Calipers Neiko 01407A — $27.99 — <https://www.amazon.com/dp/B000GSLKIW>
+- [ ] Jeweler's saw + blades — $24.95 — <https://www.amazon.com/dp/B06XPSLS6N>
+- [ ] Round/chain-nose pliers — ~$12 — <https://www.amazon.com/dp/B0B8QBVXXR>
+- [ ] Wire strippers 30–20 AWG — $12.87 — <https://www.amazon.com/dp/B00FZPHMUG>
+- [ ] Safety glasses — $14.99 — <https://www.amazon.com/dp/B016KZ1ZPM>
+- [ ] Brass flux (frame only) Harris SCLF4 — $12.85 — <https://www.amazon.com/dp/B0015DWPV8>
+- [ ] 63/37 solder — $11.69 — <https://www.amazon.com/dp/B076QF1Y85> *(only if the X-Tronic kit's roll turns out to be lead-free)*
+- [ ] Breadboard + jumpers, USB-**A**-to-C data cable, 2.54 mm header strip — ~$23 (any Prime listings)
+- [ ] Consumables: hot-glue gun, needle files, 400–800 grit, IPA + swabs + baking soda, solder wick, heat gun, ESD strap, rule/square/cardstock — ~$60–80
+
+**Total: ~$530 + NYC tax** (≈$240 parts, ≈$290 tools/consumables).
+
 ## The audit question, answered
 
 *Can the materials be configured, soldered, and assembled into a compact
