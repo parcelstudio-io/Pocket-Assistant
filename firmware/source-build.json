@@ -25,12 +25,12 @@
   },
   "local_inputs": {
     "dependencies.lock": "e264f3553b30d782aa111245ba77e02c62b4ab68b8fb7dbc4a3c4bbc2d7c54ad",
-    "partitions/pocket-ai-4m.csv": "1e169f9d6300865fbd19d31ca8dab8472323fe573b5961050dd1f819ad50505b",
+    "partitions/pocket-ai-4m.csv": "d21e68f5e7e1994a371cc404dd8d5ec4ffd7e30e8beafba35e7c54385eaefc96",
     "patches/xiaozhi-v2.4.0-pocket-wall-e-c3.patch": "9eea864003811edf66b987fb09f5c44716efe64f3d0f61446e5970f030e5359a",
     "sdkconfig.defaults": "f7a3b672ba8d73cbb1d5238110ff06944fdc95acf8030d784d8242c847c424ba",
     "src/boards/pocket-wall-e-c3/config.h": "cb52e8fded37903cc250137b8a2ed3f1e981d2137da71da6c91209810c46e33d",
     "src/boards/pocket-wall-e-c3/config.json": "133c62812a2cd413d38dc12328de99945b905388f7e5519fd80829f3427261e8",
-    "src/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc": "405d9e383458999962ba28cf6847e785db87cfef8b8151b6fee2f30c6cac7972",
+    "src/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc": "f2a397e62733dbe6884c95a8cef923baac267e545cde5784e29bdbbfff59eba7",
     "versions.env": "478c0631ef03e7a21eb96b8698606cd030f0564d3c7ad78da68f645b819cf377"
   },
   "toolchain": {

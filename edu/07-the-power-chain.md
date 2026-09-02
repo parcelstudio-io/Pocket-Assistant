@@ -1,147 +1,178 @@
-# The power chain — the number that decides whether this works
+# Applied note — power-chain qualification worksheet
 
-Most of this build is forgiving. The battery lead is not. This lesson is the
-one piece of real electrical engineering in the project, and it exists because
-a design review found a failure that every individual part passes and the
-*chain* fails.
+> **Correction notice:** the previous version of this page is withdrawn. It
+> treated unsupported values as verified, doubled parallel PPTC ratings,
+> understated two P-FET drops, and confused the TPS63070's operating minimum
+> with its cold-start requirement. Do not purchase or fabricate from that old
+> calculation.
 
-## Why a buck-boost, restated as a rule
+Learn the underlying physics in
+[Li-ion power integrity, decoupling, UVLO, and heat](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md).
+This page applies the method to the Pocket Assistant without selecting a final
+topology. The present outcome is **NO-GO for a component/design freeze** and
+**GO only for returnable Phase 0 samples tested without a cell**.
 
-A 1S lithium cell is 4.2 V full and 3.0 V empty. Three converter types could
-theoretically make 3.3 V from that, and two of them are traps:
+## Why the complete chain matters
 
-| Type | What it does at 4.2 V | What it does at 3.0 V | Verdict |
-| --- | --- | --- | --- |
-| **Boost** (step-up only) | Cannot regulate down. Its inductor and high-side path conduct straight through, so the rail sits near 4.2 V | Fine | **Destroys the build.** The ESP32-C3's absolute maximum is 3.6 V |
-| **Buck** (step-down only) / LDO | Fine | Needs headroom above 3.3 V; drops out and browns out the MCU | **Strands most of your battery** |
-| **Buck-boost** (4-switch) | Steps down | Steps up | **Correct** |
+The converter does not see an ideal cell voltage. Under load it sees the cell
+minus the drops in both outgoing and return paths:
 
-The practical rule when shopping: **listings lie, chips don't.** Search titles
-say "step up down" on single-topology parts constantly. Confirm the chip
-marking — TPS63020 / TPS63802 / TPS63070 or another named 4-switch buck-boost —
-on the board itself when it arrives.
-
-One more shopping rule: prefer a **fixed** output set by a solder jumper over
-an **adjustable** one set by a trimmer potentiometer. A trimpot that spans
-2.5–8 V sits one screwdriver slip away from putting 8 V on a rail feeding a
-3.6 V-max chip. That single consideration is why this build rejects an
-otherwise excellent Pololu module.
-
-## The series-resistance budget
-
-Here is the finding. Between the cell and the converter's input there are five
-resistances in series, and each one drops voltage under load:
-
-| Element | Resistance | Drop at 1.0 A |
-| --- | ---: | ---: |
-| Cell internal (protected 16340, typical) | 0.12 Ω | 120 mV |
-| PTC fuse — **two RUEF110 in parallel** | 0.125 Ω | 125 mV |
-| Holder contacts (acceptance limit) | 0.03 Ω | 30 mV |
-| Switch contacts (acceptance limit) | 0.03 Ω | 30 mV |
-| 26 AWG wiring, both legs | 0.02 Ω | 20 mV |
-| **Total** | **0.325 Ω** | **325 mV** |
-
-At end of discharge the cell rests at 3.0 V, so under a 1.0 A peak the
-converter's input sees **2.67 V, not 3.0 V.**
-
-That is the whole point. Every part passes its own datasheet check. The chain
-is what decides whether the pager still turns on when the battery is nearly
-empty — and the converter has to *cold-start* through it, which is harder than
-staying running.
-
-**This turns into a purchase requirement:** the converter must start below
-2.67 V. Both modules this build recommends publish a startup of 1.8–2.0 V, so
-both clear it — but one listing for the same module claims 2.8 V, which would
-*not* clear it. That conflict cannot be settled from listings, so it becomes a
-bench test (below).
-
-`tools/netcheck.py` computes this budget on every run, so if you change the
-fuse, the switch, or the wire gauge, the check tells you whether you just broke
-end-of-discharge behaviour.
-
-## Why two fuses instead of one
-
-A PTC's hold current is specified at 25 °C and **derates as it warms** — inside
-a closed frame next to a switching converter, assume roughly 75 %.
-
-- One RUEF110: 1.1 A × 0.75 = **0.83 A** hold, against a 1.0 A operating peak.
-  It would trip during normal loud audio on Wi-Fi. That is a nuisance trip: the
-  pager just dies mid-sentence for no visible reason.
-- Two in parallel: **1.65 A** hold, comfortably above the peak — *and* half the
-  resistance, which buys back 125 mV in the budget above.
-
-Two 20-cent parts instead of one, and it fixes both problems at once. The cell's
-own protection PCB remains the real overcurrent backstop; the PTC is the layer
-whose threshold you can actually name.
-
-## What protects what
-
-It is worth being precise about the layers, because they are often confused:
-
-1. **The cell's protection PCB** (built into a protected cell) — overcharge,
-   over-discharge, short circuit. Trips in milliseconds at several amps. This
-   is your last line, not your first.
-2. **The PTC pair** — the layer with a threshold you chose and can cite. Resets
-   itself when it cools.
-3. **The converter's own protection** — over-current and thermal shutdown.
-   Everything *downstream* of the converter (OLED, mic, amp, MCU, and most of
-   the solder joints in the object) is limited by this, which is why the
-   dangerous zone is small and identifiable: the cell, the holder, the wiring
-   to the converter input, and nothing else.
-4. **Reverse polarity** — currently *unprotected*. See below.
-
-## The reverse-polarity gap, and the right fix
-
-Nothing in this build stops a cell inserted backwards or a holder wired
-backwards. The tempting fix is a series Schottky diode, and it is the wrong
-one: a 1N5819 drops ~0.35 V at 1 A, which on top of the 325 mV budget above
-would push the converter under its startup floor. You would trade a rare fault
-for a guaranteed one.
-
-The right part is a **P-channel MOSFET high-side switch** (AO3401A, DMG2301L
-class): 20–40 mΩ, so about 10 mV instead of 350 mV. For Rev A this build
-accepts the gap and manages it procedurally — a keyed holder and a metered
-polarity check before first connection — and records the MOSFET as the Rev B
-improvement.
-
-## The service jumper
-
-One more node deserves protection, from a subtler problem. The ESP32-C3
-SuperMini's `3V3` pin is its onboard regulator's *output*. Our converter also
-drives that pin. Plug in USB to flash the board and you have two regulators on
-one node, with the SuperMini's back-driving our converter's output — a
-condition the converter's own manufacturer explicitly does not characterise.
-
-The fix is a **2-pin header and a shunt** in the converter's output lead:
-
-```
-converter VOUT ──[ service jumper ]── 3.3 V star bus ── ESP32-C3 3V3, OLED, mic, amp
+```text
+protected source or bench substitute
+  → contacts/holder
+  → fault protection
+  → reverse-polarity and on/off elements
+  → wiring/connectors
+  → converter VIN
+  → regulated 3V3 loads
+  → return path
 ```
 
-Pull the shunt and the converter is isolated, while USB can still power the
-MCU *and* the peripherals for bench work. The service rule is two motions:
+For a simple first estimate:
 
-> **Cell out of the holder. Jumper out. Then plug USB.**
+```text
+Vconverter = Vsource - Iinput × Rseries
+Iinput ≈ Vout × Iout / (efficiency × Vconverter)
+Ploss = Iinput² × Rseries
+```
 
-It is verifiable: with the jumper out, continuity from converter VOUT to the
-3.3 V bus must read open.
+The equations interact: higher input current makes more drop, which reduces
+converter voltage and can demand still more input current. Calculate with
+bounded inputs, then measure at the converter pins.
 
-## The bench test that settles all of it
+## Known corrections to the earlier candidate chain
 
-Do this before the frame exists, with a current-limited supply standing in for
-the cell (see [the build guide](../docs/BUILD_GUIDE.md) Phase 0):
+### TPS63070 / “XL63070” candidate
 
-1. Assemble the **real chain**: source → PTC pair → switch → holder contacts →
-   converter. Do not test the converter alone on clean bench leads; that hides
-   exactly the resistance you are trying to measure.
-2. Set the source to 4.2 V, load the 3.3 V rail to 800 mA, confirm 3.30 V ±0.05.
-3. Sweep the source down to 3.0 V. The rail must hold 3.3 V the whole way.
-4. **Power-cycle at 3.0 V.** This is the real test — it proves cold start
-   through the chain, not merely that it keeps running once started.
-5. Measure the converter's input voltage during step 3 at 1.0 A. The difference
-   from the source is your measured chain resistance. If it exceeds ~350 mV,
-   find the offender (usually the holder's crimped lead) before proceeding.
+TI specifies TPS63070 operation down to 2.0 V **after startup**, but when the
+output is below 3.0 V the IC's startup input requirement is 3.0 V. A 3.3 V
+module based on it has essentially no cold-start margin from a 3.0 V source
+before holder, protection, MOSFET, wire, and return drops. A listing that says
+“2 V startup” does not override the IC datasheet or qualify an unidentified
+module.
 
-If step 4 fails, the pager will work perfectly on a fresh cell and mysteriously
-refuse to start when it is half empty. That is a miserable bug to chase after
-the frame is soldered shut, and twenty minutes on the bench retires it.
+TPS63802 has a different, lower startup requirement, but an IC headline still
+does not prove an unknown module's output current, inductor, settings, copper,
+thermal behavior, or assembly quality.
+
+### Parallel RUEF110 PPTCs
+
+One RUEF110 is specified by Littelfuse as 1.10 A hold and 2.20 A trip at its
+stated reference condition, with temperature derating and time-dependent
+behavior. Two parallel polymer devices do not share perfectly or become an
+exact 2.20 A-hold/4.40 A-trip part. Small resistance and temperature
+differences reinforce unequal sharing. Any parallel proposal needs a reviewed
+application model and physical tests; it is not frozen here.
+
+### Two P-channel MOSFETs
+
+At `VGS = -2.5 V`, AO3401A permits up to 85 mΩ and DMG2301L up to 150 mΩ. If
+two are in series, their room-temperature maximum drops at 1.15 A calculate to:
+
+```text
+two AO3401A: 1.15 A × 0.170 Ω ≈ 0.20 V
+two DMG2301L: 1.15 A × 0.300 Ω ≈ 0.35 V
+```
+
+Hot resistance can be higher. The devices are not interchangeable 20–40 mΩ
+parts. A reverse-polarity/high-side circuit also needs correct source/drain,
+body-diode, gate bias, `VGS` limits, startup, off-state, and USB-backfeed
+analysis.
+
+### Cell and load model
+
+Nitecore publicly specifies the NL169's nominal voltage, capacity/energy,
+maximum continuous discharge, and dimensions. Its public page does not supply
+the old `0.12 Ω` internal-resistance assumption or exact protection thresholds
+and timings. Leave those cells blank until obtained from the maker or measured
+under a safe, reviewed method.
+
+The older `778 mA` rail number combined a coincident transient envelope. It is
+not a steady thermal or PPTC current. Record at least:
+
+- high-average rail current and duration for energy/heat;
+- transient magnitude, duration, and repetition for rail stability;
+- amplifier RMS/average demand for a defined waveform and gain; and
+- startup/inrush state with every load's enable behavior.
+
+### Normal low-voltage shutdown and USB service power
+
+“The cell is empty at 3.0 V” is not an implemented shutdown. The current
+firmware does not establish a qualified battery measurement/disconnect path.
+A protected cell's fault cutoff is not normal state-of-charge control. The
+final design needs reviewed hardware UVLO or supervised sensing plus a reliable
+disconnect and restart hysteresis.
+
+A header that separates converter VOUT from 3V3 does not by itself prove safe
+USB service mode. An unknown SuperMini regulator may still power peripherals,
+conduct reverse current, or expose alternate paths. Draw and test every state,
+or use a proper source selector/power mux/removable harness.
+
+## Candidate worksheet
+
+Do not fill unknown cells with optimistic typical values.
+
+| Quantity | Minimum/worst or range | Evidence label/source | Physical test |
+| --- | ---: | --- | --- |
+| source voltage during intended normal operation |  |  | controlled supply sweep |
+| exact converter cold-start requirement |  |  | power-cycle at each condition |
+| exact converter running/UVLO behavior |  |  | separate downward sweep |
+| high-average 3V3 current and duration |  |  | measured workload |
+| transient 3V3 current/time envelope |  |  | rail/current capture |
+| efficiency across input/load range |  |  | input/output power measurement |
+| holder/contact loaded drop |  |  | voltage-drop test |
+| protection-device current/time/temp behavior |  |  | datasheet plus bounded test |
+| MOSFET maximum hot resistance at actual `VGS` |  |  | calculation plus loaded drop |
+| positive and return wire/connector drop |  |  | endpoint measurements |
+| regulated-rail min/max and transient limits |  |  | exact load datasheets |
+| normal shutdown/restart thresholds |  |  | UVLO test with hysteresis |
+| service/off-state reverse/leakage paths |  |  | every switch/USB state |
+| stabilized temperatures |  |  | defined high-average load |
+
+## Battery-free qualification sequence
+
+1. Identify and photograph the exact converter and every protection/switch
+   sample. Transcribe chip and passive markings.
+2. Draw a reviewed schematic including both current paths, enables, body
+   diodes, USB/service sources, and rail capacitors.
+3. Test the converter alone from a current-limited supply at no load and a
+   modest resistor load. Stop for out-of-range voltage, CC mode, or heat.
+4. Sweep input while already running, then fully remove power and cold-start at
+   each point. These are different columns.
+5. Increase only to controlled loads supported by the exact module, fixture,
+   resistor/electronic-load rating, and current limit. Do not use a breadboard
+   or thin Dupont leads at ampere scale.
+6. Add one upstream element at a time. Measure its loaded drop on positive and
+   return paths; do not infer milliohms from continuity beeps.
+7. Apply defined load steps and capture 3V3 at the load. Record minimum,
+   overshoot, settling, input current, source/current-limit settings, and reset
+   logs.
+8. Test normal UVLO/restart hysteresis and every USB/off/service state.
+9. Stabilize the high-average load and measure temperatures at defined ambient.
+10. Repeat on multiple samples and relevant conditions. Ten starts on one unit
+    at room temperature are sample evidence, not a production guarantee.
+
+Keep the ESP32-C3, audio modules, and lithium cell disconnected until the power
+module's output is understood. Keep the cell out until the complete acceptance
+worksheet passes.
+
+## Release decision
+
+Do not freeze the converter, PPTC/MOSFET chain, carrier, holder/harness, or
+metal fabrication until:
+
+- one schematic and BOM resolve all contradictions;
+- every candidate number above has bounded evidence;
+- exact received samples pass startup, load-step, UVLO, backfeed, fault, and
+  thermal tests with margin; and
+- the complete harness later passes simultaneous Wi-Fi/audio testing from a
+  current-limited source.
+
+Primary sources:
+
+- [TI TPS63070 datasheet](https://www.ti.com/lit/ds/symlink/tps63070.pdf)
+- [TI TPS63802 datasheet](https://www.ti.com/lit/ds/symlink/tps63802.pdf)
+- [Littelfuse RUEF datasheet](https://www.littelfuse.com/assetdocs/littelfuse-ptc-radial-leaded-ruef-datasheet?assetguid=2139d828-f887-4a2a-9b25-01ddf761ab3a)
+- [AOS AO3401A datasheet](https://www.aosmd.com/sites/default/files/res/datasheets/AO3401A.pdf)
+- [Diodes DMG2301L datasheet](https://www.diodes.com/assets/Datasheets/DMG2301L.pdf)
+- [Nitecore NL169 product page](https://www.nitecore.com/product/nl169)

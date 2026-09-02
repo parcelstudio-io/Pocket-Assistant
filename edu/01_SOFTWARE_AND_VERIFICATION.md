@@ -2,14 +2,19 @@
 
 No single program can prove this build is safe. Software checks the logical design and firmware; instruments prove the assembled power system.
 
+This is a dated workstation snapshot, not a guarantee that an MCP connection or
+environment variable will survive a new Codex/Claude process. Re-run the access
+check before relying on a tool, and use the evidence model from
+[Lesson 00](fundamentals/00-safety-evidence-and-course-map.md).
+
 ## Tool access on this workstation
 
-| Tool | Purpose | Access observed on 2026-09-01 | What it can prove here |
+| Tool | Purpose | Access observed on 2026-09-02 | What it can prove here |
 | --- | --- | --- | --- |
-| KiCad 10.0.6 | Schematic review, ERC, PCB clearance/DRC | `kicad-cli` is available; KiCad MCP is connected | Net names, pin contract, missing connections, and PCB rules for a real KiCad design. The MCP is currently attached to Claude's separate Mochi project, so this repository does not retarget it. |
-| Wokwi CLI 0.26.1 | ESP32 digital simulation and diagram linting | `wokwi-cli` is available | A supported ESP32/display/button model and firmware behavior. It cannot validate the real battery, RF peaks, microphone acoustics, amplifier output, solder joints, or mechanical fit. The Wokwi MCP is not exposed in this Codex process, and its token has not been proven here. |
+| KiCad 10.0.6 | Schematic review, ERC, PCB clearance/DRC | `kicad-cli` is available; KiCad MCP tools are callable in Codex | Net names, pin contract, missing connections, and configured PCB rules for a real KiCad design. The MCP is currently attached to the separate `Projects/Pager/hardware/mochi` project, so it was inspected but not retargeted or used to modify this repository. |
+| Wokwi CLI 0.26.1 | ESP32 digital simulation and diagram linting | `wokwi-cli` is available; `WOKWI_CLI_TOKEN` is not set in this shell; no Wokwi MCP tool is exposed to this Codex turn | A supported ESP32/display/button model and firmware behavior after authentication. It cannot validate the real battery, analog power, RF, audio acoustics/output, exact clone boards, solder joints, or mechanics. |
 | FreeCAD | Parametric enclosure/frame and collision checking | Not installed and no FreeCAD MCP is exposed | Nothing yet. Install FreeCAD before treating a CAD fit check as evidence. A cardstock/caliper mockup remains mandatory because marketplace module dimensions vary. |
-| ESP-IDF / Ninja / CMake | Compile the editable ESP32-C3 source | Not globally installed in this shell | The repository records two reproducible prior builds in `firmware/source-build.json`; the pinned output can still be hash-verified. Use `firmware/scripts/prepare.sh` and `build.sh` to install/use the pinned workflow. |
+| ESP-IDF / Ninja / CMake | Compile the editable ESP32-C3 source | `idf.py`, `cmake`, and `ninja` are not globally available in this shell | The repository records prior reproducible builds in `firmware/source-build.json`; the pinned output can still be hash-verified. Use the reviewed repository scripts to prepare and run the pinned workflow. |
 | esptool + pyserial | Identify, flash, and monitor the real ESP32-C3 | Declared in `tools/requirements.txt`, not globally installed | After creating the project virtual environment, it can identify the chip and flash an explicit serial port. It cannot validate the attached power circuit. |
 | Git | Review and preserve concurrent work | Available | File history and diffs. It does not validate electronics. |
 
@@ -26,7 +31,10 @@ Run these gates in order. A later gate never excuses a failed earlier one.
 5. **Unpowered electrical:** inspect under magnification and use continuity/resistance tests for shorts, ground integrity, speaker isolation, and frame isolation.
 6. **Current-limited bring-up:** replace the cell with a bench supply, start at a conservative current limit, and test one power domain at a time.
 7. **Functional stress:** join Wi-Fi while recording microphone audio and playing loud audio; observe 3.3 V minimum, raw-rail minimum, current peaks, reset logs, and temperature.
-8. **Battery/charge:** connect the protected pack last; measure charge current, termination voltage, discharge sag, and temperature while attended.
+8. **Cell integration:** introduce the exact protected cell only after the
+   battery-free release gates pass; measure the permitted discharge behavior
+   while attended. Charging remains outside the device in a manufacturer-
+   approved charger and is not part of the pager power path.
 9. **Pocket test:** only after electrical success, install guards and strain relief, then verify that keys/coins cannot reach a live node or damage the pouch.
 
 ## Reproducible desk checks
@@ -47,6 +55,8 @@ For real flashing, create the virtual environment shown in the root README and n
 - **Desk-checked:** software/static checks passed in this repository.
 - **Bench-checked:** measured on a current-limited prototype and results recorded.
 - **Fit-checked:** actual ordered parts fit the 1:1 mockup/CAD with wiring and insulation clearance.
-- **Accepted:** all lesson 6 gates pass.
+- **Accepted:** every applicable gate in the
+  [prototype acceptance worksheet](06_ACCEPTANCE_TESTS.md) passes for the
+  identified article and revisions.
 
 At present this repository reaches **desk-checked**, not bench-checked or fit-checked.

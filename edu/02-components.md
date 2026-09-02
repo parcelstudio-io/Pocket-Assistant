@@ -1,184 +1,195 @@
-# Why each component was chosen
+# Components — turning candidates into evidence
 
-> **Part names below predate the 2026-09-01 Amazon-first swap** — the
-> purchasing list is [docs/MATERIALS.md](../docs/MATERIALS.md); the *reasons*
-> here still hold for the replacement parts.
+> **DESIGN-FREEZE STATUS: NO-GO.** This is a qualification note, not a BOM or
+> purchasing list. Every exact board, module, speaker, holder, protection part,
+> connector, and frame dimension remains **PROVISIONAL** until the interfaces
+> agree and exact received samples pass the required tests.
 
-Every part below survived a datasheet-level verification pass (and an
-adversarial re-check) before making the list. "Rejected" rows explain what the
-original video or an earlier recommendation used, and why it did not survive.
+Read the applicable foundations first:
 
-## ESP32-C3 SuperMini — the brain
+- [04 — Boards, schematics, datasheets, and connectors](fundamentals/04-boards-schematics-datasheets-and-connectors.md)
+- [06 — Li-ion power integrity, decoupling, UVLO, and heat](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
+- [10 — Class-D, BTL speakers, and acoustics](fundamentals/10-class-d-btl-speakers-and-acoustics.md)
+- [11 — RF, EMC, antennas, and the metal frame](fundamentals/11-rf-emc-antennas-and-metal-frame.md)
 
-**Chosen because** the reference firmware (Xiaozhi v2.4.0, board
-`pocket-wall-e-c3`) targets exactly this board: its GPIO map, its native
-USB-C for flashing, its 4 MB flash, and its size (~22.5 × 18 mm) drive the
-whole layout. A different C3 board would mean new wiring *and* new frame
-dimensions.
+## Start with interfaces, not product names
 
-**What to watch:** buy the plain black SuperMini, not the "Plus/V2" — the
-Plus puts a WS2812 LED on GPIO8 and adds a U.FL socket. Screen the board on
-arrival: at least 4 MB flash (`esptool flash_id`), one blue user LED, no U.FL.
-Some clones ship a flash-less die; our partition map fills all 4 MB. Buy a
-spare — you will qualify two and solder the better one.
+An IC datasheet describes the IC under its stated conditions. It does not
+identify a marketplace module, prove the module schematic, or guarantee its
+inductor, passives, thermal layout, connectors, pin order, antenna, or size.
+Record those separately.
 
-## Pololu S8V9F3 — the 3.3 V buck-boost regulator
+The Pocket Assistant currently needs these interface contracts:
 
-**Chosen because** a 1S Li-ion cell is 4.2 V full and ~3.0 V empty, while
-every chip in this build wants a steady 3.3 V. A *buck-boost* can step down
-when the cell is full and step up when it is nearly empty, so the rail never
-sags. Verified numbers: 1.29 A available at a 3.0 V input against our 0.78 A
-worst-case peak (1.66× margin); soft-start, over-current and over-temperature
-protection built in; 10.2 × 16.5 mm.
+| Subsystem | Durable requirement | Evidence still needed |
+| --- | --- | --- |
+| Controller | ESP32-C3 firmware target, correct GPIO contract, adequate flash, legal 3.3 V rail | exact board/revision, flash ID, USB/LDO path, strap loading, antenna, dimensions |
+| Display | 128×64 I2C display supported by firmware at a probed address | controller identity, pin order, pull-ups, color, current, mounting envelope |
+| Microphone | 3.3 V-compatible I2S source with the required slot and timing | exact breakout, pinout, port location, decoupling, acoustic mounting |
+| Amplifier | legal I2S rate/format, 3.3 V operation, floating BTL output | exact module schematic, `SD_MODE`, gain, decoupling, heat, connector |
+| Speaker | compatible impedance and power under named test conditions | exact driver, DC resistance, leads, enclosure, dimensions, measured clarity |
+| Power | regulated rail over the source/load envelope with safe startup, shutdown, isolation, and faults | exact converter module and complete upstream/downstream schematic |
+| Structure | no exposed powered conductor, controlled insulation and strain relief | exact received dimensions, assembly tolerance, RF/acoustic test geometry |
 
-**Rejected:** running the raw cell into the SuperMini's `5V` pin (the video's
-approach). The board's little LDO drops ~0.47 V at the ESP32-C3's 335 mA
-Wi-Fi transmit peak; with a 3.4 V cell that lands ~2.93 V — below the chip's
-3.0 V minimum. That is a random-reset machine.
+If one candidate changes, revisit firmware, wiring, CAD, service access, power,
+audio, and RF. A substitute with the same headline description is not
+automatically equivalent.
 
-**What to watch:** no reverse-polarity protection (handled by the switch
-below), and the pin labels are on the *underside* — the square pad is GND.
+## Controller candidate
 
-## Nitecore NL169 protected 16340 (950 mAh) — the battery
+An ESP32-C3 SuperMini-style board is a candidate because the current source
+tree and GPIO map target that family. “ESP32-C3” alone is insufficient:
+marketplace boards can differ in flash population, USB-C implementation,
+regulator, LED/boot-strap loading, antenna, headers, and dimensions.
 
-**Chosen because** it is a documented, *protected* rechargeable cell with a
-published 2 A continuous-discharge rating against the design's estimated
-~1 A cell-side peak. Nitecore publishes 950 mAh, 3.6 V and a
-16.6 ±0.2 × 34.1 ±0.3 mm envelope. The protection circuit guards against
-overcharge, over-discharge and shorts.
+For each received board:
 
-**Rejected:**
-- The video's cell: a "14250 1200 mAh" whose marking matches *primary*
-  (non-rechargeable) lithium chemistry. Charging one is a fire, full stop.
-- PKCELL 300 mAh 14250 (real rechargeable): its ~450 mA continuous rating is
-  below our peaks.
-- USB-port 16340 variants: typically longer and not guaranteed to fit this holder.
+1. photograph both faces and record markings and seller/lot;
+2. measure the full envelope, including connector and installed headers;
+3. read flash identity/capacity and confirm it fits the built image;
+4. map `USB`, `5V/VBUS`, `3V3`, ground, buttons, LED, and relevant GPIOs;
+5. check boot, flashing, and strap behavior on USB while the board is bare; and
+6. identify the actual antenna region before any frame layout.
 
-**What to watch:** do not promise runtime from the label; use 750 mAh as a
-conservative planning derating until the received cell is capacity-tested. The
-protected cell measures roughly 17 × 34.4 mm at maximum tolerance — bigger than the video's 14250,
-which is one reason the corrected frame grows. It lives in a **polarity-marked
-CR123A holder** (MPD BH123A class) behind a guard — never soldered, never
-wrapped in vinyl, always removable by hand. Do not assume the holder is
-mechanically keyed; the Pololu switch's reverse-voltage protection is still
-required and polarity is checked before insertion.
+Do not connect the candidate controller to the provisional power chain until
+that chain has been qualified independently.
 
-## Pololu #2810 MOSFET slide switch — the power switch
+## Display candidate
 
-**Chosen because** the switch must carry the estimated ~1 A peak and break the
-battery feed with low loss. The #2810 is rated up to 3 A under its stated
-conditions, includes reverse-voltage protection, and switches the battery line
-itself. Pololu explicitly says it is not intended as an emergency or safety
-cutoff; removing the cell is the hard disconnect.
+The firmware direction is a white 128×64 SSD1306-compatible I2C display and
+can probe the intended addresses. A listing can still be wrong about the
+controller, color, address, or pin order.
 
-**Rejected:** the tiny SS12F44 in the battery line (0.5 A rating vs ~1 A
-load), and the "put the switch on the regulator's EN pin" plan — EN is
-*enabled by default*, so a broken switch wire would leave the pager
-permanently on, and the cell would stay hard-wired to everything even when
-"off." (The SS12F44 is still fine as the *gate* control of a P-FET load
-switch if you prefer its look.)
+Before connection, read the received silkscreen from the actual viewing
+direction, trace or meter ground, compare the module schematic if available,
+and power it from a current-limited 3.3 V source. Scan I2C before deciding that
+a blank screen is defective. Record address, current, dimensions, mounting
+holes, display active area, connector access, and visible color.
 
-## PTC resettable fuse, 1.5 A hold / 3.9 A trip
+## Audio candidates
 
-**Chosen because** it is the only protection element in the battery path
-whose trip threshold we can actually name and cite. The cell's internal
-protection is real but its threshold is unpublished and it is slow. A PTC in
-the positive lead turns a wiring fault from "tens of watts until something
-gives" into a self-resetting inconvenience. Costs about a dollar.
+### Microphone
 
-## Adafruit #326 — the white OLED
+An INMP441-style I2S breakout is a candidate because its interface can match
+the firmware. Confirm the exact pin order, supply range, `L/R` selection,
+clock requirements, and breakout decoupling. Keep flux, solvent, compressed
+air, and heat away from the acoustic port; leave protective port tape in place
+until the specified stage.
 
-**Chosen because** it is a *confirmed white* SSD1306 128 × 64 panel from a
-vendor that publishes its schematic, ships I2C-ready with two STEMMA QT
-connectors (the display can be connected with **zero soldering**), and has
-four M2.5 mounting holes — the most fragile module in the build gets a
-mechanical mount instead of glue.
+### Amplifier
 
-**Rejected:** the earlier Amazon listing was the yellow/blue variant.
-Generic white 4-pin modules are workable spares, but vendors silently swap
-SH1106 controllers (which this firmware cannot drive) and pin order varies.
+A MAX98357A-based board is a candidate, but the Analog Devices IC datasheet
+does not prove a no-name module's resistor network. Measure `SD_MODE`, inspect
+gain selection, and capture I2S timing on the exact firmware. The IC does not
+support a 24 kHz LRCLK; 16 kHz is a voice-band candidate, not identical audio
+fidelity.
 
-**What to watch:** Adafruit's 128 × 64 boards answer at I2C address **0x3D**
-by default; generic modules use 0x3C. The firmware now probes both, so either
-works unmodified. Details in [05-display-and-pins.md](05-display-and-pins.md).
+The speaker connects only between the two BTL outputs. Neither output is
+ground. Do not attach an earth-referenced scope ground clip to either speaker
+terminal.
 
-## DFRobot DFR0954 — the MAX98357A amplifier
+### Speaker and enclosure
 
-**Chosen because** the MAX98357A is the amp the firmware expects (plain I2S
-in, 3.1 W-class bridge out), and DFRobot publishes the schematic — which
-generic no-name boards do not. It runs happily at 3.3 V, has built-in click
-suppression, short-circuit and thermal protection, and is ~18 × 18 mm.
+The current generic pre-boxed and rectangular `8 Ω` speakers are candidates.
+Do not transfer the Same Sky speaker's `0.7 W`, `91 dB`, dimensions, or `1 cc`
+test enclosure to them. Nominal impedance is frequency-dependent and can differ
+from DMM resistance.
 
-**What to watch:** jumper its `SD` pad to VCC to force **left-channel** mode;
-the board's default divider can land in "right channel" territory on a 3.3 V
-rail, and the right slot in this firmware is silence. One insulated jumper
-removes the whole ambiguity ([04-audio.md](04-audio.md)).
+Qualify each received speaker as an acoustic assembly: driver, baffle, seal,
+rear volume, opening, grille, adhesive, wires, and frame. Use the battery-free
+A/B procedure in Lesson 10 at fixed gain, distance, sample, orientation, and
+supply voltage. Select only after measuring clarity, buzz, relative level,
+current, heat, fit, and repeatability.
 
-## Same Sky CMS-15113-078L100-67 — the speaker
+## Power candidates
 
-**Chosen because** it is a documented 8 Ω / 0.7 W, 15 × 11 mm micro speaker
-whose ratings match the amplifier's ~0.68 W ceiling at 3.3 V almost exactly,
-and the **L100** variant brings 100 mm factory wire leads — no soldering on
-the speaker itself.
+A one-cell source that crosses the 3.3 V rail suggests a true buck-boost
+topology. That system requirement does not select a module. There is currently
+no approved converter, holder, fuse/PPTC arrangement, reverse-polarity circuit,
+switch/disconnect, USB service-power path, or UVLO implementation.
 
-**Rejected:** the video's undocumented phone-replacement speaker (no
-impedance, no power rating), 4 Ω parts (double the current for no benefit
-here), and the solder-pad "SP" variant of this same speaker (its pads allow
-380 °C for 3 seconds — an avoidable risk).
+Important candidate distinctions include:
 
-**What to watch:** its own datasheet marks **"Enclosure: Required."** In free
-air the front and back waves cancel and it is nearly inaudible at voice
-frequencies. It needs a ~1 cc sealed back volume: Same Sky's BOX-1511-1CC, or
-a 3D-printed cup.
+- TPS63070 IC operating voltage is not its cold-start voltage; a module claim
+  must be tested against the manufacturer IC limits and the complete chain.
+- TPS63802 IC capability does not guarantee an Amazon module's inductor,
+  thermal layout, passives, settings, or output current.
+- AO3401A and DMG2301L have different guaranteed on-resistance and cannot be
+  treated as equal “20–40 mΩ” substitutes.
+- Two parallel PPTCs do not exactly double hold/trip current; temperature,
+  matching, sharing, and time-to-trip matter.
+- A generic CR123A holder listing does not prove protected-16340 fit, polarity,
+  contact force, or loaded resistance.
 
-## INMP441 — the microphone
+The Nitecore NL169 is a documented cell candidate: Nitecore publishes its
+nominal energy/capacity, dimensions, and 2 A continuous-discharge rating. Its
+public page does not publish the internal resistance or protection thresholds
+and timing previously assumed by this project. Those values remain unknown.
 
-**Chosen because** the firmware's audio front end is built around this exact
-I2S MEMS mic: 3.3 V, digital output, and its L/R pin grounded selects the
-left slot the firmware reads. Nothing to calibrate.
+No lithium cell is needed for Phase 0. Qualify the complete candidate chain
+from a current-limited bench supply using Lesson 06. A cell may enter the
+project only after the schematic, protection, normal low-voltage shutdown,
+hard-disconnect/service behavior, charger pairing, heat, and fault gates close.
 
-**What to watch:** it is the most heat- and contamination-sensitive part in
-the build. Keep the port tape on until final test; no flux, IPA, hot air, or
-compressed air near the port; solder only at the header pads. Its data pin
-now lands on **GPIO4** (not GPIO8 — see
-[05-display-and-pins.md](05-display-and-pins.md)).
+## Passives and connectors are exact parts too
 
-## External 16340 charger — instead of a built-in charging board
+“10 µF ceramic” is incomplete without dielectric, tolerance, voltage rating,
+case, temperature behavior, and effective capacitance under DC bias. A bulk
+electrolytic does not replace close ceramic decoupling. A ferrite bead requires
+impedance-versus-frequency and DC-bias/current data; its DMM resistance does
+not qualify it.
 
-**Chosen because** the v1 frame charges nothing: you pop the cell out of its
-holder and charge it in a proper bench charger (XTAR/Nitecore class) with its
-own termination, timer, and thermal handling.
+Likewise, “JST,” “USB-C,” and “2-pin plug” do not identify connector systems.
+Record family, pitch, positions, mating part, pin-view direction, wire gauge,
+ratings, keying, latch, crimp, insertion path, bend radius, and strain relief.
+Genuine JST PH is 2.0 mm pitch; a “JST-PH 2.5 mm” listing is internally
+inconsistent and requires identification rather than assumption.
 
-**Rejected:** the creator's 1 A USB-C charger module (1 A into a small cell,
-no documentation), and building the Adafruit #4410 into the frame — its
-charging IC requires >7 MΩ on the battery node for correct battery detection,
-which a permanently-attached regulator violates, and it has no safety timer.
-A charger inside the sculpture can come back in v2 with a proper power-path
-design; it is not worth the risk to get v1 working.
+## Frame and insulation candidates
 
-## The frame stock — brass tube + structural wire
+Brass tube can be a structural candidate because it is workable and
+conductive. Conductivity creates obligations: the frame is not a power or
+signal path during qualification, decorative paint is not insulation, and
+every board/wire needs retained primary insulation plus abrasion protection.
 
-1.5 mm OD K&S brass tube (two 300 mm lengths, as the project page says), plus
-1 mm structural wire. Brass soft-solders well and takes primer + satin white
-enamel beautifully. For the **silver** look without paint, nickel-silver
-(German silver) rod solders almost identically and stays silver bare — see
-the finish guide in [docs/BUILD_GUIDE.md](../docs/BUILD_GUIDE.md).
+Exact stock diameter, wall, straightness, soldered geometry, finish, access,
+tolerances, antenna clearance, speaker opening, and cell guard remain to be
+measured. Do not freeze a frame around estimated module boxes.
 
-## The small stuff that makes it work
+## One-page incoming evidence record
 
-| Part | Job |
-| --- | --- |
-| 10 kΩ × 3 | Pull-ups on GPIO2 and GPIO8 (boot strapping) and GPIO10 (button) |
-| 100 kΩ | INMP441 data-line pull-down (fitted at GPIO4) |
-| 10 µF × 3, 100 nF × 4 | Local decoupling at regulator input, ESP32 3V3 entry, and amp supply; button filtering |
-| 220 µF polymer | Bulk reservoir for amplifier bass transients (polymer, not a vented electrolytic can) |
-| Ferrite bead | Keeps regulator switching noise out of the amp |
-| Tact switch | The GPIO10 action button — the firmware's only manual input (chat toggle, long-press Wi-Fi reset) |
-| FR4/polycarbonate scraps, M2.5 nylon standoffs | Sub-plates: modules mount to plates, plates mount to frame — nothing solders to painted brass |
-| Kapton + fish paper | Actual insulation (paint is decoration, not insulation) |
+For every candidate, record:
 
-There is deliberately no GPIO0 battery divider in Rev A. The current board
-port does not instantiate an ADC battery monitor or report a calibrated
-battery level, so the divider would consume parts without implementing a
-warning and could create an off-state current path. Add it only with a later,
-reviewed firmware and power-path change.
+```text
+role and candidate identifier:
+manufacturer/order code, or seller/ASIN/lot if no manufacturer exists:
+received markings and photographs:
+primary datasheet/module document and revision:
+pinout and viewing direction:
+measured dimensions and mass:
+unpowered continuity/resistance observations:
+supply settings and current limit:
+functional measurements and firmware revision:
+thermal, transient, RF, or acoustic result where applicable:
+known unknowns:
+predeclared pass/fail rule:
+disposition: reject / keep as experiment / qualified for next gate:
+```
+
+“Qualified for next gate” is not “approved for final purchase.” It means the
+sample may proceed to the next controlled experiment.
+
+## Component-release gate
+
+The component setup remains **NO-GO** until one coherent configuration has:
+
+- exact identifiers and received-part measurements;
+- one reviewed schematic/netlist, including USB and every return path;
+- matching firmware pins, protocols, sample rate, and flash requirement;
+- battery-free power startup, load-step, isolation, and thermal evidence;
+- battery-free speaker/enclosure and RF/frame A/B evidence;
+- complete mechanical envelopes and service/assembly paths; and
+- no unresolved contradiction between schematic, BOM, course, CAD, and tests.
+
+Until then, named products are candidates for experiments, not purchase or
+final-design claims.

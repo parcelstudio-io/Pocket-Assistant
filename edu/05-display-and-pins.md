@@ -1,82 +1,133 @@
-# The display, I2C, and the ESP32-C3's boot-strapping pins
+# Display application and ESP32-C3 pin reservations
 
-## I2C in three sentences
+> **Evidence status:** the corrected source contains the pin map, two-address
+> probe, and headless fallback described here. The selected marketplace display
+> and ESP32-C3 boards have not yet passed recorded hardware qualification.
 
-I2C is a two-wire party line: one data wire (SDA), one clock wire (SCL), and
-any number of devices, each with a 7-bit address. The ESP32-C3 (the bus
-master) calls an address; only the matching device answers. Our bus has one
-device — the SSD1306 OLED — on SDA=GPIO21, SCL=GPIO20.
+Read [I2C and the OLED](fundamentals/08-i2c-and-the-oled.md) and
+[Digital logic, GPIO, pull resistors, and boot straps](fundamentals/07-digital-logic-gpio-pullups-boot-straps.md)
+for the protocol and electrical foundations.
 
-## The 0x3C / 0x3D trap
+## Display contract
 
-Here is a trap that would have cost a finished, soldered build:
+| Function | ESP32-C3 pin | Corrected-source setting |
+| --- | ---: | --- |
+| SCL | GPIO20 | I2C controller clock, requested 400 kHz |
+| SDA | GPIO21 | Bidirectional open-drain data |
+| Address candidates | — | Unshifted 7-bit `0x3C`, then `0x3D` |
+| Geometry | — | 128×64, one bit per pixel |
 
-- Generic 4-pin 0.96" SSD1306 modules answer at address **0x3C**.
-- Adafruit's 128 × 64 breakouts — including the white #326 this build uses —
-  ship answering at **0x3D** (their own example code says so:
-  `0x3D for 128x64, 0x3C for 128x32`).
-- The original firmware hard-coded 0x3C **and** treated any display-init
-  error as fatal. Wrong address → the chip aborts → instant reboot → abort
-  again: an endless boot loop with no Wi-Fi, no audio, and no time to even
-  read the log. The pager would look completely dead because of a solder
-  jumper on the back of the screen.
+The firmware probes both candidate addresses. If neither responds, or later
+panel initialization fails, it logs the error and continues with a headless
+display object. This prevents one display fault from intentionally aborting the
+rest of the application.
 
-The corrected firmware (already built) does two things instead:
+An ACK means that a target responded at an address. It does not identify the
+controller as SSD1306, prove 128×64 geometry, or validate the initialization
+sequence. Address depends on the exact controller and board configuration—not
+on a universal “generic versus Adafruit” rule. Inspect and scan the received
+display.
 
-1. **Probes** 0x3C first, then 0x3D, and uses whichever answers — so either
-   display drops in with no configuration.
-2. If neither answers, it **logs the failure and boots headless** — a pager
-   that still listens and talks is infinitely easier to debug than a boot
-   loop.
+## Pull-ups and 400 kHz
 
-## Strapping pins — why the microphone moved to GPIO4
+SDA and SCL need external pull-ups because I2C participants pull LOW and release
+HIGH. The source enables the ESP32-C3 internal pull-ups, but Espressif describes
+those weak pulls as unsuitable by themselves for a robust high-speed bus.
 
-When an ESP32-C3 comes out of reset, it reads a few pins *before your
-program runs* to decide how to boot. These "strapping pins" are GPIO2, GPIO8,
-and GPIO9:
+Before accepting the requested 400 kHz setting:
 
-- **GPIO9** — the BOOT button. Held low at reset = "enter the serial
-  bootloader so a computer can reflash me."
-- **GPIO8** — must read **high** while entering that bootloader.
-  (GPIO8 = 0 with GPIO9 = 0 is marked *invalid* in Espressif's table.)
-- **GPIO2** — Espressif recommends pulling it high at boot.
+1. inventory pull-ups and level shifters fitted to every received module;
+2. calculate the parallel pull-up resistance rather than adding resistors
+   blindly;
+3. verify both idle lines sit near 3.3 V;
+4. scan at 100 kHz as a diagnostic, then test the project at 400 kHz; and
+5. measure rise time with a suitable oscilloscope.
 
-The original design wired the microphone's data output to **GPIO8**. The mic
-mostly leaves that line floating, but nothing guarantees its level at the
-instant of reset — and on the SuperMini, GPIO8 also carries the onboard blue
-LED. If the line ever sits low during a BOOT-button reset, the serial
-bootloader becomes unreachable. This build has **no over-the-air update
-partitions**, so USB download mode is the *only* recovery path. Losing it on
-a board soldered inside a finished brass sculpture is permanent.
+Working at 100 kHz but failing at 400 kHz points toward capacitance, pull-up,
+level-shifter, wiring, or edge-timing problems. A logic-analyzer decode proves
+transactions were recognized at its threshold; it does not measure analog
+rise-time margin.
 
-The fix is one line of firmware and one wire: the microphone's data now
-lands on **GPIO4**, an ordinary pin with no boot meaning (its alternate JTAG
-role is already covered by the SuperMini's native USB debugging). GPIO8 gets
-a 10 kΩ pull-up to 3.3 V so its strap level is defined; GPIO2 — which now
-carries only the I2S bit clock into two well-behaved inputs — gets the same,
-per Espressif's own schematic checklist.
+## Boot straps and native USB
 
-## The full pin budget
+ESP32-C3 samples GPIO2, GPIO8, and GPIO9 at reset, then permits normal GPIO use.
+The manufacturer's recommended states are:
 
-Every usable pin on the SuperMini, and why it is (or is not) free:
+| Boot intention | GPIO2 | GPIO8 | GPIO9 |
+| --- | --- | --- | --- |
+| Normal SPI-flash boot | HIGH recommended | Either | HIGH |
+| Joint USB/UART download | HIGH recommended | HIGH | LOW |
 
-| GPIO | Use in this build | Note |
-| ---: | --- | --- |
-| 0 | Unused in Rev A | ADC-capable, but current firmware has no battery-monitor implementation |
-| 1 | I2S WS (shared) | |
-| 2 | I2S BCLK (shared) | Strap pin — 10 kΩ pull-up fitted |
-| 3 | I2S data → amplifier | |
-| 4 | I2S data ← microphone | Moved here from GPIO8 |
-| 5–7 | Free | Spares for extensions |
-| 8 | *(unused)* + 10 kΩ pull-up | Strap pin + onboard LED |
-| 9 | BOOT button (on the module) | Strap pin — leave alone |
-| 10 | Action button → GND | The firmware's only user input |
-| 11–17 | **Not available** | Internal SPI flash |
-| 18, 19 | **Not available** | Native USB D−/D+ |
-| 20 | I2C SCL | |
-| 21 | I2C SDA | |
+GPIO2 does not itself select SPI versus Joint Download Boot, but Espressif
+recommends pulling it high because of glitches. GPIO8 is required high when
+GPIO9 is low for Joint Download Boot; it is not required high for every normal
+boot.
 
-Two takeaways for the bench: the action button on GPIO10 is worth fitting
-(it is the manual chat toggle *and* the long-press Wi-Fi reset — without it,
-a botched Wi-Fi provisioning means reflashing), and pins 5–7 are the
-project's entire expansion budget, so spend them deliberately.
+The corrected source moves microphone data from GPIO8 to GPIO4 so an audio
+output cannot interfere with GPIO8's strap state. GPIO8 remains unallocated by
+the application and may also drive an LED on the selected SuperMini family;
+verify that on every received board. GPIO9 remains the BOOT control.
+
+GPIO18/GPIO19 are reserved for native USB D−/D+ in this design. The chip can
+repurpose them, but doing so can remove USB flashing, logging, and JTAG.
+Recovery may still be possible through Joint Download Boot or UART after a
+conflicting external circuit is disconnected; losing accessible USB is a major
+serviceability failure, not literally irreversible silicon damage.
+
+GPIO20/GPIO21 have UART0 functions at reset but are routed to I2C by the GPIO
+matrix in the application. Verify reset/early-boot behavior with the exact
+module and attached OLED.
+
+## Current project reservations
+
+This is a design allocation, not a universal ESP32-C3 capability table:
+
+| GPIO | Current allocation or caution |
+| ---: | --- |
+| 0 | Unallocated; no implemented battery monitor |
+| 1 | Shared I2S WS |
+| 2 | Shared I2S BCLK; strap bias required |
+| 3 | I2S data to amplifier |
+| 4 | I2S data from microphone |
+| 5–7 | Unallocated by current firmware; board exposure and startup behavior still require review |
+| 8 | Application-unallocated strap; possible on-board LED; preserve download-mode state |
+| 9 | Module BOOT strap/control |
+| 10 | Active-low action/configuration button; also has a documented startup glitch |
+| 11 | Do not allocate until exact die/module flash-supply use is verified |
+| 12–17 | Reserved by flash on the intended in-package-flash candidates; confirm the exact received chip |
+| 18–19 | Native USB reserved by this design |
+| 20 | I2C SCL after reset; UART0 receive function at reset |
+| 21 | I2C SDA after reset; UART0 transmit function at reset |
+
+“Unallocated” does not mean electrically safe for an extension. Recheck boot
+straps, startup glitches, module circuitry, flash, USB, and firmware before
+assigning any spare pin.
+
+## Display and recovery bench gate
+
+1. Flash and identify a bare module with no external harness.
+2. With power off, inspect OLED controller claims, pin order, address jumper,
+   pull-ups, and supply range; check continuity and shorts.
+3. Connect only the OLED, power it from the documented compatible rail, and
+   measure that rail plus idle SDA/SCL.
+4. Scan and record all ACKs; then run initialization and an all-pixels/orientation
+   test.
+5. Verify 400 kHz rise time and repeat resets while observing boot logs.
+6. Exercise normal reset and GPIO9 BOOT-plus-reset with the intended strap
+   resistors and OLED attached.
+7. Confirm that USB remains accessible with the cell and external rail isolated
+   by the reviewed service procedure.
+
+Do not permanently enclose the module until normal boot, download recovery,
+display operation, and headless fallback all pass repeatedly.
+
+## Primary references
+
+- NXP I2C-bus specification UM10204:
+  <https://www.nxp.com/docs/en/user-guide/UM10204.pdf>
+- Espressif ESP32-C3 I2C guide:
+  <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2c.html>
+- Espressif ESP32-C3 schematic checklist:
+  <https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32c3/schematic-checklist.html>
+- Espressif USB Serial/JTAG console guide:
+  <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-guides/usb-serial-jtag-console.html>

@@ -157,8 +157,8 @@ where a structural joint becomes an electrical one.
 
 **Antenna:** Espressif's layout guidance asks for 15 mm clearance in all
 directions. The CAD check enforces a 15 mm keep-out around the board's antenna
-end and requires it to cantilever ≥12 mm past the frame — verified as part of
-the 144 rules.
+region and requires that region to sit ≥15 mm clear of the frame in every
+direction (≈22 mm of board cantilever) — verified as part of the 162 rules.
 
 ---
 
@@ -171,8 +171,9 @@ Honest failure modes, in rough order of likelihood:
    published 1.8 V startup.
 2. **The holder won't take the cell** → its listing never claims 16340 support.
    Fix: the DGZZI 2-slot alternate, or a different holder.
-3. **The toggle switch is too tall** (33 mm) for a pocket frame. Fix: a mini
-   slide switch; the electrical requirement is only ≥1 A DC.
+3. **The slide switch's actuator fouls the frame** at the top-face cutout.
+   Fix: relocate along the top rail or pick a shorter-actuator variant from
+   the 25-pack; it carries only FET gate current, so any SPDT works.
 4. **A clone board differs** from its listing photo. This is why every
    marketplace part is bought in multipacks and qualified.
 5. **The backend is unacceptable** — unreachable, or you don't want your

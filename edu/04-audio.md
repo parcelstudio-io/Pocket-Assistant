@@ -1,129 +1,123 @@
-# Audio — I2S, the 16 kHz decision, and why the speaker needs a box
+# Audio application — I2S, microphone, amplifier, and speaker
 
-## I2S in three sentences
+> **Evidence status:** the 16 kHz pin/rate contract is present in the corrected
+> source and has compiled reproducibly. The repository still records no physical
+> hardware test. Clock quality, samples, amplifier configuration, loudness,
+> noise, heat, and acoustics remain bench gates.
 
-I2S is digital audio's serial bus. A bit clock (BCLK) paces individual bits;
-a word-select clock (WS, also called LRCLK) flips once per sample to say
-"this slot is the left channel, that one is the right"; data lines carry the
-samples. Unlike analog audio, nothing degrades over a few centimeters of
-wire — the signal is ones and zeros until the amplifier's output stage.
+For the underlying sampling and interface theory, read
+[I2S, sampling, and digital audio](fundamentals/09-i2s-sampling-and-digital-audio.md).
 
-## The shared-clock trick
+## Corrected-source audio contract
 
-This build runs the microphone (INMP441) and the amplifier (MAX98357A) on the
-*same* BCLK and WS wires, because the ESP32-C3's I2S peripheral is
-full-duplex: it can transmit speaker samples and receive microphone samples
-in the same clock frame. Each device still has its own data wire:
-
-| Wire | GPIO | Direction |
+| Signal | GPIO | Direction and destination |
 | --- | ---: | --- |
-| WS / LRCLK | 1 | ESP32-C3 → both |
-| BCLK | 2 | ESP32-C3 → both |
-| Speaker data (DIN) | 3 | ESP32-C3 → amp |
-| Mic data (SD) | 4 | mic → ESP32-C3 |
+| WS / LRCLK | 1 | ESP32-C3 to microphone and amplifier |
+| BCLK / SCK | 2 | ESP32-C3 to microphone and amplifier |
+| Speaker data | 3 | ESP32-C3 to MAX98357A-module `DIN` |
+| Microphone data | 4 | INMP441 `SD` to ESP32-C3 |
 
-One constraint comes free with the trick: both directions must run at the
-same sample rate, because there is only one set of clocks.
+Input and output are configured for 16 kHz and share one I2S clock domain. With
+two 32-bit slots per frame, the expected bit clock is:
 
-Wire each clock as its own stub from the ESP32-C3's pad to each module — do
-not daisy-chain WS through one module to the other. A broken WS joint with
-BCLK still running puts a large DC voltage across the speaker (the amplifier
-datasheet warns about exactly this), and DC is how voice coils die.
+```text
+BCLK = 16,000 samples/s × 2 slots × 32 clocks/slot
+     = 1.024 MHz
+```
 
-## Why 16 kHz, when the original ran 24 kHz
+WS identifies the current slot; it changes at slot boundaries, and one complete
+WS period is one audio-frame period. I2S has no address or ACK, so correct clock
+frequency alone does not prove slot choice, alignment, or valid samples.
 
-The vendor firmware runs 24 kHz. The MAX98357A's datasheet says, twice,
-verbatim: *"LRCLK clocks at 11.025kHz, 12kHz, 22.05kHz and 24kHz are NOT
-supported."* The original build sits on an operating point its own amplifier
-excludes — it may happen to work, but nothing guarantees it across parts,
-temperature, or lot.
+## Why the corrected source uses 16 kHz
 
-16 kHz is the rate where every datasheet agrees at once:
+MAX98357A specifies 16 kHz operation and explicitly excludes 24 kHz LRCLK. The
+INMP441 accepts the resulting 1.024 MHz clock and 64 clocks per frame. Those
+facts make 16 kHz a compatible project choice.
 
-- **MAX98357A:** dead-center in its supported fS2 window (15.2–16.8 kHz).
-- **INMP441:** BCLK becomes 16 kHz × 64 = 1.024 MHz, inside its 0.5–3.2 MHz
-  range, with exactly the 64 clocks per frame the part requires.
-- **The firmware:** Xiaozhi's Opus voice encoder is hard-coded to 16 kHz, so
-  the microphone path loses a resampler; the server's 24 kHz replies are
-  resampled to 16 kHz by a code path that already exists upstream.
+It is still a tradeoff: a 16 kHz sample rate has an 8 kHz theoretical Nyquist
+boundary, with a practical passband below that. It is suitable for the intended
+speech tests but does not preserve all bandwidth available at 24 kHz.
 
-Voice quality is unaffected — telephony and voice assistants live at 16 kHz.
-This change is two numbers in `config.h`, already applied and compiled.
+## Wiring and signal integrity
 
-## The channel-select pin (SD_MODE) — and a correction
+Digital audio travels as physical voltage. Wire resistance, capacitance,
+inductance, edge rate, crosstalk, timing, and ground-return impedance still
+matter.
 
-The MAX98357A's `SD` pin does double duty: shutdown *and* channel select.
-The voltage on it picks the left slot, the right slot, or the average of both:
+- Keep clock/data wiring and branch stubs short.
+- Route each signal with a nearby insulated ground return.
+- Keep amplifier supply and speaker-current loops away from the microphone.
+- Inspect module bypass capacitors; place any required 0.1 µF/10 µF additions
+  at the load with a short ground return, not at the far end of the harness.
+- Verify BCLK and WS at both loads. Neither “star” nor “daisy-chain” is an
+  automatic guarantee of signal integrity.
 
-| V(SD) | Mode |
-| --- | --- |
-| < 0.16 V | shutdown |
-| 0.16 – 0.77 V | (Left + Right) / 2 |
-| 0.77 – 1.4 V | Right only |
-| > 1.4 V | Left only |
+The MAX98357A data sheet warns that BCLK continuing without LRCLK can produce a
+large DC output. Treat a missing or intermittent WS connection as a speaker
+safety fault.
 
-An Adafruit-lineage clone (the common Amazon board) has a 1 MΩ from SD to VIN
-against the chip's internal 100 kΩ pulldown, giving
-V(SD) = 3.3 × 100/1100 ≈ **0.30 V — the (L+R)/2 mix mode.**
+<a id="the-channel-select-pin-sd_mode--and-a-correction"></a>
 
-**An earlier version of this note claimed that costs you 6 dB, because the
-firmware fills only the left slot. That was wrong.** The ESP32-C3's I2S
-hardware does not leave the other slot silent. From Espressif's own
-`i2s_ll.h` for this chip, verbatim:
+## Exact-module channel and gain configuration
 
-> *In mono mode, there only should be one slot enabled, another inactive slot
-> will transmit same data as enabled slot*
+The current firmware contract requires a MAX98357A-compatible I2S amplifier,
+but `SD`/channel-selection and gain networks are breakout-board details. A
+DFRobot DFR0954, an Adafruit board, and a visually similar marketplace clone
+must not be assumed to have the same fitted resistors or defaults.
 
-So the right slot carries a **duplicate** of the left. The amplifier computes
-(L + R)/2 = (L + L)/2 = L — **full amplitude**. A board that happened to sit in
-right-only mode would play normally too, for the same reason. This is why
-thousands of ESP32 + unmodified MAX98357A projects are simply loud enough.
+For the exact purchased module:
 
-**What the `SD` pin can still do to you** is the one mode that really is
-silent: if a clone ships with *no* SD resistor fitted, the internal pulldown
-takes SD to 0 V, which is **shutdown**. That is a dead amp with no other
-symptom.
+1. identify the received board and pin order;
+2. obtain its manufacturer schematic where available;
+3. inspect and measure the `SD`/mode and gain networks;
+4. configure a channel/mix mode compatible with the transmitted slots; and
+5. prove it with a low-level tone before enclosure installation.
 
-So the jumper from `SD` to `VIN` is worth fitting as cheap insurance against a
-missing resistor — not as a volume fix. And the acceptance test is a meter,
-not your ears:
+Do not add an `SD`-to-supply jumper as generic “insurance.” It is a board
+modification whose result must be checked against that exact module and the
+MAX98357A limits.
 
-- Power the board at 3.3 V and measure **SD to GND**.
-- ≈3.3 V → left mode (jumper worked). ≈0.30 V → stock mix mode, also fine.
-- **≈0 V → shutdown.** That is the failure worth catching.
+For the INMP441, set `L/R` to ground for the intended left slot and verify the
+documented 100 kΩ data pull-down in the assembled circuit. Protect the acoustic
+port from flux, solvent, glue, paint, hot air, and compressed air.
 
-Do *not* expect the board to get audibly louder after fitting the jumper. It
-will sound identical, and chasing that non-existent difference would send you
-hunting a fault that isn't there.
+## BTL output and enclosure
 
-## Power, loudness, and the 1 cc box
+MAX98357A drives the speaker as a bridge-tied load. Both `OUT+` and `OUT−` are
+active switching outputs:
 
-At 3.3 V into 8 Ω, the ideal full-scale sine estimate is around 0.68 W — a
-hair under the speaker's 0.7 W nominal rating. That makes the pairing sensible,
-not self-protecting: clipping, DC from a clock fault, a wrong part, or a wiring
-fault can still damage the speaker. Commission at low volume and inspect the
-received board before accepting it.
+- connect the speaker only between them;
+- connect neither lead to circuit ground or the metal frame; and
+- never attach an ordinary ground-referenced probe clip to either lead.
 
-But the speaker's own spec sheet carries the line **"Enclosure: Required,"**
-and every number on it (0.7 W, 91 dB) was measured in a 1 cc sealed box. A
-bare micro-speaker in open air is a *dipole*: the back wave wraps around and
-cancels the front wave, and at voice frequencies nearly everything cancels —
-tens of dB down. This is why hobby builds with bare speakers whisper.
+Use the selected pre-enclosed speaker if it passes incoming inspection and fit,
+or a separately qualified sealed fallback. Do not carry a nominal “1 cc” claim
+from a different speaker into this build. Measure the actual part and compare
+low-volume response, distortion, current, sealing, fit, and temperature before
+permanent mounting.
 
-So the corrected build mounts the speaker in a ~1 cc sealed back volume:
-Same Sky's matching BOX-1511-1CC, or a 3D-printed cup glued over the back.
-It is the difference between "audible across a room" and "hold it to your
-ear." Do not chase loudness with the GAIN pad instead — a clipped square
-wave into 8 Ω would exceed the speaker's 1 W maximum; the box is free
-loudness with no downside.
+## Bench acceptance sequence
 
-## The microphone's one quirk
+1. Run clocks without the audio modules and measure approximately 16 kHz WS and
+   1.024 MHz BCLK.
+2. Add the microphone; inspect raw silence, speech, clipping, slot selection,
+   alignment, and noise.
+3. Inspect/configure the exact amplifier with power off.
+4. Add an enclosed 8 Ω candidate, start at minimum digital volume, and play a
+   short tone or speech sample from a current-limited supply.
+5. Record supply current, minimum 3.3 V, resets, distortion, and temperature.
+6. Repeat while Wi-Fi is active, then in the intended mechanical arrangement.
 
-The INMP441's `L/R` pin grounds to select the left slot — the same slot the
-firmware reads. Its data output drives only during its half-frame and floats
-otherwise, which is why it gets a 100 kΩ pull-down (fitted at the GPIO4 end)
-to keep the line defined.
+Use a logic analyzer only on circuit ground and the digital I2S lines. Speaker
+waveform measurement requires a suitable differential/isolated method and a
+trained operator.
 
-Treat the mic as the most fragile part on the bench: no flux, solvent, hot
-air, or compressed air near the port; leave its port-tape on until final
-test; solder only at its header pads, quickly.
+## Primary references
+
+- Espressif ESP32-C3 I2S guide:
+  <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2s.html>
+- TDK InvenSense INMP441 data sheet:
+  <https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf>
+- Analog Devices MAX98357A/MAX98357B data sheet:
+  <https://www.analog.com/media/en/technical-documentation/data-sheets/MAX98357A-MAX98357B.pdf>
