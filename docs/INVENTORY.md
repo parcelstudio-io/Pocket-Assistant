@@ -17,10 +17,11 @@ Status key: **✅ in hand** · **🚚 in transit** · **☐ not bought**
 | Amazon #4 | Sep 1 | Bench supply, saw, solder, stripper, brass flux, jumpers, headers |
 | Amazon #5 | Sep 1 | Multimeter, calipers, breadboards, safety glasses, pliers |
 | Amazon #1 | Sep 2 | Core electronics, passives, insulation, switch, buttons, JST |
-| Amazon #2 | Sep 2 | OLED, electrolytic caps (30 AWG wire since canceled) |
+| Amazon #2 | Sep 2 | OLED, electrolytic caps |
 | Amazon #3 | Sep 2 | K&S 1 mm brass rod |
 | DigiKey | Sep 2 | `CES-20134-088PM` speaker |
 | Amazon #6 | Sep 2 | K&S #9831 brass tube, TUOFENG 26 AWG wire |
+| Amazon #7 | Sep 2 | CBAZY 30 AWG wire (re-ordered after cancellation) |
 
 Estimated total spend: **≈ $600–625** (several Amazon line prices not captured).
 
@@ -65,7 +66,7 @@ cell the numbers justify. Keep the unused pair sealed and terminal-protected.
 | Pointool **heat-shrink kit**, 14 sizes, **white** | Every splice — and it matches the white/silver direction |
 | K&S **#9831 brass tube**, 1.5 mm OD × 0.225 mm wall × 300 mm, 4 tubes | The frame stock. ASIN `B005WPAW9M` verified to resolve to 9831, not a wrong-diameter variant. Caliper on arrival anyway |
 | TUOFENG **26 AWG** silicone wire, 6 colors, 33 ft each | Battery bus and any load-carrying run |
-| CBAZY **30 AWG** silicone hookup wire | ☐ **Canceled** — see the gauge note below |
+| CBAZY **30 AWG** silicone hookup wire, 6 colors, 32.8 ft each | Signals: I²C, I²S, button. Re-ordered after the initial cancellation |
 
 ### Wire-gauge note — current is not the deciding factor
 
@@ -96,12 +97,10 @@ The real trade is **mechanical**, in both directions:
   button 2). 26 AWG is stiffer and bulkier there, and stiff wire levers on
   breakout pads — which is how a pad lifts off a thin OLED or microphone board.
 
-**30 AWG is currently canceled.** The build is not blocked: Dupont jumpers
-cover the whole breadboard phase, and 33 ft × 6 colors of 26 AWG can wire the
-entire device. Re-order [CBAZY 30 AWG](https://www.amazon.com/dp/B073RDGTPB)
-(~$14) if the 1:1 dry-fit shows the signal bundle crowding the frame — which
-is the likely outcome. Strain-relieve both ends of every conductor regardless
-of gauge.
+**Both gauges are now on hand**, so use each where it belongs: 26 AWG for the
+battery bus and any load-carrying run, 30 AWG for every signal, and the
+speaker's own factory leads for the BTL pair. Strain-relieve both ends of
+every conductor regardless of gauge.
 
 ## Tools
 
