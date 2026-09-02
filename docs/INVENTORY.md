@@ -17,10 +17,12 @@ Status key: **✅ in hand** · **🚚 in transit** · **☐ not bought**
 | Amazon #4 | Sep 1 | Bench supply, saw, solder, stripper, brass flux, jumpers, headers |
 | Amazon #5 | Sep 1 | Multimeter, calipers, breadboards, safety glasses, pliers |
 | Amazon #1 | Sep 2 | Core electronics, passives, insulation, switch, buttons, JST |
-| Amazon #2 | Sep 2 | OLED, 30 AWG wire, electrolytic caps |
+| Amazon #2 | Sep 2 | OLED, electrolytic caps (30 AWG wire since canceled) |
 | Amazon #3 | Sep 2 | K&S 1 mm brass rod |
+| DigiKey | Sep 2 | `CES-20134-088PM` speaker |
+| Amazon #6 | Sep 2 | K&S #9831 brass tube, TUOFENG 26 AWG wire |
 
-Estimated total spend: **≈ $575–600** (several Amazon line prices not captured).
+Estimated total spend: **≈ $600–625** (several Amazon line prices not captured).
 
 ---
 
@@ -34,7 +36,7 @@ Estimated total spend: **≈ $575–600** (several Amazon line prices not captur
 | HiLetgo **MAX98357** I²S amplifier board | 3 | Meter `SD` on arrival: ~0.30 V = mono mix (fine); ~0 V = shutdown, needs rework |
 | QTEATAK tactile push-button set | 420 | Action button, GPIO10 → GND. Pick a white cap if available |
 | 2.54 mm male breakaway header pins | 22 | Reversible breadboard fixtures |
-| **Speaker** | — | ☐ **Not bought — the one missing component** |
+| Same Sky **CES-20134-088PM** speaker, 8 Ω 0.8 W enclosed | 1 | DigiKey `2223-CES-20134-088PM-ND`. Top-port, 20 × 13 × 4.87 mm, two mount flanges, ships with 60 mm 32 AWG leads. Cap output ≤ 2.53 V RMS differential |
 
 ## Power
 
@@ -61,19 +63,21 @@ cell the numbers justify. Keep the unused pair sealed and terminal-protected.
 | XFJYMXDM **fish paper**, 16.4 ft | The flame-rated cell barrier — mandatory under/around the pack |
 | ELEGOO **polyimide (Kapton) tape**, 4-pack | Module backs, frame crossings |
 | Pointool **heat-shrink kit**, 14 sizes, **white** | Every splice — and it matches the white/silver direction |
-| CBAZY **30 AWG** silicone hookup wire, 6 colors | Signals **and** the power bus — see the gauge note below. Adequate for this frame size |
-| **1.5 mm brass tube** (K&S #9831) | ☐ **Not bought — see below** |
+| K&S **#9831 brass tube**, 1.5 mm OD × 0.225 mm wall × 300 mm, 4 tubes | The frame stock. ASIN `B005WPAW9M` verified to resolve to 9831, not a wrong-diameter variant. Caliper on arrival anyway |
+| TUOFENG **26 AWG** silicone wire, 6 colors, 33 ft each | Battery bus and any load-carrying run |
+| CBAZY **30 AWG** silicone hookup wire | ☐ **Canceled** — see the gauge note below |
 
-### Wire-gauge note — why 30 AWG is enough here
+### Wire-gauge note — current is not the deciding factor
 
 The "26 AWG for power" rule came from the withdrawn R0 design, which pushed
 ~1.15 A through a long chain (holder + fuse + converter + two FETs). The
-current frame is ~45 mm and the chain is three parts, so:
+current frame is ~45 mm and the chain is three parts, so on **current** either
+gauge is comfortable:
 
 | | 30 AWG | 26 AWG |
 | --- | ---: | ---: |
 | Resistance | ~0.34 Ω/m | ~0.13 Ω/m |
-| Loop drop @ 0.8 A peak, 160 mm | **43 mV** | 17 mV |
+| Loop drop @ 0.8 A peak, 160 mm | 43 mV | 17 mV |
 | Loop drop @ 150 mA average | 8 mV | 3 mV |
 
 Both are far inside the ≤300 mV upstream-drop screen, and resistive heating is
@@ -81,13 +85,23 @@ tens of milliwatts. **The speaker needs no wire at all** — the
 `CES-20134-088PM` ships with 60 mm of 32 AWG leads, longer than the whole
 device, so they reach the amplifier terminal directly with no splice.
 
-Where 30 AWG is genuinely weaker is *mechanical*, not electrical: it nicks
-easily when stripped (it is the finest setting on the CSP-30-1), its strands
-fatigue with flexing, and its solder joints have less pull strength. The
-battery bus is the connection you least want failing inside a sealed frame, so
-26 AWG there is a reasonable robustness upgrade —
-[TUOFENG 26 AWG silicone, 6 colors, 33 ft each](https://www.amazon.com/dp/B07G2LRX68),
-~$15.59. Either gauge passes; strain-relieve both ends regardless.
+The real trade is **mechanical**, in both directions:
+
+- **26 AWG on the battery bus** is the robustness choice: 30 AWG nicks easily
+  when stripped (it is the finest setting on the CSP-30-1), its strands fatigue
+  with flexing, and its joints have less pull strength. The battery bus is the
+  connection you least want failing inside a sealed frame.
+- **30 AWG on signals** is the routing choice: roughly 15–17 conductors get
+  free-formed inside a 45 mm cage (OLED 4, microphone 5–6, amplifier 5,
+  button 2). 26 AWG is stiffer and bulkier there, and stiff wire levers on
+  breakout pads — which is how a pad lifts off a thin OLED or microphone board.
+
+**30 AWG is currently canceled.** The build is not blocked: Dupont jumpers
+cover the whole breadboard phase, and 33 ft × 6 colors of 26 AWG can wire the
+entire device. Re-order [CBAZY 30 AWG](https://www.amazon.com/dp/B073RDGTPB)
+(~$14) if the 1:1 dry-fit shows the signal bundle crowding the frame — which
+is the likely outcome. Strain-relieve both ends of every conductor regardless
+of gauge.
 
 ## Tools
 
@@ -111,15 +125,9 @@ battery bus is the connection you least want failing inside a sealed frame, so
 
 ## Still missing
 
-Both gaps I flagged earlier — breadboard and multimeter — are covered. What
-actually remains is short:
-
-### Blocking
-
-| Item | Why | Approx. |
-| --- | --- | ---: |
-| **Speaker** — Same Sky `CES-20134-088PM`, DigiKey `2223-CES-20134-088PM-ND` | The only missing electronic part; no audio output without it | ~$8 ea |
-| **Brass tube, K&S #9831** (1.5 mm OD × 0.225 wall) | You bought the 1.0 mm **rod** (braces) but not the **tube** — the tube *is* the frame | ~$8 |
+**Every part needed to build the device has been ordered.** Nothing on this
+list blocks the bench phase or the frame; what remains is consumables and
+process tools.
 
 ### Needed before assembly
 
