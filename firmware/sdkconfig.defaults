@@ -1,0 +1,20 @@
+# Select the reconstructed board adapter.
+CONFIG_BOARD_TYPE_POCKET_WALL_E_C3=y
+
+# The ESP32-C3 SuperMini used by the project has 4 MB of flash. Upstream's
+# ESP32-C3 defaults assume 16 MB, so both settings below are required.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions/v2/pocket-ai-4m.csv"
+
+# Match the capabilities present in the published image.
+CONFIG_FLASH_DEFAULT_ASSETS=y
+CONFIG_USE_ESP_WAKE_WORD=y
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+
+# English-speaking user finalization: "Hi ESP" wake word and English UI.
+# The vendor image ships Mandarin "ni hao xiao zhi"; this is a deliberate
+# divergence for the corrected source build.
+CONFIG_LANGUAGE_EN_US=y
+# CONFIG_SR_WN_WN9S_NIHAOXIAOZHI is not set
+CONFIG_SR_WN_WN9S_HIESP=y

@@ -1,0 +1,24 @@
+category,qty,preferred_part_or_spec,critical_requirement,color_plan,status
+superseded_see,,docs/MATERIALS.md is the current purchasing list (2026-09-01 Amazon-first swap),,,
+controller,2,ESP32-C3 SuperMini plain 4MB+ USB-C,"corrected source uses GPIO4 mic data; qualify spare",black PCB,procure and inspect
+display,1,Adafruit 326 white SSD1306 128x64,"3.3V I2C; firmware probes 0x3c then 0x3d; measure board",white light black background,procure and bench-test
+microphone,1,INMP441 I2S breakout,"3.3V; verified pin order; L/R low; SD to GPIO4",black PCB,procure and bench-test
+amplifier,1,DFRobot DFR0954 MAX98357A,"3.3V; configure left I2S slot; verify schematic",concealed black guard,procure and bench-test
+speaker,1,Same Sky CMS-15113-078L100-67,"8ohm 0.7W; factory leads; requires about 1cc enclosure",silver and black,procure and inspect
+speaker_cup,1,Same Sky BOX-1511-1CC or equivalent sealed cup,"about 1cc rear volume; dry-fit and listening test",black/hidden,procure or print
+battery,1,Nitecore NL169 protected 16340,"3.6V; 950mAh label; 2A continuous; max tolerance 16.8x34.4mm",hidden removable,procure exact non-USB part
+battery_holder,1,MPD BH123A-class single holder,"must fit full protected-cell length; secure contacts",hidden guarded,procure and fit-test
+external_charger,1,XTAR ANT MC1 Plus USB-C exact official variant,"explicit 16340 support; confirm automatic 0.5A selection; 4.20V termination",external,procure and verify instructions
+regulator,1,Pololu 4964 S8V9F3,"3.3V step-up/down; test whole load over cell range",concealed ventilated black guard,procure and load-test
+power_switch,1,Pololu 2810 Mini MOSFET Slide Switch LV,"single-cell compatible; reverse-voltage protection; true load off",black PCB actuator,procure and test
+ptc,1,Littelfuse 1206L150SLYR,"1.5A hold 3.9A trip at 20C; warm derating; mount on carrier",hidden insulated,procure and load-test
+action_button,1,NO tactile switch,"GPIO10 to GND; not GPIO9",white cap with black fallback,procure
+bulk_capacitor,1,Panasonic 6SVPC220M 220uF 6.3V polymer,"regulated amp rail; observe polarity; SMD carrier required",black/silver,procure
+small_passives,as designed,"10uF X5R; 100nF X7R; 10k/100k resistors; BLM21PG221SN1D ferrite","no GPIO0 battery divider in Rev A; freeze package/carrier before soldering",hidden,finalize packages and procure
+frame_tube,2,K&S 1.5mm OD brass tube 300mm,"fabricate unpowered; electrically floating",satin white finish,procure
+frame_brace,as needed,Albion NSR10 1.0mm nickel-silver rod or K&S brass fallback,"structural only; not ground",bare silver or satin-silver fallback,procure subject to availability
+power_wire,as needed,26-28AWG flexible stranded,"insulated short power/ground runs",black GND white/red positive,procure
+signal_wire,as needed,30AWG insulated wire,"I2C/I2S/button; label ends",black bundle,procure
+insulation,as needed,fish paper Kapton heat-shrink and guards,"barrier between every node/module/cell and frame",white guards black sleeves,procure
+subplates,as needed,thin FR4/polycarbonate plus nylon M2.5 hardware,"mechanical retention independent of solder joints",white/hidden,make after fit check
+speaker_cloth,as needed,acoustically transparent mesh,"do not obstruct diaphragm",black,procure

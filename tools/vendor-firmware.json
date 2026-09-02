@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "name": "Huy Vector Pocket AI Assistant merged firmware",
+    "filename": "pocket-esp-ai.bin",
+    "source_page": "https://www.huyvector.org/robots-kinetic/pocket-ai-assistant",
+    "download_url": "https://drive.usercontent.google.com/download?id=17c_fR2NngYaQpYxT_LWSCMmulzYWSW7z&export=download&confirm=t",
+    "google_drive_file_id": "17c_fR2NngYaQpYxT_LWSCMmulzYWSW7z",
+    "verified_on": "2026-09-01",
+    "size_bytes": 3541630,
+    "sha256": "3d9dc6d68cc0eebaacb05f20fb4cc49fda7802eda21400483f1d9fcf2a01cf98",
+    "chip": "esp32c3",
+    "flash_offset": "0x0",
+    "flash_size_bytes": 4194304,
+    "partition_table_offset": "0x8000",
+    "application_offset": "0x10000",
+    "reported_project": "xiaozhi",
+    "reported_application_version": "2.4.0",
+    "reported_board": "pocket-wall-e-c3",
+    "reported_esp_idf_version": "v5.5.2-dirty",
+    "reported_bootloader_compile_timestamp": "2026-08-26T17:23:36",
+    "reported_application_compile_timestamp": "2026-08-26T17:23:10",
+    "reported_flash_mode": "dio",
+    "reported_flash_frequency_mhz": 80,
+    "partitions": [
+      {
+        "name": "nvs",
+        "type": "data",
+        "offset": "0x9000",
+        "size": "0x4000"
+      },
+      {
+        "name": "otadata",
+        "type": "data",
+        "offset": "0xd000",
+        "size": "0x2000"
+      },
+      {
+        "name": "phy_init",
+        "type": "data",
+        "offset": "0xf000",
+        "size": "0x1000"
+      },
+      {
+        "name": "factory",
+        "type": "app",
+        "offset": "0x10000",
+        "size": "0x2f0000"
+      },
+      {
+        "name": "assets",
+        "type": "data",
+        "offset": "0x300000",
+        "size": "0x100000"
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "target": "esp32c3",
+    "builds": [
+        {
+            "name": "pocket-wall-e-c3",
+            "sdkconfig_append": [
+                "CONFIG_BOARD_TYPE_POCKET_WALL_E_C3=y",
+                "CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y",
+                "CONFIG_PARTITION_TABLE_CUSTOM_FILENAME=\"partitions/v2/pocket-ai-4m.csv\"",
+                "CONFIG_FLASH_DEFAULT_ASSETS=y",
+                "CONFIG_USE_ESP_WAKE_WORD=y",
+                "CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y",
+                "CONFIG_LANGUAGE_EN_US=y",
+                "# CONFIG_SR_WN_WN9S_NIHAOXIAOZHI is not set",
+                "CONFIG_SR_WN_WN9S_HIESP=y"
+            ]
+        }
+    ]
+}
