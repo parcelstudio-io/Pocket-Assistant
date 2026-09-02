@@ -16,53 +16,15 @@ corrections. Don't mix the two.
 
 ---
 
-## The corrected shopping list
+## Materials
 
-Prices and stock checked 2026-09-01. The fixed shopping rows total roughly
-**$130 before tax/shipping**; materials, test equipment, paint, flux,
-adhesives, fabrication, and printing can take the real total well above $190.
-NYC-specific sources and
-the one-week plan live in [NYC_SOURCING.md](NYC_SOURCING.md); the physical
-layout source is in [cad/fitcheck.py](../cad/fitcheck.py). Its earlier 93/93
-generated result was invalidated by the final holder/capacitor/antenna audit;
-read [the CAD status](../cad/README.md) and rerun it with measured parts before
-cutting metal.
-
-| # | Part | Source | Price | Color role |
-| --- | --- | --- | --- | --- |
-| 1 | ESP32-C3 SuperMini, plain (3-pack — you'll qualify two) | [Amazon B0G5XS345R](https://www.amazon.com/dp/B0G5XS345R) | $11.99/3 | black (hidden) |
-| 2 | Pololu S8V9F3 3.3 V buck-boost regulator | [Pololu 4964](https://www.pololu.com/product/4964) | $9.95 | hidden |
-| 3 | Pololu Mini MOSFET slide switch LV (reverse protection) | [Pololu 2810](https://www.pololu.com/product/2810) | $4.49 | white printed knob cap |
-| 4 | **Nitecore NL169** protected 16340, 950 mAh, 2 A continuous, 34.1×16.6 mm | [B&H Photo](https://www.bhphotovideo.com/c/product/1811930-REG/nitecore_nl169_16340_li_ion_rechargeable.html) — listing showed in stock; confirm pickup before travel | $9.95 | untouched (in white cradle) |
-| 5 | MPD BH123A CR123A holder (polarity-mark and guard it; do not assume mechanical keying) | [DigiKey](https://www.digikey.com/en/products/detail/mpd-memory-protection-devices/BH123A/2817712) | $1.25 | black, inside white cradle |
-| 6 | PTC fuse 1.5 A hold — Littelfuse 1206L150SLYR | [DigiKey](https://www.digikey.com/en/products/detail/littelfuse-inc/1206L150SLYR/2082148) | $2.26 | hidden |
-| 7 | Adafruit #326 white 0.96" SSD1306 OLED (STEMMA QT) | [Adafruit 326](https://www.adafruit.com/product/326) | $17.50 | **the face**: white pixels, black bezel |
-| 8 | DFRobot DFR0954 MAX98357A amp | [DFRobot](https://www.dfrobot.com/product-2614.html) / [DigiKey](https://www.digikey.com/en/products/detail/dfrobot/DFR0954/18069273) | $4.90/$5.25 checked | black (hidden) |
-| 9 | Same Sky CMS-15113-078**L100**-67 speaker (wire leads) | [DigiKey](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CMS-15113-078L100-67/9561150) | $3.10 | black behind grille |
-| 10 | Same Sky BOX-1511-1CC 1 cc prototyping enclosure plus its specified foam/seal materials *(or a validated white PETG cup)* | [Mouser](https://www.mouser.com/ProductDetail/Same-Sky/BOX-1511-1CC) | $1.99 checked | white if printed |
-| 11 | INMP441 microphone (3-pack; pick a black-PCB listing) | [Amazon B0972XP1YS](https://www.amazon.com/AITRIPAITRIP-AITRIP-Omnidirectional-Microphone-Interface/dp/B0972XP1YS) | $9.99/3 | black (hidden) |
-| 12 | XTAR ANT MC1 Plus USB-C, exact official variant; confirm automatic 0.5 A selection with the received manual/indicator | [XTAR](https://www.xtar.cc/product/xtar-ant-mc1-plus-charger-7.html) | $9.49 checked | lives off-device |
-| 13 | K&S brass tube 1.5 mm OD (4-pack) | [K&S BR225MM-1H](https://ksmetals.com/products/br225mm-1h) | $7.99 | painted satin white |
-| 14 | Structural wire 1.0 mm — **Albion Alloys nickel-silver rod NSR10** for silver-with-no-paint (K&S brass rod as fallback) | [Flex-I-File](https://flex-i-file.com/products/nickel-silver-rod) (sold out 2026-09-01; [UK](https://www.scalemodelshop.co.uk/nickel-silver-rod/)/eBay carry it) / [K&S](https://ksmetals.com/products/brrmet-1) | $5.99 | **bare silver** |
-| 15 | White tact switch (GPIO10 action button) | [ProtoSupplies](https://protosupplies.com/product/tactile-momentary-pushbutton-white-6mm/) | $0.69/5 | white cap |
-| 16 | 30 AWG white PTFE signal wire (silver-plated conductors) | [Remington Industries](https://www.remingtonindustries.com/hook-up-wire/hook-up-wire-30-awg-ptfe-stranded-10-colors-7-sizes-available/) | $18.80 | white |
-| 17 | Passives basket: 10 kΩ ×3, 100 kΩ, 100 nF ×4, 10 µF X5R ×3, Panasonic **6SVPC220M** 220 µF/6.3 V polymer, Murata **BLM21PG221SN1D** ferrite bead | DigiKey (same cart as 5–10); buy spares and suitable SMD adapter/protoboard | ~$8–12 | hidden |
-| 18 | STEMMA QT JST-SH-to-male-header cable; shorten/terminate at the SuperMini after bench test | [Adafruit 4209](https://www.adafruit.com/product/4209) | $0.95 checked | mostly black/hidden |
-| 19 | White polycarbonate sheet 0.5–1 mm (sub-plates, cell cradle), M2.5 white nylon standoffs, white PET braid loom, white 2:1 heat-shrink, Kapton + fish paper, 26–28 AWG power wire | McMaster / Amazon | ~$35–50 | white |
-
-Ordering order and NYC pickup/delivery options for every line (B&H same-day
-cells, Micro Center Brooklyn emergency substitutes, Home Depot paint pickup,
-Makelab PETG printing in Industry City): see [NYC_SOURCING.md](NYC_SOURCING.md).
-Recheck each cart immediately before payment; marketplace sellers, stock, and
-delivery dates are not part specifications. The 3-packs bank your qualification
-spares automatically.
-
-*Deliberately black (the secondary color):* OLED bezel, both PCBs, speaker,
-holder. *Deliberately silver:* nickel-silver rods, holder clip, polymer-cap
-cans, silver-plated wire ends. *White:* painted tube frame, PTFE wiring,
-loom, standoffs, sub-plates, printed parts, tact cap. Don't chase a
-white-PCB SuperMini or mic — none exist; "white SSD1306" listings mean white
-*pixels*.
+The complete Amazon-first material list — every ASIN, price, spec check and
+arrival test — is **[MATERIALS.md](MATERIALS.md)**. Everything electrical is on
+Amazon except the cell (Nitecore NL169, B&H Manhattan) and reverse-polarity
+protection (deferred to Rev B). Read
+**[the power-chain lesson](../edu/07-the-power-chain.md)** before ordering the
+converter and fuse; those two choices are the ones with a wrong answer that
+looks right.
 
 ---
 

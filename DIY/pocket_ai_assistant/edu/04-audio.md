@@ -50,26 +50,51 @@ temperature, or lot.
 Voice quality is unaffected — telephony and voice assistants live at 16 kHz.
 This change is two numbers in `config.h`, already applied and compiled.
 
-## The channel-select trap (SD_MODE)
+## The channel-select pin (SD_MODE) — and a correction
 
 The MAX98357A's `SD` pin does double duty: shutdown *and* channel select.
-The voltage on it decides whether the amp plays the left slot, the right
-slot, or the average of both. Our firmware transmits sound **only in the
-left slot — the right slot is digital silence.**
+The voltage on it picks the left slot, the right slot, or the average of both:
 
-DFRobot's board documentation contradicts its own schematic about the
-default, and on a worst-case 3.3 V rail the onboard divider can land the pin
-in "right channel" territory. Right slot = zeros = a perfectly built,
-perfectly silent pager.
+| V(SD) | Mode |
+| --- | --- |
+| < 0.16 V | shutdown |
+| 0.16 – 0.77 V | (Left + Right) / 2 |
+| 0.77 – 1.4 V | Right only |
+| > 1.4 V | Left only |
 
-The fix costs one solder joint: an insulated jumper from `SD` to `VCC`.
-"High" is unambiguously *left* in the datasheet's table, with ~1.8 V of
-margin. (Direct tie is safe here because the amp's supply and the logic
-supply are the same 3.3 V rail.)
+An Adafruit-lineage clone (the common Amazon board) has a 1 MΩ from SD to VIN
+against the chip's internal 100 kΩ pulldown, giving
+V(SD) = 3.3 × 100/1100 ≈ **0.30 V — the (L+R)/2 mix mode.**
 
-Bench check before final assembly: with the board powered, `SD` to ground
-should read ≈3.3 V after the jumper (≈1.65 V before, and ≈0.4 V means you
-have a mix-mode board).
+**An earlier version of this note claimed that costs you 6 dB, because the
+firmware fills only the left slot. That was wrong.** The ESP32-C3's I2S
+hardware does not leave the other slot silent. From Espressif's own
+`i2s_ll.h` for this chip, verbatim:
+
+> *In mono mode, there only should be one slot enabled, another inactive slot
+> will transmit same data as enabled slot*
+
+So the right slot carries a **duplicate** of the left. The amplifier computes
+(L + R)/2 = (L + L)/2 = L — **full amplitude**. A board that happened to sit in
+right-only mode would play normally too, for the same reason. This is why
+thousands of ESP32 + unmodified MAX98357A projects are simply loud enough.
+
+**What the `SD` pin can still do to you** is the one mode that really is
+silent: if a clone ships with *no* SD resistor fitted, the internal pulldown
+takes SD to 0 V, which is **shutdown**. That is a dead amp with no other
+symptom.
+
+So the jumper from `SD` to `VIN` is worth fitting as cheap insurance against a
+missing resistor — not as a volume fix. And the acceptance test is a meter,
+not your ears:
+
+- Power the board at 3.3 V and measure **SD to GND**.
+- ≈3.3 V → left mode (jumper worked). ≈0.30 V → stock mix mode, also fine.
+- **≈0 V → shutdown.** That is the failure worth catching.
+
+Do *not* expect the board to get audibly louder after fitting the jumper. It
+will sound identical, and chasing that non-existent difference would send you
+hunting a fault that isn't there.
 
 ## Power, loudness, and the 1 cc box
 

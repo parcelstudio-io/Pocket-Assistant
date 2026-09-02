@@ -51,6 +51,27 @@ PARTS = {
     "mic_inmp441":     (( 4.0,  30.0,  18.0), (14.0,  11.0,   3.5), "pcb"),
     "cap_220u":        (( 3.0,  17.0,   6.5), ( 6.3,   6.3,   6.0), "pcb"),
     "tact_button":     ((52.0,   4.0,   6.0), ( 6.0,   6.0,   7.3), "pcb"),
+    # 2-pin 0.1in header + shunt in the regulator VOUT lead. Pulling it breaks
+    # the 3.3 V rail between regulator and star bus so USB can power the
+    # SuperMini for service without back-driving the regulator's output.
+    "service_jumper":  ((48.0,   8.0,  24.0), ( 5.0,   2.6,   8.0), "service"),
+}
+
+# Envelope provenance. A report containing PROVISIONAL entries is a planning
+# aid, not fit evidence: measure those parts on arrival and update this file.
+PROVENANCE = {
+    "oled_326":       ("DATASHEET",   "Adafruit #326 outline incl. mounting ears"),
+    "holder_bh123a":  ("DATASHEET",   "MPD BH123A: 12.09 mm above PCB + tab allowance; datasheet lists RCR123A support"),
+    "speaker_box":    ("VENDOR",      "Same Sky BOX-1511-1CC 1 cc enclosure"),
+    "supermini":      ("PROVISIONAL", "generic clone; measure on arrival"),
+    "amp_dfr0954":    ("VENDOR",      "DFRobot DFR0954 product page"),
+    "reg_s8v9f3":     ("DATASHEET",   "Pololu S8V9F3 dimension drawing"),
+    "star_board":     ("PROVISIONAL", "perfboard scrap carrying buses + passives"),
+    "switch_2810":    ("DATASHEET",   "Pololu #2810 drawing"),
+    "mic_inmp441":    ("PROVISIONAL", "generic breakout; measure on arrival"),
+    "cap_220u":       ("PROVISIONAL", "bulk cap not yet selected"),
+    "tact_button":    ("VENDOR",      "6x6 mm tact with cap"),
+    "service_jumper": ("VENDOR",      "2-pin 0.1in header + shunt"),
 }
 
 # The exact generic-board antenna dimensions are not published. Use a
@@ -130,6 +151,22 @@ def main():
     corridor = box("usb", *USB_CORRIDOR[1])
     doc.addObject("Part::Feature", "usb_corridor").Shape = corridor
 
+    # R6: the cell must slide out of the holder's open -x face. The whole
+    # safety model (cell out for soldering, painting, flashing) depends on it.
+    h_pos, h_size, _ = PARTS["holder_bh123a"]
+    swept = box("swept", (h_pos[0] - 20.0, h_pos[1], h_pos[2]),
+                (20.0, h_size[1], h_size[2]))
+    doc.addObject("Part::Feature", "cell_swept").Shape = swept
+
+    # R7: the service jumper must be reachable from the +z face without
+    # disassembly, or the "pull the jumper before USB" rule will be skipped.
+    j_pos, j_size, _ = PARTS["service_jumper"]
+    j_top = j_pos[2] + j_size[2]
+    access = box("access", (j_pos[0] - 2.0, j_pos[1] - 2.0, j_top),
+                 (j_size[0] + 4.0, j_size[1] + 4.0,
+                  max(1.0, FRAME_D - j_top)))
+    doc.addObject("Part::Feature", "jumper_access").Shape = access
+
     report, failures = [], []
 
     def check(ok, label):
@@ -178,6 +215,18 @@ def main():
         d = solids[a].distToShape(solids[b])[0]
         check(d >= dmin, f"R5 {a} <-> {b} clearance {d:.1f} mm (>= {dmin})")
 
+    # R6 cell insertion/removal path
+    for name, s_ in solids.items():
+        if name == "holder_bh123a":
+            continue
+        check(s_.common(swept).Volume < 1e-6, f"R6 cell removal path clear of {name}")
+
+    # R7 service-jumper access
+    for name, s_ in solids.items():
+        if name == "service_jumper":
+            continue
+        check(s_.common(access).Volume < 1e-6, f"R7 jumper access clear of {name}")
+
     # frame vs components (tubes sit on the envelope border)
     for name, s in solids.items():
         v = s.common(frame).Volume
@@ -193,12 +242,33 @@ def main():
              f"{FRAME_W:g} x {FRAME_H:g} x {FRAME_D:g} mm · "
              f"{passed}/{len(report)} checks pass", "",
              "> Geometric desk check only. Replace generic-board dimensions "
-             "with caliper measurements and rerun before cutting the frame.", ""]
+             "with caliper measurements and rerun before cutting the frame.", "",
+             "## Envelope provenance", "",
+             "| Part | Provenance | Source |", "| --- | --- | --- |"]
+    for _n in PARTS:
+        _p, _src = PROVENANCE.get(_n, ("PROVISIONAL", "untracked"))
+        lines.append(f"| `{_n}` | {_p} | {_src} |")
+    provisional = sorted(n for n in PARTS
+                         if PROVENANCE.get(n, ("PROVISIONAL",))[0] == "PROVISIONAL")
+    lines += ["", "## Acceptance", ""]
+    if provisional:
+        lines += [f"**Not fit evidence yet** - {len(provisional)} envelope(s) "
+                  "are PROVISIONAL. Measure them on arrival, update "
+                  "`fitcheck.py`, and regenerate:", ""]
+        lines += [f"- `{n}`" for n in provisional]
+        lines += [""]
+    else:
+        lines += ["All envelopes are datasheet- or measurement-backed.", ""]
+    lines += ["A 1:1 cardstock dry fit of the real parts is required "
+              "regardless of this report.", "", "## Rules", ""]
     lines += ["    " + r for r in report]
     with open(os.path.join(OUT_DIR, "FITCHECK_REPORT.md"), "w") as f:
         f.write("\n".join(lines) + "\n")
     print("\n".join(report))
     print(f"\n{passed}/{len(report)} checks passed")
+    if provisional:
+        print("PROVISIONAL envelopes (measure on arrival): "
+              + ", ".join(provisional))
     if failures:
         sys.exit(1)
 

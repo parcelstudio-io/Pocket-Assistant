@@ -55,12 +55,41 @@ RAIL_PEAKS_MA = {
 REGULATOR_CAPABILITY_MA = 1290
 REQUIRED_MARGIN = 1.25
 
+# --- Series-resistance budget on the battery lead ---------------------------
+# Each element between the cell and the converter input drops voltage under
+# load. At end of discharge the converter still has to COLD-START through the
+# whole chain, so the sum matters, not the individual parts. Measured as one
+# chain at 1.0 A; these are the design allocations.
+SERIES_RESISTANCE_OHM = {
+    "cell internal (Nitecore NL169, typical)": 0.12,
+    "PTC 2x RUEF110 in parallel": 0.125,
+    "holder contacts (acceptance limit)": 0.03,
+    "switch contacts (acceptance limit)": 0.03,
+    "wiring 26 AWG, both legs": 0.02,
+}
+CELL_END_OF_DISCHARGE_V = 3.0
+CELL_PEAK_CURRENT_A = 1.0
+# The chain drop sets a hard PURCHASE REQUIREMENT on the converter: it must
+# cold-start below the voltage its input actually sees at end of discharge.
+# The XL63070 module's own listing claims "2 V ultra-low voltage startup" and
+# the TPS63802 module claims 1.8 V, so both clear it -- but a second listing
+# for the same XL63070 module claims 2.8 V, which would NOT clear it. That
+# conflict is unresolved on paper and is settled by the arrival chain test in
+# docs/BUILD_GUIDE.md Phase 0: power the module through the real PTC, holder
+# and switch, then power-cycle at a 3.0 V source to prove it cold-starts.
+CONVERTER_STARTUP_MAX_V = 2.0
+PTC_HOLD_A_EACH = 1.1        # Bourns RUEF110 hold current at 25 C
+PTC_DERATE_WARM = 0.75       # allowance for a closed frame near the converter
+
 # --- The harness net list (corrected build) --------------------------------
 # Each net: name -> list of (component, pin) endpoints. "gpioN" endpoints on
 # the esp32c3 are cross-checked against config.h.
 
 NETS = {
-    "3V3": [("s8v9f3", "VOUT"), ("esp32c3", "3V3"), ("oled", "VIN"),
+    # The regulator reaches the rail only through the service jumper, so the
+    # rail can be broken before USB is attached (see docs/WIRING_AND_ASSEMBLY).
+    "REG_OUT": [("s8v9f3", "VOUT"), ("service_jumper", "1")],
+    "3V3": [("service_jumper", "2"), ("esp32c3", "3V3"), ("oled", "VIN"),
             ("inmp441", "VDD"), ("dfr0954", "VCC"), ("dfr0954", "SD (jumper: left mode)")],
     "GND": [("s8v9f3", "GND"), ("esp32c3", "GND"), ("oled", "GND"),
             ("inmp441", "GND"), ("inmp441", "L/R (left slot)"), ("dfr0954", "GND"),
@@ -167,7 +196,38 @@ def main() -> int:
                 for c, p in NETS[net]) for net in spk_nets)
     check(isolated, "speaker leads stay a floating bridge load")
 
-    # 8. Power budget.
+    # 8. Service isolation: the regulator must not sit directly on the rail
+    # that USB back-feeds through the ESP32-C3's 3V3 pin.
+    reg_pins = {c for c, _ in NETS["REG_OUT"]}
+    rail_pins = {c for c, _ in NETS["3V3"]}
+    check("s8v9f3" not in rail_pins and "service_jumper" in reg_pins
+          and "service_jumper" in rail_pins,
+          "service jumper separates regulator output from the 3.3 V rail")
+    check("esp32c3" in rail_pins and "esp32c3" not in reg_pins,
+          "ESP32-C3 3V3 pin sits on the switched rail, not on regulator VOUT")
+
+    # 9. Series-resistance budget: the converter must still cold-start from a
+    # nearly empty cell through the fuse, holder, switch and wiring.
+    r_total = sum(SERIES_RESISTANCE_OHM.values())
+    v_drop = r_total * CELL_PEAK_CURRENT_A
+    v_conv = CELL_END_OF_DISCHARGE_V - v_drop
+    check(v_conv >= CONVERTER_STARTUP_MAX_V,
+          f"converter input {v_conv:.2f} V at {CELL_END_OF_DISCHARGE_V} V cell "
+          f"and {CELL_PEAK_CURRENT_A} A (chain {r_total:.3f} ohm, drop "
+          f"{v_drop:.2f} V) clears the {CONVERTER_STARTUP_MAX_V} V required "
+          "converter cold-start ceiling")
+    # PTC hold-current margin. A PTC's hold current derates with ambient; in a
+    # closed frame next to a warm converter, assume ~75% of the 25 C rating.
+    # This -- not the voltage drop -- is why two RUEF110 are paralleled: one
+    # alone derates below the operating current and would nuisance-trip.
+    derated_single = PTC_HOLD_A_EACH * PTC_DERATE_WARM
+    derated_pair = 2 * PTC_HOLD_A_EACH * PTC_DERATE_WARM
+    check(derated_single < CELL_PEAK_CURRENT_A <= derated_pair,
+          f"PTC pair holds {derated_pair:.2f} A warm-derated vs "
+          f"{CELL_PEAK_CURRENT_A} A peak, while a single would hold only "
+          f"{derated_single:.2f} A and nuisance-trip")
+
+    # 10. Power budget.
     peak = sum(RAIL_PEAKS_MA.values())
     check(peak * REQUIRED_MARGIN <= REGULATOR_CAPABILITY_MA,
           f"rail peak {peak} mA x {REQUIRED_MARGIN} margin fits "

@@ -11,9 +11,9 @@ Use the lessons in order:
 5. [Color and finish](05_COLOR_AND_FINISH.md) — how to achieve the requested palette without damaging parts.
 6. [Acceptance tests](06_ACCEPTANCE_TESTS.md) — the exact evidence needed before the prototype is pocket-safe.
 
-Additional focused lessons cover [power and battery safety](03-power-and-battery.md), [audio and the 16 kHz decision](04-audio.md), [display addresses and boot pins](05-display-and-pins.md), and [radio/frame placement](06-radio-and-frame.md).
+Additional focused lessons cover [power and battery safety](03-power-and-battery.md), [audio and the 16 kHz decision](04-audio.md), [display addresses and boot pins](05-display-and-pins.md), [radio/frame placement](06-radio-and-frame.md), and **[the power chain](07-the-power-chain.md)** — the series-resistance budget, why two fuses, and the service jumper. That last one is the only genuine electrical-engineering problem in the project; read it before ordering the converter.
 
-The machine-readable purchasing list is [parts.csv](parts.csv). The
+The complete Amazon-first material list is [docs/MATERIALS.md](../docs/MATERIALS.md); the evidence behind every assembly step is [docs/ASSEMBLY_EVIDENCE.md](../docs/ASSEMBLY_EVIDENCE.md). The machine-readable purchasing list is [parts.csv](parts.csv). The
 [purchase-readiness review](../docs/PURCHASE_READINESS.md) says what is safe
 to buy now. Existing [project BOM](../docs/BOM.md) and [legacy/vendor-image
 wiring guide](../docs/WIRING_AND_ASSEMBLY.md) retain broader alternatives and
