@@ -1,83 +1,69 @@
-# Complete material list — Amazon-first, NYC
+# Complete material list — R1 build release, Amazon-first, NYC
 
-> **REV A LOCKED — 2026-09-02. THIS IS THE PURCHASING LIST.** Buy only from
-> this file, using the Order Sheet at the bottom. Every other parts table in
-> the repo (docs/BOM.md, docs/NYC_SOURCING.md, PURCHASE_READINESS.md,
-> edu/parts.csv, edu/02_*) is an earlier generation kept for rationale and is
-> banner-marked superseded. Milestone-reviewed 2026-09-01 (five-lane panel,
-> verdict GO); locked with the fixes folded in. Scope: **Wi-Fi + BLE only —
-> no cellular.** Changes after this stamp require re-running netcheck and
-> fitcheck and re-stamping this file and BUILD_GUIDE.md.
+> **CURRENT PURCHASE LIST — 2026-09-02.** Rewritten by the final audit to match
+> the released compact architecture in
+> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md) (protected
+> LiPo pack + in-frame USB-C charger + slide switch; no converter, fuse pair,
+> P-FETs, 16340, or holder). The old Amazon-first cart survives only in git
+> history; its power section was withdrawn and must not be resurrected.
 
-Every row was fetched live on **2026-09-01** and then re-verified by a second
-pass that re-opened each listing independently. Prices, sellers and stock move;
-re-check in the cart. Where a claim could not be confirmed from the listing it
-says so, with the measurement that settles it on arrival.
+Listings were live-checked on **2026-09-01/02**. Prices, sellers, and stock
+move; re-check in the cart. Where a claim could not be confirmed from the
+listing it says so, with the measurement that settles it on arrival.
 
-**The whole electrical build is on Amazon except one part** (the cell — see
-Exceptions). Nothing here requires DigiKey, Pololu, Adafruit or Same Sky.
-
-Legend: **✅ confirmed** = listing fetched and specs read · **⚠️ measure**
-= a spec the listing does not publish; verify on arrival.
+Legend: **✅ confirmed** = listing/product page fetched and specs read ·
+**⚠️ measure** = a spec the listing does not publish; verify on arrival.
 
 ---
 
 ## 1 · Electronics
 
-| Role | Part / ASIN | Price | Spec check |
+| Role | Part | Price | Spec check |
 | --- | --- | --- | --- |
-| **MCU — buy BOTH packs** | [B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) 10-pack $28.99 (photo-confirmed `FH4` 4 MB marking, "Onboard LED blue light: GPIO8"; pre-soldered headers → breadboard/qualification boards) **+** [B0GX966R9R](https://www.amazon.com/dp/B0GX966R9R) 3-pack $12.97 (header-less → final-mount candidates; only 5 reviews, so it is not trusted alone) | $41.96 | ✅ Both: USB-C, no U.FL, single blue LED. ⚠️ Gate every board with `esptool flash_id` ≥ 4 MB — the 3.54 MB image makes a 2 MB clone a hard stop |
-| **Display** | 0.96" SSD1306 128×64 I²C, **white**, 5-pack — [B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) (Hosyond) | $14.99 / 5 | ✅ SSD1306 (not SH1106), 4-pin I²C, white pixels, 3.3–5 V. Address 0x3C; firmware probes 0x3C then 0x3D so either works. ⚠️ **Read the silkscreen pin order** — vendors ship GND-VCC-SCL-SDA *and* VCC-GND-SCL-SDA |
-| **Microphone** | INMP441 I²S MEMS, 5-pack — [B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS) | $11.99 / 5 | ✅ **Ships from and sold by Amazon** (best fulfilment in the whole BOM). 3.3 V, I²S, `L/R` to GND = left slot |
-| **Amplifier** | MAX98357A I²S class-D, 3-pack — [B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH) (HiLetgo) | $9.49 / 3 | ✅ Adafruit-lineage clone, 2.5–5.5 V, works at 3.3 V. Stock SD ≈ 0.30 V = (L+R)/2 — **this is fine, not a 6 dB loss** ([why](../edu/04-audio.md#the-channel-select-pin-sd_mode--and-a-correction)). Genuine Adafruit ADA3006 is *unavailable* on Amazon |
-| **Speaker — primary** | **Pre-boxed** double-cavity 8 Ω, 4-pack — [B0BHST51PQ](https://www.amazon.com/dp/B0BHST51PQ) | $9.99 / 4 | Ships with a sealed enclosure, removing the hardest acoustic step. ⚠️ No published dimensions — caliper on arrival before frame layout |
-| **Speaker — fallback** | Treedix 8 Ω 1 W 15×10×3.5 mm 4-pack [B0CJNB3CR2](https://www.amazon.com/dp/B0CJNB3CR2) + 20 mm-ID vinyl caps [B08HL9R5YB](https://www.amazon.com/dp/B08HL9R5YB) | $15.54 | 1 W ≥ the 0.68 W the amp can deliver at 3.3 V. A round cap does not rim-seal a rectangular frame — it needs a small baffle plate (PC sheet) with a sealed rim, and the cap OD must measure ≤ 22.7 mm (sand down if over). Phase 0 A/B decides which speaker the frame gets. ⚠️ Leads are **JST-PH 2.5 mm pitch** — buy matching pigtails or cut-and-solder |
-| **Action button** | 6×6 mm tact + white caps, 420 pc — [B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) | $15.99 | ✅ 8 stem heights, 7 cap colours incl. white. Same-day: Micro Center Brooklyn Inland kit $9.99 (no white cap) |
+| **MCU** | ESP32-C3 SuperMini — [B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) 10-pack $28.99 (photo-confirmed `FH4` 4 MB marking) or [B0G5XS345R](https://www.amazon.com/dp/B0G5XS345R) 3-pack | $12.97–28.99 | ✅ USB-C, no U.FL, single blue LED on GPIO8. ⚠️ Gate every board with `esptool flash_id` ≥ 4 MB — the 3.54 MB image makes a 2 MB clone a hard stop. Plain variant only (a "Plus" with WS2812 on GPIO8 breaks this pin map) |
+| **Display** | 0.96" SSD1306 128×64 I²C, **white**, 5-pack — [B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) (Hosyond) | $14.99 / 5 | ✅ SSD1306 (not SH1106), 4-pin I²C, 3.3–5 V, address 0x3C (firmware probes 0x3C then 0x3D). ⚠️ **Read the silkscreen pin order** — vendors ship GND-VCC-SCL-SDA *and* VCC-GND-SCL-SDA |
+| **Microphone** | INMP441 I²S MEMS, 5-pack — [B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS) | $11.99 / 5 | ✅ Ships from and sold by Amazon. 3.3 V, I²S, `L/R` → GND = left slot. The creator's exact mic; in-spec at the build's 1.024 MHz bit clock. Controlled-board alternate: Adafruit [#6049 ICS-43434](https://www.adafruit.com/product/6049) (`SEL` → GND) |
+| **Amplifier** | MAX98357A I²S class-D, 3-pack — [B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH) (HiLetgo) | $9.49 / 3 | ✅ Adafruit-lineage clone, 2.5–5.5 V — runs from the raw cell rail. Stock SD ≈ 0.30 V = (L+R)/2 mono mix at **full amplitude** ([why](../edu/04-audio.md#the-channel-select-pin-sd_mode--and-a-correction)). Or genuine Adafruit [#3006](https://www.adafruit.com/product/3006) |
+| **Speaker — primary** | Same Sky **CES-20134-088PM** 8 Ω 0.8 W factory-enclosed, ~20 × 16 × 4.9 mm — [DigiKey 2223-CES-20134-088PM-ND](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) ×2 | ~$8 ea | ✅ Manufacturer-controlled sealed enclosure — removes the hardest acoustic step at phone-speaker size. Keep software volume so average power ≤ 0.8 W |
+| **Speaker — fallback** | Video-style phone/mini speaker (e.g. pre-boxed 8 Ω 4-pack [B0BHST51PQ](https://www.amazon.com/dp/B0BHST51PQ)) | $9.99 / 4 | ⚠️ No published specs — measure impedance and A/B against the primary at 1 m before it earns a frame slot |
+| **Action button** | 6×6 mm tact + caps, 420 pc — [B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) | $15.99 | ✅ Multiple stem heights and cap colours. GPIO10 → GND, active low |
 
-## 2 · Power — read [the power-chain lesson](../edu/07-the-power-chain.md) first
+## 2 · Power — the R1 chain (read [the power-chain lesson](../edu/07-the-power-chain.md))
 
-| Role | Part / ASIN | Price | Spec check |
+The chain is: **protected pack ↔ charger board → slide switch → SuperMini
+`5V` + amp `VIN`**. No buck-boost, no fuse pair, no P-FETs — the pack's
+internal protection plus the five hard rules in the
+[decision doc](FINAL_MATERIALS_FOR_REVIEW.md#the-five-hard-rules) cover R1.
+
+| Role | Part | Price | Spec check |
 | --- | --- | --- | --- |
-| **3.3 V buck-boost** | XL63070 (TPS63070) module, 3-pack — [B0FFSHDLMV](https://www.amazon.com/dp/B0FFSHDLMV) (JESSINIE, FBA) | $9.99 / 3 | ✅ **True 4-switch buck-boost.** Output fixed by **solder jumper**, not a trimpot. 16×30 mm. Listing claims 2 V startup; a sibling listing for the same module claims 2.8 V and no current rating — **unresolved on paper, settled by the Phase 0 chain test**. ⚠️ Verify the 3V3 pad is bridged and Vout = 3.30 V *before* it touches the MCU |
-| ↳ smaller backup | XL63802 (TPS63802), 5-pack — [B0D5YCSZFP](https://www.amazon.com/dp/B0D5YCSZFP) | $9.99 / 5 | ✅ 12.8 × 25.8 mm — the smallest. 1.8 V startup. But its "3.3 V @ 1.2 A" is quoted **at 3.7 V in**; at a 3.0 V cell expect ~0.9–1.0 A, i.e. only ~15–25 % over the 778 mA peak |
-| ↳ if the frame is tight | XL63020 (TPS63020), 5-pack — [B0D8T3J8QZ](https://www.amazon.com/dp/B0D8T3J8QZ) | $13.99 / 5 | ✅ 1.3 A, 17.4 × 26.2 mm, 1.8 V startup. **Desolder its micro-USB connector** — a second power source on the cell node is a hazard, not a convenience |
-| ❌ **do not buy** | Pololu S7V8A [B01MCV1XY6](https://www.amazon.com/dp/B01MCV1XY6) | $22.99 | Correct topology, but the output is a **trimpot spanning 2.5–8 V** on a rail feeding a 3.6 V-max chip. Amazon's "8 A" spec is metadata garbage. Also reject every boost-only and buck-only "3.3 V converter" — [why](../edu/07-the-power-chain.md#why-a-buck-boost-restated-as-a-rule) |
-| **PTC fuse ×2** | RUEF110 10-pack — [B093L9KRP1](https://www.amazon.com/dp/B093L9KRP1) | $6.90 / 10 | **Fit two in parallel**: 1.65 A warm-derated hold vs the 1.15 A input peak, and half the resistance. One alone derates to 0.83 A and nuisance-trips. Do *not* buy the single $12.37 MF-RX110 |
-| **Battery holder** | CR123A holder w/ leads, 10-pack — [B0CRGK889F](https://www.amazon.com/dp/B0CRGK889F) (ACEIRMC) | $7.99 / 10 | 43.2 × 18.3 × 14.2 mm, wire leads. ⚠️ **Listing never says 16340** — fit is a geometric inference, not a confirmed spec. Buy the 10-pack, measure contact resistance on several, keep the best (**≤ 0.03 Ω**) |
-| **Charger** | XTAR **ANT MC1 Plus USB-C** — [xtar.cc direct](https://www.xtar.cc/product/xtar-ant-mc1-plus-charger-7.html) | $9.49 | Explicit 16340 support and ≤0.5 A selection — the charger the acceptance checks (edu/06 “Incoming parts” charger bullet; Phase 8) can actually pass. 1 A into a 950 mAh cell is ~1.05 C, outside this project's conservative envelope. Fallback if xtar.cc shipping exceeds ~2 weeks: Amazon [B00WJGR1XM](https://www.amazon.com/dp/B00WJGR1XM) MC1 Plus, first charge attended, cell < 45 °C, terminate 4.20 ± 0.05 V |
-| **Power switch** | SPDT **slide** switch, SS12F44/SS12D00 class, 25-pack — [B09R434VJQ](https://www.amazon.com/dp/B09R434VJQ) | ~$8 | Steers only the load-switch P-FET's **gate** (microamps), so its 0.5 A contact rating is irrelevant and it fails open = pager **off**. The 33 mm MTS-102 toggle was reviewed and rejected — it cannot mount in a 33 mm-deep open-tube frame in any orientation |
-| **P-FET pair** | AO3401A (or DMG2301L) SOT-23, any Amazon assortment ⚠️ pick a listing with the part number in the title; ASIN not pre-verified | ~$7 | **Two jobs, one pack:** (1) reverse-battery block — drain to cell+, source downstream, gate to cell−, always on; (2) high-side load switch — gate pulled to source by 100 kΩ (off), slide switch grounds it through 10 kΩ (on). ~30 mV each at 1.15 A vs the 350 mV a Schottky would cost. SOT-23 is tiny: add a **SOT-23→DIP adapter 10-pack** (~$7) so it's beginner-solderable |
-| **Service jumper** | 2-pin 0.1" header + shunt (from any header/jumper kit) | ~$1 | Breaks the 3.3 V rail so USB can't back-drive the converter. **[Why this exists](../edu/07-the-power-chain.md#the-service-jumper)** |
+| **Cell** | **Adafruit #1578** — 3.7 V 500 mAh LiPo, protected, JST-PH, 29 × 36 × 4.75 mm — [adafruit.com/product/1578](https://www.adafruit.com/product/1578) ×2 (one spare) | $7.95 ea | ✅ Verified in stock 2026-09-02. Protection PCM: overcharge, 3.0 V over-discharge cutout, short protection. Charge ≤ 500 mA (no thermistor). Smaller alternate: [#4237](https://www.adafruit.com/product/4237) 350 mAh protected, $5.95 |
+| **Charger (mounts in frame)** | **Adafruit #4410** — USB-C Micro-Lipo, 24 × 19 × 7.2 mm — [adafruit.com/product/4410](https://www.adafruit.com/product/4410) | $5.95 | ✅ Verified in stock 2026-09-02. 100 mA default; 500 mA by closing the front solder jumper (do this only after a clean attended first cycle). 4.2 V termination, JST battery port, 5V/GND/BAT breakout pads for the load tap |
+| ↳ creator-faithful alternate | Generic TP4056-class **USB-C** module | ~$1–2 ea | ⚠️ Only a variant with **DW01A + FS8205** protection ICs, and only after replacing its 1.2 kΩ `Rprog` (1 A) with 3 kΩ (≈400 mA). If you won't do the resistor swap, buy the #4410 |
+| **Power switch** | Mini SPDT slide, SS12D00 class, 25-pack — [B09R434VJQ](https://www.amazon.com/dp/B09R434VJQ) | ~$8 | In the protected positive lead = true battery break; fails open = off. ⚠️ Measure contact drop < 50 mV at 0.5 A on the sample you fit (average load ~0.15–0.25 A) |
+| **JST-PH pigtails** | JST-PH **2.0 mm** male+female pigtail set | ~$7 | Taps the load off the pack↔charger connection without soldering to the pack. ⚠️ Caliper the pitch: genuine PH is 2.0 mm |
+| **Resistors** (10 k, 100 k) | 1000-pc metal film kit — [B0F4P352BB](https://www.amazon.com/dp/B0F4P352BB) | $6.39 | GPIO2 pull-up, GPIO4 pull-down, button pull-up |
+| **Ceramic caps** (100 nF, 10 µF) | BOJACK 650-pc — [B07P7HRGT9](https://www.amazon.com/dp/B07P7HRGT9) | $14.99 | Local decoupling at each module. ⚠️ Dielectric unpublished; if warm-derated, parallel extra 10 µF at the amp |
+| **Bulk cap** 220 µF | ALLECIN kit — [B0C1VBXCQM](https://www.amazon.com/dp/B0C1VBXCQM) | $9.99 | At amp VIN/GND — the bass reservoir and Wi-Fi-burst buffer on the shared cell rail |
+
+**Withdrawn power parts (do not buy):** XL63070/63802/63020 converter modules,
+RUEF110 PPTC pairs, AO3401A/DMG2301L P-FETs + adapters, service-jumper
+hardware, Nitecore NL169/16340 cells, CR123A holders, XTAR/Nitecore external
+chargers. See the [audit table](FINAL_MATERIALS_FOR_REVIEW.md#withdrawn-by-this-audit-r0--r1).
 
 ## 3 · Frame, finish, wire, insulation
 
-| Role | Part / ASIN | Price | Notes |
+| Role | Part | Price | Notes |
 | --- | --- | --- | --- |
-| Brass tube 1.5 mm OD × 0.225 wall × 300 mm ×4 | K&S #9831 — [B005WPAW9M](https://www.amazon.com/dp/B005WPAW9M) | $7.80 | ✅ **Ships from and sold by Amazon.** ⚠️ This ASIN is a *variation parent* often indexed under the 1 mm title — verify OD with calipers on arrival |
+| Brass tube 1.5 mm OD × 0.225 wall × 300 mm ×4 | K&S #9831 — [B005WPAW9M](https://www.amazon.com/dp/B005WPAW9M) or [ksmetals direct](https://ksmetals.com/products/br225mm-1h) | $7.80 | ✅ The reference's stock. ⚠️ The ASIN is a variation parent — caliper the OD on arrival |
 | Brass rod 1.0 mm × 300 mm ×5 | K&S #9861 — [B005WPB7YG](https://www.amazon.com/dp/B005WPB7YG) | $8.59 | Telescopes inside the #9831 tube (ID ≈ 1.05 mm) |
-| Paint 1 — self-etch primer | Rust-Oleum 249322 — [B003CT498A](https://www.amazon.com/dp/B003CT498A) | $7.47 | ⚠️ Its own listing names "bare metal, aluminum, fiberglass" — **brass is not listed**. Test on an offcut first |
-| Paint 2 — gray sandable primer | Rust-Oleum 2081830 — [B000V69Q58](https://www.amazon.com/dp/B000V69Q58) | $6.27 | Kills the green etch coat before white |
-| Paint 3 — satin white | Rust-Oleum 7791830 — [B000Z8FGII](https://www.amazon.com/dp/B000Z8FGII) | $6.47 | Aerosols are hazmat/non-returnable. In NYC they're **21+ and kept locked** (Admin Code §10-117) — buying in person at Home Depot is often easier |
-| 30 AWG signal wire | CBAZY silicone kit — [B073RDGTPB](https://www.amazon.com/dp/B073RDGTPB) | $13.99 | White included |
-| 26 AWG power wire | TUOFENG — [B07G2LRX68](https://www.amazon.com/dp/B07G2LRX68) | $15.59 | Battery/converter spine |
-| Kapton tape | ELEGOO 4-pack — [B072Z92QZ2](https://www.amazon.com/dp/B072Z92QZ2) | $9.99 | |
-| **Fish paper** | 0.2 mm × 200 mm × 16.4 ft — [B0GZVDKBBS](https://www.amazon.com/dp/B0GZVDKBBS) | $15.88 | ✅ **Sold and shipped by Amazon.** Goes under/around the cell — this is the flame-rated layer. Polycarbonate is *not* flame-rated; use it for sub-plates only |
-| Polycarbonate sheet 0.5 mm | Zonon 5-pack — [B09KGZCMP3](https://www.amazon.com/dp/B09KGZCMP3) | $9.99 | ⚠️ Reviews report brittleness — the signature of acrylic sold as PC. Sub-plates only |
-| White heat-shrink | 14-size kit — [B08N4W4K9X](https://www.amazon.com/dp/B08N4W4K9X) | $9.99 | |
-| Resistors (10 k, 100 k; 470 k reserved for a Rev B battery-sense divider) | 1000-pc metal film kit — [B0F4P352BB](https://www.amazon.com/dp/B0F4P352BB) | $6.39 | |
-| Ceramic caps (100 nF, 10 µF) | BOJACK 650-pc — [B07P7HRGT9](https://www.amazon.com/dp/B07P7HRGT9) | $14.99 | ⚠️ Dielectric code unpublished. If Y5V, capacitance falls sharply when warm — **parallel three 10 µF at the amp** rather than substituting an electrolytic (an electrolytic's 1–5 Ω ESR cannot decouple class-D edges) |
-| Bulk cap 100–220 µF | ALLECIN kit — [B0C1VBXCQM](https://www.amazon.com/dp/B0C1VBXCQM) | $9.99 | 5 pcs per value (not 10) |
-| Ferrite beads | BOJACK axial 100-pc — [B09C25PPBG](https://www.amazon.com/dp/B09C25PPBG) | $6.99 | ⚠️ Impedance unpublished; a DMM only reads DCR, which proves nothing |
-
-## 3½ · Phase-0 bench items (no other list has these)
-
-| Item | Why |
-| --- | --- |
-| Solderless breadboard + male-male/male-female dupont jumpers (~$10) | Phase 0 is *gated* on breadboarding the full stack before any soldering |
-| Known-good **USB-A-to-C data** cable (~$7) | Clone boards ship CC-resistor bugs that make C-to-C cables power-only |
-| 2.54 mm pin-header strip + shunt/jumper kit (~$6) | The service jumper `netcheck` assumes, plus the P-FET gate wiring |
-| SOT-23→DIP adapter boards, 10-pack (~$7) | Makes the two P-FETs beginner-solderable |
-| JST-PH 2.5 mm-pitch pigtails (~$7) | Mates the Treedix speaker connector (verify pitch with calipers — 2.5 mm, not 2.0 mm PH) |
+| 30 AWG signal wire | CBAZY silicone kit — [B073RDGTPB](https://www.amazon.com/dp/B073RDGTPB) | $13.99 | I²C, I²S, button |
+| 26 AWG power wire | TUOFENG — [B07G2LRX68](https://www.amazon.com/dp/B07G2LRX68) | $15.59 | Battery bus + twisted speaker pair |
+| Kapton tape | ELEGOO 4-pack — [B072Z92QZ2](https://www.amazon.com/dp/B072Z92QZ2) | $9.99 | Module backs, frame crossings |
+| **Fish paper** | 0.2 mm × 200 mm — [B0GZVDKBBS](https://www.amazon.com/dp/B0GZVDKBBS) | $15.88 | ✅ Sold/shipped by Amazon. The flame-rated barrier under and around the pack — mandatory |
+| Heat-shrink kit | 14-size — [B08N4W4K9X](https://www.amazon.com/dp/B08N4W4K9X) | $9.99 | Every splice |
+| Hot glue + CA | Any electronics-safe low-temp gun + gel CA | ~$15 | The video's retention method; keep clear of mic port, switch, USB |
+| Finish (optional) | Raw brass like the reference, or the white paint system in [edu/05_COLOR_AND_FINISH.md](../edu/05_COLOR_AND_FINISH.md) (249322 self-etch + 2081830 gray + 7791830 satin white, in-person at Home Depot, 21+) | ~$24 | Paint is decoration, never insulation. NYC Admin Code §10-117: spray paint is 21+, kept locked |
 
 ## 4 · Tools
 
@@ -85,137 +71,81 @@ Legend: **✅ confirmed** = listing fetched and specs read · **⚠️ measure**
 
 | Owned item | Covers |
 | --- | --- |
-| **X-Tronic 3020-XTS Complete Kit** (75 W station, 90–480 °C, ESD-safe) | The soldering station line. Bundle also includes: **2 helping hands**, 5 extra tips — incl. **T-2.4D chisel** (the brass-joint tip) and T-K knife, **solder sucker**, **anti-static stainless tweezers**, **silicone work mat**, brass tip cleaner, iron holder, and a 50 g solder roll. ⚠️ The listing contradicts itself on the roll (headline says 60/40 leaded, photo shows Sn99.3/Cu0.7 lead-free) — check on arrival: 60/40 works great; if it's the lead-free roll, buy the 63/37 below |
-| **Chip Quik CQ4LF no-clean flux pen** (10 ml) — B07B53LNGX | The electronics no-clean flux line (pen instead of syringe — fine) |
-| **BOENFU 6″ flush-cut side cutters** — B07C5PM8L4 | The flush-cutter line for wire and leads. **Never on the 1.5 mm brass tube** — heavy snips crush the 0.225 mm wall; the jeweler's saw still does all tube cuts |
-| **WORKLION 12×18″ self-healing cutting mat** — B07NRQY829 | The layout/template surface. **Not heat-resistant** — solder only over the bundle's silicone mat |
-| **OLFA CMP-1 compass circle cutter** — B000BK7NWC | Originally optional; now genuinely useful — cuts the clean circular speaker opening in the PC-sheet baffle/grille |
+| **X-Tronic 3020-XTS Complete Kit** (75 W station) | Soldering station, 2 helping hands, T-2.4D chisel + T-K knife tips, solder sucker, tweezers, silicone mat, tip cleaner, holder, 50 g solder roll. ⚠️ Identify the roll's alloy on arrival: 60/40 leaded = use it; lead-free = buy the 63/37 below |
+| **Chip Quik CQ4LF no-clean flux pen** | Electronics flux |
+| **BOENFU flush cutters** | Wire and leads — **never the brass tube** (jeweler's saw does all tube cuts) |
+| **WORKLION cutting mat** | Layout only — not heat-resistant; solder over the silicone mat |
+| **OLFA CMP-1 circle cutter** | Speaker grille opening in template/guard material |
 
-**Still to buy** (~$240 of the must-have table below):
+### Still to buy
 
 | Tool | Part | Price |
 | --- | --- | --- |
-| ~~Soldering station~~ | ~~Weller WE1010NA~~ **owned: X-Tronic 3020-XTS** | ~~$115.00~~ |
-| Solder, **63/37 leaded** | MAIYUM 0.8 mm 100 g — [B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) — skip if the X-Tronic roll turns out to be 60/40 leaded | $11.69 |
-| ~~Electronics flux~~ | ~~SMD291 syringe~~ **owned: CQ4LF no-clean pen** | ~~$15.95~~ |
-| Brass flux (**frame only**) | Harris SCLF4 zinc chloride — [B0015DWPV8](https://www.amazon.com/dp/B0015DWPV8) | $12.85 |
+| Solder, 63/37 leaded | MAIYUM 0.8 mm — [B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) — skip if the X-Tronic roll is 60/40 | $11.69 |
 | Multimeter | KAIWEETS HT118A — [B08BL288LW](https://www.amazon.com/dp/B08BL288LW) | $41.23 |
-| **Bench supply, current-limited** | SKY TOPPOWER PS305H 0–30 V/0–5 A — [B0BN1F6CGZ](https://www.amazon.com/dp/B0BN1F6CGZ) | $47.49 |
-| ~~Helping hands~~ | **owned: 2× in the X-Tronic kit** | ~~$36.99~~ |
-| ~~Flush cutters~~ | ~~Hakko CHP-170~~ **owned: BOENFU snips** (CHP-170 is a nice-to-have for very fine pad-side trims) | ~~$14.83~~ |
+| **Bench supply, current-limited** | SKY TOPPOWER PS305H — [B0BN1F6CGZ](https://www.amazon.com/dp/B0BN1F6CGZ) — the one non-negotiable instrument: it stands in for the cell in every power test | $47.49 |
 | Wire strippers 30–20 AWG | Hakko CSP-30-1 — [B00FZPHMUG](https://www.amazon.com/dp/B00FZPHMUG) | $12.87 |
 | Calipers | Neiko 01407A — [B000GSLKIW](https://www.amazon.com/dp/B000GSLKIW) | $27.99 |
-| Safety glasses | 3M Solus 1000 — [B016KZ1ZPM](https://www.amazon.com/dp/B016KZ1ZPM) | $14.99 |
-| **Jeweler's saw** (brass) | SE 3-in-1 w/ 144 blades — [B06XPSLS6N](https://www.amazon.com/dp/B06XPSLS6N) | $24.95 |
-| **Round + chain-nose pliers** | WORKPRO 3-pc — [B0B8QBVXXR](https://www.amazon.com/dp/B0B8QBVXXR) | ~$12 |
-| **Organic-vapour respirator** | 3M 6211 OV/P95 — [B00004Z4EB](https://www.amazon.com/dp/B00004Z4EB) | ~$35 |
+| Safety glasses | 3M Solus — [B016KZ1ZPM](https://www.amazon.com/dp/B016KZ1ZPM) | $14.99 |
+| **Jeweler's saw** | SE 3-in-1 w/ blades — [B06XPSLS6N](https://www.amazon.com/dp/B06XPSLS6N) | $24.95 |
+| Round + chain-nose pliers | WORKPRO 3-pc — [B0B8QBVXXR](https://www.amazon.com/dp/B0B8QBVXXR) | ~$12 |
+| Brass flux (**frame only**) | Harris SCLF4 — [B0015DWPV8](https://www.amazon.com/dp/B0015DWPV8) — acid-class; wash + neutralize before any electronics exist near the frame | $12.85 |
+| Breadboard + jumpers, USB-**A**-to-C data cable, header strip | Any Prime listings | ~$23 |
 
-**Also required, cheap, easy to forget** *(struck = covered by the owned kit)*: needle files + 400–800 grit (deburring
-is *safety*-critical — no sharp edge may reach the cell, and abrasion is what
-makes the primer stick), 90 %+ IPA + lint-free swabs + baking soda (to
-neutralise the zinc-chloride brass flux — it is water-soluble, so water-rinse
-then IPA, and the frame must be bone dry before primer or the residue blisters
-the paint), ~~a heat-resistant silicone mat~~ (in the X-Tronic kit), fine
-solder wick, a heat gun, an ESD wrist strap, magnification, a metric steel rule
-and small square, cardstock, ~~and a spare chisel tip~~ (the kit's T-2.4D covers brass joints; T-I stays
-on fine pads). Budget **~$85–110** for what remains of this group.
+**Also required, cheap:** needle files + 400–800 grit (deburring is
+safety-critical — no sharp edge may reach the pack), 90 %+ IPA + swabs +
+baking soda (neutralizes the brass flux), solder wick, heat gun, ESD strap,
+magnification, metric rule + square, cardstock. Budget ~$60–80.
 
-**Why leaded 63/37:** it melts lower and wets faster than lead-free, which
-means less time with a hot iron against a MEMS microphone or an OLED flex tail.
-Wash your hands, don't eat at the bench, and ventilate.
-
----
-
-## Exceptions — the two things not on Amazon
-
-**1 · The cell.** No protected 16340 with a published discharge rating exists on
-Amazon; searches return chargers and primary CR123As. Buy:
-
-> **Nitecore NL169** — 950 mAh, 3.6 V, protected, button top, **2 A max
-> continuous** (2× our peak), 34.1 × 16.6 mm.
-> [B&H Photo](https://www.bhphotovideo.com/c/product/1811930-REG/nitecore_nl169_16340_li_ion_rechargeable.html),
-> $9.95, 420 Ninth Ave Manhattan. **Buy two.**
-
-⚠️ B&H blocks automated fetches, so "in stock" is unverified — **call or load
-the page in a browser before travelling.** Same cell at the same price from
-[nitecorestore.com](https://nitecorestore.com) or Battery Junction if not.
-
-**2 · Reverse-polarity protection — now IN Rev A.** The always-on P-FET in
-the battery spine (see the P-FET pair row) blocks a reversed cell at a cost of
-~30 mV. The procedural check stays as a belt: meter the holder leads for
-polarity before the first-ever connection, because the FET protects the
-electronics, not a mis-wired holder.
+**Why leaded 63/37:** melts lower and wets faster than lead-free — less time
+with a hot iron against a MEMS microphone or an OLED flex tail. Wash hands,
+don't eat at the bench, ventilate.
 
 ## Budget
 
 | | |
 | --- | ---: |
-| Electronics + power + frame/consumables + Phase-0 bench items | ~$330 |
-| Cell ×2 + charger | ~$30 |
-| Tools **still to buy** after the 2026-09-02 owned-equipment reconciliation (~$240 must-have + ~$85–110 consumables) | ~$325–350 |
-| **Total remaining to buy** | **~$685–710** (+ NYC 8.875 % tax) |
+| Electronics (MCU, OLED, mic, amp, speakers, button) | ~$95 |
+| Power (2× pack, charger, switch, pigtails, passives) | ~$60 |
+| Frame + insulation + wire + adhesive | ~$85 |
+| Tools still to buy + consumables | ~$290 |
+| **Total remaining** | **~$530** (+ NYC 8.875 % tax) |
 
-**Split the buy:** Cart A today — all electronics, power, insulation, wire,
-passives, bench items, brass stock — plus the B&H trip for two cells. Cart B
-*after* the cardstock dry-fit — paint (in person, 21+, easier than Amazon's
-hazmat rules), any backup converter promotion, speaker/holder substitutes.
-Order the fish paper first (slowest item), and co-order the **XL63020 backup
-converter** ([B0D8T3J8QZ](https://www.amazon.com/dp/B0D8T3J8QZ)) with Cart A —
-the XL63802's own row concedes it can't carry the end-of-discharge load.
+**Sequence:** order everything in one pass (Adafruit ships from Brooklyn —
+typically 1–2 days to NYC; fish paper is the slowest Amazon item). Bench
+bring-up while brass and paint wait. Multipacks mean spares of every
+marketplace part — qualification means measuring several and keeping the best.
 
-Multipacks mean you finish with spares of every consumable part — which is the
-point, since qualification means measuring several and keeping the best.
+## Order sheet
 
+Re-check price/seller/stock in the cart. NYC tax 8.875 % applies.
 
----
+### Adafruit (one order, ships from Brooklyn)
 
-## Order Sheet — Rev A locked, 2026-09-02
+- [ ] 2 × #1578 protected 500 mAh LiPo — $7.95 ea
+- [ ] 1 × #4410 USB-C Micro-Lipo charger — $5.95
+- [ ] *(optional alternates)* #4237 350 mAh pack · #6049 ICS-43434 mic · #3006 amp
 
-Re-check price/seller/stock in the cart; treat a seller change away from the
-listed one as a swap-to-alternate trigger. NYC tax 8.875 % applies.
+### DigiKey
 
-### Cart A — Amazon, order now (slowest item first)
+- [ ] 2 × CES-20134-088PM speaker — `2223-CES-20134-088PM-ND`
 
-- [ ] Fish paper B0GZVDKBBS — $15.88 *(slowest item; order first)*
-- [ ] MCU 10-pack B0F888JQ91 — $28.99 · **and** MCU 3-pack B0GX966R9R — $12.97
+### Amazon
+
+- [ ] MCU pack B0F888JQ91 (or B0G5XS345R) — flash-ID gate on arrival
 - [ ] OLED white SSD1306 ×5 B09T6SJBV5 — $14.99
 - [ ] INMP441 ×5 B092HWW4RS — $11.99
 - [ ] MAX98357A ×3 B0CDWXZZCH — $9.49
-- [ ] Speaker, pre-boxed ×4 B0BHST51PQ — $9.99 · **and** fallback Treedix ×4 B0CJNB3CR2 — $7.99 + caps B08HL9R5YB — $7.55
-- [ ] Tact-switch kit w/ white caps B0FHW6HMG4 — $15.99
-- [ ] Buck-boost XL63070 ×3 B0FFSHDLMV — $9.99 · **and** backup XL63020 ×5 B0D8T3J8QZ — $13.99
-- [ ] PTC RUEF110 ×10 B093L9KRP1 — $6.90 *(fit two, resistance-matched)*
-- [ ] Holder CR123A ×10 B0CRGK889F — $7.99
-- [ ] Slide switch SS12F44-class ×25 B09R434VJQ — ~$8
-- [ ] P-FET AO3401A/DMG2301L SOT-23 assortment — ~$7 · SOT-23→DIP adapters ×10 — ~$7 *(any listing with the part number in the title)*
-- [ ] Wire: 30 AWG kit B073RDGTPB — $13.99 · 26 AWG B07G2LRX68 — $15.59
-- [ ] Kapton B072Z92QZ2 — $9.99 · white heat-shrink B08N4W4K9X — $9.99 · PC sheet B09KGZCMP3 — $9.99
-- [ ] Passives: resistors B0F4P352BB — $6.39 · ceramics B07P7HRGT9 — $14.99 · electrolytics B0C1VBXCQM — $9.99 · ferrites B09C25PPBG — $6.99
-- [ ] Brass: K&S #9831 tube B005WPAW9M — $7.80 · #9861 rod B005WPB7YG — $8.59 *(caliper the OD inside the return window)*
-- [ ] Bench: breadboard + dupont jumpers ~$10 · USB-**A**-to-C data cable ~$7 · 2.54 mm header + shunt kit ~$6 · JST-PH 2.5 mm pigtails ~$7 *(any Prime listing meeting the spec)*
+- [ ] Tact-switch kit B0FHW6HMG4 — $15.99
+- [ ] Slide switch 25-pack B09R434VJQ — ~$8
+- [ ] JST-PH 2.0 mm pigtail set — ~$7 (caliper the pitch)
+- [ ] Resistor kit B0F4P352BB — $6.39 · ceramics B07P7HRGT9 — $14.99 · electrolytics B0C1VBXCQM — $9.99
+- [ ] Fish paper B0GZVDKBBS — $15.88 *(slowest item — order first)*
+- [ ] Kapton B072Z92QZ2 — $9.99 · heat-shrink B08N4W4K9X — $9.99
+- [ ] Wire: 30 AWG B073RDGTPB — $13.99 · 26 AWG B07G2LRX68 — $15.59
+- [ ] Brass: #9831 tube B005WPAW9M — $7.80 · #9861 rod B005WPB7YG — $8.59 *(caliper on arrival)*
+- [ ] Tools per the table above · bench items (breadboard, jumpers, USB-A-to-C data cable, header strip)
 
-### Charger — XTAR direct
+### In person (optional finish)
 
-- [ ] XTAR **ANT MC1 Plus USB-C** from xtar.cc — $9.49. If shipping quotes > ~2 weeks: Amazon B00WJGR1XM instead, first charge attended, cell < 45 °C, terminate 4.20 ± 0.05 V.
-
-### B&H trip — call 800-606-6969 first
-
-- [ ] 2 × Nitecore NL169 — $9.95 ea, 420 Ninth Ave (closed Saturdays)
-
-### Tools (skip what you own — reconcile against your drawer first)
-
-- [x] ~~Soldering station~~ · ~~no-clean flux~~ · ~~helping hands~~ · ~~flush cutters~~ · ~~silicone mat~~ · ~~tweezers~~ · ~~desoldering pump~~ · ~~chisel tip~~ — **owned** (X-Tronic 3020-XTS kit, CQ4LF pen, BOENFU, WORKLION mat, OLFA cutter)
-- [ ] 63/37 solder B076QF1Y85 — $11.69 *(only if the kit's roll is the lead-free one)* · Harris SCLF4 (brass only) B0015DWPV8 — $12.85
-- [ ] Multimeter B08BL288LW — $41.23 · **bench supply** B0BN1F6CGZ — $47.49 · calipers B000GSLKIW — $27.99
-- [ ] Jeweler's saw B06XPSLS6N — $24.95 · round/chain-nose pliers B0B8QBVXXR — ~$12 · strippers B00FZPHMUG — $12.87
-- [ ] Safety: glasses B016KZ1ZPM — $14.99 · OV/P95 respirator B00004Z4EB — ~$35 · ESD strap ~$8
-- [ ] Consumables (any Prime listing): solder wick, heat gun, magnifier/loupe, needle files, 400–800 grit, 90 %+ IPA + swabs + baking soda, metric steel rule + small square + cardstock, epoxy, M2.5 white nylon standoffs, white PET braid loom — budget ~$85–110 total *(mat, tweezers, chisel tip, pump: owned)*
-
-### Cart B — only after the cardstock dry-fit closes
-
-- [ ] Paint, in person at Home Depot (21+, ID, locked case): 249322 self-etch — $10.48 · 2081830 gray — $6.27 · 7791830 satin white — $6.98
-- [ ] Any substitutions the dry-fit or Phase 0 demanded (speaker, holder alternate DGZZI B08R36DLXB, converter backup promotion)
-
-**Sequence:** Cart A + XTAR + B&H today → parts arrive → Phase 0 bench (chain
-test, acoustic A/B, backend round trip) → caliper the 8 PROVISIONAL envelopes,
-update `cad/fitcheck.py`, regenerate → cardstock dry-fit → Cart B → Phase 1.
+- [ ] Paint at Home Depot (21+, ID): 249322 · 2081830 · 7791830 — only if not keeping raw brass

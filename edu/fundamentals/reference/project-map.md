@@ -4,6 +4,13 @@ This page connects the durable concepts in the course to the repository's
 current prototype. It is a navigation aid, not a released wiring drawing or
 purchase approval.
 
+> **Current signal fixture (R1):** INMP441 microphone on GPIO4 (documented
+> alternate: Adafruit `#6049` ICS-43434 — wires identically) and a MAX98357A
+> amplifier on GPIO3, with 16 kHz audio and shared GPIO1/GPIO2 clocks.
+> Purchase authority belongs only to
+> [FINAL_MATERIALS_FOR_REVIEW.md](../../../docs/FINAL_MATERIALS_FOR_REVIEW.md);
+> this map does not authorize final quantities or assembly.
+
 ## Evidence status
 
 As of the repository's current state:
@@ -50,22 +57,25 @@ compatibility. Its source of truth is
 
 | Function | ESP32-C3 GPIO | Intended endpoint | Course topic |
 | --- | ---: | --- | --- |
-| I2S word select | 1 | INMP441 `WS`, MAX98357A `LRC` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
-| I2S bit clock | 2 | INMP441 `SCK`, MAX98357A `BCLK` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| I2S word select | 1 | INMP441 `WS` (alt: ICS-43434 `WS/LRCLK`), MAX98357A `LRC` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| I2S bit clock | 2 | INMP441 `SCK` (alt: ICS-43434 `BCLK`), MAX98357A `BCLK` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
 | I2S speaker data | 3 | ESP output → MAX98357A `DIN` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
-| I2S microphone data | 4 | INMP441 `SD` → ESP input | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| I2S microphone data | 4 | INMP441 `SD` (alt: ICS-43434 `DOUT`) → ESP input | [I2S](../09-i2s-sampling-and-digital-audio.md) |
 | Action/config input | 10 | external active-low control | [GPIO](../07-digital-logic-gpio-pullups-boot-straps.md) |
 | OLED clock | 20 | SSD1306 `SCL` | [I2C](../08-i2c-and-the-oled.md) |
 | OLED data | 21 | SSD1306 `SDA` | [I2C](../08-i2c-and-the-oled.md) |
 
 The corrected source uses 16 kHz full-duplex audio, two 32-bit I2S slots, and
-probes OLED addresses `0x3C` then `0x3D`. That implies a 1.024 MHz bit clock.
+probes OLED addresses `0x3C` then `0x3D`. The 64 clocks per frame imply a
+1.024 MHz bit clock.
 
-The separately published vendor binary uses a different contract: microphone
-data on GPIO8, 24 kHz audio, and `0x3C`. Do not mix vendor-binary wiring with
-corrected-source wiring. GPIO8 is also involved in ESP32-C3 boot strapping and
-may be loaded by an LED on some SuperMini variants. GPIO9 remains the ROM BOOT
-strap in the corrected-source plan. Exact board circuitry must be inspected.
+The separately published vendor binary uses a different, **historical**
+INMP441-style contract: microphone data on GPIO8, 24 kHz audio, and `0x3C`.
+Do not mix vendor-binary wiring with corrected-source wiring. GPIO8 is also
+involved in ESP32-C3 boot strapping and may be loaded by an LED on some
+SuperMini variants. GPIO9 remains the ROM BOOT strap in the corrected-source
+plan. Exact board circuitry must be inspected. DFRobot `DFR0954` is a former
+amplifier primary and held alternative, not the active `#3006` endpoint.
 
 ## Interfaces at a glance
 
@@ -73,10 +83,10 @@ strap in the corrected-source plan. Exact board circuitry must be inspected.
 | --- | --- | --- |
 | 3V3 rail | DC supply with transient current | range at load, startup, ripple/dips, current, heat |
 | I2C | shared open-drain SDA/SCL with pull-ups | actual pull-ups/levels, addresses, ACK, rise time, pin order |
-| I2S | point-to-point/shared-clock push-pull stream | direction, levels, BCLK/WS, slot format, edge quality |
+| I2S | `#6049`/`#3006` point-to-point/shared-clock push-pull stream | direction, levels, 16 kHz WS, 1.024 MHz BCLK, slot format, edge quality |
 | Action input | active-low GPIO according to source | external pull/default, reset-time effect, debounce, access |
 | USB/service power | depends on exact board implementation | isolation, reverse current/backfeed, regulator path, connector access |
-| Speaker output | bridge-tied differential pair | neither lead grounded; load, current, heat, acoustic mounting |
+| Speaker output | Adafruit `#3006` bridge-tied screw-terminal pair | neither lead grounded; load, current, heat, acoustic mounting |
 | Wi-Fi | onboard 2.4 GHz antenna | exact antenna end, keepout, frame/cell A/B performance |
 
 ## Power questions still requiring a reconciled design

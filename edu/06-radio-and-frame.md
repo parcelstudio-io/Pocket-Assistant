@@ -1,9 +1,10 @@
 # Radio and frame — applying the RF/EMC lesson
 
-> **DESIGN-FREEZE STATUS: NO-GO.** The exact controller antenna, board
-> position, brass geometry, insulation, frame electrical state, wire routing,
-> and pocket-use enclosure are **PROVISIONAL**. This note defines hypotheses
-> and battery-free tests; it does not approve a frame or component purchase.
+> **Status: R1 released with fit gate — 2026-09-02.** The compact frame is
+> released for fabrication *after* the cardstock dry-fit closes
+> ([decision record](../docs/FINAL_MATERIALS_FOR_REVIEW.md)). The exact
+> antenna position, brass geometry, and routing on **your** build still earn
+> acceptance through this note's battery-free RF tests.
 
 Read [11 — RF, EMC, antennas, and the metal frame](fundamentals/11-rf-emc-antennas-and-metal-frame.md)
 and [12 — Soldering, mechanics, insulation, and tolerances](fundamentals/12-soldering-mechanics-insulation-tolerance.md)
@@ -161,8 +162,8 @@ Before a frame can be released, the exact received assembly must demonstrate:
   keepouts that remain functional after tolerance stacking; and
 - acceptable RF metrics in the representative held and pocket-adjacent poses.
 
-Do these checks with a bench supply or inert cell dummy. A lithium cell enters
-only after the separate power architecture is released.
+Do these checks with a bench supply or inert cell dummy. The pack enters only
+at the final acceptance gate.
 
-The frame remains **NO-GO** while its safety, RF, EMC, acoustics, tolerance,
-and service evidence are incomplete.
+Your particular frame is accepted only when its safety, RF, EMC, acoustics,
+tolerance, and service evidence are complete and recorded.

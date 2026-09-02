@@ -7,18 +7,19 @@
 //
 // The vendor image runs 24 kHz, but the MAX98357A datasheet states twice that
 // 24 kHz LRCLK is NOT supported (supported: 8/16/32/44.1/48/88.2/96 kHz).
-// 16 kHz sits centered in the amplifier's fS2 window, is a legal INMP441
-// rate (64 SCK per frame at BCLK 1.024 MHz), and matches Xiaozhi's Opus
-// encoder, which is hard-coded to 16 kHz — so the input resampler is never
-// created and server audio is resampled 24k->16k by the existing
-// output_resampler_ path in audio_service.cc.
+// 16 kHz sits centered in the amplifier's fS2 window, is legal for both
+// qualified microphones — INMP441 (R1 primary) and ICS-43434 (alternate),
+// 64 SCK per frame at BCLK 1.024 MHz — and matches Xiaozhi's Opus encoder,
+// which is hard-coded to 16 kHz, so the input resampler is never created and
+// server audio is resampled 24k->16k by the existing output_resampler_ path
+// in audio_service.cc.
 #define AUDIO_INPUT_SAMPLE_RATE  16000
 #define AUDIO_OUTPUT_SAMPLE_RATE 16000
 #define AUDIO_I2S_GPIO_WS        GPIO_NUM_1
 #define AUDIO_I2S_GPIO_BCLK      GPIO_NUM_2
 #define AUDIO_I2S_GPIO_DOUT      GPIO_NUM_3  // ESP32-C3 -> MAX98357A DIN
 
-// INMP441 SD -> ESP32-C3. The vendor image uses GPIO8, but on the ESP32-C3
+// I2S microphone SD -> ESP32-C3. The vendor image uses GPIO8, but on the ESP32-C3
 // SuperMini GPIO8 carries the onboard blue LED and is a boot-strapping pin:
 // GPIO8 must read high to enter the serial bootloader, and this board has no
 // OTA app slots, so losing download mode inside a finished frame is

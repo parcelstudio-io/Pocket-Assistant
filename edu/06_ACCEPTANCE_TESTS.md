@@ -1,10 +1,11 @@
 # Applied note — prototype acceptance-test worksheet
 
-> **Status: NOT A DESIGN FREEZE.** The earlier “Rev A locked” text was
-> withdrawn because the power chain, exact marketplace modules, service-power
-> isolation, normal undervoltage shutdown, speaker assembly, and mechanical
-> envelopes are not yet qualified. This worksheet says what must be proved; it
-> does not say the present parts have passed.
+> **Status: R1 RELEASE WORKSHEET — 2026-09-02.** This worksheet accepts the
+> released architecture in
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md)
+> (protected pack + in-frame USB-C charger + slide switch + LDO-direct rail).
+> It says what must be proved on the physical build; nothing here asserts the
+> present parts have already passed.
 
 Read [systematic debugging and the capstone](fundamentals/13-debugging-integration-and-capstone.md)
 and use a fresh [lab record](fundamentals/reference/lab-record-template.md) for
@@ -36,9 +37,13 @@ ERC/DRC, or collision-free CAD cannot substitute for the physical record.
 - [ ] Each connector is specified by family, pitch, positions, housing,
       contacts, mate, polarity, and physical pin order. “JST-PH 2.5 mm” is not
       accepted; genuine JST PH is 2.0 mm pitch.
-- [ ] The power design includes a reviewed normal undervoltage shutdown with
-      hysteresis, not only an assumed cell-protection cutoff.
-- [ ] USB/service power has a reviewed isolation or source-selection design.
+- [ ] The power design's end-of-discharge behavior is understood and recorded:
+      the LDO-direct rail sags until brownout, with the pack's documented
+      3.0 V protection cutout as the backstop. (R1 deliberately has no
+      separate UVLO module — the bench sweep proves the sag is graceful.)
+- [ ] The USB/service rule is written where the builder works: switch OFF and
+      pack JST unplugged before the SuperMini's USB-C connects; device off
+      while the charger's USB-C is in; never both ports at once.
 
 ## Gate B — incoming exact parts
 
@@ -73,27 +78,28 @@ With every source removed and stored energy discharged:
       insulation; paint is not counted as insulation.
 - [ ] Wires have strain relief and cannot reach sharp edges or moving parts.
 
-## Gate D — power module and input chain, battery absent
+## Gate D — power chain, battery absent
 
 Use the current-limited supply and safe procedure in
 [Lesson 06](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md).
+The supply stands at the pack's JST position for every test here.
 
-- [ ] Exact converter sample produces the permitted rail under defined no-load
-      and controlled-load conditions.
-- [ ] Cold start and continued operation are recorded separately across the
-      intended input range, input ramp, temperature, and real path impedance.
-- [ ] Minimum rail, overshoot, ripple, and settling are captured at the load
-      during defined transients.
-- [ ] Loaded drop is measured across holder substitute, protection, switch,
-      MOSFETs, connectors, wiring, and return; unsupported cell resistance is
-      not inserted as a fact.
-- [ ] Fuse/PPTC choice is supported by current-time-temperature data. Parallel
-      sharing is not assumed to be exactly two times one device.
-- [ ] MOSFET voltage drop and heat use maximum `RDS(on)` at actual gate drive
-      and relevant temperature, with body-diode/orientation review.
-- [ ] Off-state current and every alternate/backfeed path are measured.
-- [ ] Temperatures stabilize within component and project limits under the
-      defined high-average condition.
+- [ ] The switched rail feeds the SuperMini `5V` pin and amp `VIN`; the
+      SuperMini's 3.3 V output is verified at no-load and under display +
+      mic load before the amp joins.
+- [ ] Supply sweep 4.2 → 3.3 V under Wi-Fi + loud audio: no reset, no I2C
+      errors, no audio dropout anywhere in the range. Record the voltage
+      where behavior first degrades.
+- [ ] Slide-switch contact drop measured < 50 mV at 0.5 A; 20 on/off cycles
+      give 20 clean boots.
+- [ ] Loaded drop across the JST, switch, and wiring is measured (not
+      inferred); total upstream drop recorded at peak load.
+- [ ] Idle, average, and peak input currents recorded for the runtime
+      estimate and the charge-rate sanity check.
+- [ ] Off-state: switch off → input current ≈ 0; no alternate path keeps any
+      module lit.
+- [ ] Temperatures stabilize within limits after ten minutes of loud audio +
+      Wi-Fi: amp warm is fine, nothing too hot to touch comfortably.
 
 Any unexplained current limiting, start failure, reset, material rail dip,
 abnormal heat, odor, or protection trip is a failure—not a reason to raise the
@@ -123,14 +129,16 @@ limit and continue.
 - [ ] Wi-Fi plus defined audio/capture workload produces no reset or corruption.
 - [ ] Input current, rail minimum, reset log, audio level, and test duration are
       recorded together; peak, RMS, and average conditions remain distinct.
-- [ ] Converter, protection, MCU, amplifier, speaker, wiring, and enclosure
+- [ ] MCU, amplifier, speaker, charger board, wiring, and pack-bay
       temperatures are recorded after stabilization.
-- [ ] Brownout/current-limit behavior is safe when simulated with the bench
-      source; no destructive cell fault is injected.
+- [ ] Brownout behavior is safe when simulated with the bench source (sweep
+      below 3.3 V): the device resets or halts cleanly, without repeated
+      high-current restart loops; no destructive cell fault is injected.
 - [ ] Removing an OLED or signal produces a bounded logged failure/headless
       mode rather than uncontrolled heating or repeated high-current restart.
-- [ ] Service USB cannot backfeed the converter, cell path, or an unqualified
-      peripheral rail in any permitted switch/jumper state.
+- [ ] With the switch OFF, USB into the SuperMini powers only the SuperMini
+      and its 3.3 V peripherals — the switched bus side reads dead and no
+      current flows toward the JST/charger in any permitted state.
 
 ## Gate G — exact-part mechanical, acoustic, and RF evidence
 
@@ -150,21 +158,26 @@ limit and continue.
 - [ ] Shake, abrasion, rattle, retention, and pocket-access tests cause no
       intermittent power, exposed conductor, control activation, or movement.
 
-## Gate H — protected-cell introduction
+## Gate H — protected-pack introduction
 
-This gate remains closed until A–G pass and a reviewer records the release.
+This gate opens only after A–G pass and the pass records exist.
 
-- [ ] Cell polarity and open-circuit voltage are checked before insertion.
-- [ ] Normal undervoltage shutdown and restart hysteresis are already proven
-      with the bench substitute.
-- [ ] First cell power occurs on a fire-resistant surface with immediate safe
-      disconnect available; no soldering, cutting, drilling, or metalwork occurs.
-- [ ] Cell behavior matches the qualified bench envelope; no protection trip,
+- [ ] JST polarity metered against the charger's markings and pack
+      open-circuit voltage checked (3.0–4.2 V) before the first mating.
+- [ ] End-of-discharge behavior already proven with the bench substitute
+      (Gate D sweep); the pack's 3.0 V protection cutout is the backstop,
+      not the operating plan.
+- [ ] First pack power occurs on a fire-resistant surface with the JST
+      immediately unpluggable; no soldering, cutting, drilling, or metalwork
+      occurs with the pack connected.
+- [ ] Pack behavior matches the qualified bench envelope; no protection trip,
       abnormal heat, damage, or movement occurs.
 - [ ] Runtime is measured under a named workload; it is not inferred by simply
       dividing mAh by 3V3 rail current.
-- [ ] Charging occurs only outside the device in the approved external charger,
-      following the cell and charger manufacturers' instructions.
+- [ ] First charge attended: device off, charger current at its programmed
+      value (100 mA default; 500 mA only after this cycle and only for the
+      500 mAh pack), pack cool, DONE indication, 4.20 ± 0.05 V. The 500 mA
+      jumper decision is recorded.
 
 ## Substitutions and failures
 

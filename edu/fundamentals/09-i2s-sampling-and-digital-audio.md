@@ -1,5 +1,16 @@
 # 09 — I2S, sampling, and digital audio
 
+> **Current project contract (R1):** the microphone data pin goes to GPIO4 and
+> the MAX98357A `DIN` comes from GPIO3, sharing GPIO1/GPIO2 clocks at 16 kHz
+> and 64 clocks/frame. The R1 primary microphone is the **INMP441** (`SD` to
+> GPIO4, `L/R` low); the documented alternate is the Adafruit `#6049`
+> ICS-43434 (`DOUT` to GPIO4, `SEL` low) — this lesson's worked examples use
+> the ICS-43434 naming, and every pin position, clock number, and procedure is
+> identical for the INMP441. DFRobot DFR0954 material is alternative context
+> only. Purchase authority is
+> [FINAL_MATERIALS_FOR_REVIEW.md](../../docs/FINAL_MATERIALS_FOR_REVIEW.md),
+> not this theory lesson.
+
 ## Learning objectives
 
 After this lesson, you should be able to:
@@ -59,18 +70,18 @@ BCLK = sample rate × slots per frame × bits per slot
      = 1,024,000 Hz = 1.024 MHz
 ```
 
-The INMP441 produces 24-bit two's-complement samples within these 32-bit slots.
-Padding clocks are part of the transport; they do not create extra microphone
-resolution.
+The ICS-43434 produces 24-bit two's-complement samples within these 32-bit
+slots. Padding clocks are part of the transport; they do not create extra
+microphone resolution.
 
 ## The four project signals
 
 | Signal | ESP32-C3 pin | Direction | Connection |
 | --- | ---: | --- | --- |
-| WS / LRCLK | GPIO1 | ESP32-C3 output | INMP441 WS and MAX98357A LRCLK |
-| BCLK / SCK | GPIO2 | ESP32-C3 output | INMP441 SCK and MAX98357A BCLK |
-| Speaker data | GPIO3 | ESP32-C3 output | MAX98357A DIN |
-| Microphone data | GPIO4 | ESP32-C3 input | INMP441 SD |
+| WS / LRCLK | GPIO1 | ESP32-C3 output | Adafruit `#6049` ICS-43434 `WS/LRCLK` and Adafruit `#3006` `LRC` |
+| BCLK / SCK | GPIO2 | ESP32-C3 output | Adafruit `#6049` ICS-43434 `BCLK` and Adafruit `#3006` `BCLK` |
+| Speaker data | GPIO3 | ESP32-C3 output | Adafruit `#3006` `DIN` |
+| Microphone data | GPIO4 | ESP32-C3 input | Adafruit `#6049` ICS-43434 `DOUT` |
 
 MCLK is not used; neither selected audio device requires it for this
 configuration. All boards need the same ground reference.
@@ -81,10 +92,11 @@ capture and speaker output use the same 16 kHz clock domain while retaining
 separate data directions. “Both rates must match” is a constraint of this
 shared-clock project configuration, not a law of every possible I2S system.
 
-Do not connect ordinary push-pull data outputs together. The INMP441's SD pin
-is a documented special case: channel selection controls which half-frame it
-drives, and the output becomes high impedance outside that slot. Its data sheet
-recommends a 100 kΩ pull-down so an undriven data line has a defined state.
+Do not connect ordinary push-pull data outputs together. On the current
+ICS-43434 fixture, `SEL` chooses which half-frame carries microphone data; tie
+it low for the left slot expected by this firmware. Verify the received
+`#6049` board, slot timing, word alignment, and idle data behavior rather than
+borrowing an INMP441 carrier's pull-down assumptions.
 
 ## Sampling rate is a bandwidth choice
 
@@ -100,9 +112,11 @@ unaffected” is too strong: it deliberately gives up high-frequency bandwidth.
 
 This project selects 16 kHz because it satisfies all three current constraints:
 
-- MAX98357A explicitly supports 16 kHz but excludes 24 kHz;
-- INMP441 accepts the resulting 1.024 MHz bit clock and 64 clocks per stereo
-  frame; and
+- the MAX98357A on Adafruit `#3006` explicitly supports 16 kHz but excludes
+  24 kHz;
+- the ICS-43434 on Adafruit `#6049` documents a sample-rate range that includes
+  16 kHz and uses the resulting 1.024 MHz bit clock with 64 clocks per frame;
+  and
 - the firmware's input/output codec path is configured for 16 kHz.
 
 ## Digital audio is still an analog circuit
@@ -131,8 +145,9 @@ A local bypass capacitor supplies rapid current changes before a long wire or
 regulator can respond. Physical placement matters because the wire and trace
 have impedance:
 
-- the INMP441 data sheet shows a 0.1 µF supply bypass close to the microphone;
-- the MAX98357A data sheet calls for both 0.1 µF and 10 µF bypassing at VDD; and
+- the ICS-43434 data sheet shows a 0.1 µF supply bypass close to the microphone;
+- the MAX98357A data sheet calls for both 0.1 µF and 10 µF bypassing at VDD;
+  and
 - a breakout module may already fit these parts, so inspect its published
   schematic and received PCB before adding duplicates.
 
@@ -154,10 +169,13 @@ produce a large DC output. That makes sound clock wiring, low-volume first
 power, and a correctly rated enclosed speaker important. It does **not** imply
 that a particular star topology is universally required.
 
-The selected DFRobot DFR0954 amplifier module has documented SD/mode and gain
-configuration. Use that exact module documentation and inspect its fitted
-resistors rather than reasoning from a visually similar clone. Set and measure
-SD before the module is hidden in the enclosure.
+The current Adafruit `#3006` amplifier module has documented `SD`/mode and gain
+configuration. It defaults to a mono mix and 9 dB gain; inspect its fitted
+network and measure the actual `SD` voltage/channel result rather than reasoning
+from a visually similar clone. DFRobot `DFR0954` is a former primary and current
+held alternative because its 3.3 V minimum lacks guaranteed overlap with the
+candidate regulator's 3.201 V worst-case output. Do not transfer configuration
+assumptions between the two boards.
 
 ## Safe staged lab
 
@@ -177,8 +195,8 @@ rewiring.
 
 ### Stage 2: microphone
 
-1. Power off. Connect INMP441 supply, ground, WS, SCK, and SD to GPIO4. Set L/R
-   LOW for the slot expected by firmware and verify the 100 kΩ SD pull-down.
+1. Power off. Connect the Adafruit `#6049` ICS-43434 supply, ground, WS/LRCLK,
+   BCLK, and `DOUT` to GPIO4. Tie `SEL` low for the slot expected by firmware.
 2. Power on with a conservative current limit.
 3. Record raw samples during silence, speech, and a gentle tone. Check for a
    stuck value, clipping, wrong byte alignment, wrong slot, and excess noise.
@@ -187,11 +205,13 @@ rewiring.
 
 ### Stage 3: amplifier and enclosed speaker
 
-1. Power off. Inspect the exact DFR0954 mode/gain components and local bypass
-   capacitors. Connect LRCLK, BCLK, DIN, supply, ground, and an enclosed 8 Ω
-   speaker between `OUT+` and `OUT−`.
+1. Power off. Inspect the exact Adafruit `#3006` mode/gain components, local
+   bypass capacitors, pin order, and terminal block. Connect LRC, BCLK, DIN,
+   supply, ground, and the factory-enclosed Same Sky `CES-20134-088PM` between
+   the two BTL screw-terminal positions.
 2. Start with minimum digital volume and a short tone or speech sample.
-3. Observe supply current, 3.3 V minimum, resets, distortion, and heating.
+3. Observe voltage at the amplifier pins, `SD` mode voltage, supply current,
+   resets, distortion, and heating against the written limits.
 4. Probe only the digital input lines with the ground-referenced analyzer.
    Never probe either BTL speaker lead with its ground clip.
 
@@ -227,12 +247,16 @@ skip speaker-output waveform measurements.
   <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2s.html>
 - Espressif, *ESP32-C3 Technical Reference Manual* (I2S and GPIO matrix):
   <https://documentation.espressif.com/esp32-c3_technical_reference_manual_en.pdf>
-- TDK InvenSense, *INMP441 Omnidirectional Microphone with Bottom Port and I2S
-  Digital Output*: <https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf>
+- TDK InvenSense, *ICS-43434 Low-Noise Microphone with I2S Digital Output*:
+  <https://invensense.tdk.com/wp-content/uploads/2016/02/DS-000069-ICS-43434-v1.2.pdf>
+- Adafruit, *ICS-43434 I2S Digital Microphone Breakout #6049*:
+  <https://www.adafruit.com/product/6049>
 - Analog Devices/Maxim Integrated, *MAX98357A/MAX98357B PCM Input Class D
   Amplifier*: <https://www.analog.com/media/en/technical-documentation/data-sheets/MAX98357A-MAX98357B.pdf>
-- DFRobot, *DFR0954 Fermion: I2S Amplifier Module*:
-  <https://wiki.dfrobot.com/dfr0954/>
+- Adafruit, *MAX98357A I2S Class-D Mono Amplifier Breakout #3006*:
+  <https://www.adafruit.com/product/3006>
+- Historical/alternative comparison: DFRobot, *DFR0954 Fermion I2S Amplifier
+  Module*: <https://wiki.dfrobot.com/dfr0954/>
 - Texas Instruments, *High-Speed Layout Guidelines for Signal Conditioners and
   USB Hubs* (return paths and decoupling principles):
   <https://www.ti.com/lit/an/scaa082a/scaa082a.pdf>

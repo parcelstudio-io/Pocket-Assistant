@@ -5,6 +5,13 @@ ESP32-C3 hardware. It pins the public Xiaozhi application, adds the project's
 board registration and confirmed pin map, forces the real 4 MB flash layout,
 and produces a merged image that can be flashed at address `0x0`.
 
+> **Current-contract boundary:** the corrected source targets an I2S
+> microphone on GPIO4 (R1 primary: INMP441 with `L/R` low; documented
+> alternate: Adafruit `#6049` ICS-43434 with `SEL` low) and a MAX98357A
+> amplifier on GPIO3, with shared clocks on GPIO1/GPIO2 at 16 kHz. This README
+> is not purchase authority; the release decision is
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
+
 ## Source status and limits
 
 The project author publishes a merged binary but not the corresponding board
@@ -42,28 +49,40 @@ WakeNet9s entries are independent bools, not a choice group).
 For the exact published image and its pinned checksum, use the
 [host flashing and verification tools](../tools/README.md).
 
-## Vendor-image and corrected-source pin maps
+## Current corrected-source pin map
 
 | Function | ESP32-C3 GPIO | Peripheral connection |
 | --- | ---: | --- |
-| I2S word select | 1 | INMP441 WS and MAX98357A LRC |
-| I2S bit clock | 2 | INMP441 SCK and MAX98357A BCLK |
-| I2S speaker data | 3 | MAX98357A DIN |
-| I2S microphone data | 8 in vendor image; **4 in corrected source** | INMP441 SD |
+| I2S word select | 1 | INMP441 `WS` (alt: ICS-43434 `WS/LRCLK`) and MAX98357A `LRC` |
+| I2S bit clock | 2 | INMP441 `SCK` (alt: ICS-43434 `BCLK`) and MAX98357A `BCLK`; expected 1.024 MHz |
+| I2S speaker data | 3 | MAX98357A `DIN` |
+| I2S microphone data | 4 | INMP441 `SD` (alt: ICS-43434 `DOUT`) |
 | Optional action/config input | 10 | Active-low push button to GND if fitted |
 | OLED SCL | 20 | SSD1306 SCL |
 | OLED SDA | 21 | SSD1306 SDA |
 
-The published vendor image uses SSD1306 address `0x3c`, 24 kHz full-duplex
-audio, and microphone GPIO8. Those values were recovered from the binary and
-are retained only for wiring an exact-video replica.
+At 16,000 frames/s and 64 bit clocks per frame, the I2S bit clock is
+`16,000 × 64 = 1.024 MHz`. The microphone uses the intended left slot with its
+select pin low (INMP441 `L/R`, ICS-43434 `SEL`). The amplifier defaults to a
+mono mix — full amplitude, since the ESP32-C3 duplicates the mono slot; its
+`SD` mode voltage and gain are still measured on the received board.
 
-The editable corrected source build uses legal 16 kHz duplex audio, moves mic
-data to GPIO4 so GPIO8 can retain a defined high boot strap, probes SSD1306 at
-`0x3c` and `0x3d`, and continues headless when no display answers. GPIO10 is
+### Historical vendor/video contract
+
+The published vendor image uses a microphone harness with data on GPIO8,
+SSD1306 address `0x3C`, and 24 kHz full-duplex audio. Those recovered values
+are historical replication evidence only — never wire the corrected-source
+GPIO4 harness for the vendor binary or vice versa. DFRobot `DFR0954` remains
+an unqualified amplifier alternative; do not substitute it for a MAX98357A
+breakout without revisiting the rail analysis in the materials decision.
+
+The editable corrected source build uses 16 kHz duplex audio, receives mic data
+on GPIO4 so GPIO8 can retain a defined high boot strap, probes SSD1306 at
+`0x3C` and `0x3D`, and continues headless when no display answers. GPIO10 is
 the active-low action/config input; GPIO9 remains ROM BOOT. The authoritative
-Rev A harness in [`edu/03_HOW_IT_WORKS.md`](../edu/03_HOW_IT_WORKS.md) targets
-this corrected source build. Do not mix the two wiring contracts.
+qualification harness in
+[`edu/03_HOW_IT_WORKS.md`](../edu/03_HOW_IT_WORKS.md) targets this corrected
+source build. Do not mix the two wiring contracts.
 
 ## Directory layout
 

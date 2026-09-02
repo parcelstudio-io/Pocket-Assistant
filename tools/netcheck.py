@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Static wiring-rule checker for the Pocket AI Assistant build.
+"""Static GPIO/protocol checker for the Pocket AI Assistant source build.
+
+POWER-SCOPE CORRECTION (2026-09-02): the old power/service model was removed.
+It used withdrawn cell-resistance, parallel-PPTC, P-FET, converter-startup, and
+rail-current assumptions. Passing this script does not qualify a regulator,
+battery, USB-service path, carrier, or complete harness. See
+docs/FINAL_MATERIALS_FOR_REVIEW.md and edu/07-the-power-chain.md.
 
 There is no published schematic for this project, so the harness net list
 lives here as data and is validated against the constraints that were
@@ -8,11 +14,9 @@ verified from the part datasheets (see edu/ for the reasoning):
 * every net's pins exist and no ESP32-C3 GPIO is claimed twice
 * the ESP32-C3 strapping rules (GPIO2/8/9) are honored by the wiring
 * the configured I2S sample rate is one the MAX98357A supports, and the
-  resulting BCLK is legal for the INMP441
+  selected microphone (INMP441 primary / ICS-43434 alternate) rate and BCLK are legal on paper
 * the display address strategy covers 0x3C and 0x3D
 * the speaker stays a floating bridge load (no lead on GND or frame)
-* the worst-case 3.3 V rail load stays inside the regulator's capability
-  at the battery's end-of-discharge voltage
 
 The GPIO assignments are read from the firmware overlay's config.h so this
 check fails loudly if the wiring tables and the firmware ever drift apart.
@@ -33,8 +37,9 @@ CONFIG_H = REPO / "firmware" / "src" / "boards" / "pocket-wall-e-c3" / "config.h
 # --- Datasheet constants (sources cited in edu/) ---------------------------
 
 MAX98357A_SUPPORTED_LRCLK_HZ = {8000, 16000, 32000, 44100, 48000, 88200, 96000}
-INMP441_SCK_HZ = (500_000, 3_200_000)  # datasheet operating range
-INMP441_FRAME_SCK = 64  # the INMP441 requires 64 SCK per stereo WS frame
+ICS43434_LOW_POWER_SAMPLE_HZ = (6_250, 18_750)
+ICS43434_SCK_HZ = (400_000, 3_300_330)  # 2500 ns to 303 ns periods
+ICS43434_FRAME_SCK = 64
 
 # ESP32-C3 strapping pins (datasheet table 3-3): the wiring must not fight
 # the levels needed to reach both SPI boot and download boot.
@@ -42,71 +47,20 @@ STRAPPING_PINS = {2, 8, 9}
 USB_PINS = {18, 19}          # native USB D-/D+
 FLASH_PINS = set(range(11, 18)) - USB_PINS  # SPI flash on the module
 
-# Power budget (worst-case peaks at the 3.3 V rail, mA).
-RAIL_PEAKS_MA = {
-    "esp32c3 wifi tx": 335,   # ESP32-C3 datasheet table 5-7 (802.11b, 21 dBm)
-    "ssd1306 oled": 25,
-    "inmp441": 3,
-    "max98357a quiescent": 3,
-    "max98357a peak into 8ohm": 412,  # 3.3 V / 8 ohm bridge crest
-}
-# Conservative floor for the converter's deliverable current at a 3.0 V input.
-# The purchased XL63070 module claims 2 A (vendor figure, unverified); 1290 mA
-# is retained as the requirement floor the Phase 0 load sweep must demonstrate.
-REGULATOR_CAPABILITY_MA = 1290
-REQUIRED_MARGIN = 1.25
-
-# --- Series-resistance budget on the battery lead ---------------------------
-# Each element between the cell and the converter input drops voltage under
-# load. At end of discharge the converter still has to COLD-START through the
-# whole chain, so the sum matters, not the individual parts. Measured as one
-# chain at 1.0 A; these are the design allocations.
-SERIES_RESISTANCE_OHM = {
-    "cell internal (Nitecore NL169, typical)": 0.12,
-    "PTC 2x RUEF110 in parallel": 0.125,
-    "holder contacts (acceptance limit)": 0.03,
-    "reverse-block P-FET (AO3401A class)": 0.03,
-    "load-switch P-FET (gate via slide switch)": 0.03,
-    "wiring 26 AWG, both legs": 0.02,
-}
-# The slide switch itself carries only the load-switch FET's gate current
-# (microamps), so its contact rating and resistance no longer matter -- and it
-# fails OPEN = pager OFF, the safe direction.
-CELL_END_OF_DISCHARGE_V = 3.0
-# Self-consistent input current: 778 mA * 3.3 V = 2.57 W out; / ~0.85 eff
-# = 3.02 W in; at the ~2.6 V the converter terminal actually sees at end of
-# discharge that is ~1.15 A, not the naive 1.0 A.
-CELL_PEAK_CURRENT_A = 1.15
-# The chain drop sets a hard PURCHASE REQUIREMENT on the converter: it must
-# cold-start below the voltage its input actually sees at end of discharge.
-# The XL63070 module's own listing claims "2 V ultra-low voltage startup" and
-# the TPS63802 module claims 1.8 V, so both clear it -- but a second listing
-# for the same XL63070 module claims 2.8 V, which would NOT clear it. That
-# conflict is unresolved on paper and is settled by the arrival chain test in
-# docs/BUILD_GUIDE.md Phase 0: power the module through the real PTC, holder
-# and switch, then power-cycle at a 3.0 V source to prove it cold-starts.
-CONVERTER_STARTUP_MAX_V = 2.0
-PTC_HOLD_A_EACH = 1.1        # Bourns RUEF110 hold current at 25 C
-PTC_DERATE_WARM = 0.75       # allowance for a closed frame near the converter
-
 # --- The harness net list (corrected build) --------------------------------
 # Each net: name -> list of (component, pin) endpoints. "gpioN" endpoints on
 # the esp32c3 are cross-checked against config.h.
 
 NETS = {
-    # The regulator reaches the rail only through the service jumper, so the
-    # rail can be broken before USB is attached (see docs/WIRING_AND_ASSEMBLY).
-    "REG_OUT": [("converter", "VOUT"), ("service_jumper", "1")],
-    "3V3": [("service_jumper", "2"), ("esp32c3", "3V3"), ("oled", "VIN"),
-            ("inmp441", "VDD"), ("amp", "VCC"), ("amp", "SD (jumper optional: shutdown insurance)")],
-    "GND": [("converter", "GND"), ("esp32c3", "GND"), ("oled", "GND"),
-            ("inmp441", "GND"), ("inmp441", "L/R (left slot)"), ("amp", "GND"),
-            ("holder", "NEG"), ("button", "B")],
-    "SWITCHED_BAT": [("holder", "POS via PTC pair + reverse P-FET + load P-FET"), ("converter", "VIN")],
-    "I2S_WS": [("esp32c3", "gpio1"), ("inmp441", "WS"), ("amp", "LRC")],
-    "I2S_BCLK": [("esp32c3", "gpio2"), ("inmp441", "SCK"), ("amp", "BCLK")],
+    "3V3": [("esp32c3", "3V3"), ("oled", "VIN"),
+            ("i2s_mic", "VDD"), ("amp", "VCC")],
+    "GND": [("esp32c3", "GND"), ("oled", "GND"),
+            ("i2s_mic", "GND"), ("i2s_mic", "SEL/LR (left slot)"), ("amp", "GND"),
+            ("button", "B")],
+    "I2S_WS": [("esp32c3", "gpio1"), ("i2s_mic", "WS"), ("amp", "LRC")],
+    "I2S_BCLK": [("esp32c3", "gpio2"), ("i2s_mic", "SCK"), ("amp", "BCLK")],
     "I2S_DOUT": [("esp32c3", "gpio3"), ("amp", "DIN")],
-    "I2S_DIN": [("esp32c3", "gpio4"), ("inmp441", "SD")],
+    "I2S_DIN": [("esp32c3", "gpio4"), ("i2s_mic", "SD")],
     "I2C_SDA": [("esp32c3", "gpio21"), ("oled", "SDA")],
     "I2C_SCL": [("esp32c3", "gpio20"), ("oled", "SCL")],
     "BUTTON": [("esp32c3", "gpio10"), ("button", "A")],
@@ -187,9 +141,12 @@ def main() -> int:
           f"shared-clock duplex uses one rate (in={rate_in}, out={rate_out})")
     check(rate_out in MAX98357A_SUPPORTED_LRCLK_HZ,
           f"LRCLK {rate_out} Hz is on the MAX98357A supported list")
-    bclk = (rate_in or 0) * INMP441_FRAME_SCK
-    check(INMP441_SCK_HZ[0] <= bclk <= INMP441_SCK_HZ[1],
-          f"BCLK {bclk} Hz inside INMP441 SCK range at 64 SCK/frame")
+    check(ICS43434_LOW_POWER_SAMPLE_HZ[0] <= (rate_in or 0)
+          <= ICS43434_LOW_POWER_SAMPLE_HZ[1],
+          f"microphone rate {rate_in} Hz is legal for INMP441 and ICS-43434")
+    bclk = (rate_in or 0) * ICS43434_FRAME_SCK
+    check(ICS43434_SCK_HZ[0] <= bclk <= ICS43434_SCK_HZ[1],
+          f"BCLK {bclk} Hz is in range for INMP441 and ICS-43434 at 64 SCK/frame")
 
     # 6. Display address strategy.
     check(cfg.get("DISPLAY_I2C_ADDRESS") == 0x3C
@@ -204,44 +161,8 @@ def main() -> int:
                 for c, p in NETS[net]) for net in spk_nets)
     check(isolated, "speaker leads stay a floating bridge load")
 
-    # 8. Service isolation: the regulator must not sit directly on the rail
-    # that USB back-feeds through the ESP32-C3's 3V3 pin.
-    reg_pins = {c for c, _ in NETS["REG_OUT"]}
-    rail_pins = {c for c, _ in NETS["3V3"]}
-    check("converter" not in rail_pins and "service_jumper" in reg_pins
-          and "service_jumper" in rail_pins,
-          "service jumper separates regulator output from the 3.3 V rail")
-    check("esp32c3" in rail_pins and "esp32c3" not in reg_pins,
-          "ESP32-C3 3V3 pin sits on the switched rail, not on regulator VOUT")
-
-    # 9. Series-resistance budget: the converter must still cold-start from a
-    # nearly empty cell through the fuse, holder, switch and wiring.
-    r_total = sum(SERIES_RESISTANCE_OHM.values())
-    v_drop = r_total * CELL_PEAK_CURRENT_A
-    v_conv = CELL_END_OF_DISCHARGE_V - v_drop
-    check(v_conv >= CONVERTER_STARTUP_MAX_V,
-          f"converter input {v_conv:.2f} V at {CELL_END_OF_DISCHARGE_V} V cell "
-          f"and {CELL_PEAK_CURRENT_A} A (chain {r_total:.3f} ohm, drop "
-          f"{v_drop:.2f} V) clears the {CONVERTER_STARTUP_MAX_V} V required "
-          "converter cold-start ceiling")
-    # PTC hold-current margin. A PTC's hold current derates with ambient; in a
-    # closed frame next to a warm converter, assume ~75% of the 25 C rating.
-    # This -- not the voltage drop -- is why two RUEF110 are paralleled: one
-    # alone derates below the operating current and would nuisance-trip.
-    derated_single = PTC_HOLD_A_EACH * PTC_DERATE_WARM
-    derated_pair = 2 * PTC_HOLD_A_EACH * PTC_DERATE_WARM
-    check(derated_single < CELL_PEAK_CURRENT_A <= derated_pair,
-          f"PTC pair holds {derated_pair:.2f} A warm-derated vs "
-          f"{CELL_PEAK_CURRENT_A} A peak, while a single would hold only "
-          f"{derated_single:.2f} A and nuisance-trip")
-
-    # 10. Power budget.
-    peak = sum(RAIL_PEAKS_MA.values())
-    check(peak * REQUIRED_MARGIN <= REGULATOR_CAPABILITY_MA,
-          f"rail peak {peak} mA x {REQUIRED_MARGIN} margin fits "
-          f"{REGULATOR_CAPABILITY_MA} mA regulator capability at 3.0 V cell")
-
-    print(f"\n{checks - len(failures)}/{checks} checks passed")
+    print(f"\n{checks - len(failures)}/{checks} static checks passed")
+    print("Power, USB-source, carrier, and fit qualification: NOT CHECKED")
     if failures:
         for f in failures:
             print(f"  FAILED: {f}", file=sys.stderr)

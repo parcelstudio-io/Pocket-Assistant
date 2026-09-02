@@ -5,6 +5,14 @@
 > hardware test. Clock quality, samples, amplifier configuration, loudness,
 > noise, heat, and acoustics remain bench gates.
 
+> **R1 parts:** INMP441 microphone (primary; `L/R` → GND) with the Adafruit
+> `#6049` ICS-43434 as the documented alternate (`SEL` → GND) — where a table
+> below names `#6049`, the INMP441 wires identically — and a MAX98357A
+> amplifier (HiLetgo breakout or Adafruit `#3006`). DFRobot DFR0954 passages
+> are alternative context only. Purchases are controlled by
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) (R1
+> build release), not this lesson.
+
 For the underlying sampling and interface theory, read
 [I2S, sampling, and digital audio](fundamentals/09-i2s-sampling-and-digital-audio.md).
 
@@ -12,10 +20,10 @@ For the underlying sampling and interface theory, read
 
 | Signal | GPIO | Direction and destination |
 | --- | ---: | --- |
-| WS / LRCLK | 1 | ESP32-C3 to microphone and amplifier |
-| BCLK / SCK | 2 | ESP32-C3 to microphone and amplifier |
-| Speaker data | 3 | ESP32-C3 to MAX98357A-module `DIN` |
-| Microphone data | 4 | INMP441 `SD` to ESP32-C3 |
+| WS / LRCLK | 1 | ESP32-C3 to Adafruit `#6049` ICS-43434 and Adafruit `#3006` |
+| BCLK / SCK | 2 | ESP32-C3 to Adafruit `#6049` ICS-43434 and Adafruit `#3006` |
+| Speaker data | 3 | ESP32-C3 to Adafruit `#3006` `DIN` |
+| Microphone data | 4 | Adafruit `#6049` ICS-43434 `DOUT` to ESP32-C3 |
 
 Input and output are configured for 16 kHz and share one I2S clock domain. With
 two 32-bit slots per frame, the expected bit clock is:
@@ -31,9 +39,11 @@ frequency alone does not prove slot choice, alignment, or valid samples.
 
 ## Why the corrected source uses 16 kHz
 
-MAX98357A specifies 16 kHz operation and explicitly excludes 24 kHz LRCLK. The
-INMP441 accepts the resulting 1.024 MHz clock and 64 clocks per frame. Those
-facts make 16 kHz a compatible project choice.
+The MAX98357A on Adafruit `#3006` specifies 16 kHz operation and explicitly
+excludes 24 kHz LRCLK. The ICS-43434 on Adafruit `#6049` documents a low-power
+sample-rate range that includes 16 kHz and uses the resulting 1.024 MHz clock
+with 64 clocks per frame. Those facts make 16 kHz the current paper-compatible
+choice; received-hardware timing and audio still need proof.
 
 It is still a tradeoff: a 16 kHz sample rate has an 8 kHz theoretical Nyquist
 boundary, with a practical passband below that. It is suitable for the intended
@@ -61,10 +71,11 @@ safety fault.
 
 ## Exact-module channel and gain configuration
 
-The current firmware contract requires a MAX98357A-compatible I2S amplifier,
-but `SD`/channel-selection and gain networks are breakout-board details. A
-DFRobot DFR0954, an Adafruit board, and a visually similar marketplace clone
-must not be assumed to have the same fitted resistors or defaults.
+The R1 release accepts a MAX98357A breakout — HiLetgo clone or Adafruit
+`#3006`. The chip's documented 2.5–5.5 V supply covers the R1 raw-cell rail.
+Its default is a left/right mono mix with 9 dB gain, but `SD`/channel
+selection and gain remain voltage- and board-configuration details that must
+be measured on the received board.
 
 For the exact purchased module:
 
@@ -78,9 +89,15 @@ Do not add an `SD`-to-supply jumper as generic “insurance.” It is a board
 modification whose result must be checked against that exact module and the
 MAX98357A limits.
 
-For the INMP441, set `L/R` to ground for the intended left slot and verify the
-documented 100 kΩ data pull-down in the assembled circuit. Protect the acoustic
-port from flux, solvent, glue, paint, hot air, and compressed air.
+DFRobot `DFR0954` is a **former primary and current held alternative**. Its
+published 3.3 V minimum does not overlap the candidate regulator's 3.201 V
+worst-case output. Do not transfer its resistor assumptions to `#3006` or use
+it unless the power design and material decision are formally revised.
+
+For the Adafruit `#6049` ICS-43434, tie `SEL` low for the intended left slot
+and prove bit/slot alignment and intelligible samples on GPIO4. Protect its
+bottom acoustic port from flux, solvent, glue, paint, hot air, compressed air,
+and a sealing guard.
 
 ## BTL output and enclosure
 
@@ -91,22 +108,25 @@ active switching outputs:
 - connect neither lead to circuit ground or the metal frame; and
 - never attach an ordinary ground-referenced probe clip to either lead.
 
-Use the selected pre-enclosed speaker if it passes incoming inspection and fit,
-or a separately qualified sealed fallback. Do not carry a nominal “1 cc” claim
-from a different speaker into this build. Measure the actual part and compare
-low-volume response, distortion, current, sealing, fit, and temperature before
-permanent mounting.
+The R1 primary is the factory-enclosed Same Sky
+`CES-20134-088PM`, 8 ohm and 0.8 W nominal. Connect its two leads only to the
+amplifier's BTL output pair. Its controlled rear enclosure removes the need
+to invent a rear cup, but the front opening, grille, mounting, strain relief,
+low-volume response, distortion, current, fit, feedback, and temperature still
+require measurement before permanent mounting.
 
 ## Bench acceptance sequence
 
 1. Run clocks without the audio modules and measure approximately 16 kHz WS and
    1.024 MHz BCLK.
-2. Add the microphone; inspect raw silence, speech, clipping, slot selection,
-   alignment, and noise.
-3. Inspect/configure the exact amplifier with power off.
-4. Add an enclosed 8 Ω candidate, start at minimum digital volume, and play a
-   short tone or speech sample from a current-limited supply.
-5. Record supply current, minimum 3.3 V, resets, distortion, and temperature.
+2. Add the `#6049` ICS-43434 on GPIO4 with `SEL` low; inspect raw silence,
+   speech, clipping, slot selection, alignment, and noise.
+3. Inspect the `#3006` with power off; record pin order, `SD` network, gain
+   state, and its terminal-block envelope.
+4. Add the `CES-20134-088PM` at minimum digital volume and play a short tone or
+   speech sample from a current-limited supply.
+5. Record voltage at every module, supply current, resets, `SD` mode voltage,
+   distortion, and temperature against the written limits.
 6. Repeat while Wi-Fi is active, then in the intended mechanical arrangement.
 
 Use a logic analyzer only on circuit ground and the digital I2S lines. Speaker
@@ -117,7 +137,11 @@ trained operator.
 
 - Espressif ESP32-C3 I2S guide:
   <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2s.html>
-- TDK InvenSense INMP441 data sheet:
-  <https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf>
+- TDK InvenSense ICS-43434 data sheet:
+  <https://invensense.tdk.com/wp-content/uploads/2016/02/DS-000069-ICS-43434-v1.2.pdf>
+- Adafruit ICS-43434 breakout `#6049`:
+  <https://www.adafruit.com/product/6049>
+- Adafruit MAX98357A breakout `#3006` and guide:
+  <https://www.adafruit.com/product/3006>
 - Analog Devices MAX98357A/MAX98357B data sheet:
   <https://www.analog.com/media/en/technical-documentation/data-sheets/MAX98357A-MAX98357B.pdf>

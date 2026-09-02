@@ -1,9 +1,12 @@
 # Power and battery — applying the power-integrity lesson
 
-> **DESIGN-FREEZE STATUS: NO-GO.** No converter, protection chain, switch,
-> holder, service-power circuit, UVLO, charger pairing, or cell-powered build
-> is released. This note turns [Lesson 06](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
-> into a battery-free qualification plan.
+> **Status: R1 released — 2026-09-02.** The released power system is the
+> protected-pack chain in
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) and
+> [the power-chain worksheet](07-the-power-chain.md). This note turns
+> [Lesson 06](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
+> into the battery-free qualification method that chain still runs through
+> before the pack is trusted.
 
 ## The durable system problem
 
@@ -189,20 +192,25 @@ temperature, and converter needs, plus hysteresis so the device does not chatter
 on and off. Firmware may request shutdown, but a hardware path must handle a
 wedged or unpowered controller if continued draw would be unsafe.
 
-No cell-powered release can occur until normal undervoltage shutdown and
-restart behavior are defined and tested.
+In R1 this is resolved by division of labor: the display dying and the MCU
+browning out are the *normal* end-of-charge signal (the LDO-direct rail sags
+gracefully — prove it on the bench sweep), and the pack's documented 3.0 V
+protection cutout is the *hardware backstop* behind it. Any design without
+both halves defined and tested has no cell-powered release.
 
 ## USB and service power must not backfeed
 
-The SuperMini `3V3` node, onboard regulator, USB `VBUS`, external converter,
-and peripherals can create multiple-source paths. A jumper only isolates the
-one conductor it opens. It does not prove that USB can safely supply the full
-peripheral rail through an unknown clone LDO.
+The SuperMini `3V3` node, onboard regulator, USB `VBUS`, charger board, and
+peripherals can create multiple-source paths. A jumper only isolates the one
+conductor it opens, and clone LDO/VBUS arrangements vary. R1 therefore makes
+the rule physical, not electronic: **slide switch OFF and pack JST unplugged
+before the SuperMini's USB-C connects; device off while the charger's USB-C
+is in; never both ports at once.**
 
 For foundation work, flash and test the bare controller over USB. For the
-candidate power system, use the current-limited bench supply with USB absent.
-Before combining them, require a reviewed source-selection/isolation schematic
-and measure every off/backfeed state.
+power system, use the current-limited bench supply with USB absent. The
+off/backfeed check in the acceptance worksheet verifies the rule holds on
+your exact boards.
 
 ## Decoupling and heat close the loop
 
@@ -217,16 +225,19 @@ short crest. Measure converter, MOSFET, PPTC, holder/contact, wire, and nearby
 air temperatures after stabilization. Case temperature is not junction
 temperature; use datasheet thermal information and margin.
 
-## External charging only, after an exact pairing review
+## Charging: an exact, documented pairing — never a class of products
 
-No charging circuit belongs in the provisional frame. If the design later uses
-the NL169, qualify one exact external charger variant against the exact cell's
-manufacturer information: supported size/chemistry, termination voltage,
-charge-current selection, polarity, fault handling, and instructions.
+R1 mounts the charger in the frame (like the reference build) because the
+pairing is exact and documented: Adafruit #4410 (CC/CV, 4.2 V termination,
+100 mA default / 500 mA jumper) charging the Adafruit #1578 pack (protected,
+charge ≤ 500 mA per its own page), device off, first cycle attended.
 
-“XTAR/Nitecore class” is not an electrical specification, and features cannot
-be transferred between similarly named charger revisions. Until the pairing is
-documented, do not charge a project cell as part of this course.
+The lesson generalizes: qualify one exact charger variant against the exact
+cell's manufacturer information — supported chemistry, termination voltage,
+charge-current selection, polarity, fault handling. "XTAR/Nitecore class" or
+"TP4056 class" is not an electrical specification, and features cannot be
+transferred between similarly named revisions. An undocumented pairing means
+do not charge.
 
 ## Battery-free Phase 0 gate
 
@@ -246,8 +257,9 @@ Use the detailed lab in Lesson 06. The minimum release evidence is:
 9. predeclared pass/fail limits with margin across more than one sample.
 
 Ten successful room-temperature starts on one board are useful **MEASURED**
-sample evidence, not a module specification. The power architecture remains
-**NO-GO** until all gates close without relying on a lithium cell for testing.
+sample evidence, not a module specification. Your particular build's power
+chain is accepted only when these gates close without relying on a lithium
+cell for testing — the pack enters last, per the acceptance worksheet.
 
 ## Safety rules
 

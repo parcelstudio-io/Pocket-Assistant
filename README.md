@@ -16,12 +16,14 @@ These paths are deliberately separate. The creator published only a merged binar
 ```text
 .
 ├── docs/
-│   ├── BUILD_GUIDE.md            video-correlated white/silver Rev A procedure
-│   ├── BOM.md                    legacy alternatives and tool audit
-│   └── WIRING_AND_ASSEMBLY.md    legacy/vendor-image wiring reference
+│   ├── FINAL_MATERIALS_FOR_REVIEW.md  R1 release decision (the authority)
+│   ├── MATERIALS.md              R1 order sheet, Amazon/Adafruit/DigiKey
+│   ├── BUILD_GUIDE.md            released video-correlated build procedure
+│   ├── WIRING_AND_ASSEMBLY.md    released wiring tables and staged tests
+│   └── BOM.md                    creator-page ↔ R1 part reconciliation
 ├── edu/
 │   ├── README.md                 course index and evidence boundary
-│   ├── 02_COMPONENTS_*.md        historical spec baseline (the purchasing list is docs/MATERIALS.md)
+│   ├── 02_COMPONENTS_*.md        historical component rationale
 │   ├── 03_HOW_IT_WORKS.md        corrected source-build wiring contract
 │   └── 04–06_*.md                assembly, finish, and acceptance checks
 ├── firmware/
@@ -33,7 +35,7 @@ These paths are deliberately separate. The creator published only a merged binar
 │   ├── diagram.json              partial ESP32-C3/OLED/button Wokwi fixture
 │   └── README.md                 simulation limits and lint command
 └── tools/
-    ├── netcheck.py               firmware/net/power-rule contract checker
+    ├── netcheck.py               static checker; legacy power model withdrawn
     ├── pocket_ai_device.py       vendor-image fetch/verify/flash/monitor CLI
     ├── vendor-firmware.json      artifact provenance and integrity metadata
     └── tests/                    host-tool unit tests
@@ -43,25 +45,28 @@ A [partial Wokwi fixture](simulation/README.md) checks the corrected OLED and
 GPIO10 button diagram. It intentionally does not model the power or audio
 hardware.
 
-**Buy only from [docs/MATERIALS.md](docs/MATERIALS.md) — the purchasing
-list.** Then start with the [build course](edu/README.md) and the [Rev A
-wiring contract](edu/03_HOW_IT_WORKS.md); the
-[purchase-readiness review](docs/PURCHASE_READINESS.md) is superseded (see its
-banner). `docs/WIRING_AND_ASSEMBLY.md` is a
-legacy/vendor-image reference, not the Rev A build path. The educational
-course contains the corrected purchasing baseline, component explanations,
-finish plan, video-correlated assembly sequence, and physical acceptance
-tests. These guides intentionally change the video's battery construction:
-do **not** strip a lithium cell, solder to its can, or use an undocumented 1 A
+**Use [docs/FINAL_MATERIALS_FOR_REVIEW.md](docs/FINAL_MATERIALS_FOR_REVIEW.md)
+as the current decision source.** The 2026-09-02 final audit released the
+complete R1 cart and the staged build procedure: the creator's compact
+topology (protected 1S pack + in-frame USB-C charger + slide switch) with
+documented parts and hard USB/charging rules. Order from
+[docs/MATERIALS.md](docs/MATERIALS.md), build with
+[docs/BUILD_GUIDE.md](docs/BUILD_GUIDE.md) and
+[docs/WIRING_AND_ASSEMBLY.md](docs/WIRING_AND_ASSEMBLY.md), and start with the
+[build course](edu/README.md) plus the corrected
+[source-build wiring contract](edu/03_HOW_IT_WORKS.md). The cell connects
+only after the bench gate; charging and pocket carry have their own gates.
+These guides intentionally change the video's battery construction: do
+**not** strip a lithium cell, solder to its can, or use an undocumented 1 A
 charger.
 
 ## Flash the exact published image
 
-For Phase 0, flash a bare SuperMini with its external 3.3 V/peripheral harness
-disconnected. Removing the cell alone does not isolate USB-driven 3.3 V from
-the regulator output and peripherals. Generic SuperMini clones also have
-varying VBUS/`5V` arrangements; do not connect USB to an assembled harness
-until the service-isolation design in the purchase-readiness review is closed.
+For Phase 0, flash a bare SuperMini. For an assembled unit the USB rule is
+physical: **slide switch OFF and the pack's JST unplugged before the
+SuperMini's USB-C is connected**, and never both USB-C ports at once. Generic
+SuperMini clones have varying VBUS/`5V` arrangements, so the rule does not
+rely on any clone's diode being present.
 
 ```bash
 python3 -m venv .venv
@@ -98,16 +103,15 @@ Read [`firmware/README.md`](firmware/README.md) before using the source-flash he
 | --- | --- | ---: |
 | OLED I2C | SDA / SCL | 21 / 20 |
 | Shared I2S clocks | WS / BCLK | 1 / 2 |
-| Microphone input | INMP441 SD | 4 |
+| Microphone input | I2S microphone SD (INMP441 primary; ICS-43434 alternate) | 4 |
 | Amplifier output | MAX98357A DIN | 3 |
 | Optional external action button | active-low button | 10 |
 
-The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at address `0x3c` or `0x3d`, uses 16 kHz duplex audio, and puts INMP441 `SD` on GPIO4 with `L/R` grounded. The pinned creator binary instead requires `SD` on GPIO8 and OLED address `0x3c`. The amplifier is a MAX98357A; both audio modules share `WS` and `BCLK`. GPIO10 is the active-low application input, while the SuperMini's ROM BOOT button remains GPIO9.
+The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at address `0x3c` or `0x3d`, uses 16 kHz duplex audio, and puts the I2S microphone's `SD` on GPIO4 with its left-slot select grounded. The R1 primaries are the creator-faithful INMP441 microphone (`L/R` → GND) and a MAX98357A breakout; the Adafruit ICS-43434 #6049 (`SEL` → GND) is the documented alternate mic. The pinned creator binary instead requires microphone `SD` on GPIO8 and OLED address `0x3c`. Both audio modules share `WS` and `BCLK`. GPIO10 is the active-low application input, while the SuperMini's ROM BOOT button remains GPIO9.
 
 ## What has and has not been verified
 
 - The published binary's size, digest, merged-image markers, chip target, application metadata, and partition offsets were inspected and pinned.
 - The host CLI has unit tests and refuses an unverified image or implicit serial-port target.
 - The source overlay compiled successfully twice from clean, pinned inputs on the validation host; both merged images were identical. The size, digest, SDK/source commits, local-input hashes, effective configuration, and observed tool versions are recorded in [`firmware/source-build.json`](firmware/source-build.json).
-- No physical ESP32-C3 or assembled battery circuit was connected in this workspace. Final validation therefore requires the staged continuity, current-limited power, audio, display, Wi-Fi, and charging checks in the assembly guide.
-# Pocket-Assistant
+- No physical ESP32-C3 or assembled battery circuit was connected in this workspace — `hardware_tested` is still `false`, which is why the released procedure is bench-first. The [staged assembly plan](edu/04_ASSEMBLY_STEP_BY_STEP.md) and [acceptance worksheet](edu/06_ACCEPTANCE_TESTS.md) carry the gates: the cell connects only after the bench gate, and pocket carry only after acceptance.
