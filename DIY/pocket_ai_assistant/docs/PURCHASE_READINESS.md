@@ -1,5 +1,12 @@
 # Purchase-readiness review — 2026-09-01
 
+> **Superseded (2026-09-01 milestone review).** Part identities below predate
+> the Amazon-first swap — the cart is [MATERIALS.md](MATERIALS.md). Blockers 1
+> and 2 are closed by the service jumper and the through-hole PTC pair;
+> blocker 3 is closed by the regenerated cad/fitcheck (162 rules, Amazon
+> envelopes, PROVISIONAL-tagged); blocker 4 (no hardware test) still stands
+> and is Phase 0's job.
+
 ## Verdict
 
 **Buy a Phase 0 bench/fit batch now; do not buy the complete final-frame cart

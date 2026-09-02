@@ -37,12 +37,15 @@ resistances in series, and each one drops voltage under load:
 | Cell internal (protected 16340, typical) | 0.12 Ω | 120 mV |
 | PTC fuse — **two RUEF110 in parallel** | 0.125 Ω | 125 mV |
 | Holder contacts (acceptance limit) | 0.03 Ω | 30 mV |
-| Switch contacts (acceptance limit) | 0.03 Ω | 30 mV |
+| Reverse-block P-FET | 0.03 Ω | 30 mV |
+| Load-switch P-FET | 0.03 Ω | 30 mV |
 | 26 AWG wiring, both legs | 0.02 Ω | 20 mV |
-| **Total** | **0.325 Ω** | **325 mV** |
+| **Total** | **0.355 Ω** | **355 mV** |
 
-At end of discharge the cell rests at 3.0 V, so under a 1.0 A peak the
-converter's input sees **2.67 V, not 3.0 V.**
+(The slide switch is absent from this table on purpose: it steers a FET gate
+and carries microamps.) At end of discharge the cell rests at 3.0 V, so the
+converter's input sees roughly **2.6 V, not 3.0 V** — `netcheck` computes it
+at the self-consistent 1.15 A input peak: 2.59 V.
 
 That is the whole point. Every part passes its own datasheet check. The chain
 is what decides whether the pager still turns on when the battery is nearly
@@ -50,7 +53,7 @@ empty — and the converter has to *cold-start* through it, which is harder than
 staying running.
 
 **This turns into a purchase requirement:** the converter must start below
-2.67 V. Both modules this build recommends publish a startup of 1.8–2.0 V, so
+~2.6 V. Both modules this build recommends publish a startup of 1.8–2.0 V, so
 both clear it — but one listing for the same module claims 2.8 V, which would
 *not* clear it. That conflict cannot be settled from listings, so it becomes a
 bench test (below).
@@ -64,7 +67,7 @@ end-of-discharge behaviour.
 A PTC's hold current is specified at 25 °C and **derates as it warms** — inside
 a closed frame next to a switching converter, assume roughly 75 %.
 
-- One RUEF110: 1.1 A × 0.75 = **0.83 A** hold, against a 1.0 A operating peak.
+- One RUEF110: 1.1 A × 0.75 = **0.83 A** hold, against the ~1.15 A input peak.
   It would trip during normal loud audio on Wi-Fi. That is a nuisance trip: the
   pager just dies mid-sentence for no visible reason.
 - Two in parallel: **1.65 A** hold, comfortably above the peak — *and* half the
@@ -88,21 +91,23 @@ It is worth being precise about the layers, because they are often confused:
    the solder joints in the object) is limited by this, which is why the
    dangerous zone is small and identifiable: the cell, the holder, the wiring
    to the converter input, and nothing else.
-4. **Reverse polarity** — currently *unprotected*. See below.
+4. **The reverse-block P-FET** — stops a cell inserted backwards before it
+   reaches anything else. See below.
 
-## The reverse-polarity gap, and the right fix
+## Reverse polarity, and why not a diode
 
-Nothing in this build stops a cell inserted backwards or a holder wired
-backwards. The tempting fix is a series Schottky diode, and it is the wrong
-one: a 1N5819 drops ~0.35 V at 1 A, which on top of the 325 mV budget above
-would push the converter under its startup floor. You would trade a rare fault
-for a guaranteed one.
+A cell can go into a holder backwards, and a holder can be wired backwards.
+The tempting fix is a series Schottky diode, and it is the wrong one: a
+1N5819 drops ~0.35 V at 1 A, which on top of the budget above would push the
+converter under its startup floor. You would trade a rare fault for a
+guaranteed one.
 
-The right part is a **P-channel MOSFET high-side switch** (AO3401A, DMG2301L
-class): 20–40 mΩ, so about 10 mV instead of 350 mV. For Rev A this build
-accepts the gap and manages it procedurally — a keyed holder and a metered
-polarity check before first connection — and records the MOSFET as the Rev B
-improvement.
+The right part is a **P-channel MOSFET** (AO3401A, DMG2301L class): 20–40 mΩ,
+so ~30 mV instead of 350 mV — and as of the Rev A lock it is **in the build**:
+one always-on reverse-block FET in the spine (drain to battery side, source
+downstream, gate to cell −), plus a second FET as the high-side load switch
+whose gate the slide switch grounds. The metered polarity check on the holder
+leads stays as the belt to the braces.
 
 ## The service jumper
 
@@ -131,16 +136,18 @@ It is verifiable: with the jumper out, continuity from converter VOUT to the
 Do this before the frame exists, with a current-limited supply standing in for
 the cell (see [the build guide](../docs/BUILD_GUIDE.md) Phase 0):
 
-1. Assemble the **real chain**: source → PTC pair → switch → holder contacts →
-   converter. Do not test the converter alone on clean bench leads; that hides
-   exactly the resistance you are trying to measure.
+1. Assemble the **real chain**: source → PTC pair → reverse-block P-FET →
+   load-switch P-FET (slide switch on its gate) → converter. Do not test the
+   converter alone on clean bench leads; that hides exactly the resistance
+   you are trying to measure.
 2. Set the source to 4.2 V, load the 3.3 V rail to 800 mA, confirm 3.30 V ±0.05.
 3. Sweep the source down to 3.0 V. The rail must hold 3.3 V the whole way.
 4. **Power-cycle at 3.0 V.** This is the real test — it proves cold start
    through the chain, not merely that it keeps running once started.
 5. Measure the converter's input voltage during step 3 at 1.0 A. The difference
-   from the source is your measured chain resistance. If it exceeds ~350 mV,
-   find the offender (usually the holder's crimped lead) before proceeding.
+   from the source is your measured chain resistance. If the external chain
+   (everything but the cell) exceeds ~250 mV at 1.0 A, find the offender
+   (usually the holder's crimped lead) before proceeding.
 
 If step 4 fails, the pager will work perfectly on a fresh cell and mysteriously
 refuse to start when it is half empty. That is a miserable bug to chase after

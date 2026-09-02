@@ -21,7 +21,7 @@ These paths are deliberately separate. The creator published only a merged binar
 │   └── WIRING_AND_ASSEMBLY.md    legacy/vendor-image wiring reference
 ├── edu/
 │   ├── README.md                 course index and evidence boundary
-│   ├── 02_COMPONENTS_*.md        authoritative Rev A purchasing baseline
+│   ├── 02_COMPONENTS_*.md        historical spec baseline (the purchasing list is docs/MATERIALS.md)
 │   ├── 03_HOW_IT_WORKS.md        corrected source-build wiring contract
 │   └── 04–06_*.md                assembly, finish, and acceptance checks
 ├── firmware/
@@ -43,9 +43,11 @@ A [partial Wokwi fixture](simulation/README.md) checks the corrected OLED and
 GPIO10 button diagram. It intentionally does not model the power or audio
 hardware.
 
-Start with the [purchase-readiness review](docs/PURCHASE_READINESS.md),
-[white/silver/black build course](edu/README.md), and [authoritative Rev A
-wiring contract](edu/03_HOW_IT_WORKS.md). `docs/WIRING_AND_ASSEMBLY.md` is a
+**Buy only from [docs/MATERIALS.md](docs/MATERIALS.md) — the purchasing
+list.** Then start with the [build course](edu/README.md) and the [Rev A
+wiring contract](edu/03_HOW_IT_WORKS.md); the
+[purchase-readiness review](docs/PURCHASE_READINESS.md) is superseded (see its
+banner). `docs/WIRING_AND_ASSEMBLY.md` is a
 legacy/vendor-image reference, not the Rev A build path. The educational
 course contains the corrected purchasing baseline, component explanations,
 finish plan, video-correlated assembly sequence, and physical acceptance
@@ -108,3 +110,4 @@ The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at add
 - The host CLI has unit tests and refuses an unverified image or implicit serial-port target.
 - The source overlay compiled successfully twice from clean, pinned inputs on the validation host; both merged images were identical. The size, digest, SDK/source commits, local-input hashes, effective configuration, and observed tool versions are recorded in [`firmware/source-build.json`](firmware/source-build.json).
 - No physical ESP32-C3 or assembled battery circuit was connected in this workspace. Final validation therefore requires the staged continuity, current-limited power, audio, display, Wi-Fi, and charging checks in the assembly guide.
+# Pocket-Assistant

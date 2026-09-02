@@ -39,38 +39,47 @@ TUBE_R = 0.75  # 1.5 mm OD brass tube
 # conductive for antenna-clearance purposes.
 PARTS = {
     #                      x      y      z       w      h      d
-    "oled_326":        ((15.4,  10.0,   0.8), (29.2,  26.7,   6.2), "pcb"),
-    # 12.09 mm above the carrier plus a conservative 1.54 mm tab allowance.
-    "holder_bh123a":   (( 2.0,   2.0,  15.2), (43.0,  17.78, 13.63), "metal"),
-    "speaker_box":     ((30.0,  22.0,   8.5), (21.0,  16.0,   7.8), "pcb"),
+    "oled_hosyond":    ((16.3,   9.5,   0.8), (27.5,  27.8,   4.3), "pcb"),
+    "holder_aceirmc":  (( 2.0,   2.0,  15.2), (43.2,  18.3,  14.2), "metal"),
+    # Treedix 15x10x3.5 speaker seated in a trimmed 20mm-ID vinyl cap (~1cc).
+    # Envelope assumes cap OD <=22mm; gate on the measured OD (<=22.7 fits).
+    "speaker_cap":     ((30.5,  22.3,   8.5), (22.0,  22.0,   9.0), "pcb"),
     "supermini":       ((59.5,  26.0,  26.0), (22.5,  18.0,   4.0), "pcb"),
-    "amp_dfr0954":     (( 3.0,  24.0,  24.0), (18.0,  18.0,   7.1), "pcb"),
-    "reg_s8v9f3":      ((26.0,  26.0,  28.0), (10.2,  16.5,   2.6), "pcb"),  # rotated 90deg
-    "star_board":      ((38.0,  36.0,  22.0), (12.0,   8.0,   3.0), "pcb"),
-    "switch_2810":     ((44.0,  22.0,  18.0), (15.2,  15.2,   2.5), "pcb"),
-    "mic_inmp441":     (( 4.0,  30.0,  18.0), (14.0,  11.0,   3.5), "pcb"),
+    "amp_hiletgo":     ((20.0,  24.0,  24.0), (23.0,  16.5,   7.0), "pcb"),
+    # XL63070 16x30mm laid flat behind the OLED; total thickness incl. the
+    # inductor must be <=~7mm -- measure on arrival before committing.
+    "reg_xl63070":     ((11.0,   6.0,   8.0), (16.0,  30.0,   5.0), "pcb"),
+    "star_board":      ((25.0,  36.0,  20.0), (12.0,   8.0,   3.0), "pcb"),
+    # SPDT slide switch steering the load-switch P-FET gate; actuator through
+    # the y=45 top face.
+    "switch_slide":    (( 2.0,  38.0,  18.0), (13.0,   7.0,   9.0), "pcb"),
+    "mic_inmp441":     (( 4.0,  24.0,  18.0), (14.0,  11.0,   3.5), "pcb"),
     "cap_220u":        (( 3.0,  17.0,   6.5), ( 6.3,   6.3,   6.0), "pcb"),
     "tact_button":     ((52.0,   4.0,   6.0), ( 6.0,   6.0,   7.3), "pcb"),
-    # 2-pin 0.1in header + shunt in the regulator VOUT lead. Pulling it breaks
-    # the 3.3 V rail between regulator and star bus so USB can power the
-    # SuperMini for service without back-driving the regulator's output.
+    # Two paralleled RUEF110 discs + both P-FETs on the solder tag by the
+    # holder's + terminal, sleeved.
+    "ptc_pair":        ((48.0,   3.0,  15.5), ( 8.0,  16.0,   5.0), "pcb"),
+    # 2-pin 0.1in header + shunt in the converter VOUT lead. Pulling it breaks
+    # the 3.3 V rail between converter and star bus so USB can power the
+    # SuperMini for service without back-driving the converter's output.
     "service_jumper":  ((48.0,   8.0,  24.0), ( 5.0,   2.6,   8.0), "service"),
 }
 
 # Envelope provenance. A report containing PROVISIONAL entries is a planning
 # aid, not fit evidence: measure those parts on arrival and update this file.
 PROVENANCE = {
-    "oled_326":       ("DATASHEET",   "Adafruit #326 outline incl. mounting ears"),
-    "holder_bh123a":  ("DATASHEET",   "MPD BH123A: 12.09 mm above PCB + tab allowance; datasheet lists RCR123A support"),
-    "speaker_box":    ("VENDOR",      "Same Sky BOX-1511-1CC 1 cc enclosure"),
+    "oled_hosyond":   ("PROVISIONAL", "Hosyond B09T6SJBV5 generic 0.96in; measure on arrival"),
+    "holder_aceirmc": ("VENDOR",      "ACEIRMC B0CRGK889F listing dims 43.2x18.3x14.2; 16340 fit is inference - qualify on arrival"),
+    "speaker_cap":    ("PROVISIONAL", "Treedix speaker in trimmed 20mm-ID vinyl cap; gate on measured cap OD (<=22.7mm fits)"),
     "supermini":      ("PROVISIONAL", "generic clone; measure on arrival"),
-    "amp_dfr0954":    ("VENDOR",      "DFRobot DFR0954 product page"),
-    "reg_s8v9f3":     ("DATASHEET",   "Pololu S8V9F3 dimension drawing"),
+    "amp_hiletgo":    ("VENDOR",      "HiLetgo B0CDWXZZCH, Adafruit-3006 lineage 0.9x0.65in; wire direct or right-angle pins, <=7mm height"),
+    "reg_xl63070":    ("PROVISIONAL", "JESSINIE B0FFSHDLMV 16x30 footprint; inductor height unpublished - measure before committing"),
     "star_board":     ("PROVISIONAL", "perfboard scrap carrying buses + passives"),
-    "switch_2810":    ("DATASHEET",   "Pololu #2810 drawing"),
+    "switch_slide":   ("PROVISIONAL", "SPDT slide (SS12F44/SS12D00 class) incl. actuator; carries gate current only"),
     "mic_inmp441":    ("PROVISIONAL", "generic breakout; measure on arrival"),
-    "cap_220u":       ("PROVISIONAL", "bulk cap not yet selected"),
+    "cap_220u":       ("PROVISIONAL", "bulk cap from ALLECIN kit; measure the chosen can"),
     "tact_button":    ("VENDOR",      "6x6 mm tact with cap"),
+    "ptc_pair":       ("VENDOR",      "2x Bourns RUEF110 7.4mm discs + P-FETs on the holder solder tag"),
     "service_jumper": ("VENDOR",      "2-pin 0.1in header + shunt"),
 }
 
@@ -84,15 +93,15 @@ USB_CORRIDOR = ("usb_corridor", ((47.5, 27.0, 25.0), (12.0, 16.0, 6.0)))
 
 # R5: required minimum clearances between pairs (mm of air for wire + insulation)
 CLEARANCES = [
-    ("holder_bh123a", "supermini", 3.0),   # cell away from the radio
-    ("holder_bh123a", "oled_326", 1.5),
-    ("holder_bh123a", "speaker_box", 2.0),
-    ("holder_bh123a", "switch_2810", 2.0),
-    ("holder_bh123a", "cap_220u", 2.0),
-    ("amp_dfr0954", "reg_s8v9f3", 2.0),    # bead + wiring between them
-    ("speaker_box", "mic_inmp441", 3.0),   # acoustic + wiring separation
-    ("speaker_box", "oled_326", 1.5),
-    ("speaker_box", "switch_2810", 1.5),
+    ("holder_aceirmc", "supermini", 3.0),   # cell away from the radio
+    ("holder_aceirmc", "oled_hosyond", 1.5),
+    ("holder_aceirmc", "speaker_cap", 2.0),
+    ("holder_aceirmc", "cap_220u", 2.0),
+    ("holder_aceirmc", "ptc_pair", 2.0),
+    ("amp_hiletgo", "reg_xl63070", 2.0),
+    ("speaker_cap", "mic_inmp441", 3.0),
+    ("speaker_cap", "oled_hosyond", 0.5),
+    ("reg_xl63070", "oled_hosyond", 1.5),   # regulator sits behind the display
 ]
 
 
@@ -153,7 +162,7 @@ def main():
 
     # R6: the cell must slide out of the holder's open -x face. The whole
     # safety model (cell out for soldering, painting, flashing) depends on it.
-    h_pos, h_size, _ = PARTS["holder_bh123a"]
+    h_pos, h_size, _ = PARTS["holder_aceirmc"]
     swept = box("swept", (h_pos[0] - 20.0, h_pos[1], h_pos[2]),
                 (20.0, h_size[1], h_size[2]))
     doc.addObject("Part::Feature", "cell_swept").Shape = swept
@@ -217,7 +226,7 @@ def main():
 
     # R6 cell insertion/removal path
     for name, s_ in solids.items():
-        if name == "holder_bh123a":
+        if name == "holder_aceirmc":
             continue
         check(s_.common(swept).Volume < 1e-6, f"R6 cell removal path clear of {name}")
 

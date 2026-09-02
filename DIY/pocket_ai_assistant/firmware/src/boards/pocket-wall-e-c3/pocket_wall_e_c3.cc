@@ -160,4 +160,3 @@ public:
 };
 
 DECLARE_BOARD(PocketWallEC3Board);
-

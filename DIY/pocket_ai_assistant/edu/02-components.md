@@ -1,5 +1,9 @@
 # Why each component was chosen
 
+> **Part names below predate the 2026-09-01 Amazon-first swap** — the
+> purchasing list is [docs/MATERIALS.md](../docs/MATERIALS.md); the *reasons*
+> here still hold for the replacement parts.
+
 Every part below survived a datasheet-level verification pass (and an
 adversarial re-check) before making the list. "Rejected" rows explain what the
 original video or an earlier recommendation used, and why it did not survive.

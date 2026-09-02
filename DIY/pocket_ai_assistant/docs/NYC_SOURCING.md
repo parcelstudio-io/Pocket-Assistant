@@ -1,5 +1,9 @@
 # NYC sourcing — where every part actually comes from
 
+> **Cart tables superseded.** Buy only from [MATERIALS.md](MATERIALS.md);
+> this file remains useful for the B&H cell trip, Home Depot paint pickup,
+> Micro Center substitutes, and the NYC logistics notes.
+
 Checked live on **2026-09-01** (Labor Day is Mon Sep 7 — carrier estimates
 this week are padded). "Confirmed" means the listing/spec page was fetched
 that day; B&H, Home Depot and Micro Center wall off bots, so call or check

@@ -1,5 +1,9 @@
 # 6 — Component and finished-build acceptance tests
 
+> **Rev A lock note (2026-09-02):** part identities updated to the locked
+> Amazon cart (XL63070 converter, P-FET pair, pre-boxed speaker). The
+> purchasing list is [docs/MATERIALS.md](../docs/MATERIALS.md).
+
 Record instruments, settings, values, firmware digest/commit, and photos in a dated build log. “It turned on” is not an acceptance test.
 
 ## Incoming parts
@@ -7,9 +11,9 @@ Record instruments, settings, values, firmware digest/commit, and photos in a da
 - [ ] Received model, pin silk, dimensions, and order code match the authoritative BOM.
 - [ ] Cell is exact Nitecore NL169 protected rechargeable 16340 (not longer NL169R), wrapper intact, and its measured envelope is accepted by the holder.
 - [ ] Exact XTAR charger instructions explicitly support protected 3.6/3.7 V 16340 Li-ion; its automatic mode selects 0.5 A for the received cell.
-- [ ] Holder polarity/contact pressure are clear; Pololu #2810 provides the intended reverse-voltage protection.
-- [ ] Speaker is exact 8 Ω/0.7 W wired part; neither terminal is shorted to its metalwork.
-- [ ] S8V9F3 produces 3.3 V over the planned input range and PTC has a traceable datasheet.
+- [ ] Holder polarity/contact pressure are clear; the always-on AO3401A/DMG2301L reverse-block P-FET is fitted and oriented (drain to battery side) — it, not the switch, provides reverse-voltage protection.
+- [ ] Speaker is the Rev A part (pre-boxed 8 Ω primary, or Treedix 8 Ω 1 W + sealed cap/baffle fallback); neither terminal is shorted to its metalwork.
+- [ ] The XL63070 converter produces 3.30 ± 0.05 V over the 3.0–4.2 V input range (chain test passed, incl. 10/10 cold-start at 3.0 V) and the RUEF110 PTC pair is resistance-matched with a traceable datasheet.
 - [ ] Actual envelopes, ports, speaker cup, cell removal path, and wire clearances fit the 1:1 mockup.
 
 ## Unpowered assembled checks

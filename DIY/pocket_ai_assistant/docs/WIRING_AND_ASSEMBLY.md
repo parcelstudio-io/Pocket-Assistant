@@ -1,5 +1,7 @@
 # Wiring, assembly, and staged test guide
 
+> **Purchasing note:** buy only from [MATERIALS.md](MATERIALS.md).
+
 > **Legacy/video-compatible wiring note:** the current Rev A source build and
 > removable-cell architecture are documented in the
 > [authoritative wiring contract](../edu/03_HOW_IT_WORKS.md) and

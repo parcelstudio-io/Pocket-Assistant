@@ -5,7 +5,7 @@ This folder turns Huy Vector's attractive free-form brass build into a reproduci
 Use the lessons in order:
 
 1. [Software and verification](01_SOFTWARE_AND_VERIFICATION.md) — what is installed here and what each tool can actually prove.
-2. [Corrected white/silver/black BOM](02_COMPONENTS_WHITE_SILVER_BLACK.md) — the authoritative Rev A identity/specification baseline and incoming-inspection gates; the [purchase review](../docs/PURCHASE_READINESS.md) limits what to order now, and [the component deep dive](02-components.md) records the decisions.
+2. [Corrected white/silver/black BOM](02_COMPONENTS_WHITE_SILVER_BLACK.md) — the Rev A identity/specification rationale and incoming-inspection gates (**purchasing list: [docs/MATERIALS.md](../docs/MATERIALS.md)**); and [the component deep dive](02-components.md) records the decisions.
 3. [How the parts work together](03_HOW_IT_WORKS.md) — the wiring contract; [the bus/audio deep dive](01-how-it-fits-together.md) explains why.
 4. [Step-by-step assembly](04_ASSEMBLY_STEP_BY_STEP.md) — a safer, video-correlated build order.
 5. [Color and finish](05_COLOR_AND_FINISH.md) — how to achieve the requested palette without damaging parts.
@@ -13,7 +13,7 @@ Use the lessons in order:
 
 Additional focused lessons cover [power and battery safety](03-power-and-battery.md), [audio and the 16 kHz decision](04-audio.md), [display addresses and boot pins](05-display-and-pins.md), [radio/frame placement](06-radio-and-frame.md), and **[the power chain](07-the-power-chain.md)** — the series-resistance budget, why two fuses, and the service jumper. That last one is the only genuine electrical-engineering problem in the project; read it before ordering the converter.
 
-The complete Amazon-first material list is [docs/MATERIALS.md](../docs/MATERIALS.md); the evidence behind every assembly step is [docs/ASSEMBLY_EVIDENCE.md](../docs/ASSEMBLY_EVIDENCE.md). The machine-readable purchasing list is [parts.csv](parts.csv). The
+The complete Amazon-first material list is [docs/MATERIALS.md](../docs/MATERIALS.md); the evidence behind every assembly step is [docs/ASSEMBLY_EVIDENCE.md](../docs/ASSEMBLY_EVIDENCE.md). The machine-readable role list is [parts.csv](parts.csv) (superseded for purchasing by [docs/MATERIALS.md](../docs/MATERIALS.md)). The
 [purchase-readiness review](../docs/PURCHASE_READINESS.md) says what is safe
 to buy now. Existing [project BOM](../docs/BOM.md) and [legacy/vendor-image
 wiring guide](../docs/WIRING_AND_ASSEMBLY.md) retain broader alternatives and

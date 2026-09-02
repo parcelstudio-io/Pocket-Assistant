@@ -50,8 +50,9 @@ RAIL_PEAKS_MA = {
     "max98357a quiescent": 3,
     "max98357a peak into 8ohm": 412,  # 3.3 V / 8 ohm bridge crest
 }
-# Pololu max-continuous-current curve for the S8V9F3 at Vout = 3.3 V,
-# read at the battery's 3.0 V end-of-useful-discharge point.
+# Conservative floor for the converter's deliverable current at a 3.0 V input.
+# The purchased XL63070 module claims 2 A (vendor figure, unverified); 1290 mA
+# is retained as the requirement floor the Phase 0 load sweep must demonstrate.
 REGULATOR_CAPABILITY_MA = 1290
 REQUIRED_MARGIN = 1.25
 
@@ -64,11 +65,18 @@ SERIES_RESISTANCE_OHM = {
     "cell internal (Nitecore NL169, typical)": 0.12,
     "PTC 2x RUEF110 in parallel": 0.125,
     "holder contacts (acceptance limit)": 0.03,
-    "switch contacts (acceptance limit)": 0.03,
+    "reverse-block P-FET (AO3401A class)": 0.03,
+    "load-switch P-FET (gate via slide switch)": 0.03,
     "wiring 26 AWG, both legs": 0.02,
 }
+# The slide switch itself carries only the load-switch FET's gate current
+# (microamps), so its contact rating and resistance no longer matter -- and it
+# fails OPEN = pager OFF, the safe direction.
 CELL_END_OF_DISCHARGE_V = 3.0
-CELL_PEAK_CURRENT_A = 1.0
+# Self-consistent input current: 778 mA * 3.3 V = 2.57 W out; / ~0.85 eff
+# = 3.02 W in; at the ~2.6 V the converter terminal actually sees at end of
+# discharge that is ~1.15 A, not the naive 1.0 A.
+CELL_PEAK_CURRENT_A = 1.15
 # The chain drop sets a hard PURCHASE REQUIREMENT on the converter: it must
 # cold-start below the voltage its input actually sees at end of discharge.
 # The XL63070 module's own listing claims "2 V ultra-low voltage startup" and
@@ -88,22 +96,22 @@ PTC_DERATE_WARM = 0.75       # allowance for a closed frame near the converter
 NETS = {
     # The regulator reaches the rail only through the service jumper, so the
     # rail can be broken before USB is attached (see docs/WIRING_AND_ASSEMBLY).
-    "REG_OUT": [("s8v9f3", "VOUT"), ("service_jumper", "1")],
+    "REG_OUT": [("converter", "VOUT"), ("service_jumper", "1")],
     "3V3": [("service_jumper", "2"), ("esp32c3", "3V3"), ("oled", "VIN"),
-            ("inmp441", "VDD"), ("dfr0954", "VCC"), ("dfr0954", "SD (jumper: left mode)")],
-    "GND": [("s8v9f3", "GND"), ("esp32c3", "GND"), ("oled", "GND"),
-            ("inmp441", "GND"), ("inmp441", "L/R (left slot)"), ("dfr0954", "GND"),
+            ("inmp441", "VDD"), ("amp", "VCC"), ("amp", "SD (jumper optional: shutdown insurance)")],
+    "GND": [("converter", "GND"), ("esp32c3", "GND"), ("oled", "GND"),
+            ("inmp441", "GND"), ("inmp441", "L/R (left slot)"), ("amp", "GND"),
             ("holder", "NEG"), ("button", "B")],
-    "SWITCHED_BAT": [("holder", "POS via PTC + slide switch"), ("s8v9f3", "VIN")],
-    "I2S_WS": [("esp32c3", "gpio1"), ("inmp441", "WS"), ("dfr0954", "LRC")],
-    "I2S_BCLK": [("esp32c3", "gpio2"), ("inmp441", "SCK"), ("dfr0954", "BCLK")],
-    "I2S_DOUT": [("esp32c3", "gpio3"), ("dfr0954", "DIN")],
+    "SWITCHED_BAT": [("holder", "POS via PTC pair + reverse P-FET + load P-FET"), ("converter", "VIN")],
+    "I2S_WS": [("esp32c3", "gpio1"), ("inmp441", "WS"), ("amp", "LRC")],
+    "I2S_BCLK": [("esp32c3", "gpio2"), ("inmp441", "SCK"), ("amp", "BCLK")],
+    "I2S_DOUT": [("esp32c3", "gpio3"), ("amp", "DIN")],
     "I2S_DIN": [("esp32c3", "gpio4"), ("inmp441", "SD")],
     "I2C_SDA": [("esp32c3", "gpio21"), ("oled", "SDA")],
     "I2C_SCL": [("esp32c3", "gpio20"), ("oled", "SCL")],
     "BUTTON": [("esp32c3", "gpio10"), ("button", "A")],
-    "SPK_P": [("dfr0954", "OUT+"), ("speaker", "+")],
-    "SPK_N": [("dfr0954", "OUT-"), ("speaker", "-")],
+    "SPK_P": [("amp", "OUT+"), ("speaker", "+")],
+    "SPK_N": [("amp", "OUT-"), ("speaker", "-")],
 }
 
 # Peripherals that actively drive a line toward the ESP32-C3.
@@ -200,7 +208,7 @@ def main() -> int:
     # that USB back-feeds through the ESP32-C3's 3V3 pin.
     reg_pins = {c for c, _ in NETS["REG_OUT"]}
     rail_pins = {c for c, _ in NETS["3V3"]}
-    check("s8v9f3" not in rail_pins and "service_jumper" in reg_pins
+    check("converter" not in rail_pins and "service_jumper" in reg_pins
           and "service_jumper" in rail_pins,
           "service jumper separates regulator output from the 3.3 V rail")
     check("esp32c3" in rail_pins and "esp32c3" not in reg_pins,

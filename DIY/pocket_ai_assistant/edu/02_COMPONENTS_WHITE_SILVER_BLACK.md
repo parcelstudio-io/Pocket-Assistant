@@ -1,5 +1,10 @@
 # 2 — Authoritative Rev A BOM: white, silver, and black
 
+> **Superseded as a shopping list** by [docs/MATERIALS.md](../docs/MATERIALS.md)
+> (XL63070 converter, ACEIRMC holder, pre-boxed speaker, HiLetgo amp, Hosyond
+> OLED, 2× RUEF110, slide switch + P-FETs). The rows below are the pre-Amazon
+> baseline, kept for the spec rationale.
+
 > **Purchase gate:** this freezes the intended identities/specifications, not
 > authorization for a one-shot finished build. Order only the Phase 0 subset
 > in the [purchase-readiness review](../docs/PURCHASE_READINESS.md). Hold the

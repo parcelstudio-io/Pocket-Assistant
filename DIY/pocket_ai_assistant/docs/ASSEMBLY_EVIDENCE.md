@@ -25,7 +25,7 @@ all of this:
 | --- | --- | --- |
 | Firmware builds reproducibly | `cd firmware && ./scripts/build.sh` | The corrected source compiles with the pinned ESP-IDF v6.0.2 and produces a byte-identical image across clean builds |
 | Wiring rules hold | `python3 tools/netcheck.py` | **22 rules**: pin map matches the firmware's own `config.h`, no GPIO claimed twice, strapping pins respected, sample rate legal for both audio parts, display address covered, speaker floating, service jumper present, series-resistance budget, PTC hold margin, rail power budget |
-| Parts physically fit | `freecadcmd cad/fitcheck.py` | **144 rules**: no envelope intersects another or the frame tubes, antenna keep-out honoured, USB corridor clear, cell can be removed, service jumper reachable |
+| Parts physically fit | `freecadcmd cad/fitcheck.py` | **162 rules** (regenerated 2026-09-01 with the Amazon-part envelopes; 8 tagged PROVISIONAL pending caliper measurement, so it is a planning aid until arrivals are measured): no envelope intersects another or the frame tubes, antenna keep-out honoured, USB corridor clear, cell can be removed, service jumper reachable |
 
 If you change a part, re-run all three. They are wired to each other: the
 netcheck reads the firmware's `config.h` directly, so wiring and firmware
@@ -47,7 +47,7 @@ afternoon and a finished sculpture makes expensive.
 | Mic records, amp plays | Datasheet agreement at 16 kHz (below) | Silence → meter the amp's `SD` pin |
 | **The chain test** | [The series-resistance budget](../edu/07-the-power-chain.md#the-series-resistance-budget) | Works on a full cell, won't cold-start on a half-empty one |
 | Backend round trip | `CONFIG_OTA_URL` defaults to a third-party service | A beautiful object that cannot talk |
-| Speaker with and without the cap | Same Sky's spec sheet: *"Enclosure: Required"* | Audible only if held to your ear |
+| Speaker A/B: pre-boxed vs open | Micro-speaker physics (Same Sky publishes it plainly: *"Enclosure: Required"* — an unbaffled driver's front and back waves cancel) | Audible only if held to your ear |
 
 ---
 
@@ -102,18 +102,19 @@ Against a buck-boost rated ~1.3 A at a 3.0 V input, that is **1.66× margin at
 the worst point of the discharge** — not at the comfortable mid-charge point
 where vendors quote their numbers.
 
-**Cell side:** 778 mA at 3.3 V ≈ 1.0 A drawn from a 3.0 V cell. The Nitecore
+**Cell side:** 778 mA at 3.3 V ≈ 1.15 A drawn at the ~2.6 V the converter terminal actually sees at end of discharge. The Nitecore
 NL169 publishes **2 A max continuous** — 2× margin, from a manufacturer that
 actually publishes the number.
 
 **Runtime:** idle-listening averages ~130 mA at the rail ≈ 141 mA from the
 cell. Against 950 mAh: **5–6 hours** of always-on listening. Not a day.
 
-**The chain:** the finding that no single part reveals is that the cell, fuse,
-holder, switch and wiring form 0.325 Ω in series — 325 mV lost at 1 A — so the
-converter's input sees 2.67 V when the cell reads 3.0 V, and it must *cold
-start* through that. This is why the design specifies two paralleled PTCs
-rather than one, and why the converter's startup voltage is a purchase
+**The chain:** the finding that no single part reveals is that the cell, fuse
+pair, holder, the two P-FETs and the wiring form 0.355 Ω in series — ~410 mV
+lost at the 1.15 A peak — so the converter's input sees ~2.59 V when the cell
+reads 3.0 V, and it must *cold start* through that. This is why the design
+paralleled two PTCs, moved the mechanical switch out of the power path onto a
+FET gate, and treats the converter's startup voltage as a purchase
 requirement. Full derivation: [the power-chain lesson](../edu/07-the-power-chain.md).
 
 ---
@@ -156,8 +157,8 @@ where a structural joint becomes an electrical one.
 
 **Antenna:** Espressif's layout guidance asks for 15 mm clearance in all
 directions. The CAD check enforces a 15 mm keep-out around the board's antenna
-end and requires it to cantilever ≥12 mm past the frame — verified as part of
-the 144 rules.
+region and requires that region to sit ≥15 mm clear of the frame in every
+direction (≈22 mm of board cantilever) — verified as part of the 162 rules.
 
 ---
 
@@ -170,8 +171,9 @@ Honest failure modes, in rough order of likelihood:
    published 1.8 V startup.
 2. **The holder won't take the cell** → its listing never claims 16340 support.
    Fix: the DGZZI 2-slot alternate, or a different holder.
-3. **The toggle switch is too tall** (33 mm) for a pocket frame. Fix: a mini
-   slide switch; the electrical requirement is only ≥1 A DC.
+3. **The slide switch's actuator fouls the frame** at the top-face cutout.
+   Fix: relocate along the top rail or pick a shorter-actuator variant from
+   the 25-pack; it carries only FET gate current, so any SPDT works.
 4. **A clone board differs** from its listing photo. This is why every
    marketplace part is bought in multipacks and qualified.
 5. **The backend is unacceptable** — unreachable, or you don't want your

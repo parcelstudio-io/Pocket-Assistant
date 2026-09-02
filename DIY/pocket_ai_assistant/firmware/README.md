@@ -32,6 +32,13 @@ author's original code and not a byte-for-byte rebuild of that binary.
   microphone, speaker, button, and end-to-end assistant behavior still require
   a hardware smoke test.
 
+The source build additionally diverges for English users: wake word
+`wn9s_hiesp` ("Hi, ESP") and `CONFIG_LANGUAGE_EN_US` replace the vendor
+image's Mandarin `wn9s_nihaoxiaozhi` and zh-CN strings (both set in
+`sdkconfig.defaults` and the board `config.json`; the explicit
+`# CONFIG_SR_WN_WN9S_NIHAOXIAOZHI is not set` line is required because the
+WakeNet9s entries are independent bools, not a choice group).
+
 For the exact published image and its pinned checksum, use the
 [host flashing and verification tools](../tools/README.md).
 

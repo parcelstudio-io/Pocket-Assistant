@@ -1,10 +1,13 @@
 # Bill of materials and tools
 
+> **Superseded as a shopping list.** The current purchasing list is
+> [MATERIALS.md](MATERIALS.md) (Amazon-first, milestone-reviewed 2026-09-01).
+
 > **Rev A purchasing note:** this older audit preserves the creator-faithful
 > charger alternatives for reference. The current recommended build uses a
 > removable protected 16340, external charger, regulated 3.3 V rail, and no
 > charger inside the frame. Buy from the
-> [authoritative white/silver/black BOM](../edu/02_COMPONENTS_WHITE_SILVER_BLACK.md).
+> [current purchasing list, MATERIALS.md](MATERIALS.md).
 
 This list reconciles the [project page](https://www.huyvector.org/robots-kinetic/pocket-ai-assistant), its [assembly video](https://www.youtube.com/watch?v=25RGnr407PM), the wiring diagram, and currently reachable listings. Prices and stock were checked on **2026-09-01** and can change. Creator links are affiliate/marketplace links, so verify the selected variant, dimensions, chemistry, and datasheet before ordering.
 
