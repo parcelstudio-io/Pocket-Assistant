@@ -81,18 +81,28 @@ Legend: **✅ confirmed** = listing fetched and specs read · **⚠️ measure**
 
 ## 4 · Tools
 
-**Must-have** (~$425 if you own none of it):
+### Already owned (reconciled 2026-09-02)
+
+| Owned item | Covers |
+| --- | --- |
+| **X-Tronic 3020-XTS Complete Kit** (75 W station, 90–480 °C, ESD-safe) | The soldering station line. Bundle also includes: **2 helping hands**, 5 extra tips — incl. **T-2.4D chisel** (the brass-joint tip) and T-K knife, **solder sucker**, **anti-static stainless tweezers**, **silicone work mat**, brass tip cleaner, iron holder, and a 50 g solder roll. ⚠️ The listing contradicts itself on the roll (headline says 60/40 leaded, photo shows Sn99.3/Cu0.7 lead-free) — check on arrival: 60/40 works great; if it's the lead-free roll, buy the 63/37 below |
+| **Chip Quik CQ4LF no-clean flux pen** (10 ml) — B07B53LNGX | The electronics no-clean flux line (pen instead of syringe — fine) |
+| **BOENFU 6″ flush-cut side cutters** — B07C5PM8L4 | The flush-cutter line for wire and leads. **Never on the 1.5 mm brass tube** — heavy snips crush the 0.225 mm wall; the jeweler's saw still does all tube cuts |
+| **WORKLION 12×18″ self-healing cutting mat** — B07NRQY829 | The layout/template surface. **Not heat-resistant** — solder only over the bundle's silicone mat |
+| **OLFA CMP-1 compass circle cutter** — B000BK7NWC | Originally optional; now genuinely useful — cuts the clean circular speaker opening in the PC-sheet baffle/grille |
+
+**Still to buy** (~$240 of the must-have table below):
 
 | Tool | Part | Price |
 | --- | --- | --- |
-| Soldering station, 70 W | Weller WE1010NA — [B077JDGY1J](https://www.amazon.com/dp/B077JDGY1J) | $115.00 |
-| Solder, **63/37 leaded** | MAIYUM 0.8 mm 100 g — [B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) | $11.69 |
-| Electronics flux (no-clean) | Chip Quik SMD291 — [B0CT5T6HWN](https://www.amazon.com/dp/B0CT5T6HWN) | $15.95 |
+| ~~Soldering station~~ | ~~Weller WE1010NA~~ **owned: X-Tronic 3020-XTS** | ~~$115.00~~ |
+| Solder, **63/37 leaded** | MAIYUM 0.8 mm 100 g — [B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) — skip if the X-Tronic roll turns out to be 60/40 leaded | $11.69 |
+| ~~Electronics flux~~ | ~~SMD291 syringe~~ **owned: CQ4LF no-clean pen** | ~~$15.95~~ |
 | Brass flux (**frame only**) | Harris SCLF4 zinc chloride — [B0015DWPV8](https://www.amazon.com/dp/B0015DWPV8) | $12.85 |
 | Multimeter | KAIWEETS HT118A — [B08BL288LW](https://www.amazon.com/dp/B08BL288LW) | $41.23 |
 | **Bench supply, current-limited** | SKY TOPPOWER PS305H 0–30 V/0–5 A — [B0BN1F6CGZ](https://www.amazon.com/dp/B0BN1F6CGZ) | $47.49 |
-| Helping hands | Toolour — [B07MZM7MPS](https://www.amazon.com/dp/B07MZM7MPS) | $36.99 |
-| Flush cutters | Hakko CHP-170 — [B00FZPDG1K](https://www.amazon.com/dp/B00FZPDG1K) | $14.83–29.40 |
+| ~~Helping hands~~ | **owned: 2× in the X-Tronic kit** | ~~$36.99~~ |
+| ~~Flush cutters~~ | ~~Hakko CHP-170~~ **owned: BOENFU snips** (CHP-170 is a nice-to-have for very fine pad-side trims) | ~~$14.83~~ |
 | Wire strippers 30–20 AWG | Hakko CSP-30-1 — [B00FZPHMUG](https://www.amazon.com/dp/B00FZPHMUG) | $12.87 |
 | Calipers | Neiko 01407A — [B000GSLKIW](https://www.amazon.com/dp/B000GSLKIW) | $27.99 |
 | Safety glasses | 3M Solus 1000 — [B016KZ1ZPM](https://www.amazon.com/dp/B016KZ1ZPM) | $14.99 |
@@ -100,15 +110,15 @@ Legend: **✅ confirmed** = listing fetched and specs read · **⚠️ measure**
 | **Round + chain-nose pliers** | WORKPRO 3-pc — [B0B8QBVXXR](https://www.amazon.com/dp/B0B8QBVXXR) | ~$12 |
 | **Organic-vapour respirator** | 3M 6211 OV/P95 — [B00004Z4EB](https://www.amazon.com/dp/B00004Z4EB) | ~$35 |
 
-**Also required, cheap, easy to forget:** needle files + 400–800 grit (deburring
+**Also required, cheap, easy to forget** *(struck = covered by the owned kit)*: needle files + 400–800 grit (deburring
 is *safety*-critical — no sharp edge may reach the cell, and abrasion is what
 makes the primer stick), 90 %+ IPA + lint-free swabs + baking soda (to
 neutralise the zinc-chloride brass flux — it is water-soluble, so water-rinse
 then IPA, and the frame must be bone dry before primer or the residue blisters
-the paint), a **heat-resistant silicone mat** (the Weller ships none), fine
+the paint), ~~a heat-resistant silicone mat~~ (in the X-Tronic kit), fine
 solder wick, a heat gun, an ESD wrist strap, magnification, a metric steel rule
-and small square, cardstock, and a spare Weller ET chisel tip. Budget
-**~$110–140** for this group.
+and small square, cardstock, ~~and a spare chisel tip~~ (the kit's T-2.4D covers brass joints; T-I stays
+on fine pads). Budget **~$85–110** for what remains of this group.
 
 **Why leaded 63/37:** it melts lower and wets faster than lead-free, which
 means less time with a hot iron against a MEMS microphone or an OLED flex tail.
@@ -142,9 +152,8 @@ electronics, not a mis-wired holder.
 | --- | ---: |
 | Electronics + power + frame/consumables + Phase-0 bench items | ~$330 |
 | Cell ×2 + charger | ~$30 |
-| Tools, if you own none (must-have table ~$425 + the "easy to forget" group $110–140) | ~$535–565 |
-| **Total, starting from nothing** | **~$895–935** (+ NYC 8.875 % tax) |
-| **Total, if you already have a soldering setup and meter** | **~$360** |
+| Tools **still to buy** after the 2026-09-02 owned-equipment reconciliation (~$240 must-have + ~$85–110 consumables) | ~$325–350 |
+| **Total remaining to buy** | **~$685–710** (+ NYC 8.875 % tax) |
 
 **Split the buy:** Cart A today — all electronics, power, insulation, wire,
 passives, bench items, brass stock — plus the B&H trip for two cells. Cart B
@@ -195,11 +204,12 @@ listed one as a swap-to-alternate trigger. NYC tax 8.875 % applies.
 
 ### Tools (skip what you own — reconcile against your drawer first)
 
-- [ ] Weller WE1010NA B077JDGY1J — $115 · 63/37 solder B076QF1Y85 — $11.69 · SMD291 no-clean B0CT5T6HWN — $15.95 · Harris SCLF4 (brass only) B0015DWPV8 — $12.85
+- [x] ~~Soldering station~~ · ~~no-clean flux~~ · ~~helping hands~~ · ~~flush cutters~~ · ~~silicone mat~~ · ~~tweezers~~ · ~~desoldering pump~~ · ~~chisel tip~~ — **owned** (X-Tronic 3020-XTS kit, CQ4LF pen, BOENFU, WORKLION mat, OLFA cutter)
+- [ ] 63/37 solder B076QF1Y85 — $11.69 *(only if the kit's roll is the lead-free one)* · Harris SCLF4 (brass only) B0015DWPV8 — $12.85
 - [ ] Multimeter B08BL288LW — $41.23 · **bench supply** B0BN1F6CGZ — $47.49 · calipers B000GSLKIW — $27.99
-- [ ] Jeweler's saw B06XPSLS6N — $24.95 · round/chain-nose pliers B0B8QBVXXR — ~$12 · flush cutters B00FZPDG1K — ~$15–29 · strippers B00FZPHMUG — $12.87
+- [ ] Jeweler's saw B06XPSLS6N — $24.95 · round/chain-nose pliers B0B8QBVXXR — ~$12 · strippers B00FZPHMUG — $12.87
 - [ ] Safety: glasses B016KZ1ZPM — $14.99 · OV/P95 respirator B00004Z4EB — ~$35 · ESD strap ~$8
-- [ ] Consumables (any Prime listing): solder wick, silicone soldering mat, heat gun, magnifier/loupe, fine tweezers, needle files, 400–800 grit, 90 %+ IPA + swabs + baking soda, metric steel rule + small square + cardstock, spare 2–3 mm Weller ET chisel tip, epoxy, M2.5 white nylon standoffs, white PET braid loom — budget ~$110–140 total
+- [ ] Consumables (any Prime listing): solder wick, heat gun, magnifier/loupe, needle files, 400–800 grit, 90 %+ IPA + swabs + baking soda, metric steel rule + small square + cardstock, epoxy, M2.5 white nylon standoffs, white PET braid loom — budget ~$85–110 total *(mat, tweezers, chisel tip, pump: owned)*
 
 ### Cart B — only after the cardstock dry-fit closes
 
