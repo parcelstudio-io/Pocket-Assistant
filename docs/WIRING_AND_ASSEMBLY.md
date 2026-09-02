@@ -1,11 +1,11 @@
-# Wiring, assembly, and staged test guide — R1 release
+# Wiring, assembly, and staged test guide — archived R1 candidate
 
-> **RELEASED — 2026-09-02 final audit.** This is the wiring reference for the
-> compact architecture in
-> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md). The signal
-> table below is the **source-build** contract (mic data on GPIO4). The
-> creator's vendor image instead expects mic data on GPIO8 — that legacy map is
-> noted where it differs. Never mix the two.
+> **SUPERSEDED; DO NOT WIRE THE POWER SECTION BELOW.** The digital GPIO table
+> remains useful, but the #1578/direct-rail/generic-switch power chain is not
+> accepted. The current Phase 0 parts and candidate power topology are in
+> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md), and no cell
+> connection or final assembly is released. The source build uses microphone
+> data on GPIO4; the creator image uses GPIO8. Never mix those maps.
 
 ## Power rules
 

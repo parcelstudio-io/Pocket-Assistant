@@ -1,21 +1,21 @@
 category,qty,preferred_part_or_spec,critical_requirement,color_plan,status
-release_notice,,R1 BUILD RELEASE 2026-09-02 - authority is docs/FINAL_MATERIALS_FOR_REVIEW.md; order sheet is docs/MATERIALS.md,,,
-controller,2 qualified from 3+ pack,ESP32-C3 SuperMini plain 4MB+ USB-C,"esptool flash_id >= 4MB; plain variant (one blue LED, no U.FL/WS2812); corrected source uses GPIO4 mic data",black PCB,RELEASED - qualify on arrival
-display,1 of 5-pack,0.96in SSD1306 128x64 I2C white 4-pin,"3.3V; firmware probes 0x3c then 0x3d; read silkscreen pin order before wiring",white pixels black face,RELEASED - qualify on arrival
-microphone,1 of 5-pack,INMP441 I2S breakout,"3.3V; L/R low = left slot; SD to GPIO4; in-spec at 1.024MHz BCLK",black PCB,RELEASED - primary (alternate: Adafruit 6049 ICS-43434 SEL low)
-amplifier,1 of 3-pack,MAX98357A breakout (HiLetgo or Adafruit 3006),"2.5-5.5V VIN from switched cell rail; SD ~0.30V stock = mono mix full amplitude; GAIN floating 9dB",concealed,RELEASED - qualify on arrival
-speaker,2,Same Sky CES-20134-088PM,"8ohm 0.8W factory-enclosed ~20x16x4.9mm; software volume limit <= 0.8W average; BTL leads floating",black,RELEASED - primary (fallback: phone speaker after A/B)
-battery,2 (one spare),Adafruit 1578 protected 500mAh LiPo,"protection PCM (overcharge, 3.0V cutout, short); factory JST-PH lead; never soldered; charge <= 500mA",hidden removable,RELEASED - connects only after bench gate
-charger,1,Adafruit 4410 USB-C Micro-Lipo (in frame),"100mA default; 500mA jumper only after clean attended first cycle; 4.2V termination; device off while charging",port exposed at frame edge,RELEASED
-power_switch,1 of 25-pack,mini SPDT slide SS12D00 class,"in protected positive lead; contact drop < 50mV at 0.5A on fitted sample; OFF before any USB-C",body insulated from frame,RELEASED - measure sample
-jst_pigtails,1 set,JST-PH 2.0mm male+female pigtails,"caliper pitch = 2.0mm; taps load off pack/charger connection without soldering to pack",hidden,RELEASED
-action_button,1 from kit,6x6mm tactile NO switch,"GPIO10 to GND active low; GPIO9 is ROM BOOT, not this input",cap color to taste,RELEASED
-bulk_capacitor,1,220uF electrolytic >= 6.3V,"at amp VIN/GND; observe polarity; Wi-Fi/class-D transient reservoir",hidden,RELEASED - fit from the start
-small_passives,as designed,"10uF + 100nF ceramics per module; 10k pull-ups (GPIO2, button); 100k pull-down (GPIO4)","strap-pin hygiene per Espressif checklist",hidden,RELEASED
-frame_tube,1 pack (4x 300mm),K&S 9831 1.5mm OD x 0.225 wall brass tube,"jeweler's saw only; deburr every end; frame electrically floating - never a conductor",raw brass or satin white,RELEASED - cut only after cardstock dry-fit
-frame_brace,1 pack (5x 300mm),K&S 9861 1.0mm brass rod,"structural only; telescopes in 9831 tube",matches frame,RELEASED
-power_wire,as needed,26AWG flexible stranded silicone,"battery bus + twisted speaker pair; insulated; strain-relieved",red/black positive/return,RELEASED
-signal_wire,as needed,30AWG insulated silicone,"I2C/I2S/button; short runs; label ends",builder's choice,RELEASED
-insulation,as needed,fish paper + Kapton + heat-shrink,"fish paper lines the pack bay (flame-rated, mandatory); Kapton on module backs and frame crossings; shrink on every splice",hidden,RELEASED
-adhesive,as needed,electronics-safe hot glue + sparing CA,"keep clear of mic port, switch mechanism, USB ports",hidden,RELEASED
-finish,optional,raw brass or Rust-Oleum white system,"paint is decoration, never insulation; reference build is raw brass",builder's choice,OPTIONAL
+release_notice,,ARCHIVED CLAUDE R1 CANDIDATE - DO NOT ORDER OR BUILD FROM THIS CSV; current authority is docs/FINAL_MATERIALS_FOR_REVIEW.md,,,
+controller,2 qualified from 3+ pack,ESP32-C3 SuperMini plain 4MB+ USB-C,"Historical R1 row; see current Phase 0 list and alternatives",black PCB,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+display,1 of 5-pack,0.96in SSD1306 128x64 I2C white 4-pin,"Historical R1 row; see current Phase 0 list and alternatives",white pixels black face,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+microphone,1 of 5-pack,INMP441 I2S breakout,"Historical R1 row; Phase 0 primary is Adafruit 6049 ICS-43434; carrier pin order is not interchangeable",black PCB,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+amplifier,1 of 3-pack,MAX98357A breakout (HiLetgo or Adafruit 3006),"Historical R1 row; left/right TX slots and SD mode require capture",concealed,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+speaker,2,Same Sky CES-20134-088PM,"Historical R1 row; no verified firmware power cap existed",black,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+battery,2 (one spare),Adafruit 1578 protected 500mAh LiPo,"REJECT for the current estimated load: published 0.5A continuous rating lacks margin",hidden removable,ARCHIVED R1 - REJECTED
+charger,1,Adafruit 4410 USB-C Micro-Lipo (in frame),"Historical R1 topology; part is sampled only in the current coupled power qualification",port exposed at frame edge,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+power_switch,1 of 25-pack,mini SPDT slide SS12D00 class,"REJECT as load switch for estimated 0.7-0.8A; cited part is 0.5A class",body insulated from frame,ARCHIVED R1 - REJECTED
+jst_pigtails,1 set,JST-PH 2.0mm male+female pigtails,"Historical R1 row; final connector/harness is not frozen",hidden,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+action_button,1 from kit,6x6mm tactile NO switch,"Historical R1 row; current sample is exact Omron B3F-1000 plus B32-1060",cap color to taste,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+bulk_capacitor,1,220uF electrolytic >= 6.3V,"Historical R1 row; current sample is Panasonic EEU-FC1A221SB",hidden,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+small_passives,as designed,"10uF + 100nF ceramics per module; 10k pull-ups (GPIO2, button); 100k pull-down (GPIO4)","Historical R1 assumptions require a reviewed schematic",hidden,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+frame_tube,1 pack (4x 300mm),K&S 9831 1.5mm OD x 0.225 wall brass tube,"Phase 0 sample only; do not cut until fit and finish gates pass",satin white/silver candidate,ARCHIVED R1 - SEE CURRENT LIST
+frame_brace,1 pack (5x 300mm),K&S 9861 1.0mm brass rod,"Phase 0 sample only; structural and electrically floating",matches frame,ARCHIVED R1 - SEE CURRENT LIST
+power_wire,as needed,26AWG flexible stranded silicone,"Historical generic row; use exact current Phase 0 wire entries",red/black positive/return,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+signal_wire,as needed,30AWG insulated silicone,"Historical generic row; use exact current Phase 0 wire entries",builder's choice,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+insulation,as needed,fish paper + Kapton + heat-shrink,"Historical generic row; final barrier and rigid guard are unresolved",hidden,ARCHIVED R1 - NOT PURCHASE AUTHORITY
+adhesive,as needed,electronics-safe hot glue + sparing CA,"Final adhesive and retention design are not frozen",hidden,ARCHIVED R1 - HOLD
+finish,optional,raw brass or Rust-Oleum white system,"Current palette is white primary / silver accent / black secondary; coating system remains coupon-gated",builder's choice,ARCHIVED R1 - HOLD

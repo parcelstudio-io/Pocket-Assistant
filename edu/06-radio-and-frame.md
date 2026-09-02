@@ -1,8 +1,9 @@
 # Radio and frame — applying the RF/EMC lesson
 
-> **Status: R1 released with fit gate — 2026-09-02.** The compact frame is
-> released for fabrication *after* the cardstock dry-fit closes
-> ([decision record](../docs/FINAL_MATERIALS_FOR_REVIEW.md)). The exact
+> **Status: lesson only; brass fabrication is held.** The current
+> [decision record](../docs/FINAL_MATERIALS_FOR_REVIEW.md) requires measured
+> parts, updated CAD, a cardstock fit model, antenna checks, and coating
+> coupons before any final brass cut. The exact
 > antenna position, brass geometry, and routing on **your** build still earn
 > acceptance through this note's battery-free RF tests.
 

@@ -1,10 +1,11 @@
-# Step-by-step build guide — R1 release
+# Step-by-step build guide — archived R1 candidate
 
-> **RELEASED PROCEDURE — 2026-09-02 final audit.** This guide implements the
-> compact architecture released in
-> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md): protected
-> LiPo pack + in-frame USB-C charger + slide switch, brass frame floating.
-> The old converter/PTC/P-FET/16340 phases live only in git history.
+> **SUPERSEDED; DO NOT USE AS FINAL ASSEMBLY AUTHORITY.** This guide's compact
+> #1578/direct-rail/generic-switch power architecture did not pass the final
+> audit. It remains useful only for video timestamps and non-powered mock-up
+> ideas. Follow [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md)
+> and do not connect a cell, cut brass, or install final wiring until its
+> schematic, power, audio, fit, and finish gates close.
 
 This guide follows the sequence of the reference video
 ([*\[Satisfying\] Building a Tiny Pocket AI Assistant*](https://www.youtube.com/watch?v=25RGnr407PM),
@@ -20,19 +21,21 @@ image the way the video does at 5:20, you must wire the microphone's SD to
 **GPIO8** and use a 0x3C display — the vendor image knows nothing about the
 corrections. Don't mix the two.
 
-**The five hard rules** (from the
-[decision doc](FINAL_MATERIALS_FOR_REVIEW.md#the-five-hard-rules)) apply to
-every phase: switch OFF before any USB-C is plugged; device OFF while
-charging; first charge attended; never solder to / unwrap / heat a cell;
-stop on swelling, heat, or odor.
+**The old five-rule R1 shortcut is withdrawn.** OFF does not provide source
+isolation and #4410 has no load sharing. The current
+[power architecture](FINAL_MATERIALS_FOR_REVIEW.md#candidate-power-architecture)
+uses physically separate battery-free and standalone-charge fixtures; no cell
+connection is allowed without its signed release. Never solder to, unwrap,
+heat, clamp, or puncture a cell; stop on swelling, warmth, damage, or odor.
 
 ---
 
 ## Materials
 
-Shop from **[MATERIALS.md](MATERIALS.md)** (the R1 order sheet). Read
-**[the power-chain lesson](../edu/07-the-power-chain.md)** before any
-power work.
+Shop only from the status-marked
+**[current Phase 0 list](FINAL_MATERIALS_FOR_REVIEW.md)**. The archived R1
+[MATERIALS.md](MATERIALS.md) is comparison evidence, not an order sheet. Read
+**[the power-chain lesson](../edu/07-the-power-chain.md)** before any power work.
 
 ---
 
@@ -161,10 +164,11 @@ separate data), change the details:
 | Action button | 10 | absent | GPIO10 → tact switch → GND, 10 kΩ pull-up + 100 nF |
 | Power | `5V` pin | same | same idea — but from the **protected, switched** bus, never a bare cell |
 
-Amp specifics: stock SD ≈ 0.30 V mix mode plays at **full amplitude** (the
-ESP32-C3 duplicates the mono slot — see
-[edu/04-audio.md](../edu/04-audio.md)); GAIN stays floating (9 dB). Mic:
-`L/R` → GND. Speaker: leads to the amp's output terminals, twisted pair,
+Amp specifics: do not assume stock `SD` mix mode plays at full amplitude.
+Source inspection predicts an active left and inactive right TX slot; capture
+both and select a compatible channel mode before any audio promotion (see
+[edu/04-audio.md](../edu/04-audio.md)). Mic select goes low for the intended
+left slot. Speaker leads form a twisted pair at the amp's output terminals;
 **neither lead ever grounded or touching the frame**.
 
 Mic handling: port tape stays on until final test; solder only at the header

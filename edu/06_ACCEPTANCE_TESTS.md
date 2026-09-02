@@ -1,11 +1,10 @@
 # Applied note — prototype acceptance-test worksheet
 
-> **Status: R1 RELEASE WORKSHEET — 2026-09-02.** This worksheet accepts the
-> released architecture in
-> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md)
-> (protected pack + in-frame USB-C charger + slide switch + LDO-direct rail).
-> It says what must be proved on the physical build; nothing here asserts the
-> present parts have already passed.
+> **Status: reusable test template; R1 topology superseded.** This worksheet
+> does not accept any present architecture. Reconcile every test point and
+> limit with [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md)
+> and the future reviewed schematic before use. Nothing in this repository
+> asserts that physical hardware has passed.
 
 Read [systematic debugging and the capstone](fundamentals/13-debugging-integration-and-capstone.md)
 and use a fresh [lab record](fundamentals/reference/lab-record-template.md) for

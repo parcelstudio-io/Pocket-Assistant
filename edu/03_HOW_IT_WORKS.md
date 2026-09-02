@@ -5,9 +5,9 @@
 > records `hardware_tested: false`, so every physical claim below remains a
 > qualification requirement until measured on identified received parts.
 
-The exact released parts and their status live in
-[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) (R1
-build release). The power topology and its rules are in that record and
+The exact Phase 0 candidates and their status live in
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md). The
+candidate power topology and its rules are in that record and
 [the power-chain worksheet](07-the-power-chain.md); this lesson is the signal
 side of the contract.
 
@@ -19,16 +19,18 @@ theory.
 
 | ESP32-C3 connection | Peripheral connection | Contract |
 | --- | --- | --- |
-| GPIO1 | INMP441 `WS` (alternate: ICS-43434 `WS/LRCLK`); MAX98357A `LRC` | Shared I2S word select, 16 kHz |
-| GPIO2 | INMP441 `SCK` (alternate: ICS-43434 `BCLK`); MAX98357A `BCLK` | Shared I2S bit clock: 64 clocks per frame × 16,000 frames/s = 1.024 MHz; GPIO2 boot-strap behavior must remain valid at reset |
-| GPIO3 | MAX98357A `DIN` | ESP32-C3 audio data output |
-| GPIO4 | INMP441 `SD` (alternate: ICS-43434 `DOUT`) | Microphone data input for the corrected source |
+| GPIO1 | #6049 ICS-43434 `WS/LRCLK` directly; MAX98357A `LRC` through candidate isolator channel 1 | Shared I2S word select, 16 kHz |
+| GPIO2 | #6049 ICS-43434 `BCLK` directly; MAX98357A `BCLK` through candidate isolator channel 2 | Shared I2S bit clock: 64 clocks per frame × 16,000 frames/s = 1.024 MHz; GPIO2 boot-strap behavior must remain valid at reset |
+| GPIO3 | Candidate isolator channel 3 → MAX98357A `DIN` | ESP32-C3 audio data output |
+| GPIO4 | #6049 ICS-43434 `DOUT` (alternate: INMP441 `SD`) | Microphone data input for the corrected source |
+| GPIO5 | Candidate TXU0104 A4, with 4.7 kΩ to GND; B4 drives MAX98357A `SD_MODE` with its own 4.7 kΩ to GND. #2873 open-drain `PG` drives translator `OE`, pulled up through 10 kΩ to 5V_SYS | **Not implemented/frozen:** configure GPIO5 low at earliest init, start continuous I2S clocks with zero data, then raise GPIO5 after the MCU startup/rail delay and valid I2S. `PG` independently vetoes `OE`; the MCU does not sense `PG` in this candidate. Do not use an API that resets/enables a pull-up on this MTDI pad |
 | GPIO10 | Normally-open action button to GND | Active-low application input; firmware enables an internal pull-up |
 | GPIO20 | OLED `SCL` | I2C clock, requested 400 kHz |
 | GPIO21 | OLED `SDA` | I2C data |
 | GPIO18/GPIO19 | Module USB D−/D+ | Reserved for native USB service in this design |
-| 3.3 V | OLED `VCC`, microphone `VDD` | From the SuperMini's LDO output; the amp's `VIN` instead takes the switched battery rail (see [the power worksheet](07-the-power-chain.md)) |
-| GND | Every logic/power module GND; INMP441 `L/R` low (ICS-43434: `SEL` low) for the left slot | Common insulated reference/return; never the frame |
+| 3.3 V | OLED `VCC`, microphone `VDD`, candidate isolator `VCCA` | From the SuperMini's LDO output |
+| 5V_SYS | MAX98357A `VIN`, candidate isolator `VCCB` | From #2873 in the candidate whole-load architecture; not a released wiring schematic |
+| GND | Every logic/power module GND; #6049 `SEL` low (INMP441 alternate: `L/R` low) for the left slot | Common insulated reference/return; never the frame |
 
 The signal names on a breakout are connector labels, not a guarantee about its
 pin order or fitted circuit. Read each received PCB's silkscreen and exact
@@ -48,32 +50,29 @@ microphone, amplifier, speaker, radio, or assistant service.
 
 ### Microphone choice
 
-The R1 primary is the creator-faithful **INMP441** breakout (`L/R` → GND);
-the documented alternate is the Adafruit `#6049` ICS-43434 (`SEL` → GND).
-Both are 24-bit, 64-SCK I2S parts that are in-spec at this contract's
-1.024 MHz bit clock, and the firmware needs no change between them. Whichever
-arrives, photograph the exact breakout, verify its silkscreen pin order, and
-prove slot/word alignment and intelligible capture before final soldering —
-IC-level claims never transfer blindly to an anonymous carrier.
+Adafruit **#6049 ICS-43434** (`SEL` → GND) is the Phase 0 primary. INMP441
+(`L/R` → GND) is a held alternative. Their I2S signals are analogous, but
+their carrier pin orders are not interchangeable. Photograph the exact board,
+follow that carrier's documentation, and prove slot/word alignment and
+intelligible capture before final soldering.
 
-DFRobot `DFR0954` remains an unqualified amplifier alternative. The MAX98357A
-breakouts document a 2.5–5.5 V supply, which the R1 raw-cell rail sits inside;
-DFR0954's published 3.3 V minimum does not. Do not substitute it without
-revisiting the rail analysis.
+DFRobot `DFR0954` remains a held amplifier alternative. The Phase 0 primary is
+Adafruit `#3006`; repeat supply, gain/mode, noise, current, thermal, and fit
+qualification for any substitute.
 
 ## Power and service boundary
 
-During first bring-up, use a current-limited bench source at the pack's JST
-position and no lithium cell. Measure voltage at each module pin under load; a
+During first bring-up, use a current-limited bench source at the future cell
+input and no lithium cell. Measure voltage at each module pin under load; a
 source setting is not proof that a module remains within its published range.
-The released power topology and its bench worksheet are in
-[the power-chain lesson](07-the-power-chain.md).
+The current candidate topology and gates are in
+[the material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
 
-Native USB can power the ESP32-C3 module. The R1 service rule is physical:
-**slide switch OFF and pack JST unplugged before the SuperMini's USB-C is
-connected**, and never both USB-C ports (SuperMini and charger) at once. With
-the pack out of circuit, USB feeds only the SuperMini's LDO and the 3.3 V
-peripherals — all rated for it.
+Native USB can power a bare ESP32-C3 module. Until the received clone's
+VBUS/5V path and proposed supply **and I2S/control** isolation pass every
+reset/bootloader/source-state test,
+service it only while detached from the cell and external power harness. This
+procedural limit is not a substitute for the final electrical design.
 
 Every ground connection uses insulated wire. With all power absent, verify that
 the metal frame is open/high-resistance to ground, both supply domains, every
@@ -90,17 +89,17 @@ signal, and both speaker outputs.
   paint, hot air, compressed air, and a sealing guard.
 - **Amplifier:** inspect the received MAX98357A board for `SD`/channel and
   gain configuration. It accepts a documented 2.5–5.5 V supply and supports
-  the 16 kHz contract. The default mode is a left/right average while the
-  firmware transmits the left slot — which plays at full amplitude because
-  the ESP32-C3 duplicates the mono slot (see
-  [the audio lesson](04-audio.md)); meter `SD` (~0.30 V stock; ~0 V =
-  shutdown = rework). Measure the board's real envelope including any screw
-  terminal.
-- **Speaker:** the factory-enclosed Same Sky `CES-20134-088PM` connects only
-  between the amplifier's BTL outputs. Neither terminal is ground. Start at
-  low digital volume; qualify its front outlet, grille, mounting, feedback,
-  current, and temperature. Do not design an added rear cup for this already
-  enclosed part.
+  the 16 kHz contract. Source inspection predicts active left and inactive
+  right TX slots; hardware capture must confirm that. Do not assume the
+  board's default left/right mix gives full amplitude. Qualify its `SD` mode
+  and select left explicitly if the capture confirms an inactive right slot.
+  Measure the board's real envelope including any screw terminal.
+- **Speaker:** the open Same Sky `CMS-20143-158SP` is the Phase 0 primary and
+  needs a repeatable sealed rear cavity. The factory-enclosed
+  `CES-20134-088PM` is the separately capped comparison. Connect only one at a
+  time between the amplifier's BTL outputs; neither terminal is ground. Start
+  at low digital volume and qualify differential RMS power, front outlet,
+  grille, mounting, feedback, current, and temperature.
 - **Bypassing and returns:** inspect the capacitors already fitted to every
   module. Add required local bypassing close to each load with a short return;
   keep amplifier/speaker current out of the microphone return path.
@@ -115,10 +114,12 @@ signal, and both speaker outputs.
 3. With data paths absent, measure 16 kHz WS and 1.024 MHz BCLK (64 clocks per
    frame) and prove normal boot plus ROM-download recovery with both clock
    recipients attached.
-4. Add the microphone (INMP441 primary) on GPIO4 and validate slot/word
+4. Add the #6049 ICS-43434 primary microphone on GPIO4 and validate slot/word
    alignment and capture quality.
-5. Add the MAX98357A and factory-enclosed Same Sky `CES-20134-088PM` at low
-   software volume; keep both BTL leads off ground and the frame. Record the
+5. Add the MAX98357A into an 8 Ω dummy load first. Then A/B the open
+   `CMS-20143-158SP` primary in its sealed fixture against the separately
+   capped enclosed `CES-20134-088PM`, one at a time and at low volume. Keep
+   both BTL leads off ground and the frame; record differential RMS voltage,
    amplifier-pin voltage, `SD` mode voltage, gain state, current, and
    temperature.
 6. Exercise Wi-Fi and simultaneous audio from a current-limited source.

@@ -5,13 +5,12 @@
 > hardware test. Clock quality, samples, amplifier configuration, loudness,
 > noise, heat, and acoustics remain bench gates.
 
-> **R1 parts:** INMP441 microphone (primary; `L/R` → GND) with the Adafruit
-> `#6049` ICS-43434 as the documented alternate (`SEL` → GND) — where a table
-> below names `#6049`, the INMP441 wires identically — and a MAX98357A
-> amplifier (HiLetgo breakout or Adafruit `#3006`). DFRobot DFR0954 passages
-> are alternative context only. Purchases are controlled by
-> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) (R1
-> build release), not this lesson.
+> **Phase 0 parts:** Adafruit `#6049` ICS-43434 is the primary microphone
+> (`SEL` → GND); INMP441 (`L/R` → GND) is a held alternative with analogous
+> signals but a non-interchangeable carrier pin order. The amplifier is
+> Adafruit `#3006` MAX98357A. Purchases are controlled by
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md), not
+> this lesson.
 
 For the underlying sampling and interface theory, read
 [I2S, sampling, and digital audio](fundamentals/09-i2s-sampling-and-digital-audio.md).
@@ -20,10 +19,11 @@ For the underlying sampling and interface theory, read
 
 | Signal | GPIO | Direction and destination |
 | --- | ---: | --- |
-| WS / LRCLK | 1 | ESP32-C3 to Adafruit `#6049` ICS-43434 and Adafruit `#3006` |
-| BCLK / SCK | 2 | ESP32-C3 to Adafruit `#6049` ICS-43434 and Adafruit `#3006` |
-| Speaker data | 3 | ESP32-C3 to Adafruit `#3006` `DIN` |
+| WS / LRCLK | 1 | ESP32-C3 directly to `#6049`; through the candidate partial-power isolator to `#3006` |
+| BCLK / SCK | 2 | ESP32-C3 directly to `#6049`; through the candidate partial-power isolator to `#3006` |
+| Speaker data | 3 | ESP32-C3 through the candidate partial-power isolator to `#3006` `DIN` |
 | Microphone data | 4 | Adafruit `#6049` ICS-43434 `DOUT` to ESP32-C3 |
+| Amplifier enable | 5 candidate | **Not implemented/frozen:** drives candidate TXU0104 A4 through 4.7 kΩ to GND; B4 releases `#3006` `SD_MODE` into left mode. #2873 `PG` independently gates translator `OE` through 10 kΩ to 5V_SYS |
 
 Input and output are configured for 16 kHz and share one I2S clock domain. With
 two 32-bit slots per frame, the expected bit clock is:
@@ -58,6 +58,9 @@ matter.
 - Keep clock/data wiring and branch stubs short.
 - Route each signal with a nearby insulated ground return.
 - Keep amplifier supply and speaker-current loops away from the microphone.
+- A USB-powered MCU must not drive an unpowered amplifier. Qualify all four
+  TXU0104 channels for partial-power injection and waveform integrity; the TI
+  EVM is an experiment, not released final hardware.
 - Inspect module bypass capacitors; place any required 0.1 µF/10 µF additions
   at the load with a short ground return, not at the far end of the harness.
 - Verify BCLK and WS at both loads. Neither “star” nor “daisy-chain” is an
@@ -71,9 +74,29 @@ safety fault.
 
 ## Exact-module channel and gain configuration
 
-The R1 release accepts a MAX98357A breakout — HiLetgo clone or Adafruit
-`#3006`. The chip's documented 2.5–5.5 V supply covers the R1 raw-cell rail.
-Its default is a left/right mono mix with 9 dB gain, but `SD`/channel
+The Phase 0 primary is the Adafruit `#3006` MAX98357A breakout. Its documented
+board range is 2.7–5.5 V and the candidate powers it from regulated `5V_SYS`.
+The proposed TXU0104 boundary uses VCCA=3V3 and VCCB=5V_SYS. GPIO5 connects to
+A4 with a 4.7 kΩ pull-down, and B4 drives `SD_MODE`, which has its own 4.7 kΩ
+pull-down. Firmware configures GPIO5 output-low at the earliest board-init
+point, starts continuous I2S clocks with zero data, and raises GPIO5 only after
+its MCU startup/rail-stabilization delay and valid I2S. `PG` independently
+vetoes `OE`; this candidate gives the MCU no `PG` sense input. Keep samples at
+zero for a scope-qualified bound covering `PG` release and amplifier turn-on,
+or add a reviewed level-safe sense path. Official chip reset does not itself pull MTDI
+(GPIO5) high, but firmware APIs can enable that pull-up, so the code must not
+reset or configure this pad that way.
+
+The #2873 open-drain `PG` signal independently drives TXU `OE`, with 10 kΩ to
+VCCB/5V_SYS. It therefore disables all amp-side outputs during the regulator's
+documented rail-not-good interval. Meter-map J3 and retain only its VCCB-side
+10 kΩ path, or remove the shunt and fit an explicit resistor; never hard-short
+OE to 5V_SYS. Pololu does not publish complete `PG` electrical limits, so scope
+PG/OE/rails/B4 through every ramp, brownout, switch, and USB-only transition.
+Measure OE against the TXU0104 guaranteed input limit and `SD_MODE` below
+0.08 V while disabled and above 1.5 V when enabled; 0.16 V and 1.4 V are only
+typical MAX98357A boundaries. This source-off behavior still must be measured.
+The module's default is a left/right mono mix with 9 dB gain, but `SD`/channel
 selection and gain remain voltage- and board-configuration details that must
 be measured on the received board.
 
@@ -108,12 +131,12 @@ active switching outputs:
 - connect neither lead to circuit ground or the metal frame; and
 - never attach an ordinary ground-referenced probe clip to either lead.
 
-The R1 primary is the factory-enclosed Same Sky
-`CES-20134-088PM`, 8 ohm and 0.8 W nominal. Connect its two leads only to the
-amplifier's BTL output pair. Its controlled rear enclosure removes the need
-to invent a rear cup, but the front opening, grille, mounting, strain relief,
-low-volume response, distortion, current, fit, feedback, and temperature still
-require measurement before permanent mounting.
+The Phase 0 primary sample is Same Sky `CMS-20143-158SP`, 8 ohm and 1.5 W
+nominal, tested in a controlled sealed baffle/cavity. The enclosed
+`CES-20134-088PM`, 8 ohm and 0.8 W nominal, is the A/B comparison and requires
+a verified hard volume cap before promotion. Either connects only to the
+amplifier's BTL output pair; front opening, mounting, strain relief, response,
+distortion, current, fit, feedback, and temperature still require measurement.
 
 ## Bench acceptance sequence
 
@@ -123,8 +146,11 @@ require measurement before permanent mounting.
    speech, clipping, slot selection, alignment, and noise.
 3. Inspect the `#3006` with power off; record pin order, `SD` network, gain
    state, and its terminal-block envelope.
-4. Add the `CES-20134-088PM` at minimum digital volume and play a short tone or
-   speech sample from a current-limited supply.
+4. With `SD_MODE` initially hard-grounded, start the amp rail and verify no
+   I/O injection. Then meter-map TXU-EVM J3, connect #2873 `PG` to its center
+   `OE` pin using only the 10 kΩ VCCB-side pull-up, and test the documented
+   PG-gated/GPIO5 left-select path before adding either speaker at minimum
+   digital volume.
 5. Record voltage at every module, supply current, resets, `SD` mode voltage,
    distortion, and temperature against the written limits.
 6. Repeat while Wi-Fi is active, then in the intended mechanical arrangement.
@@ -145,3 +171,5 @@ trained operator.
   <https://www.adafruit.com/product/3006>
 - Analog Devices MAX98357A/MAX98357B data sheet:
   <https://www.analog.com/media/en/technical-documentation/data-sheets/MAX98357A-MAX98357B.pdf>
+- TI TXU-EVM and TXU0104:
+  <https://www.ti.com/tool/TXU-EVM>, <https://www.ti.com/product/TXU0104>

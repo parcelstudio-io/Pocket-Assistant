@@ -1,11 +1,16 @@
-# Complete material list — R1 build release, Amazon-first, NYC
+# Archived material list — Claude R1 compact-build proposal
 
-> **CURRENT PURCHASE LIST — 2026-09-02.** Rewritten by the final audit to match
-> the released compact architecture in
-> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md) (protected
-> LiPo pack + in-frame USB-C charger + slide switch; no converter, fuse pair,
-> P-FETs, 16340, or holder). The old Amazon-first cart survives only in git
-> history; its power section was withdrawn and must not be resurrected.
+> **SUPERSEDED; DO NOT ORDER OR BUILD FROM THIS FILE.** Its #1578 cell,
+> direct-to-SuperMini rail, generic slide switch, and software-only speaker
+> assumptions did not pass the independent power/digital audit. The only
+> current purchase authority is the reversible Phase 0 list in
+> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md). The original
+> R1 list below is retained for provenance and Claude's comparison; labels such
+> as “released” or “current” below are historical claims, not instructions.
+
+> **Original R1 proposal text follows.** It described a protected LiPo pack +
+> in-frame USB-C charger + generic slide switch, with no qualified regulator,
+> fuse, or hardware USB-source isolation.
 
 Listings were live-checked on **2026-09-01/02**. Prices, sellers, and stock
 move; re-check in the cart. Where a claim could not be confirmed from the
@@ -23,7 +28,7 @@ Legend: **✅ confirmed** = listing/product page fetched and specs read ·
 | **MCU** | ESP32-C3 SuperMini — [B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) 10-pack $28.99 (photo-confirmed `FH4` 4 MB marking) or [B0G5XS345R](https://www.amazon.com/dp/B0G5XS345R) 3-pack | $12.97–28.99 | ✅ USB-C, no U.FL, single blue LED on GPIO8. ⚠️ Gate every board with `esptool flash_id` ≥ 4 MB — the 3.54 MB image makes a 2 MB clone a hard stop. Plain variant only (a "Plus" with WS2812 on GPIO8 breaks this pin map) |
 | **Display** | 0.96" SSD1306 128×64 I²C, **white**, 5-pack — [B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) (Hosyond) | $14.99 / 5 | ✅ SSD1306 (not SH1106), 4-pin I²C, 3.3–5 V, address 0x3C (firmware probes 0x3C then 0x3D). ⚠️ **Read the silkscreen pin order** — vendors ship GND-VCC-SCL-SDA *and* VCC-GND-SCL-SDA |
 | **Microphone** | INMP441 I²S MEMS, 5-pack — [B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS) | $11.99 / 5 | ✅ Ships from and sold by Amazon. 3.3 V, I²S, `L/R` → GND = left slot. The creator's exact mic; in-spec at the build's 1.024 MHz bit clock. Controlled-board alternate: Adafruit [#6049 ICS-43434](https://www.adafruit.com/product/6049) (`SEL` → GND) |
-| **Amplifier** | MAX98357A I²S class-D, 3-pack — [B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH) (HiLetgo) | $9.49 / 3 | ✅ Adafruit-lineage clone, 2.5–5.5 V — runs from the raw cell rail. Stock SD ≈ 0.30 V = (L+R)/2 mono mix at **full amplitude** ([why](../edu/04-audio.md#the-channel-select-pin-sd_mode--and-a-correction)). Or genuine Adafruit [#3006](https://www.adafruit.com/product/3006) |
+| **Amplifier** | MAX98357A I²S class-D, 3-pack — [B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH) (HiLetgo) | $9.49 / 3 | ✅ Adafruit-lineage clone, 2.5–5.5 V — runs from the raw cell rail. Stock SD ≈ 0.30 V = (L+R)/2 mono mix at **full amplitude** ([why](../edu/04-audio.md#exact-module-channel-and-gain-configuration)). Or genuine Adafruit [#3006](https://www.adafruit.com/product/3006) |
 | **Speaker — primary** | Same Sky **CES-20134-088PM** 8 Ω 0.8 W factory-enclosed, ~20 × 16 × 4.9 mm — [DigiKey 2223-CES-20134-088PM-ND](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) ×2 | ~$8 ea | ✅ Manufacturer-controlled sealed enclosure — removes the hardest acoustic step at phone-speaker size. Keep software volume so average power ≤ 0.8 W |
 | **Speaker — fallback** | Video-style phone/mini speaker (e.g. pre-boxed 8 Ω 4-pack [B0BHST51PQ](https://www.amazon.com/dp/B0BHST51PQ)) | $9.99 / 4 | ⚠️ No published specs — measure impedance and A/B against the primary at 1 m before it earns a frame slot |
 | **Action button** | 6×6 mm tact + caps, 420 pc — [B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) | $15.99 | ✅ Multiple stem heights and cap colours. GPIO10 → GND, active low |
@@ -32,8 +37,9 @@ Legend: **✅ confirmed** = listing/product page fetched and specs read ·
 
 The chain is: **protected pack ↔ charger board → slide switch → SuperMini
 `5V` + amp `VIN`**. No buck-boost, no fuse pair, no P-FETs — the pack's
-internal protection plus the five hard rules in the
-[decision doc](FINAL_MATERIALS_FOR_REVIEW.md#the-five-hard-rules) cover R1.
+internal protection plus procedural rules were claimed to cover R1; the
+[current power architecture](FINAL_MATERIALS_FOR_REVIEW.md#candidate-power-architecture)
+withdraws that claim and must control instead.
 
 | Role | Part | Price | Spec check |
 | --- | --- | --- | --- |
@@ -49,7 +55,7 @@ internal protection plus the five hard rules in the
 **Withdrawn power parts (do not buy):** XL63070/63802/63020 converter modules,
 RUEF110 PPTC pairs, AO3401A/DMG2301L P-FETs + adapters, service-jumper
 hardware, Nitecore NL169/16340 cells, CR123A holders, XTAR/Nitecore external
-chargers. See the [audit table](FINAL_MATERIALS_FOR_REVIEW.md#withdrawn-by-this-audit-r0--r1).
+chargers. See the [current audit summary](FINAL_MATERIALS_FOR_REVIEW.md#independent-audit-summary-claude-must-disposition).
 
 ## 3 · Frame, finish, wire, insulation
 

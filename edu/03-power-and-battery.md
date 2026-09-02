@@ -1,9 +1,9 @@
 # Power and battery — applying the power-integrity lesson
 
-> **Status: R1 released — 2026-09-02.** The released power system is the
-> protected-pack chain in
-> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) and
-> [the power-chain worksheet](07-the-power-chain.md). This note turns
+> **Status: lesson retained; R1 topology superseded.** Do not treat historical
+> direct-rail examples below as wiring authority. The current candidate chain,
+> `BUY-P0` list, and mandatory qualification gates are in
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md). This note turns
 > [Lesson 06](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
 > into the battery-free qualification method that chain still runs through
 > before the pack is trusted.
@@ -227,10 +227,11 @@ temperature; use datasheet thermal information and margin.
 
 ## Charging: an exact, documented pairing — never a class of products
 
-R1 mounts the charger in the frame (like the reference build) because the
-pairing is exact and documented: Adafruit #4410 (CC/CV, 4.2 V termination,
-100 mA default / 500 mA jumper) charging the Adafruit #1578 pack (protected,
-charge ≤ 500 mA per its own page), device off, first cycle attended.
+The archived R1 proposal mounted #4410 in the frame with a #1578 pack. That
+proposal is **not released**: the cell lacked discharge margin and #4410 has no
+load sharing. The current Phase 0 candidate uses #4410 only in a standalone,
+load-free fixture and only under the signed staged charge gate in
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go).
 
 The lesson generalizes: qualify one exact charger variant against the exact
 cell's manufacturer information — supported chemistry, termination voltage,

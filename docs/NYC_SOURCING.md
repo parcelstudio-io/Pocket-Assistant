@@ -1,9 +1,11 @@
-# NYC sourcing — where every part actually comes from
+# NYC sourcing — archived R1 vendor notes
 
-> **UPDATED FOR THE R1 RELEASE — 2026-09-02.** Matches the released cart in
-> [MATERIALS.md](MATERIALS.md). "Confirmed" means a listing/spec page was
-> fetched on the stated date; re-check stock and price in the cart before
-> ordering.
+> **SUPERSEDED; DO NOT USE AS A SHOPPING LIST.** This page sources Claude's
+> rejected R1 cart, including the under-rated #1578 cell. Current `BUY-P0`
+> items, exact quantities, holds, and alternatives are in
+> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md). The notes
+> below remain only as possible supplier leads and must be reconciled against
+> that current document before any order.
 
 ## The battery, solved locally
 
@@ -48,11 +50,8 @@ delivery with "last items" stock.
 
 ## One-week plan
 
-**Day 0:** place all three carts (Adafruit, DigiKey, Amazon) per the
-[order sheet](MATERIALS.md#order-sheet). **Days 1–4:** as parts land, run
-incoming checks (flash-ID the SuperMinis, caliper the brass and OLED, meter
-the switch samples) and the Phase 0 bench bring-up from
-[BUILD_GUIDE.md](BUILD_GUIDE.md). **Days 4–6:** cardstock dry-fit with real
-parts; regenerate the CAD check if using it. **Day 6+:** cut brass. The cell
-connects only after the bench gate passes, per the
-[decision doc](FINAL_MATERIALS_FOR_REVIEW.md#release-gates-that-remain).
+**Withdrawn R1 schedule—do not follow it.** In particular, do not place the
+archived carts, connect the cell after a generic bench gate, or cut brass on
+Day 6. Order only `BUY-P0` items from the
+[current condensed checkout](FINAL_MATERIALS_FOR_REVIEW.md#condensed-checkout),
+and follow its [promotion gates](FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go).

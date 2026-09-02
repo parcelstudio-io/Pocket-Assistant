@@ -1,12 +1,11 @@
 # Components — turning candidates into evidence
 
-> **Status: R1 released — 2026-09-02.** This is a qualification lesson, not a
-> BOM or purchasing list; the purchase authority is
-> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) (R1
-> build release) and the order sheet is
-> [MATERIALS.md](../docs/MATERIALS.md). Released parts still earn their place
-> on your bench: every received sample passes its incoming and bring-up gates
-> before it is soldered into the frame.
+> **Status: qualification lesson; R1 examples superseded.** This is not a BOM
+> or purchasing list. The only current authority is the status-marked Phase 0
+> list in [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md);
+> [MATERIALS.md](../docs/MATERIALS.md) is an archived proposal. Every received
+> sample must pass its incoming and bring-up gates before it can be considered
+> for a future final design.
 
 Read the applicable foundations first:
 
@@ -28,10 +27,10 @@ The Pocket Assistant currently needs these interface contracts:
 | --- | --- | --- |
 | Controller | ESP32-C3 firmware target, correct GPIO contract, adequate flash, legal 3.3 V rail | exact board/revision, flash ID, USB/LDO path, strap loading, antenna, dimensions |
 | Display | 128×64 I2C display supported by firmware at a probed address | controller identity, pin order, pull-ups, color, current, mounting envelope |
-| Microphone | INMP441 (primary) or ICS-43434 (alternate) using the required left slot and timing | exact received breakout, GPIO4 capture, port location, decoupling, acoustic mounting |
-| Amplifier | MAX98357A breakout, legal I2S rate/format, 2.5–5.5 V supply, floating BTL output | exact received schematic/revision, `SD` mode, gain, decoupling, heat, terminal envelope |
+| Microphone | #6049 ICS-43434 Phase 0 primary or held INMP441 alternative using the required left slot and timing | exact received breakout, GPIO4 capture, port location, decoupling, acoustic mounting; carrier pin orders are not interchangeable |
+| Amplifier | MAX98357A breakout, legal I2S rate/format, regulated whole-load supply, floating BTL output | exact received schematic/revision, partial-power signal isolation, reset-safe `SD` mode, gain, decoupling, heat, terminal envelope |
 | Speaker | compatible impedance and power under named test conditions | exact driver, DC resistance, leads, enclosure, dimensions, measured clarity |
-| Power | the R1 chain: protected pack → switch → SuperMini LDO + amp VIN, stable over 3.3–4.2 V under full load | bench sweep, switch drop, thermal soak, off-state per [the power worksheet](07-the-power-chain.md) |
+| Power | current candidate: qualified cell/charger/fuse/MOSFET switch feeding #2873; its regulated 5V_SYS feeds the amp and diode-isolated controller path | reviewed schematic, recalculated low-cell demand, TXU0104 one-way signal-isolation experiment, source/GPIO reverse-current, cutoff/restart, thermal, and fit gates in the current decision |
 | Structure | no exposed powered conductor, controlled insulation and strain relief | exact received dimensions, assembly tolerance, RF/acoustic test geometry |
 
 If one candidate changes, revisit firmware, wiring, CAD, service access, power,
@@ -73,14 +72,13 @@ holes, display active area, connector access, and visible color.
 
 ### Microphone
 
-The R1 primary is the creator-faithful **INMP441** breakout; the documented
-alternate is the Adafruit `#6049` ICS-43434. Connect the data pin (`SD` /
-`DOUT`) to GPIO4, share GPIO1 word select and GPIO2 bit clock, and tie the
-slot select (`L/R` / `SEL`) low for the intended left slot. At 16 kHz and 64
-clocks per frame, expect 1.024 MHz BCLK. Confirm the exact received pin
-order, supply behavior, bit/slot alignment, decoupling, and intelligible
-capture. Keep flux, solvent, compressed air, glue, paint, and heat away from
-the acoustic port.
+Adafruit **#6049 ICS-43434** is the Phase 0 primary; INMP441 is a held
+alternative. Connect microphone data (`DOUT`, or alternate `SD`) to GPIO4,
+share GPIO1 word select and GPIO2 bit clock, and tie its documented slot select
+low for the intended left slot. At 16 kHz and 64 clocks per frame, expect
+1.024 MHz BCLK. Confirm exact carrier pin order, supply behavior, bit/slot
+alignment, decoupling, and intelligible capture. Keep flux, solvent,
+compressed air, glue, paint, and heat away from the acoustic port.
 
 INMP441 references in the video and older lessons are **historical/alternative
 context**, not permission to buy or wire an anonymous carrier. IC-level timing
@@ -88,13 +86,16 @@ compatibility does not prove a marketplace breakout's identity or assembly.
 
 ### Amplifier
 
-The R1 release accepts a MAX98357A breakout — the HiLetgo 3-pack or the
-controlled Adafruit `#3006`. The chip's documented 2.5–5.5 V supply covers
-the R1 raw-cell rail (3.0–4.2 V) with margin on both ends. Measure the
-received board's `SD` voltage (~0.30 V stock = mono mix at full amplitude;
-~0 V = shutdown = rework) and gain state, and capture 16 kHz I2S timing. A
-published PCB size excludes any terminal-block, wire, and tool envelope,
-which must be measured before layout acceptance.
+The Phase 0 primary is the controlled Adafruit `#3006` MAX98357A breakout.
+Its documented 2.7–5.5 V board range covers candidate `5V_SYS` on paper. The
+amp sits behind the same #2873 low-voltage cutoff as the controller, while a
+four-channel partial-power isolation experiment separates its I2S/`SD` pins
+from a USB-powered MCU when the amp rail is absent. Measure the received
+board's `SD` voltage/channel mode and gain state, and capture both TX slots at
+16 kHz. Source inspection predicts an inactive right slot, so default mono-mix
+**must not** be called full amplitude. A published PCB size excludes any
+terminal-block, wire, and tool envelope, which must be measured before layout
+acceptance.
 
 DFRobot `DFR0954` is a **former primary and current held alternative** because
 its published 3.3 V minimum lacks guaranteed overlap with the candidate
@@ -111,25 +112,29 @@ terminal.
 
 ### Speaker and enclosure
 
-The current primary is the factory-enclosed Same Sky `CES-20134-088PM`, 8 ohm
-and 0.8 W nominal, with bare leads. Its controlled enclosure avoids borrowing
-an undocumented phone speaker's rear-volume claim. Nominal impedance is still
+The current primary sample is Same Sky `CMS-20143-158SP`, 8 ohm and 1.5 W
+nominal, tested in a repeatable sealed baffle. The factory-enclosed
+`CES-20134-088PM`, 8 ohm and 0.8 W nominal, is the comparison and requires a
+measured hard power cap before promotion. Nominal impedance is still
 frequency-dependent and can differ from DMM resistance.
 
-Connect it only across the `#3006` BTL screw terminal, never to ground or the
-frame. Qualify the received speaker as an acoustic assembly: factory enclosure,
-front opening, grille, mounting, strain relief, wires, and frame. Use the
-battery-free A/B procedure in Lesson 10 at fixed gain, distance, sample,
-orientation, and supply voltage. Accept it only after measuring clarity, buzz,
-relative level, feedback, current, heat, fit, and repeatability. Do not add an
-assumed rear cup to this already enclosed part.
+Connect a speaker only across the `#3006` BTL screw terminal, never to ground
+or the frame. The Phase 0 set compares the open CMS-20143-158SP in a controlled
+sealed fixture against the enclosed CES-20134-088PM. Use the battery-free A/B
+procedure in Lesson 10 at fixed gain, distance, sample, orientation, and supply
+voltage. Accept one only after measuring clarity, buzz, relative level,
+feedback, current, heat, fit, and repeatability.
 
 ## The power system
 
-The released R1 chain is the reference build's topology on documented parts:
-protected pack (Adafruit #1578) ↔ in-frame USB-C charger (#4410) → slide
-switch → SuperMini `5V`/LDO + amp `VIN`. The full rationale, the withdrawn
-converter-chain history, and the bench worksheet are in
+The current Phase 0 chain is a **candidate**, not released wiring: shared
+cell/#4410 node → candidate fuse → #2810 MOSFET switch → #2873 whole-load
+5V_SYS → amp plus diode-isolated controller path. The TXU0104 section of a TI
+TXU-EVM tests the powered-MCU/unpowered-amp signal boundary: #2873 `PG` gates
+its `OE`, while GPIO5 crosses channel 4 to control amplifier shutdown. The
+earlier TXB0104 network is rejected for this role. The exact topology and
+gates are in [the current decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md). The older
+direct-rail calculation remains only as an archived worked example in
 [the power-chain lesson](07-the-power-chain.md).
 
 Lessons the withdrawn chains left behind — they generalize to any project:

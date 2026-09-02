@@ -13,13 +13,19 @@ verified from the part datasheets (see edu/ for the reasoning):
 
 * every net's pins exist and no ESP32-C3 GPIO is claimed twice
 * the ESP32-C3 strapping rules (GPIO2/8/9) are honored by the wiring
-* the configured I2S sample rate is one the MAX98357A supports, and the
-  selected microphone (INMP441 primary / ICS-43434 alternate) rate and BCLK are legal on paper
+* the configured I2S sample rate is one the MAX98357A and selected ICS-43434
+  support, and the calculated microphone BCLK is legal on paper
 * the display address strategy covers 0x3C and 0x3D
 * the speaker stays a floating bridge load (no lead on GND or frame)
 
-The GPIO assignments are read from the firmware overlay's config.h so this
-check fails loudly if the wiring tables and the firmware ever drift apart.
+The I2S nets below are **logical** signal relationships. The candidate
+TXU0104 physical isolation boundary, proposed GPIO5-to-A4 amplifier enable,
+and #2873-PG-to-OE hardware gate are not modeled or validated here; they
+require KiCad and bench evidence.
+
+The GPIO assignments are read from the firmware overlay's config.h and checked
+against this script's internal `NETS` model. It does not parse Markdown wiring
+tables or the inherited I2S slot/mask configuration.
 
 Usage:  python3 tools/netcheck.py
 Exit status is non-zero if any check fails.
@@ -53,7 +59,8 @@ FLASH_PINS = set(range(11, 18)) - USB_PINS  # SPI flash on the module
 
 NETS = {
     "3V3": [("esp32c3", "3V3"), ("oled", "VIN"),
-            ("i2s_mic", "VDD"), ("amp", "VCC")],
+            ("i2s_mic", "VDD")],
+    "5V_SYS": [("amp", "VCC")],
     "GND": [("esp32c3", "GND"), ("oled", "GND"),
             ("i2s_mic", "GND"), ("i2s_mic", "SEL/LR (left slot)"), ("amp", "GND"),
             ("button", "B")],
@@ -143,10 +150,10 @@ def main() -> int:
           f"LRCLK {rate_out} Hz is on the MAX98357A supported list")
     check(ICS43434_LOW_POWER_SAMPLE_HZ[0] <= (rate_in or 0)
           <= ICS43434_LOW_POWER_SAMPLE_HZ[1],
-          f"microphone rate {rate_in} Hz is legal for INMP441 and ICS-43434")
+          f"microphone rate {rate_in} Hz is legal for the ICS-43434")
     bclk = (rate_in or 0) * ICS43434_FRAME_SCK
     check(ICS43434_SCK_HZ[0] <= bclk <= ICS43434_SCK_HZ[1],
-          f"BCLK {bclk} Hz is in range for INMP441 and ICS-43434 at 64 SCK/frame")
+          f"BCLK {bclk} Hz is in range for the ICS-43434 at 64 SCK/frame")
 
     # 6. Display address strategy.
     check(cfg.get("DISPLAY_I2C_ADDRESS") == 0x3C
@@ -157,12 +164,12 @@ def main() -> int:
     spk_nets = {net for net, pins in NETS.items()
                 for c, _ in pins if c == "speaker"}
     isolated = all(
-        not any(c in ("esp32c3", "holder") or p == "GND"
+        not any(c in ("esp32c3", "holder", "frame") or p == "GND"
                 for c, p in NETS[net]) for net in spk_nets)
     check(isolated, "speaker leads stay a floating bridge load")
 
     print(f"\n{checks - len(failures)}/{checks} static checks passed")
-    print("Power, USB-source, carrier, and fit qualification: NOT CHECKED")
+    print("Power, USB/GPIO isolation, carrier, and fit qualification: NOT CHECKED")
     if failures:
         for f in failures:
             print(f"  FAILED: {f}", file=sys.stderr)

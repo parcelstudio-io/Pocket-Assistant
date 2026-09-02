@@ -1,12 +1,11 @@
 # 09 — I2S, sampling, and digital audio
 
-> **Current project contract (R1):** the microphone data pin goes to GPIO4 and
+> **Current project contract:** the microphone data pin goes to GPIO4 and
 > the MAX98357A `DIN` comes from GPIO3, sharing GPIO1/GPIO2 clocks at 16 kHz
-> and 64 clocks/frame. The R1 primary microphone is the **INMP441** (`SD` to
-> GPIO4, `L/R` low); the documented alternate is the Adafruit `#6049`
-> ICS-43434 (`DOUT` to GPIO4, `SEL` low) — this lesson's worked examples use
-> the ICS-43434 naming, and every pin position, clock number, and procedure is
-> identical for the INMP441. DFRobot DFR0954 material is alternative context
+> and 64 clocks/frame. The Phase 0 primary microphone is Adafruit `#6049`
+> ICS-43434 (`DOUT` to GPIO4, `SEL` low). INMP441 (`SD` to GPIO4, `L/R` low)
+> is a held alternative: its signals are analogous, but its carrier pin order
+> is not interchangeable. DFRobot DFR0954 material is alternative context
 > only. Purchase authority is
 > [FINAL_MATERIALS_FOR_REVIEW.md](../../docs/FINAL_MATERIALS_FOR_REVIEW.md),
 > not this theory lesson.

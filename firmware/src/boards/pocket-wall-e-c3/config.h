@@ -7,9 +7,11 @@
 //
 // The vendor image runs 24 kHz, but the MAX98357A datasheet states twice that
 // 24 kHz LRCLK is NOT supported (supported: 8/16/32/44.1/48/88.2/96 kHz).
-// 16 kHz sits centered in the amplifier's fS2 window, is legal for both
-// qualified microphones — INMP441 (R1 primary) and ICS-43434 (alternate),
-// 64 SCK per frame at BCLK 1.024 MHz — and matches Xiaozhi's Opus encoder,
+// 16 kHz sits centered in the amplifier's fS2 window and is legal for the
+// Phase 0 primary, Adafruit #6049 ICS-43434 (SEL low, DOUT on GPIO4). The held
+// INMP441 alternative uses analogous signals but not an interchangeable carrier
+// pin order. Both use 64 SCK per frame at BCLK 1.024 MHz. This also matches
+// Xiaozhi's Opus encoder,
 // which is hard-coded to 16 kHz, so the input resampler is never created and
 // server audio is resampled 24k->16k by the existing output_resampler_ path
 // in audio_service.cc.

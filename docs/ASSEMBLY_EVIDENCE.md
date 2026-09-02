@@ -1,10 +1,11 @@
-# Why this assembly works — the evidence behind each step
+# Why the R1 assembly was proposed — archived evidence
 
-> **R1 RELEASE EVIDENCE — 2026-09-02.** Updated by the final audit for the
-> released compact architecture (protected pack + in-frame charger + slide
-> switch; no converter chain). Desk evidence and datasheet reasoning below;
-> `hardware_tested` remains `false` until the bench gate runs, which is why
-> the [build guide](BUILD_GUIDE.md) is bench-first.
+> **SUPERSEDED DESK STUDY; NOT PROOF OF A SAFE ASSEMBLY.** The independent
+> audit found unresolved cell-current, USB-source, regulator, switch, and audio
+> issues in this compact architecture. `hardware_tested` remains `false`.
+> Use [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md) for the
+> current Phase 0 decision and promotion gates; the discussion below is kept
+> so Claude can inspect the prior reasoning.
 
 Three things set the honest ceiling on all of this:
 
@@ -72,13 +73,13 @@ as a separate stub to each module, never daisy-chained — the amplifier's
 datasheet warns that losing LRCLK while BCLK runs produces *"a large DC output
 voltage"*, and DC is how voice coils die.
 
-**A correction worth reading:** an earlier version of these notes claimed the
-amp's stock (L+R)/2 mode costs 6 dB because the firmware fills only the left
-slot. That was wrong. Espressif's `i2s_ll.h` for this chip says verbatim: *"In
-mono mode, there only should be one slot enabled, another inactive slot will
-transmit same data as enabled slot."* The right slot is a duplicate, so
-(L+L)/2 = L at full amplitude. Details and the corrected acceptance test are in
-[the audio lesson](../edu/04-audio.md#the-channel-select-pin-sd_mode--and-a-correction).
+**Digital-audio correction:** the archived R1 review misapplied an Espressif
+copy-mono comment. The pinned codec requests mono DMA with
+`I2S_STD_SLOT_LEFT`, while the pinned ESP-IDF enables TX copy-mono only for a
+`BOTH` slot mask. Source inspection therefore predicts active left and inactive
+right TX slots. Hardware capture remains required, and the #3006 default mix
+must not be assumed to produce full amplitude. See
+    [the audio lesson](../edu/04-audio.md#exact-module-channel-and-gain-configuration).
 
 ---
 

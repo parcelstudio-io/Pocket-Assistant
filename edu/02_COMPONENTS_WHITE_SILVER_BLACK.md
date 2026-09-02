@@ -1,11 +1,9 @@
 # 2 — White, silver, and black candidate selection
 
-> **Status: superseded selection study — 2026-09-02.** This lesson records the
-> white/silver/black candidate-selection reasoning from the R0 review cycle.
-> The R1 build release since restored several creator-faithful primaries
-> (INMP441 microphone; generic SSD1306; protected LiPo pack instead of the
-> 16340 chain) and made the finish optional (the reference is raw brass). The
-> decision record is
+> **Status: palette and comparison study only.** This lesson records earlier
+> white/silver/black candidate-selection reasoning; its R0/R1 part conclusions
+> are not current purchase decisions. Current part status, quantities,
+> confidence, and alternatives live in the decision record,
 > [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md);
 > where this page disagrees with it, the decision record wins.
 
@@ -15,8 +13,8 @@ accepted part.
 
 ## Read the evidence chain first
 
-- [The R1 material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md) names the
-  released parts and the rejections that survive from this study's era. It
+- [The F0 material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md) names the
+  Phase 0 samples and the rejections that survive from this study's era. It
   supersedes this page's purchase labels.
 - [Components — turning candidates into evidence](02-components.md) explains
   why a product-family name or marketplace listing is not an exact part identity.
@@ -44,25 +42,26 @@ controls quantities and substitutions.
 | Controller | Plain USB-C ESP32-C3 SuperMini-layout board with at least 4 MB flash; exact maker/revision remains uncontrolled | Corrected-source GPIO map, flash identity, native-USB recovery, boot straps, power path, and antenna | Treat the native PCB as black/hidden; qualify multiple same-lot samples before designing its guard |
 | Display | Adafruit `#326`, white 0.96-inch 128×64 OLED | GPIO20 `SCL`, GPIO21 `SDA`, 3.3 V-compatible I2C; firmware probes `0x3C` and `0x3D` | White pixels provide the intended accent; use the measured received-board envelope, not stale CAD |
 | Microphone | Adafruit `#6049` ICS-43434 breakout | 16 kHz standard I2S; GPIO1 `WS/LRCLK`, GPIO2 `BCLK`, GPIO4 microphone data; 64 bit clocks per frame gives 1.024 MHz; `SEL` low selects the intended left slot | Controlled black bottom-port board; leave its port open and uncoated. The discontinued microphone is a one-off qualification choice, not a production baseline |
-| Amplifier | Adafruit `#3006` MAX98357A mono breakout | Shares GPIO1 `LRC` and GPIO2 `BCLK`; GPIO3 drives `DIN`; Adafruit's documented 2.7–5.5 V board input covers the candidate 3.3 V regulator's full tolerance. Prove reset-time loading, channel/mode, gain, and floating BTL output | Blue 19.4 × 17.8 × 3.0 mm PCB plus its pre-soldered terminal-block envelope; conceal it behind a removable ventilated guard and measure the complete received assembly before CAD |
-| Speaker | Same Sky `CES-20134-088PM`, factory-enclosed, bare leads, 8 ohm, 0.8 W | Connect only to the Adafruit `#3006` screw-terminal BTL pair; qualify level, current, temperature, grille, feedback, and speech quality | The controlled black enclosure supplies its own rear cavity. Design only the front outlet, mounting, protection, and lead strain relief; do not invent an extra rear cup |
+| Amplifier | Adafruit `#3006` MAX98357A mono breakout | Shares GPIO1 `LRC` and GPIO2 `BCLK`; GPIO3 drives `DIN`; VIN comes from candidate `5V_SYS`, while the MCU-to-amp signals cross the held partial-power translator. Prove reset-safe shutdown, source-off isolation, channel/mode, gain, and floating BTL output | Blue 19.4 × 17.8 × 3.0 mm PCB plus its pre-soldered terminal-block envelope; conceal it behind a removable ventilated guard and measure the complete received assembly before CAD |
+| Speaker | Same Sky `CMS-20143-158SP`, open 8 ohm / 1.5 W primary sample; `CES-20134-088PM`, enclosed 8 ohm / 0.8 W comparison | Connect only to the Adafruit `#3006` screw-terminal BTL pair; A/B both in repeatable fixtures and qualify differential RMS power, level, current, temperature, feedback, and speech quality | The open CMS needs a sealed rear cavity; the black CES already has one but needs a verified hard power cap. Neither is final until the measured acoustic and fit gates choose it |
 | Action control | Omron `B3F-1000` SPST-NO plus white `B32-1060` cap | GPIO10 to ground, active low; identify the paired switch legs by continuity | The cap is a small white accent, but finger access and the guard opening still require a physical mock-up |
 
 ### Historical microphone references
 
-The R1 release restored **INMP441** as the primary microphone (it is the
-creator's part and is in-spec at this build's 1.024 MHz bit clock); the
-ICS-43434 breakout this page discusses remains the documented alternate.
-Either way, raw-IC compatibility claims do not establish a marketplace
+The superseded R1 proposal restored **INMP441** as its primary. The current
+Phase 0 primary is the controlled Adafruit `#6049` ICS-43434; INMP441 is a
+held alternative. In either direction, raw-IC compatibility does not establish a marketplace
 module's silicon, pin order, bypassing, or assembly quality — inspect the
 received board. The creator binary's separate recovered contract uses
 microphone data on GPIO8 at 24 kHz; never combine that binary with the
 corrected-source GPIO4/16 kHz harness above.
 
-DFRobot `DFR0954` remains only an alternative amplifier. The MAX98357A
-breakouts document a 2.5–5.5 V supply, which the R1 raw-cell rail sits
-inside; DFR0954's published 3.3 V minimum does not. Do not substitute it
-without revisiting the rail analysis and the decision record.
+DFRobot `DFR0954` remains only a held alternative amplifier. The Phase 0
+`#3006` candidate is powered from the regulated `5V_SYS` rail, never directly
+from a cell. Any DFR0954 substitution must repeat the exact-board supply,
+current, startup, shutdown/mode, partial-power isolation, noise, thermal, and
+measured-fit tests in the decision record; an IC-family voltage range alone
+does not qualify either breakout.
 
 ## Visual direction, not an electrical rule
 
@@ -145,11 +144,10 @@ Create one traceable record per received lot or revision:
 
 ## Purchase and freeze decision
 
-This study's HOLD/BUY-P0 labels are superseded: the 2026-09-02 final audit
-released the complete R1 cart in
-[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md), and
-the finish became optional (the reference build is raw brass; the white
-system in [the finish study](05_COLOR_AND_FINISH.md) remains available).
+This study's old HOLD/BUY-P0 labels are superseded. The current decision in
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md)
+authorizes only a reversible Phase 0 order. Final finish, brass fabrication,
+power wiring, and pocket carry remain held.
 
 What survives from this study unchanged: the rejections (mystery cells,
 frame-as-conductor, paint-as-insulation, grounded BTL leads) and the method —

@@ -1,13 +1,15 @@
-# Purchase-readiness review — R1
+# Purchase-readiness review — archived Claude R1 verdict
 
-> **CURRENT — 2026-09-02 final audit.** Supersedes the 2026-09-01 review and
-> the R0 Phase 0-only verdict. The decision record is
-> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md); the order
-> sheet is [MATERIALS.md](MATERIALS.md).
+> **SUPERSEDED; NOT PURCHASE AUTHORITY.** The independent audit rejected this
+> complete-cart verdict. Use
+> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md): its current
+> decision is **GO only for one reversible `BUY-P0` qualification batch and
+> NO-GO for a final build, cell connection, brass cutting, or pocket carry**.
+> [MATERIALS.md](MATERIALS.md) is the matching archived R1 order sheet.
 
-## Verdict
+## Withdrawn R1 verdict (retained for review)
 
-**GO: buy the complete R1 cart now.** The part set is coherent, every
+**Original claim — do not act on it:** “Buy the complete R1 cart now.” The part set was described as coherent, every
 electrical interface closes on datasheet evidence, the power system uses
 documented protected parts, and the procedure is bench-first so every
 marketplace unknown is caught before irreversible work. What purchasing does
@@ -18,7 +20,7 @@ Why the earlier NO-GO fell: it was attached to a converter/fuse/16340
 architecture that tripled the device volume and demanded a lab-grade
 qualification program. The final audit replaced that architecture with the
 reference build's own topology on documented protected parts — see the
-[audit rationale](FINAL_MATERIALS_FOR_REVIEW.md#the-audit-question-answered).
+[current independent-audit summary](FINAL_MATERIALS_FOR_REVIEW.md#independent-audit-summary-claude-must-disposition).
 
 ## What the money buys, and in what order
 

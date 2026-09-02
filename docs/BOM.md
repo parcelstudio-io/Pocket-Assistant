@@ -1,9 +1,11 @@
-# Bill of materials — reference reconciliation
+# Bill of materials — archived R1 reference reconciliation
 
-> **RECONCILED WITH THE R1 RELEASE — 2026-09-02.** This file maps the
-> creator's published parts to what this project actually builds. The current
-> shopping list is [MATERIALS.md](MATERIALS.md); the decision record is
-> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md).
+> **HISTORICAL COMPARISON; NOT PURCHASE AUTHORITY.** This maps the creator's
+> parts to Claude's superseded R1 proposal. Use the exact, status-marked Phase
+> 0 list and alternatives in
+> [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md). Do not order
+> from [MATERIALS.md](MATERIALS.md) or interpret the “released” column below as
+> a current decision.
 
 This list reconciles the [project page](https://www.huyvector.org/robots-kinetic/pocket-ai-assistant),
 its [assembly video](https://www.youtube.com/watch?v=25RGnr407PM), the wiring
@@ -40,9 +42,9 @@ and solders its can to the brass frame. **Do not reproduce that sequence.**
   (Adafruit #1578: overcharge/over-discharge/short protection, JST lead) and
   keeps everything else about the creator's power topology: in-frame USB-C
   charging, slide switch, direct feed to the SuperMini `5V` pin and amp VIN.
-- The full rules (switch off for USB, off while charging, attended first
-  charge, never solder to a cell) are in the
-  [decision doc](FINAL_MATERIALS_FOR_REVIEW.md#the-five-hard-rules).
+- Those R1 procedural rules were withdrawn because OFF is not electrical
+  isolation. The current separate-fixture rules are in the
+  [candidate power architecture](FINAL_MATERIALS_FOR_REVIEW.md#candidate-power-architecture).
 
 Rejected forever, regardless of listing: `ER14250`, `LS14250`, any 3.6 V
 Li-SOCl₂, any cell without clearly stated chemistry, and any assembly that

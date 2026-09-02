@@ -1,11 +1,11 @@
-# Applied note — power-chain qualification worksheet
+# Applied note — archived R1 power-chain worksheet
 
-> **R1 RELEASE — 2026-09-02.** The released chain is the reference build's own
-> topology on documented protected parts: pack → slide switch → SuperMini LDO
-> + amp VIN. This page teaches why the chain works, why two earlier chains
-> were withdrawn, and exactly what to measure on the bench before the pack is
-> trusted. The decision record is
+> **SUPERSEDED; DO NOT BUILD THE DIRECT-RAIL CHAIN BELOW.** The #1578 pack,
+> generic load switch, unqualified SuperMini LDO, and procedural USB isolation
+> failed the final audit. Use the candidate architecture and gates in
 > [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
+> The calculations below remain useful as a worked lesson, but their R1 part
+> values are historical rather than purchase or wiring instructions.
 
 Learn the underlying physics in
 [Li-ion power integrity, decoupling, UVLO, and heat](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md).

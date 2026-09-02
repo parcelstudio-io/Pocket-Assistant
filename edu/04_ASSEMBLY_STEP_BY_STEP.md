@@ -1,9 +1,11 @@
-# 4 — Video-aligned, battery-last staged assembly
+# 4 — Video-aligned, battery-last staged assembly (archived R1)
 
-> **ASSEMBLY RELEASE: GO WITH GATES — 2026-09-02 (R1).** The staged method
-> below is released for the R1 architecture (protected pack + in-frame USB-C
-> charger + slide switch; frame floating). Each stage's gate still must pass
-> before the next begins, and the cell stays out until Stage 10.
+> **SUPERSEDED; NO FINAL ASSEMBLY IS RELEASED.** Keep this page only as a
+> candidate sequence and video index. Its R1 power wiring and part primaries
+> are obsolete. Follow
+> [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md), and do
+> not connect a cell, cut brass, or proceed to powered enclosure work until
+> its promotion gates pass.
 
 The sequence follows the visual rhythm of the reference video—template, form,
 join, prewire, mount, flash, and provision—without copying its dimensions,
@@ -12,10 +14,9 @@ are navigation aids only; see the
 [reference build guide](../docs/BUILD_GUIDE.md) for the source link and context.
 
 The current exact-part and purchase record is
-[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md) (R1
-build release): the complete cart is GO, and this staged plan is the released
-path from parts to a finished device. The cell and charging remain gated to
-Stage 10.
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md). It
+authorizes only a reversible Phase 0 qualification batch; this historical
+sequence does not authorize a finished device.
 
 Use [Lesson 13's bring-up ladder](fundamentals/13-debugging-integration-and-capstone.md)
 as the controlling method. Record each gate in
@@ -27,14 +28,15 @@ test record.
 For the battery-free signal tests, the corrected source build targets the R1
 chain:
 
-- **INMP441** microphone (primary; the creator's part): `WS` to GPIO1, `SCK`
-  to GPIO2, `SD` to GPIO4, and `L/R` low for the left slot. The documented
-  alternate is Adafruit `#6049` ICS-43434 (`DOUT` to GPIO4, `SEL` low) —
-  electrically interchangeable at this fixture's 16 kHz contract;
-- **MAX98357A** amplifier (HiLetgo breakout or Adafruit `#3006`): `LRC` to
+- **Adafruit #6049 ICS-43434** Phase 0 microphone: `WS/LRCLK` to GPIO1, `BCLK`
+  to GPIO2, `DOUT` to GPIO4, and `SEL` low for the left slot. INMP441 is a
+  held alternative with analogous signals but a non-interchangeable carrier
+  pin order;
+- **Adafruit #3006 MAX98357A** amplifier: `LRC` to
   GPIO1, `BCLK` to GPIO2, and `DIN` to GPIO3; and
-- Same Sky `CES-20134-088PM` 8-ohm, 0.8 W factory-enclosed speaker: its two
-  leads go only to the amplifier's floating BTL output terminals.
+- Same Sky `CMS-20143-158SP` 8-ohm, 1.5 W speaker primary (with a sealed test
+  cavity), compared against `CES-20134-088PM`: either connects only to the
+  amplifier's floating BTL output terminals.
 
 The contract is 16,000 frames/s with 64 bit clocks per frame, so the expected
 BCLK is `16,000 × 64 = 1.024 MHz`. Prove those clocks and GPIO2 boot/recovery
@@ -45,10 +47,11 @@ onto the GPIO4/16 kHz fixture above. Changing the microphone model reopens
 pinout, timing, capture, fit, and acoustic checks — the two named parts above
 are the only qualified choices.
 
-DFRobot `DFR0954` remains an unqualified alternative amplifier; its published
-3.3 V minimum board supply is inferior to the MAX98357A breakouts' documented
-2.5–5.5 V range on the R1 raw-cell rail. Do not swap it in without revisiting
-the rail analysis and fit.
+DFRobot `DFR0954` remains a held alternative amplifier. The Phase 0 `#3006`
+candidate is powered from regulated `5V_SYS`, never directly from a cell. Any
+substitution must repeat the exact-board rail, startup, shutdown/mode,
+partial-power isolation, current, noise, thermal, and measured-fit tests in the
+current decision record.
 
 ## Gate 0 — release inputs before irreversible work
 
@@ -79,8 +82,9 @@ This stage has no video equivalent and happens first.
 
 1. Assign a unit ID to every board or module. Photograph both faces and all
    labels before soldering headers or wires. For the audio fixture, record the
-   exact microphone breakout, amplifier breakout, and Same Sky
-   `CES-20134-088PM` identities rather than only their underlying IC families.
+   exact microphone breakout, amplifier breakout, and both Same Sky
+   `CMS-20143-158SP` and `CES-20134-088PM` speaker identities rather than only
+   their underlying component families.
 2. Measure the board, component heights, mounting features, connector pitch,
    pin order, plug envelope, wire exit, antenna region, acoustic port, and any
    switch or jumper state. A published PCB dimension does not replace a
@@ -108,14 +112,16 @@ reversible.
    from a current-limited laboratory supply. Follow the reviewed schematic,
    manufacturer limits, and written test points—not prose in an older lesson.
 4. Bring up one peripheral at a time. Verify rail voltage/current first, then
-   display communication, microphone timing/left-slot capture on GPIO4,
-   amplifier timing/mode/gain, and low-level playback through the
-   `CES-20134-088PM`.
-5. Test the factory-enclosed speaker only across the amplifier's BTL output
-   terminals. Neither side is ground. Use isolated or differential
-   measurement where required. Start with a conservative software volume and
-   record amplifier-pin voltage, `SD` mode voltage, gain state, current, and
-   temperature against the speaker's 0.8 W nominal rating.
+   display communication, microphone timing/left-slot capture on GPIO4, and
+   amplifier timing/mode/gain. Prove low-level playback into an 8-ohm dummy
+   load before connecting either speaker.
+5. A/B the open `CMS-20143-158SP` in its repeatable sealed test cavity against
+   the enclosed `CES-20134-088PM`. Connect either only across the amplifier's
+   floating BTL output terminals; neither side is ground. Use isolated or
+   differential measurement where required. Start with conservative software
+   volume and record differential RMS voltage, amplifier `SD_MODE`, gain,
+   current, and temperature. Respect the CMS's 1.5 W nominal rating; for the
+   0.8 W CES, enforce and verify no more than 2.53 Vrms differential.
 6. Do not connect service USB and an external powered rail at the same time
    unless the reviewed service-power design explicitly permits and has tested
    that state.
@@ -198,11 +204,12 @@ strain-relief, and subsystem bench tests outside the frame with no cell.
 ## Stage 7 — mount exact parts, still unpowered
 
 Install carriers and guarded components in a reversible order. Preserve the
-display active area, microphone acoustic port, the factory-enclosed speaker's
-front outlet/grille and mounting features, antenna space, thermal clearance,
-controls, connectors, debug access, and all planned removal paths. Do not add
-an assumed rear cup to the `CES-20134-088PM`, force a board, or use adhesive to
-correct a dimensional error.
+display active area, microphone acoustic port, the selected speaker's tested
+front outlet/grille and cavity geometry, antenna space, thermal clearance,
+controls, connectors, debug access, and all planned removal paths. If the CES
+wins the A/B test, do not add an assumed rear cup to its existing enclosure; if
+the CMS wins, reproduce its qualified sealed rear cavity. Never force a board
+or use adhesive to correct a dimensional error.
 
 Before power, verify with USB and every energy source absent:
 
@@ -254,21 +261,13 @@ written acoustic, RF, thermal, mechanical, and access criteria.
 
 ## Stage 10 — battery introduction last
 
-The battery release exists: the R1 decision names the exact cell system
-(Adafruit #1578 protected 500 mAh pack, factory JST-PH lead), the charging
-method (Adafruit #4410 in-frame USB-C charger, 100 mA default), and the
-[five hard rules](../docs/FINAL_MATERIALS_FOR_REVIEW.md#the-five-hard-rules).
-Follow it exactly, and only after Gates 1–9 pass:
-
-1. Meter the JST polarity against the charger's markings before the first
-   mating; check open-circuit pack voltage (3.0–4.2 V, else stop).
-2. Seat the pack in its fish-paper-lined bay, retained mechanically, lead
-   strain-relieved. First power-up on a fire-resistant surface with the
-   ability to unplug immediately.
-3. First charge attended, device off, pack cool throughout, DONE indication,
-   4.20 ± 0.05 V at the pack.
-4. Measure runtime under a named workload; do not infer it by dividing mAh by
-   a rail current.
+**Withdrawn R1 step—do not perform it.** The earlier #1578 direct-rail battery
+release did not survive review. The current authority permits no cell-powered
+device assembly: its only Phase 0 cell activity is the separately signed,
+two-stage OCV/one-cycle standalone-charge gate in
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go).
+Future cell discharge requires another written release after the battery-free
+power, controller-interface, guarding, and fit gates pass.
 
 Keep the pack unplugged during soldering, drilling, finishing, continuity
 work, USB servicing, and any rework. Never solder, coat, rewrap, crush,

@@ -1,14 +1,14 @@
 # CAD status and regeneration
 
-> **STALE vs the R1 release — 2026-09-02.** Everything in this directory
-> models the **withdrawn** R0 architecture (16340 cell + BH123A holder +
-> Pololu regulator/switch stack, ~60 × 45 × 33 mm). The released R1 design is
-> the compact protected-LiPo layout (~45 × 32 × 20 mm target) in
-> [docs/FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
-> Before cutting brass, rewrite `fitcheck.py`'s part set for the R1 BOM
-> (pack 29 × 36 × 4.75 mm, charger 24 × 19 × 7.2 mm, no holder/regulator)
-> using measured envelopes from the received parts — or rely on the required
-> 1:1 cardstock dry fit alone.
+> **STALE; NOT FIT OR FABRICATION AUTHORITY — 2026-09-02.** Everything in this
+> directory models the withdrawn R0 architecture (16340 cell + BH123A holder +
+> older Pololu stack, ~60 × 45 × 33 mm). It also predates the current F0
+> candidate, which samples a 34 × 62 × 5 mm #258 pouch, #4410 charger, #2810
+> switch, #2873 regulator, fuse, diode, two speaker geometries, and rigid cell
+> guard. Use [docs/FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
+> Do not regenerate from the old constants or cut brass. First measure the
+> received Phase 0 parts, then rewrite `fitcheck.py`, regenerate every artifact,
+> and verify the result with a 1:1 cardstock model.
 
 `fitcheck.py` is the editable source for the placement study. The existing
 `pager_rev_a.FCStd`, `pager_rev_a.step`, and `FITCHECK_REPORT.md` were

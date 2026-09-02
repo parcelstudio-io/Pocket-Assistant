@@ -6,8 +6,8 @@ board registration and confirmed pin map, forces the real 4 MB flash layout,
 and produces a merged image that can be flashed at address `0x0`.
 
 > **Current-contract boundary:** the corrected source targets an I2S
-> microphone on GPIO4 (R1 primary: INMP441 with `L/R` low; documented
-> alternate: Adafruit `#6049` ICS-43434 with `SEL` low) and a MAX98357A
+> microphone on GPIO4 (Phase 0 primary: Adafruit `#6049` ICS-43434 with `SEL`
+> low; held alternate: INMP441 with `L/R` low) and a MAX98357A
 > amplifier on GPIO3, with shared clocks on GPIO1/GPIO2 at 16 kHz. This README
 > is not purchase authority; the release decision is
 > [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
@@ -53,19 +53,39 @@ For the exact published image and its pinned checksum, use the
 
 | Function | ESP32-C3 GPIO | Peripheral connection |
 | --- | ---: | --- |
-| I2S word select | 1 | INMP441 `WS` (alt: ICS-43434 `WS/LRCLK`) and MAX98357A `LRC` |
-| I2S bit clock | 2 | INMP441 `SCK` (alt: ICS-43434 `BCLK`) and MAX98357A `BCLK`; expected 1.024 MHz |
+| I2S word select | 1 | #6049 ICS-43434 `WS/LRCLK` (alt: INMP441 `WS`) and MAX98357A `LRC` |
+| I2S bit clock | 2 | #6049 ICS-43434 `BCLK` (alt: INMP441 `SCK`) and MAX98357A `BCLK`; expected 1.024 MHz |
 | I2S speaker data | 3 | MAX98357A `DIN` |
-| I2S microphone data | 4 | INMP441 `SD` (alt: ICS-43434 `DOUT`) |
+| I2S microphone data | 4 | #6049 ICS-43434 `DOUT` (alt: INMP441 `SD`) |
 | Optional action/config input | 10 | Active-low push button to GND if fitted |
 | OLED SCL | 20 | SSD1306 SCL |
 | OLED SDA | 21 | SSD1306 SDA |
 
+These are logical endpoints. The F0 hardware experiment interposes a one-way
+TXU0104 boundary between GPIO1/GPIO2/GPIO3 and the amplifier. It proposes
+GPIO5, with 4.7 kΩ to ground, as channel A4; B4 then releases `SD_MODE` into
+left-channel operation. The #2873 open-drain power-good output independently
+gates TXU `OE` through a 10 kΩ pull-up to 5V_SYS, so loss of rail-good disables
+all amplifier-side outputs. Official chip reset does not itself pull MTDI
+(GPIO5) high, but firmware APIs can enable that pull-up: GPIO5 must be driven low
+at the earliest board-init point and must not be reset into a pulled-up state.
+The candidate has no MCU `PG` sense input: firmware sequencing uses a qualified
+startup/rail delay and valid zero-data I2S while `PG` independently vetoes
+`OE`. The delay before nonzero samples must cover measured worst-case `PG`
+release plus amplifier turn-on, or the final schematic needs a reviewed
+level-safe sense path.
+This control is not implemented or frozen in the current firmware; keep
+`SD_MODE` hard-grounded until the reviewed schematic, firmware sequence, and
+partial-power tests pass.
+
 At 16,000 frames/s and 64 bit clocks per frame, the I2S bit clock is
 `16,000 × 64 = 1.024 MHz`. The microphone uses the intended left slot with its
-select pin low (INMP441 `L/R`, ICS-43434 `SEL`). The amplifier defaults to a
-mono mix — full amplitude, since the ESP32-C3 duplicates the mono slot; its
-`SD` mode voltage and gain are still measured on the received board.
+select pin low (#6049 `SEL`; INMP441 `L/R`). The pinned codec selects mono DMA
+with `I2S_STD_SLOT_LEFT`; source inspection therefore predicts active left and
+inactive right TX slots because ESP-IDF copy-mono is enabled only for a `BOTH`
+slot mask. Treat that as unverified until a hardware capture confirms it. Do
+not assume the #3006 default mix gives full amplitude; qualify its `SD` mode
+and select left explicitly if the capture confirms an inactive right slot.
 
 ### Historical vendor/video contract
 

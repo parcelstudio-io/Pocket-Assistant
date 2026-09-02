@@ -4,9 +4,10 @@ This page connects the durable concepts in the course to the repository's
 current prototype. It is a navigation aid, not a released wiring drawing or
 purchase approval.
 
-> **Current signal fixture (R1):** INMP441 microphone on GPIO4 (documented
-> alternate: Adafruit `#6049` ICS-43434 — wires identically) and a MAX98357A
-> amplifier on GPIO3, with 16 kHz audio and shared GPIO1/GPIO2 clocks.
+> **Current signal fixture:** Adafruit `#6049` ICS-43434 Phase 0 microphone on
+> GPIO4 and a MAX98357A amplifier on GPIO3, with 16 kHz audio and shared
+> GPIO1/GPIO2 clocks. INMP441 is a held alternative with analogous signal
+> names but a carrier pin order that must be checked independently.
 > Purchase authority belongs only to
 > [FINAL_MATERIALS_FOR_REVIEW.md](../../../docs/FINAL_MATERIALS_FOR_REVIEW.md);
 > this map does not authorize final quantities or assembly.
@@ -32,21 +33,25 @@ Use the five evidence labels from [Lesson 00](../00-safety-evidence-and-course-m
 protected cell or current-limited bench substitute
                      │
                      ▼
-       input protection / switching / regulation
-                     │
-                    3V3
-       ┌─────────────┼──────────────┬───────────────┐
-       ▼             ▼              ▼               ▼
-   ESP32-C3       OLED(s)       I2S mic        I2S amplifier
-       │                                             │
-       └──── Wi-Fi / controls                         ▼
-                                                  speaker
+       input protection / switching / #2873
+                     │ 5V_SYS
+          ┌──────────┴──────────────┐
+          ▼                         ▼
+     I2S amplifier       diode → controller LDO → 3V3
+          ▲                               ┌─────┼────────┐
+          │                               ▼     ▼        ▼
+ PG-gated partial-power translator    ESP32   OLED   I2S mic
+          ▲                               │
+          └──────── I2S / shutdown ───────┘ Wi-Fi / controls
+          │
+          ▼
+       speaker
 
 conductive frame: mechanically separate, insulated, not a power return
 ```
 
 Every arrow needs a return-current path even when the drawing omits it for
-clarity. The regulated rail, protection strategy, service-power isolation,
+clarity. The regulated rails, protection strategy, supply and signal isolation,
 connectors, and exact module implementations remain design/qualification work.
 
 ## Current corrected-source signal contract
@@ -57,10 +62,11 @@ compatibility. Its source of truth is
 
 | Function | ESP32-C3 GPIO | Intended endpoint | Course topic |
 | --- | ---: | --- | --- |
-| I2S word select | 1 | INMP441 `WS` (alt: ICS-43434 `WS/LRCLK`), MAX98357A `LRC` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
-| I2S bit clock | 2 | INMP441 `SCK` (alt: ICS-43434 `BCLK`), MAX98357A `BCLK` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| I2S word select | 1 | #6049 ICS-43434 `WS/LRCLK` (alt: INMP441 `WS`), MAX98357A `LRC` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| I2S bit clock | 2 | #6049 ICS-43434 `BCLK` (alt: INMP441 `SCK`), MAX98357A `BCLK` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
 | I2S speaker data | 3 | ESP output → MAX98357A `DIN` | [I2S](../09-i2s-sampling-and-digital-audio.md) |
-| I2S microphone data | 4 | INMP441 `SD` (alt: ICS-43434 `DOUT`) → ESP input | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| I2S microphone data | 4 | #6049 ICS-43434 `DOUT` (alt: INMP441 `SD`) → ESP input | [I2S](../09-i2s-sampling-and-digital-audio.md) |
+| Candidate amplifier enable | 5 | TXU0104 A4 → B4 → MAX98357A `SD_MODE`; #2873 `PG` independently gates translator `OE` | [GPIO](../07-digital-logic-gpio-pullups-boot-straps.md) and [audio](../10-class-d-btl-speakers-and-acoustics.md) |
 | Action/config input | 10 | external active-low control | [GPIO](../07-digital-logic-gpio-pullups-boot-straps.md) |
 | OLED clock | 20 | SSD1306 `SCL` | [I2C](../08-i2c-and-the-oled.md) |
 | OLED data | 21 | SSD1306 `SDA` | [I2C](../08-i2c-and-the-oled.md) |
@@ -81,9 +87,9 @@ amplifier primary and held alternative, not the active `#3006` endpoint.
 
 | Interface | Electrical behavior | What to verify on hardware |
 | --- | --- | --- |
-| 3V3 rail | DC supply with transient current | range at load, startup, ripple/dips, current, heat |
+| 5V_SYS / 3V3 rails | Candidate #2873 whole-load rail and the controller board's downstream LDO rail | range at load, startup/cutoff, ripple/dips, current, heat, and rail-to-rail backfeed |
 | I2C | shared open-drain SDA/SCL with pull-ups | actual pull-ups/levels, addresses, ACK, rise time, pin order |
-| I2S | `#6049`/`#3006` point-to-point/shared-clock push-pull stream | direction, levels, 16 kHz WS, 1.024 MHz BCLK, slot format, edge quality |
+| I2S | `#6049`/`#3006` point-to-point/shared-clock push-pull stream; amp-side translator `OE` is gated by #2873 `PG` | direction, levels, 16 kHz WS, 1.024 MHz BCLK, slot format, PG/OE/SD sequencing, edge quality |
 | Action input | active-low GPIO according to source | external pull/default, reset-time effect, debounce, access |
 | USB/service power | depends on exact board implementation | isolation, reverse current/backfeed, regulator path, connector access |
 | Speaker output | Adafruit `#3006` bridge-tied screw-terminal pair | neither lead grounded; load, current, heat, acoustic mounting |
@@ -96,7 +102,7 @@ approving a power path. At minimum, resolve and verify:
 
 1. Can the exact converter module **cold-start** at the intended minimum input
    with the real load and all path drops?
-2. Does it maintain 3V3 through credible Wi-Fi/audio transients?
+2. Does it maintain 5V_SYS and the downstream 3V3 rail through credible Wi-Fi/audio transients?
 3. What provides a normal low-battery shutdown with hysteresis, rather than
    relying on a cell protection fault cutoff?
 4. What does each protection component do across current, time, and temperature?
