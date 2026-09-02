@@ -132,12 +132,12 @@ process tools.
 
 | Item | Why | Approx. |
 | --- | --- | ---: |
-| **IPA 90 %+ · swabs · baking soda** | **Safety-relevant** — neutralizes the Harris acid flux. Residue left on brass corrodes joints and blisters paint | ~$15 |
-| **Heat gun** | You have white heat-shrink and nothing to shrink it with | ~$20 |
-| Solder wick | Undoing mistakes on fine pads | ~$8 |
-| Needle files + 400–800 grit | Deburring is a safety step — no sharp brass edge may reach the pack | ~$15 |
-| Hot glue gun + gel CA | Module retention | ~$15 |
-| USB-**A**-to-C data cable | Clone boards ship CC-resistor bugs that make C-to-C power-only | ~$7 |
+| **IPA 91 %+ · swabs · baking soda** — buy **locally** (pharmacy + grocery); liquid shipping is hazmat-flagged and costly | **Safety-relevant** — neutralizes the Harris acid flux. Residue left on brass corrodes joints and blisters paint. 70 % IPA has too much water; use 91 %+ | ~$6 |
+| **Heat gun** — [QWORK 300 W with stand](https://www.amazon.com/QWORK-Shrink-Shrinking-Wrapping-Embossing/dp/B09NDCCW29) | White heat-shrink is already on hand with nothing to shrink it. Buy standalone, not a tubing bundle | ~$18 |
+| **Solder wick** — [JoTownCand 3-pack, 3 widths, no-clean](https://www.amazon.com/JoTownCand-Premium-Desoldering-Residue-Solder/dp/B0DRN688Q5) | Undoing mistakes on fine pads; the 0.08" width suits OLED/microphone breakouts | ~$8 |
+| **Steel needle files, cut 2** + 400–800 wet/dry grit | Deburring is a safety step — no sharp brass edge may reach the pack. ⚠️ **Steel, not diamond**: soft brass loads diamond grit and the file stops cutting | ~$15 |
+| Hot glue gun (**low-temp**) + gel CA | Module retention near plastic bodies and the OLED | ~$15 |
+| **USB-A-to-C data cable** — [Rankie USB 3.0, 3-pack](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4) | Clone boards ship CC-resistor bugs that make C-to-C power-only. "3.0" guarantees data lines; a charge-only cable makes the board look dead to `esptool` | ~$10 |
 
 ### Optional — white/silver finish
 
