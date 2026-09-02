@@ -123,8 +123,8 @@ display operation, and headless fallback all pass repeatedly.
 
 ## Primary references
 
-- NXP I2C-bus specification UM10204:
-  <https://www.nxp.com/docs/en/user-guide/UM10204.pdf>
+- NXP I2C-bus specification UM10204, Rev. 7
+  ([NXP-hosted copy](https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/other/18306/1/UM10204_I2CSpec.pdf?inline=true))
 - Espressif ESP32-C3 I2C guide:
   <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2c.html>
 - Espressif ESP32-C3 schematic checklist:

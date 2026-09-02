@@ -35,6 +35,29 @@ Digital wiring therefore has analog properties: resistance, capacitance,
 finite edge speed, noise, and a return-current path. Short wiring gives more
 margin, but “it is only ones and zeros” is never a signal-integrity argument.
 
+## Bits, bytes, binary, and hexadecimal
+
+A **bit** is one logical choice, 0 or 1. Eight bits form a **byte**. Binary
+place values are powers of two:
+
+```text
+bit position:  7   6   5   4   3   2   1   0
+place value: 128  64  32  16   8   4   2   1
+```
+
+Hexadecimal is a compact way to write binary. One hexadecimal digit represents
+four bits and uses `0`–`9`, then `A`–`F` for decimal 10–15. The prefix `0x`
+means “this number is hexadecimal”:
+
+```text
+0x3C = binary 0011 1100 = decimal 60
+```
+
+This is why an I2C address such as `0x3C` is easy to compare with a captured
+seven-bit field. The written number is information interpreted by devices; it
+is not a “0x3C-volt” electrical level. The physical wire still carries only
+voltages that the receiver classifies as LOW or HIGH.
+
 ## The four GPIO ideas that must not be confused
 
 | State or mode | What the pin does | Typical use |
@@ -225,11 +248,10 @@ seen in logs, but a floating input should never remain in the final design.
 ## Primary sources
 
 - Espressif, *ESP32-C3 Series Datasheet* (electrical characteristics, pins, and
-  boot configuration): <https://www.espressif.com/documentation/esp32-c3_datasheet_en.pdf>
+  boot configuration): <https://documentation.espressif.com/esp32-c3_datasheet_en.pdf>
 - Espressif, *ESP32-C3 Schematic Checklist* (straps, GPIO reset states, USB,
   and decoupling): <https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32c3/schematic-checklist.html>
 - Espressif, *GPIO & RTC GPIO*: <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/gpio.html>
 - Espressif, *USB Serial/JTAG Controller Console*: <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-guides/usb-serial-jtag-console.html>
 - Texas Instruments, *Implications of Slow or Floating CMOS Inputs*:
   <https://www.ti.com/lit/an/scba004e/scba004e.pdf>
-

@@ -226,7 +226,7 @@ skip speaker-output waveform measurements.
 - Espressif, *ESP-IDF I2S Programming Guide for ESP32-C3*:
   <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2s.html>
 - Espressif, *ESP32-C3 Technical Reference Manual* (I2S and GPIO matrix):
-  <https://www.espressif.com/documentation/esp32-c3_technical_reference_manual_en.pdf>
+  <https://documentation.espressif.com/esp32-c3_technical_reference_manual_en.pdf>
 - TDK InvenSense, *INMP441 Omnidirectional Microphone with Bottom Port and I2S
   Digital Output*: <https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf>
 - Analog Devices/Maxim Integrated, *MAX98357A/MAX98357B PCM Input Class D
@@ -236,4 +236,3 @@ skip speaker-output waveform measurements.
 - Texas Instruments, *High-Speed Layout Guidelines for Signal Conditioners and
   USB Hubs* (return paths and decoupling principles):
   <https://www.ti.com/lit/an/scaa082a/scaa082a.pdf>
-

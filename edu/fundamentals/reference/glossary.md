@@ -72,6 +72,7 @@ Capitalization matters: `mA` is milliampere; `MA` is megaampere.
 | **Boost converter** | Switching converter that increases voltage. |
 | **Buck-boost converter** | Switching converter that can regulate with input above or below output. |
 | **Efficiency (`η`)** | Useful output power divided by input power. It varies with voltage, load, temperature, and implementation. |
+| **Constant voltage / constant current (`CV` / `CC`)** | Control modes that regulate voltage or current. A bench supply entering CC may indicate overload; a qualified Li-ion charger deliberately uses controlled CC/CV phases under cell-specific rules. |
 | **Quiescent current** | Current used internally by a device, usually under specifically stated no-load or disabled conditions. |
 | **Inrush current** | Short initial current while capacitors charge or systems start. |
 | **Load transient** | Rapid change in demanded current and the rail's response to it. |
@@ -91,6 +92,8 @@ Capitalization matters: `mA` is milliampere; `MA` is megaampere.
 | --- | --- |
 | **Logic low/high** | Voltage ranges a receiver interprets as 0 or 1. Exact thresholds are datasheet conditions, not always 0 V and rail voltage. |
 | **GPIO** | General-purpose input/output pin. It is a signal pin with limited drive, not a general power rail. |
+| **Bit / byte** | A bit is one binary 0-or-1 value; a byte contains eight bits. |
+| **Binary / hexadecimal** | Base-2 / base-16 notation. Hex digits `0`–`F` compactly encode four bits and are commonly prefixed with `0x`. |
 | **Push-pull** | Output actively drives both high and low. |
 | **Open-drain** | Output actively pulls low or releases the line; an external pull-up creates high. Multiple devices can share a line safely if all follow the protocol. |
 | **Tri-state / high impedance** | Output driver releases the line and draws little current. The voltage then needs another defined path. |
@@ -116,6 +119,7 @@ Capitalization matters: `mA` is milliampere; `MA` is megaampere.
 | --- | --- |
 | **Amplitude** | Magnitude of a varying signal. State peak, peak-to-peak, or RMS. |
 | **Impedance (`Z`)** | Frequency-dependent opposition to AC, incorporating resistance and reactance. Measured in ohms. |
+| **Reactance (`X`)** | Frequency-dependent opposition of ideal capacitance or inductance; part of impedance and measured in ohms. |
 | **Class-D amplifier** | Efficient switching audio amplifier whose output waveform is filtered by the load/acoustics and circuit. |
 | **BTL** | Bridge-tied load: the load is driven differentially between two amplifier outputs. Neither output is ground. |
 | **Clipping** | Output cannot follow the requested waveform and flattens/distorts at a limit. |

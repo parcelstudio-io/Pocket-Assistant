@@ -152,6 +152,34 @@ If an inductor current path is opened abruptly, the inductor produces whatever
 voltage its circuit allows in an attempt to keep current continuous. Converter
 switches and clamp or freewheel paths are designed around that behavior.
 
+## Frequency intuition: reactance and impedance
+
+For a repeating sine wave, capacitors and inductors oppose current in a way
+that depends on frequency. The ideal magnitude of that opposition is called
+**reactance**:
+
+```text
+capacitor: Xc = 1 / (2πfC)
+inductor:  Xl = 2πfL
+```
+
+Reactance is measured in ohms, but unlike a resistor it also shifts the timing
+between voltage and current. **Impedance** is the broader AC quantity combining
+resistance and reactance. This is why a speaker can be labeled `8 Ω nominal`
+yet measure a different DC resistance, and why a capacitor can bypass fast
+noise while remaining open to steady DC in the ideal model.
+
+For an ideal `100 nF` capacitor at `1 MHz`:
+
+```text
+Xc = 1 / (2π × 1,000,000 × 100 nF) ≈ 1.59 Ω
+```
+
+That is useful intuition, not a prediction of a real decoupling network. At
+high frequency, capacitor ESR/ESL, package, placement, trace length, and the
+return loop can dominate. Similarly, a real inductor can saturate or approach
+self-resonance, where the simple `Xl` model stops being sufficient.
+
 ## Diodes
 
 A diode strongly favors current in one direction. For a conventional diode

@@ -277,6 +277,26 @@ loads vary with time, datasheet maxima differ from typical readings, and a
 converter must handle transients and startup. The method is durable; the input
 numbers are provisional until measured and justified.
 
+## Know the solderless breadboard before using it
+
+A breadboard hides metal spring clips under its holes. On a common style, each
+group of five holes beside the center trench is one node; the trench separates
+the two sides so an IC can straddle it. Long red/blue “power rails” run in the
+other direction—but many are split halfway, and not every breadboard follows
+the same pattern.
+
+```text
+power rail:  o-o-o-o-o ... possible hidden break ... o-o-o-o-o
+
+terminal:    o o o o o   || center trench ||   o o o o o
+             └─one node─┘                     └─one node─┘
+```
+
+With all power disconnected, map the actual hidden connections using
+continuity mode. Add explicit jumpers across intended rail breaks. A colored
+stripe is a label, not proof of voltage or continuity, and a breadboard is not
+an appropriate fixture for the pager's ampere-scale power qualification.
+
 ## Battery-free lab — verify series, parallel, KVL, and KCL
 
 ### Equipment

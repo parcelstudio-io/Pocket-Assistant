@@ -191,6 +191,16 @@ An inductor's current cannot change instantaneously in the ideal model. Real
 inductors have winding resistance, parasitic capacitance, current saturation,
 core loss, and thermal limits.
 
+For ideal components in sinusoidal steady state:
+
+```text
+capacitive reactance magnitude: Xc = 1 / (2πfC)
+inductive reactance magnitude:  Xl = 2πfL
+```
+
+Both are in ohms. Impedance also includes phase and resistance; real ESR, ESL,
+loss, saturation, and self-resonance limit these ideal formulas.
+
 ## I2C pull-up current and rise time
 
 When one device pulls the line low:

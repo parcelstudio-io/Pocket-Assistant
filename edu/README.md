@@ -37,6 +37,7 @@ prototype. They are engineering notes, not a second fundamentals course:
 - [System overview](01-how-it-fits-together.md)
 - [Software and evidence tools](01_SOFTWARE_AND_VERIFICATION.md)
 - [Component rationale](02-components.md)
+- [White/silver/black candidate-selection criteria](02_COMPONENTS_WHITE_SILVER_BLACK.md)
 - [Power and battery notes](03-power-and-battery.md)
 - [Current signal contract](03_HOW_IT_WORKS.md)
 - [I2S and audio](04-audio.md)
@@ -61,5 +62,6 @@ been physically accepted.
 
 Do not reproduce the video's exposed-cell construction. Keep lithium cells
 out of the early labs. Never strip, solder, heat, puncture, or deliberately
-short a cell. The metal frame is structure, not a conductor, and neither
-bridge-amplifier speaker lead is ground.
+short a cell. The metal frame is not a circuit conductor or current return,
+but must always be treated as electrically conductive and isolated from every
+net. Neither bridge-amplifier speaker lead is ground.

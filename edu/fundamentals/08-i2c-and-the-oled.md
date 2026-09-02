@@ -225,12 +225,12 @@ scope clip until its relationship to circuit ground is understood.
 
 ## Primary sources
 
-- NXP Semiconductors, *UM10204 I2C-bus specification and user manual*, Rev. 7:
-  <https://www.nxp.com/docs/en/user-guide/UM10204.pdf>
+- NXP Semiconductors, *UM10204 I2C-bus specification and user manual*, Rev. 7
+  ([NXP-hosted copy](https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/other/18306/1/UM10204_I2CSpec.pdf?inline=true))
 - Espressif, *ESP-IDF I2C Programming Guide for ESP32-C3*:
   <https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2c.html>
 - Espressif, *ESP32-C3 Series Datasheet* (internal pull-resistor
-  characteristics): <https://www.espressif.com/documentation/esp32-c3_datasheet_en.pdf>
+  characteristics): <https://documentation.espressif.com/esp32-c3_datasheet_en.pdf>
 - Solomon Systech, *SSD1306 Advance Information* (address and interface):
   <https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf>
 - Adafruit, *Monochrome 1.3 in 128×64 OLED Graphic Display #326*:
@@ -239,4 +239,3 @@ scope clip until its relationship to circuit ground is understood.
   <https://learn.adafruit.com/monochrome-oled-breakouts/wiring-128x64-oleds>
 - Adafruit, published #326 PCB design files:
   <https://github.com/adafruit/Adafruit-128x64-Monochrome-OLED-PCB>
-

@@ -241,6 +241,26 @@ from the cell manufacturer. Nitecore's public NL169 page gives capacity,
 energy, dimensions, and 2 A maximum continuous discharge, but not the internal
 resistance or protection thresholds/timing assumed in the old project lesson.
 
+## Charging is a separate controlled process
+
+Many rechargeable Li-ion cells are charged in two main phases by a charger
+matched to the exact chemistry and manufacturer limits:
+
+1. **constant current (`CC`)** while cell voltage rises; then
+2. **constant voltage (`CV`)** while current tapers toward the charger's
+   specified termination condition.
+
+This `CC` means a charge-control phase; it is not the bench supply's accidental
+current-limit state during debugging. Preconditioning, temperature limits,
+termination current, maximum voltage, recharge behavior, and maximum charge
+current are part-specific. `4.2 V` is common for some Li-ion chemistries but is
+not a universal number to impose on an unidentified cell.
+
+A cell protection PCB does not implement a complete charger. Neither does the
+pager's 3.3 V converter. This project keeps charging outside the pager in an
+exact external charger whose manufacturer explicitly supports the accepted
+cell. No course lab asks you to construct or tune a Li-ion charger.
+
 ## Protection layers have separate jobs
 
 | Layer | Intended job | It does not prove |
@@ -400,4 +420,3 @@ charger, or complete harness.
 - [AOS AO3401A datasheet](https://www.aosmd.com/sites/default/files/res/datasheets/AO3401A.pdf)
 - [Diodes Incorporated DMG2301L datasheet](https://www.diodes.com/assets/Datasheets/DMG2301L.pdf)
 - [Espressif ESP32-C3 schematic checklist](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32c3/schematic-checklist.html)
-

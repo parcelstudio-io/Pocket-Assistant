@@ -271,5 +271,5 @@ condition can.
 
 - [Fluke: how to measure voltage with a digital multimeter](https://www.fluke.com/en-us/learn/blog/digital-multimeters/how-to-measure-voltage-with-a-digital-multimeter)
 - [Fluke: how to measure current with a digital multimeter](https://www.fluke.com/en-us/learn/blog/digital-multimeters/how-to-measure-current-with-a-digital-multimeter)
-- [Saleae: logic analyzer fundamentals](https://support.saleae.com/tutorials/learning-portal/learning-resources/learn-how-a-logic-analyzer-works)
+- [Saleae: logic analyzer tutorial](https://www.saleae.com/support/tutorials-learning/guides/logic-analyzer-tutorial)
 - [Tektronix: oscilloscope fundamentals](https://www.tek.com/en/documents/primer/oscilloscope-basics)
