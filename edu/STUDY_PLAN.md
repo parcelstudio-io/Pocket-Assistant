@@ -39,11 +39,16 @@ to be either hand-wavy or a parts list pretending to be a tutorial.
 Everything for the *device* is bought. Practice is what you cannot do yet,
 because you have no sacrificial boards to solder to.
 
-| Item | Why | Approx. |
-| --- | --- | ---: |
-| **Perfboard, assorted, pre-tinned** — [Chanzon 34 pcs, 5 sizes](https://www.amazon.com/CHANZON-IA0-PCB-BOARD/dp/B09YH1Q11W) | The practice surface. Pre-tinned holes wet cleanly, so you learn what a *good* joint feels like instead of fighting bare copper | ~$13 |
-| **Magnification** — [1000× USB microscope, metal stand](https://www.amazon.com/Digital-Microscope-Lights-Multifunction-Studying/dp/B0DFLJ8N1S), or a headband magnifier if economising | The purchase that most accelerates the skill. You cannot improve joints you cannot see — wetting, cold joints, and hairline bridges are invisible at arm's length. Being able to photograph a joint and compare it to the next one is the whole feedback loop | $13–28 |
-| **Assorted LEDs** — [DSSRQI 100 pcs, 5 colors, diffused](https://www.amazon.com/DSSRQI-Diffused-Assortment-Emitting-Lighting/dp/B0DGTR8GP3) | Instant pass/fail on a practice circuit: it lights or it doesn't. Choose **diffused** over clear — visible from any angle. Skip kits that bundle resistors; you own a thousand | ~$7 |
+**These three are commodity items — any equivalent works.** Unlike the speaker
+or the connectors, no specific part number matters here. Search terms and the
+specs that actually matter are given with each; treat the links as examples,
+not requirements.
+
+| Item | Search / examples | What actually matters | Approx. |
+| --- | --- | --- | ---: |
+| **Perfboard** | `double sided perfboard 2.54mm` — [20 pcs 4 sizes](https://www.amazon.com/Prototype-Printed-Universal-Perfboard-Soldering/dp/B096YJXX62) · [10 pcs 9×15 cm](https://www.amazon.com/Culnflun-Perfboard-Prototype-Soldering-Practice/dp/B0GXC1TFHD) · [74 pcs with headers](https://www.amazon.com/PCB-Prototype-Electronic-Double-Sided-Compatible/dp/B0G6RVM23J) | **2.54 mm pitch**, **FR4** (not phenolic/paper — it scorches and delaminates), double-sided, tinned holes preferred. Tinned holes wet cleanly, so you learn what a *good* joint feels like instead of fighting bare copper | ~$13 |
+| **Magnification** | `headband magnifier LED` — [YOCTOSUN 5-lens](https://www.amazon.com/YOCTOSUN-Rechargeable-Magnifying-Professional-Interchangeable/dp/B07T4KPYN2) · [TMANGO visor](https://www.amazon.com/TMANGO-Magnifier-Headband-Magnifying-Brightness/dp/B07XJMZGHS). Or `USB microscope soldering` — [1000× with stand](https://www.amazon.com/Digital-Microscope-Lights-Multifunction-Studying/dp/B0DFLJ8N1S) | Hands-free, with a light. **3.5× is the lens you will live on**; the rest are filler. The purchase that most accelerates the skill — wetting, cold joints, and hairline bridges are invisible at arm's length | $13–28 |
+| **Assorted LEDs** | `5mm diffused LED assortment` — [DSSRQI 100 pcs](https://www.amazon.com/DSSRQI-Diffused-Assortment-Emitting-Lighting/dp/B0DGTR8GP3) · [500 pcs, 5 colors](https://www.amazon.com/Assorted-Arduino-Projects-Indicator-Consumption/dp/B07DQQCXV9) | 5 mm, **diffused** rather than clear so they read from any angle. Skip kits that bundle resistors; you own a thousand | ~$7 |
 | Sacrificial brass | **Free** — dedicate 1 of your 4 tubes and 1 of your 5 rods to practice. Never practice structural soldering on the piece you intend to keep | — |
 
 Everything else you own: 1,000 resistors, 650 ceramic caps, electrolytics,
