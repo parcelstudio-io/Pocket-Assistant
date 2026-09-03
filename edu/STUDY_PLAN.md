@@ -42,8 +42,8 @@ because you have no sacrificial boards to solder to.
 | Item | Why | Approx. |
 | --- | --- | ---: |
 | **Perfboard, assorted, pre-tinned** — [Chanzon 34 pcs, 5 sizes](https://www.amazon.com/CHANZON-IA0-PCB-BOARD/dp/B09YH1Q11W) | The practice surface. Pre-tinned holes wet cleanly, so you learn what a *good* joint feels like instead of fighting bare copper | ~$13 |
-| **Magnification** — headband magnifier or a cheap USB microscope | The one that actually accelerates learning. You cannot improve joints you cannot see; wetting, cold joints, and hairline bridges are invisible at arm's length | $15–30 |
-| **Assorted LEDs** (5 mm, with the resistors you own) | Instant pass/fail feedback on a practice circuit — it lights or it doesn't. Cheaper than a multimeter probe every time | ~$8 |
+| **Magnification** — [1000× USB microscope, metal stand](https://www.amazon.com/Digital-Microscope-Lights-Multifunction-Studying/dp/B0DFLJ8N1S), or a headband magnifier if economising | The purchase that most accelerates the skill. You cannot improve joints you cannot see — wetting, cold joints, and hairline bridges are invisible at arm's length. Being able to photograph a joint and compare it to the next one is the whole feedback loop | $13–28 |
+| **Assorted LEDs** — [DSSRQI 100 pcs, 5 colors, diffused](https://www.amazon.com/DSSRQI-Diffused-Assortment-Emitting-Lighting/dp/B0DGTR8GP3) | Instant pass/fail on a practice circuit: it lights or it doesn't. Choose **diffused** over clear — visible from any angle. Skip kits that bundle resistors; you own a thousand | ~$7 |
 | Sacrificial brass | **Free** — dedicate 1 of your 4 tubes and 1 of your 5 rods to practice. Never practice structural soldering on the piece you intend to keep | — |
 
 Everything else you own: 1,000 resistors, 650 ceramic caps, electrolytics,
