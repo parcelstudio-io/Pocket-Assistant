@@ -4,8 +4,14 @@ This is a beginner-first path into the physics and electrical engineering used
 by the pocket assistant. It assumes comfortable arithmetic and simple algebra,
 but no electronics background and no calculus.
 
-Start with the [foundations course](fundamentals/README.md). It teaches the
-ideas independently of whichever exact marketplace parts eventually pass
+**If you are starting from scratch, read [the three-week study
+plan](STUDY_PLAN.md) first.** It sequences everything below into fifteen
+2-hour sessions, pairs each reading block with bench work on parts you own,
+and adds the soldering practice curriculum (rep counts, pass criteria, and the
+materials needed) that the lessons alone do not provide.
+
+The [foundations course](fundamentals/README.md) teaches the ideas
+independently of whichever exact marketplace parts eventually pass
 qualification:
 
 1. [Safety, evidence, and the learning path](fundamentals/00-safety-evidence-and-course-map.md)
