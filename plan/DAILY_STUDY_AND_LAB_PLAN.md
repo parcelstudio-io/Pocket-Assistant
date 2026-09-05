@@ -66,6 +66,96 @@ cell fixture with an improvised connection. Generic parts from the older
 inventory are useful learning articles, but ownership does not make them
 approved final-build parts.
 
+## Product links for items used in this plan
+
+The links below are purchase-provenance links recovered from the project's
+archived order sheet and inventory history. They identify what was bought; they
+do **not** override the current safety or design status in
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
+
+Use this index whenever a daily session names an item. An entry marked
+`not recorded` means the repository names the owned item or order batch but
+does not preserve its exact product URL. Do not silently replace it with a
+similar search result. Add the original order-page URL here if it becomes
+available.
+
+### Electronics and passive components
+
+| Item referenced by the plan | Purchased item and product link | Used on |
+| --- | --- | --- |
+| ESP32-C3 controller | Meshnology/plain ESP32-C3 SuperMini 10-pack — [Amazon B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) | Days 1, 6–10, 14–15 |
+| OLED | Hosyond 0.96-inch white SSD1306 I2C 5-pack — [Amazon B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) | Days 1, 6, 8, 14–15 |
+| I2S microphone | AITRIP/INMP441 5-pack — [Amazon B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS) | Days 1, 6, 9–10, 14–15 |
+| I2S amplifier | HiLetgo MAX98357A 3-pack — [Amazon B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH) | Days 1, 6, 9–10, 13–14 |
+| Speaker | Same Sky CES-20134-088PM, 8 ohm/0.8 W — [DigiKey 2223-CES-20134-088PM-ND](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) | Days 1, 6, 10, 14 |
+| Action button | QTEATAK 6x6 mm tactile-switch and cap kit — [Amazon B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) | Days 1, 6–8, 14–15 |
+| Resistors, including 1 kohm, 2.2 kohm, 10 kohm, and 100 kohm | LuminologyPro 1/4 W resistor kit — [Amazon B0F4P352BB](https://www.amazon.com/dp/B0F4P352BB) | Days 2–5, 7, 11, 13 |
+| Ceramic capacitors | BOJACK ceramic-capacitor kit — [Amazon B07P7HRGT9](https://www.amazon.com/dp/B07P7HRGT9) | Days 4 and 13 |
+| Electrolytic capacitors, including 100 uF and 220 uF | ALLECIN electrolytic-capacitor kit — [Amazon B0C1VBXCQM](https://www.amazon.com/dp/B0C1VBXCQM) | Days 4 and 13 |
+| Protected 500 mAh LiPo | Adafruit #1578 — [Adafruit product 1578](https://www.adafruit.com/product/1578) | Storage boundary and Day 14 inert mock-up only |
+| Protected 1200 mAh LiPo | Adafruit #258 — [Adafruit product 258](https://www.adafruit.com/product/258) | Storage boundary and Day 14 inert mock-up only |
+| USB-C LiPo charger | Adafruit #4410 — [Adafruit product 4410](https://www.adafruit.com/product/4410) | Storage/source-state discussion only |
+| Slide switch | Chanzon/SS12D00-class SPDT 25-pack — [Amazon B09R434VJQ](https://www.amazon.com/dp/B09R434VJQ) | Day 13 unpowered or currently permitted testing only |
+| LED | Exact purchase URL `not recorded` | Optional Day 7 extension |
+| 2.54 mm breakaway headers | Exact purchase URL `not recorded`; recorded in Amazon order #4 | Days 11–12 |
+| JST-PH pigtails | Exact purchase URL `not recorded`; recorded as daier 2.0 mm cable set | Not used in powered work in this plan |
+
+The resistor and capacitor links point to the purchased assortment, not to
+separate listings for each individual value. Confirm markings, measured value,
+polarity, voltage rating, and power rating before each lab.
+
+### Bench and measurement equipment
+
+| Item referenced by the plan | Purchased item and product link | Used on |
+| --- | --- | --- |
+| Digital multimeter | KAIWEETS HT118A/TRMS meter — [Amazon B08BL288LW](https://www.amazon.com/dp/B08BL288LW) | Days 1–5 and 7–13 |
+| Current-limited bench supply | SKY TOPPOWER PS305H — [Amazon B0BN1F6CGZ](https://www.amazon.com/dp/B0BN1F6CGZ) | Days 2–5 and 13 |
+| Digital caliper | Neiko 01407A — [Amazon B000GSLKIW](https://www.amazon.com/dp/B000GSLKIW) | Days 6 and 14 |
+| Safety glasses | 3M Solus 1000 — [Amazon B016KZ1ZPM](https://www.amazon.com/dp/B016KZ1ZPM) | Every physical lab |
+| USB-A-to-C data cable | Rankie USB 3.0 3-pack — [Amazon B01JRY0VE4](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4) | Days 6–10 and 14–15 |
+| Solderless breadboards | REXQualis 830/400-point set — exact purchase URL `not recorded`; recorded in Amazon order #5 | Days 2–5 and 7–9 |
+| Dupont jumpers | TODOELEC 10 cm/120-wire kit — exact purchase URL `not recorded`; recorded in Amazon order #4 | Low-current Days 2–9 only |
+| Logic analyzer | No purchase recorded; optional instrument only | Days 8–9 |
+| Oscilloscope/differential measurement equipment | No purchase recorded; optional/arranged instrument only | Day 10 |
+| Current-rated 8 ohm dummy load and leads | No purchase link recorded for the exact approved fixture | Conditional Day 10 only |
+| Camera, scale/ruler, stopwatch, computer, and spreadsheet | General tools; no project purchase URL recorded | Various days |
+
+### Soldering, wire, and rework equipment
+
+| Item referenced by the plan | Purchased item and product link | Used on |
+| --- | --- | --- |
+| Soldering station, holder, helping hands, and silicone mat | X-Tronic 3020-XTS complete kit — exact purchase URL `not recorded`; recorded as an earlier X-Tronic order | Days 11–12 |
+| Electronics solder | MAIYUM 63/37, 0.8 mm — [Amazon B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) | Days 11–12 |
+| Electronics flux | Chip Quik CQ4LF no-clean flux pen — exact purchase URL `not recorded`; recorded in the Adafruit order | Days 11–12 |
+| Wire stripper | Hakko CHP CSP-30-1 — [Amazon B00FZPHMUG](https://www.amazon.com/dp/B00FZPHMUG) | Days 11–12 |
+| Solder wick | JoTownCand 3-pack — [Amazon B0DRN688Q5](https://www.amazon.com/JoTownCand-Premium-Desoldering-Residue-Solder/dp/B0DRN688Q5) | Day 12 |
+| Heat gun | QWORK 300 W with stand — [Amazon B09NDCCW29](https://www.amazon.com/QWORK-Shrink-Shrinking-Wrapping-Embossing/dp/B09NDCCW29) | Day 12, with cells absent |
+| 30 AWG signal wire | CBAZY silicone-wire kit — [Amazon B073RDGTPB](https://www.amazon.com/dp/B073RDGTPB) | Days 11–12 and mock-up planning |
+| 26 AWG power wire | TUOFENG silicone-wire kit — [Amazon B07G2LRX68](https://www.amazon.com/dp/B07G2LRX68) | Days 11–12 and unpowered planning |
+| Heat-shrink tubing | Pointool 14-size white kit — [Amazon B08N4W4K9X](https://www.amazon.com/dp/B08N4W4K9X) | Day 12 |
+| Sacrificial perfboard | Exact purchase URL `not recorded`; use only if already owned | Days 11–12 |
+| Magnification and fume extraction/ventilation | Exact purchase URL `not recorded` | Days 11–12 |
+
+### Mechanical, insulation, and mock-up materials
+
+| Item referenced by the plan | Purchased item and product link | Used on |
+| --- | --- | --- |
+| Brass tube | K&S #9831, 1.5 mm OD — [Amazon B005WPAW9M](https://www.amazon.com/dp/B005WPAW9M) | Day 14 optional uncut RF comparison only |
+| Brass rod | K&S #9861, 1.0 mm — [Amazon B005WPB7YG](https://www.amazon.com/dp/B005WPB7YG) | Fit planning only; do not cut during this plan |
+| Fish-paper insulation | XFJYMXDM 0.2 mm fish paper — [Amazon B0GZVDKBBS](https://www.amazon.com/dp/B0GZVDKBBS) | Day 14 clearance planning only |
+| Polyimide/Kapton tape | ELEGOO four-pack — [Amazon B072Z92QZ2](https://www.amazon.com/dp/B072Z92QZ2) | Mock-up/insulation planning only |
+| Jeweler's saw | SE 3-in-1 saw and blade set — [Amazon B06XPSLS6N](https://www.amazon.com/dp/B06XPSLS6N) | Referenced as a held final-frame tool; no final cutting in this plan |
+| Round/chain-nose pliers | WORKPRO three-piece set — [Amazon B0B8QBVXXR](https://www.amazon.com/dp/B0B8QBVXXR) | Held final-frame work only |
+| Brass acid flux | Harris SCLF4 — [Amazon B0015DWPV8](https://www.amazon.com/dp/B0015DWPV8) | Storage/safety boundary only; never electronics work |
+| Hot-glue gun | SHJADE 20 W mini gun — exact purchase URL `not recorded`; recorded in Amazon order #8 | Held final assembly only |
+| Diamond needle files | SE 744DF-R set — exact purchase URL `not recorded`; recorded in Amazon order #8 | Held final-frame work only |
+| Cardboard, paper, and tape | Reuse clean packaging/household material; no dedicated purchase link required | Day 14 |
+
+These links are intentionally direct product/order references rather than
+search-result links. Amazon inventory and sellers can change behind an ASIN, so
+match the received label and physical part rather than treating the web page as
+proof of the delivered item.
+
 ## Non-negotiable boundaries for all 15 sessions
 
 - Keep every lithium cell terminal-protected, electrically disconnected, and
