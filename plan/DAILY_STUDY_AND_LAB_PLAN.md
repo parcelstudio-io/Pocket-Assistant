@@ -17,6 +17,13 @@ offline diagnostics. Then work through these sessions around that prototype;
 the first five theory labs are useful practice, not prerequisites for bare-board
 USB boot. No additional parts are required for that starting point.
 
+For the physics and engineering behind each lab, open the
+[illustrated concept notes](concepts/README.md). Each day now has a direct link
+to a concise explanation with drawings, a worked example, and a self-check.
+Start with concepts 01–03 for charge, voltage, current, and circuit laws; read
+the remaining pages as needed. These optional 5–10 minute notes fit inside the
+existing study block and add no parts or extra lab requirements.
+
 After Session 15, the intended result is:
 
 - a documented set of basic circuit and measurement labs;
@@ -276,6 +283,8 @@ recorded a privacy/backend decision.
 
 **Question:** What is the system made of, and what work is currently allowed?
 
+**Optional illustrated explanation:** [Charge, energy, and complete circuits](concepts/01-charge-energy-and-circuits.md)
+
 **Prepare**
 
 Everything in the first table is already in your purchase record. The
@@ -437,6 +446,8 @@ why software checks do not prove physical power or audio behavior.
 **Question:** Can measured voltage and resistance predict current and resistor
 power?
 
+**Optional illustrated explanation:** [Voltage, current, resistance, and power](concepts/02-voltage-current-resistance-and-power.md)
+
 **Prepare**
 
 Everything in the first table is already in your purchase record. The
@@ -582,6 +593,8 @@ the calculated dissipation by a comfortable margin.
 
 **Question:** Can circuit laws predict node voltages and branch currents before
 power is applied?
+
+**Optional illustrated explanation:** [Series, parallel, rails, and divider loading](concepts/03-series-parallel-and-loading.md)
 
 **Prepare**
 
@@ -730,6 +743,8 @@ memorizing only the formula.
 **Question:** Does a real capacitor charge according to the predicted RC time
 constant?
 
+**Optional illustrated explanation:** [Capacitors and time](concepts/04-capacitors-and-time.md)
+
 **Prepare**
 
 Everything in the first table is already in your purchase record. The
@@ -867,6 +882,8 @@ disagreement with the prediction is bounded or marked for repetition.
 
 **Question:** Can you choose and connect a measuring instrument without
 changing the circuit dangerously?
+
+**Optional illustrated explanation:** [Measurement and uncertainty](concepts/05-measurement-and-uncertainty.md)
 
 **Prepare**
 
@@ -1036,6 +1053,8 @@ and you consistently de-energize before changing modes or wiring.
 
 **Question:** Is `MCU-A1` the expected board, and can it boot a verified image
 with no external hardware attached?
+
+**Optional illustrated explanation:** [From source code to boot](concepts/06-from-code-to-boot.md)
 
 **Prepare**
 
@@ -1248,6 +1267,8 @@ passes its verifier, and the controller produces a stable, understood boot log.
 **Question:** Can one input have a defined released state and a repeatable
 active-low pressed state?
 
+**Optional illustrated explanation:** [GPIO and buttons](concepts/07-gpio-and-buttons.md)
+
 **Prepare**
 
 Everything in the first table is already in your purchase record. The
@@ -1397,6 +1418,8 @@ works, and no boot mode is entered unintentionally.
 
 **Question:** Does one exact OLED acknowledge at the address and voltage
 expected by the selected firmware?
+
+**Optional illustrated explanation:** [I2C and the OLED](concepts/08-i2c-and-the-oled.md)
 
 **Prepare**
 
@@ -1552,6 +1575,8 @@ failure has been reduced to a specific next discriminating test.
 
 **Question:** Does the exact microphone produce plausible data using the
 selected firmware's clock, data pin, and slot contract?
+
+**Optional illustrated explanation:** [Sampling and I2S](concepts/09-sampling-and-i2s.md)
 
 **Prepare**
 
@@ -1722,6 +1747,8 @@ but mark microphone functionality unverified if this data test has not passed.
 
 **Question:** What must be true before it is safe and meaningful to power the
 amplifier and speaker?
+
+**Optional illustrated explanation:** [Speakers and amplifiers](concepts/10-speakers-and-amplifiers.md)
 
 **Prepare**
 
@@ -1905,6 +1932,8 @@ If loose headers were found on Day 6, do this session before Day 7. After the
 practice gate passes, prepare the needed module headers using the quickstart.
 If already completed then, reuse the record and treat this day as catch-up.
 
+**Optional illustrated explanation:** [Soldering and heat](concepts/11-soldering-and-heat.md)
+
 **Prepare**
 
 Everything in the first table is already in your purchase record. The
@@ -2070,6 +2099,8 @@ continuity, and isolation criteria.
 
 **Question:** Can a wire connection survive handling without transferring
 force to a fragile electrical pad?
+
+**Optional illustrated explanation:** [Joints and strain relief](concepts/12-joints-and-strain-relief.md)
 
 **Prepare**
 
@@ -2245,6 +2276,8 @@ you can distinguish soldering quality from mechanical support.
 
 **Question:** Why can a circuit that works at idle fail during startup, Wi-Fi,
 or audio activity?
+
+**Optional illustrated explanation:** [Power integrity](concepts/13-power-integrity.md)
 
 **Prepare**
 
@@ -2425,6 +2458,8 @@ the others.
 
 **Question:** Can the received parts fit while preserving antenna, connector,
 acoustic, insulation, and removal space?
+
+**Optional illustrated explanation:** [Fit and radio](concepts/14-fit-and-radio.md)
 
 **Prepare**
 
@@ -2615,6 +2650,8 @@ rather than guessed away.
 
 **Question:** Can every previously passed subsystem be reproduced from a clean
 start and debugged without changing several variables at once?
+
+**Optional illustrated explanation:** [Debugging as experiments](concepts/15-debugging-as-experiments.md)
 
 **Prepare**
 

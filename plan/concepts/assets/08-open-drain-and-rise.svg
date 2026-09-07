@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" role="img" aria-labelledby="title desc">
+  <title id="title">I2C LOW is driven; HIGH is an RC rise</title>
+  <desc id="desc">A 3.3 volt supply feeds a resistor into SDA. Controller and OLED each have an open-drain switch to common ground. Closing either switch pulls SDA LOW; opening both lets its capacitance charge. A graph shows an exponential rise and the interval between 30 and 70 percent of the supply.</desc>
+  <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 7 3.5 0 7Z" fill="#172b4d"/></marker></defs>
+  <rect width="800" height="440" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="19">
+    <text x="28" y="32" font-size="22" font-weight="bold">Shared SDA line: any device can pull LOW</text>
+    <g fill="none" stroke-width="3">
+      <path d="M63 128V62H245V85M245 134V174H135V226M245 174H363V226M135 277V322H63V207M135 322H363V277" stroke="#1463ad"/>
+      <circle cx="63" cy="167" r="39" stroke="#1463ad"/>
+      <rect x="231" y="85" width="28" height="49" stroke="#172b4d"/>
+      <path d="M135 277 163 239M363 277 391 239" stroke="#087f8c"/>
+      <circle cx="135" cy="226" r="4" stroke="#087f8c"/>
+      <circle cx="363" cy="226" r="4" stroke="#087f8c"/>
+    </g>
+    <g fill="#087f8c"><circle cx="245" cy="174" r="5"/><circle cx="135" cy="322" r="5"/></g>
+    <text x="63" y="159" text-anchor="middle">+</text><text x="63" y="192" text-anchor="middle">−</text>
+    <text x="29" y="234" fill="#1463ad">3.3 V</text>
+    <text x="276" y="116">Pull-up</text>
+    <text x="198" y="163" fill="#087f8c">SDA</text>
+    <text x="122" y="205">Controller</text>
+    <text x="339" y="205">OLED</text>
+    <text x="142" y="351" fill="#1463ad">Common GND return</text>
+    <text x="456" y="92" font-weight="bold">After everyone releases SDA</text>
+    <g fill="none" stroke="#172b4d" stroke-width="2" marker-end="url(#arrow)"><path d="M500 316V123"/><path d="M500 316H765"/></g>
+    <g stroke="#a0abb8" stroke-dasharray="5 5"><path d="M500 257H750M500 179H750M500 120H750"/><path d="M529 257V326M596 179V326"/></g>
+    <path d="M500 316C507 297 519 273 529 257C549 221 575 192 596 179C646 144 704 130 750 123" fill="none" stroke="#087f8c" stroke-width="4"/>
+    <text x="494" y="125" text-anchor="end">VDD</text>
+    <text x="494" y="185" text-anchor="end">70%</text>
+    <text x="494" y="263" text-anchor="end">30%</text>
+    <text x="494" y="322" text-anchor="end">0</text>
+    <text x="702" y="344">Time →</text>
+    <path d="M529 343V352H596V343" fill="none" stroke="#9a5b00" stroke-width="2"/>
+    <text x="562" y="377" text-anchor="middle" fill="#9a5b00">rise time</text>
+    <text x="28" y="408">Switches represent open-drain transistors. SCL has a separate pull-up.</text>
+    <text x="28" y="433" fill="#9a5b00">Capacitance is distributed along the wire and pins; not an added lab capacitor.</text>
+  </g>
+</svg>

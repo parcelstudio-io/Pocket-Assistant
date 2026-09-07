@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" role="img" aria-labelledby="title desc">
+  <title id="title">A short rail dip can escape a slow meter reading</title>
+  <desc id="desc">An illustrative voltage waveform drops from 3.3 to 2.7 volts for 100 microseconds between 0.45 and 0.55 milliseconds. A slow meter indication near 3.3 volts does not show the full dip. The vertical axis is cropped and begins at 2.5 volts.</desc>
+  <rect width="800" height="360" fill="white"/>
+  <g font-family="sans-serif" font-size="19" fill="#172b4d">
+    <text x="30" y="30" font-size="22" font-weight="bold">A steady-looking number can hide a brief event</text>
+    <path d="M90 55V270H730" fill="none" stroke="#172b4d" stroke-width="2"/>
+    <text x="34" y="95">3.3</text><text x="34" y="230">2.7</text><text x="34" y="277">2.5</text>
+    <text x="6" y="207" transform="rotate(-90 20 207)">Rail voltage (V)</text>
+    <path d="M90 225H700" stroke="#ccd6e0" stroke-dasharray="5 5"/>
+    <path d="M90 90H364.5V225H425.5V90H700" fill="none" stroke="#1463ad" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M90 98H700" stroke="#9a5b00" stroke-width="2" stroke-dasharray="8 6"/>
+    <text x="466" y="141" fill="#9a5b00">DMM may read near 3.3 V</text>
+    <text x="471" y="166" fill="#9a5b00">Illustration, not meter specs</text>
+    <path d="M364.5 202V184H425.5V202" fill="none" stroke="#087f8c" stroke-width="2"/>
+    <text x="340" y="169" fill="#087f8c">100 µs</text>
+    <text x="115" y="70" fill="#1463ad">Actual rail waveform</text>
+    <path d="M395 270V277 M700 270V277" stroke="#172b4d" stroke-width="2"/>
+    <text x="84" y="302">0</text><text x="379" y="302">0.5</text><text x="690" y="302">1.0</text>
+    <text x="290" y="339">Time (ms) · vertical axis cropped</text>
+  </g>
+</svg>

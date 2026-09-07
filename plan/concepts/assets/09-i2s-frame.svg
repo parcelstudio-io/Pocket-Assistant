@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+  <title id="title">I2S clock intervals and one-bit data delay</title>
+  <desc id="desc">One 62.5 microsecond frame has two 32-clock word-select intervals. The left interval is low and right interval high. The detail shows the next sample's most significant bit starting one full bit-clock period after the word-select edge; the first boundary interval still belongs to the preceding word.</desc>
+  <rect width="800" height="420" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="19">
+    <text x="28" y="32" font-size="22" font-weight="bold">One frame = 64 BCLK periods = 62.5 µs at 16 kHz</text>
+    <rect x="160" y="57" width="300" height="62" fill="#eaf4f7" stroke="#087f8c" stroke-width="2"/>
+    <rect x="460" y="57" width="300" height="62" fill="#e9f1fb" stroke="#1463ad" stroke-width="2"/>
+    <text x="310" y="82" text-anchor="middle">Left: 32 clocks</text><text x="310" y="108" text-anchor="middle">WS LOW</text>
+    <text x="610" y="82" text-anchor="middle">Right: 32 clocks</text><text x="610" y="108" text-anchor="middle">WS HIGH</text>
+    <text x="30" y="153">WS</text>
+    <path d="M130 136H160V157H460V136H760V157H778" fill="none" stroke="#087f8c" stroke-width="3"/>
+    <text x="28" y="195" fill="#9a5b00">Interval overview above; data words start one BCLK after each WS edge.</text>
+    <text x="28" y="236" font-weight="bold">Zoom: beginning of the next word (not to frame scale)</text>
+    <g stroke="#a0abb8" stroke-dasharray="5 5"><path d="M255 255V380M385 255V380M515 255V380M645 255V380"/></g>
+    <text x="30" y="281">BCLK</text>
+    <path d="M190 263H255V288H320V263H385V288H450V263H515V288H580V263H645V288H710V263H765" fill="none" stroke="#1463ad" stroke-width="3"/>
+    <text x="30" y="327">WS</text>
+    <path d="M190 338H255V313H765" fill="none" stroke="#087f8c" stroke-width="3"/>
+    <text x="30" y="375">DATA</text>
+    <rect x="255" y="352" width="130" height="36" fill="#fff2d9" stroke="#9a5b00"/>
+    <rect x="385" y="352" width="130" height="36" fill="#eaf4f7" stroke="#087f8c"/>
+    <rect x="515" y="352" width="130" height="36" fill="#eaf4f7" stroke="#087f8c"/>
+    <rect x="645" y="352" width="120" height="36" fill="#eaf4f7" stroke="#087f8c"/>
+    <text x="320" y="376" text-anchor="middle" font-size="18">prior word</text>
+    <text x="450" y="376" text-anchor="middle">MSB</text>
+    <text x="580" y="376" text-anchor="middle">next bit</text>
+    <text x="705" y="376" text-anchor="middle">…</text>
+    <text x="256" y="412" fill="#9a5b00">WS edge → one clock → next sample's MSB</text>
+  </g>
+</svg>

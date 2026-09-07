@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 430" role="img" aria-labelledby="title desc">
+  <title id="title">A speaker receives power between two amplifier outputs</title>
+  <desc id="desc">Audio data enters an amplifier, while a separate supply and return deliver energy. OUT+ and OUT− form a closed path through the speaker. Both outputs are actively driven; neither connects to ground. A warning says this is a concept drawing and the prototype amplifier remains disconnected.</desc>
+  <defs><marker id="signalArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#087f8c"/></marker></defs>
+  <rect width="800" height="430" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="19">
+    <text x="28" y="32" font-size="22" font-weight="bold">Data controls the power; it does not supply the power</text>
+    <rect x="52" y="95" width="180" height="75" rx="9" fill="#eaf4f7" stroke="#087f8c" stroke-width="2"/>
+    <text x="142" y="126" text-anchor="middle">Audio numbers</text><text x="142" y="152" text-anchor="middle">I2S information</text>
+    <path d="M232 133H299" fill="none" stroke="#087f8c" stroke-width="3" marker-end="url(#signalArrow)"/>
+    <rect x="311" y="89" width="188" height="157" rx="9" fill="#e9f1fb" stroke="#1463ad" stroke-width="2"/>
+    <text x="405" y="119" text-anchor="middle" font-weight="bold">Class-D amplifier</text>
+    <text x="405" y="149" text-anchor="middle">Switching power</text>
+    <text x="477" y="181" text-anchor="end">OUT+</text><text x="477" y="223" text-anchor="end">OUT−</text>
+    <g fill="none" stroke="#1463ad" stroke-width="3">
+      <path d="M499 175H654V196M654 246V264H535V216H499"/>
+      <path d="M354 246V299H162V320M162 380V397H448V246"/>
+      <circle cx="162" cy="350" r="30"/>
+      <rect x="637" y="196" width="34" height="50" stroke="#172b4d"/>
+    </g>
+    <text x="654" y="138" text-anchor="middle">Speaker</text>
+    <text x="654" y="161" text-anchor="middle">between outputs</text>
+    <text x="690" y="216">coil</text>
+    <path d="M737 187Q759 220 737 253M748 177Q778 220 748 263" fill="none" stroke="#087f8c" stroke-width="2"/>
+    <text x="531" y="297" fill="#9a5b00">Neither lead connects to GND</text>
+    <text x="162" y="345" text-anchor="middle">+</text><text x="162" y="371" text-anchor="middle">−</text>
+    <text x="35" y="322" fill="#1463ad">Supply</text>
+    <text x="283" y="285" fill="#1463ad">Energy in</text>
+    <text x="238" y="378" fill="#1463ad">GND return</text>
+    <text x="515" y="340">Vspeaker = VOUT+ − VOUT−</text>
+    <text x="28" y="424" fill="#9a5b00">Concept only. Keep amplifier and speaker disconnected in the USB prototype.</text>
+  </g>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" role="img" aria-labelledby="title desc">
+  <title id="title">Sampling selects time; quantization selects an amplitude code</title>
+  <desc id="desc">The left plot shows evenly spaced samples on a smooth pressure wave. The right shows a sample value rounded to one of five illustrative amplitude levels. This is a conceptual illustration, not a microphone resolution specification.</desc>
+  <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 7 3.5 0 7Z" fill="#172b4d"/></marker></defs>
+  <rect width="800" height="360" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="19">
+    <text x="28" y="32" font-size="22" font-weight="bold">Two different kinds of discreteness</text>
+    <text x="28" y="75" font-weight="bold">1. Sampling: choose instants</text>
+    <text x="438" y="75" font-weight="bold">2. Quantization: choose levels</text>
+    <g fill="none" stroke="#172b4d" stroke-width="2" marker-end="url(#arrow)"><path d="M50 280V103"/><path d="M50 280H392"/><path d="M487 280V103"/></g>
+    <path d="M50 188C78 94 102 94 130 188S182 282 210 188S262 94 290 188S342 282 370 188" fill="none" stroke="#087f8c" stroke-width="3"/>
+    <g stroke="#b1d4dc" stroke-width="2"><path d="M50 188V280M90 118V280M130 188V280M170 258V280M210 188V280M250 118V280M290 188V280M330 258V280M370 188V280"/></g>
+    <g fill="#1463ad"><circle cx="50" cy="188" r="5"/><circle cx="90" cy="118" r="5"/><circle cx="130" cy="188" r="5"/><circle cx="170" cy="258" r="5"/><circle cx="210" cy="188" r="5"/><circle cx="250" cy="118" r="5"/><circle cx="290" cy="188" r="5"/><circle cx="330" cy="258" r="5"/><circle cx="370" cy="188" r="5"/></g>
+    <text x="55" y="101">Pressure variation</text>
+    <text x="311" y="307">Time →</text>
+    <g stroke="#a0abb8" stroke-dasharray="5 5"><path d="M487 116H762M487 156H762M487 196H762M487 236H762M487 276H762"/></g>
+    <text x="474" y="122" text-anchor="end">+2</text><text x="474" y="162" text-anchor="end">+1</text><text x="474" y="202" text-anchor="end">0</text><text x="474" y="242" text-anchor="end">−1</text><text x="474" y="282" text-anchor="end">−2</text>
+    <circle cx="550" cy="138" r="6" fill="#087f8c"/>
+    <path d="M550 144V156H652" fill="none" stroke="#9a5b00" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="662" y="149" width="14" height="14" fill="#1463ad"/>
+    <text x="540" y="112" fill="#087f8c">sample</text>
+    <text x="627" y="184" fill="#1463ad">rounded level</text>
+    <text x="493" y="309" font-size="18">Illustrative levels, not actual bit depth</text>
+    <text x="28" y="344" fill="#9a5b00">More time samples ≠ more amplitude precision. More bits ≠ less microphone noise.</text>
+  </g>
+</svg>

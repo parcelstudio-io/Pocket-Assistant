@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" role="img" aria-labelledby="title desc">
+  <title id="title">Ideal capacitor charging curve with a ten second time constant</title>
+  <desc id="desc">Voltage rises exponentially from zero, reaches 2.09 volts at ten seconds and 3.28 volts at fifty seconds, approaching the 3.3 volt source voltage.</desc>
+  <rect width="800" height="360" fill="white"/>
+  <g font-family="sans-serif" font-size="19" fill="#172b4d">
+    <text x="35" y="30" font-size="22" font-weight="bold">Charging slows as the voltage difference shrinks</text>
+    <path d="M90 50V280H725" fill="none" stroke="#172b4d" stroke-width="2"/>
+    <path d="M90 70H715" stroke="#9a5b00" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="36" y="77">3.3</text><text x="48" y="287">0</text>
+    <text x="6" y="179" transform="rotate(-90 23 179)">V_C (V)</text>
+    <text x="549" y="59" fill="#9a5b00">Final value: 3.3 V</text>
+    <path d="M212 280V147.3H90" fill="none" stroke="#087f8c" stroke-width="2" stroke-dasharray="5 5"/>
+    <polyline points="90,280 114.4,241.9 138.8,210.8 163.2,185.3 187.6,164.4 212,147.3 236.4,133.3 260.8,121.8 285.2,112.4 309.6,104.7 334,98.4 358.4,93.3 382.8,89.1 407.2,85.6 431.6,82.8 456,80.5 480.4,78.6 504.8,77 529.2,75.7 553.6,74.7 578,73.8 602.4,73.1 626.8,72.6 651.2,72.1 675.6,71.7 700,71.4" fill="none" stroke="#1463ad" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="212" cy="147.3" r="6" fill="#087f8c"/>
+    <text x="249" y="181" fill="#087f8c">At τ = 10 s: 2.09 V (63.2%)</text>
+    <text x="408" y="225">R = 100 kΩ, C = 100 µF</text>
+    <path d="M212 280V287 M334 280V287 M456 280V287 M578 280V287 M700 280V287" stroke="#172b4d" stroke-width="2"/>
+    <text x="85" y="310">0</text><text x="201" y="310">10</text><text x="323" y="310">20</text><text x="445" y="310">30</text><text x="567" y="310">40</text><text x="689" y="310">50</text>
+    <text x="310" y="344">Time after applying 3.3 V (s)</text>
+  </g>
+</svg>

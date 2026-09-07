@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" role="img" aria-labelledby="title desc">
+  <title id="title">Capacitor charge separation and an RC charging circuit</title>
+  <desc id="desc">Two conducting plates hold equal opposite charge separated by a dielectric. A separate circuit shows a 3.3 volt source, a 100 kilohm resistor, and a 100 microfarad capacitor in one complete loop.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#087f8c"/></marker></defs>
+  <rect width="800" height="380" fill="white"/>
+  <g font-family="sans-serif" font-size="19" fill="#172b4d">
+    <text x="30" y="35" font-size="22" font-weight="bold">Inside the capacitor</text>
+    <rect x="115" y="105" width="95" height="145" fill="#e9f5f5"/>
+    <path d="M110 105V250 M215 105V250" stroke="#1463ad" stroke-width="8"/>
+    <g fill="#1463ad" font-size="24"><text x="77" y="135">+</text><text x="77" y="181">+</text><text x="77" y="227">+</text><text x="232" y="135">−</text><text x="232" y="181">−</text><text x="232" y="227">−</text></g>
+    <path d="M130 152H195 M130 200H195" stroke="#087f8c" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="75" y="82">+Q</text><text x="224" y="82">−Q</text>
+    <text x="65" y="280">Electric field: + → −</text>
+    <text x="35" y="311">The gap is an insulator.</text>
+    <text x="35" y="340" fill="#9a5b00">No electrons cross an ideal gap.</text>
+    <path d="M370 60V350" stroke="#ccd6e0" stroke-width="2"/>
+    <text x="403" y="35" font-size="22" font-weight="bold">Charging through a resistor</text>
+    <path d="M450 180V110H530 M610 110H700V183 M700 207V290H450V240" fill="none" stroke="#1463ad" stroke-width="3"/>
+    <rect x="530" y="98" width="80" height="24" fill="white" stroke="#172b4d" stroke-width="3"/>
+    <circle cx="450" cy="210" r="30" fill="white" stroke="#172b4d" stroke-width="3"/>
+    <text x="442" y="203">+</text><text x="442" y="230">−</text>
+    <path d="M674 183H726 M674 207H726" stroke="#172b4d" stroke-width="4"/>
+    <text x="528" y="82">100 kΩ</text>
+    <text x="418" y="335">3.3 V</text>
+    <text x="648" y="245">100 µF</text>
+    <text x="649" y="176">+</text><text x="724" y="199">V_C</text>
+    <path d="M510 147H565" stroke="#087f8c" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="485" y="177" fill="#087f8c">charging current</text>
+    <text x="556" y="335">Return wire to source −</text>
+  </g>
+</svg>

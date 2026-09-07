@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" role="img" aria-labelledby="title desc">
+  <title id="title">Strain relief redirects cable forces</title>
+  <desc id="desc">An unsupported cable transmits movement to its solder pad. An anchored cable sends the external load into a separate support, leaving a slack loop between the anchor and the pad.</desc>
+  <defs>
+    <marker id="force" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#9a5b00"/></marker>
+    <marker id="support" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#087f8c"/></marker>
+  </defs>
+  <rect width="800" height="400" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="18">
+    <rect x="20" y="18" width="370" height="360" rx="14" fill="#f4f8fc"/>
+    <rect x="410" y="18" width="370" height="360" rx="14" fill="#f4f8fc"/>
+    <text x="40" y="52" font-size="22" font-weight="bold">Pad is the only anchor</text>
+    <rect x="314" y="128" width="34" height="111" fill="#dbe6ee" stroke="#172b4d" stroke-width="2"/>
+    <path d="M61 174L295 174" fill="none" stroke="#1463ad" stroke-width="9"/>
+    <path d="M293 169L314 163L314 185L293 179Z" fill="#8cabc1" stroke="#172b4d" stroke-width="2"/>
+    <path d="M214 107H88" fill="none" stroke="#9a5b00" stroke-width="4" marker-end="url(#force)"/>
+    <text x="109" y="91" fill="#9a5b00">cable pull</text>
+    <circle cx="288" cy="174" r="27" fill="none" stroke="#9a5b00" stroke-width="3" stroke-dasharray="5 5"/>
+    <path d="M248 254L281 203" stroke="#9a5b00" stroke-width="2" fill="none"/>
+    <text x="62" y="284">Bending concentrates near</text>
+    <text x="62" y="308">the rigid soldered section.</text>
+    <text x="62" y="350" fill="#9a5b00">Force reaches the pad.</text>
+    <text x="430" y="52" font-size="22" font-weight="bold">Support takes the cable load</text>
+    <rect x="720" y="128" width="34" height="111" fill="#dbe6ee" stroke="#172b4d" stroke-width="2"/>
+    <path d="M451 174H562C613 174 591 265 646 265S681 174 701 174" fill="none" stroke="#1463ad" stroke-width="8"/>
+    <path d="M699 169L720 163L720 185L699 179Z" fill="#8cabc1" stroke="#172b4d" stroke-width="2"/>
+    <rect x="544" y="152" width="32" height="47" rx="5" fill="#b9e2df" stroke="#087f8c" stroke-width="3"/>
+    <path d="M560 199V260" stroke="#087f8c" stroke-width="5" marker-end="url(#support)"/>
+    <rect x="522" y="274" width="74" height="14" fill="#087f8c"/>
+    <path d="M540 107H458" fill="none" stroke="#9a5b00" stroke-width="4" marker-end="url(#force)"/>
+    <text x="444" y="91" fill="#9a5b00">cable pull</text>
+    <text x="519" y="136" fill="#087f8c">anchor</text>
+    <text x="613" y="222">slack</text>
+    <text x="618" y="245">loop</text>
+    <text x="451" y="318">Anchor transfers force to support.</text>
+    <text x="451" y="350" fill="#087f8c">Pad sees much less movement.</text>
+  </g>
+</svg>

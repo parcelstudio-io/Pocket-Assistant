@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="370" viewBox="0 0 800 370" role="img" aria-labelledby="title desc">
+  <title id="title">Voltage across, current through, and Ohm's law</title>
+  <desc id="desc">A 1 kilohm resistor has current through it and voltage between its ends. Its ideal current-versus-voltage graph is a straight line through the origin: 3.3 volts produces 3.3 milliamps, and 6.6 volts produces 6.6 milliamps.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#1463ad"/></marker></defs>
+  <rect width="800" height="370" rx="12" fill="white"/>
+  <g font-family="Arial, sans-serif" fill="#172b4d" font-size="19">
+    <text x="25" y="34" font-size="23" font-weight="bold">Different quantities, one resistor</text>
+    <path d="M390 54V334" stroke="#d8e2ec"/>
+    <g fill="none" stroke="#172b4d" stroke-width="3"><path d="M85 100V147M85 223V280H270V223M270 147V100H85"/><rect x="250" y="147" width="40" height="76"/><rect x="43" y="147" width="84" height="76" rx="8" fill="#eff6ff" stroke="#1463ad"/></g>
+    <text x="85" y="180" text-anchor="middle">3.3 V</text><text x="85" y="205" text-anchor="middle" font-size="17">source</text>
+    <text x="158" y="190">1 kΩ</text>
+    <path d="M171 78H238" stroke="#1463ad" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="25" y="63" fill="#1463ad">Current THROUGH: 3.3 mA</text>
+    <path d="M302 147H315V223H302" fill="none" stroke="#087f8c" stroke-width="2"/>
+    <text x="328" y="158" fill="#087f8c">+</text><text x="328" y="225" fill="#087f8c">−</text>
+    <text x="30" y="316" fill="#087f8c">Voltage ACROSS the resistor: 3.3 V</text>
+    <text x="442" y="67">I (mA)</text><text x="671" y="316">V (volts)</text>
+    <path d="M467 88V281H750" fill="none" stroke="#172b4d" stroke-width="2"/>
+    <path d="M467 280L729 93" fill="none" stroke="#1463ad" stroke-width="4"/>
+    <path d="M598 280V186.5H467M729 280V93H467" fill="none" stroke="#a5b6c8" stroke-dasharray="5 5"/>
+    <g fill="#1463ad"><circle cx="598" cy="186.5" r="6"/><circle cx="729" cy="93" r="6"/></g>
+    <text x="447" y="304">0</text><text x="598" y="304" text-anchor="middle">3.3</text><text x="729" y="304" text-anchor="middle">6.6</text>
+    <text x="453" y="192" text-anchor="end">3.3</text><text x="453" y="99" text-anchor="end">6.6</text>
+    <text x="505" y="128" fill="#1463ad">I = V / 1,000 Ω</text>
+    <text x="25" y="353" font-size="18">Fixed resistance: 2× voltage → 2× current → 4× power. Calculation only; keep the lab settings.</text>
+  </g>
+</svg>
