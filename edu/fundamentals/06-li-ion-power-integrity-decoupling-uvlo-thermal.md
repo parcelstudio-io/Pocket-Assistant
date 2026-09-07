@@ -73,8 +73,7 @@ temperature, so one efficiency number is an **ASSUMED** input unless the
 applicable guaranteed specification says otherwise.
 
 Battery capacity in amp-hours is charge, not energy. A nominal energy estimate
-is `Wh ≈ nominal V × Ah`. Nitecore lists the NL169 as `3.6 V`, `950 mAh`, and
-`3.42 Wh`; that agreement is a useful unit check, not a runtime guarantee.
+is `Wh ≈ nominal V × Ah`, but the result is not a runtime guarantee.
 
 ### Worked estimate: average versus peak
 
@@ -163,27 +162,17 @@ is not an instantaneous precision threshold. Trip time depends on current,
 ambient temperature, mounting, prior heating, and airflow.
 
 Parallel PPTCs do not simply double their ratings. Small resistance and thermal
-differences cause unequal current sharing. Eaton recommends derating and gives
-roughly 1.6–1.8 times a single device's rating as a rule of thumb for carefully
-matched, co-located parts—not 2 times. The project must not teach the two
-RUEF110 parts as an exact `2 × Ihold` fuse.
+differences cause unequal current sharing, and application guidance requires
+derating based on the exact parts, mounting, and environment.
 
 ### MOSFET names are not interchangeable specifications
 
 Use maximum on-resistance at the actual available gate voltage, not a headline
-current rating or a typical value at 10 V gate drive. At `VGS = -2.5 V`, the
-AO3401A datasheet permits up to `85 mΩ`; the DMG2301L permits up to `150 mΩ`.
-At `1.15 A`, two such series devices could drop approximately:
-
-```text
-AO3401A pair: 1.15 A × 0.170 Ω ≈ 0.20 V
-DMG2301L pair: 1.15 A × 0.300 Ω ≈ 0.35 V
-```
-
-Those are **CALCULATED** worst-case room-temperature values before hot
-resistance is considered. A reverse-polarity circuit also depends on MOSFET
-orientation, body diode, gate limits, and all possible source connections.
-Require a reviewed schematic; a part number alone is not a protection design.
+current rating or a typical value at 10 V gate drive. Include hot resistance
+and every series device when calculating voltage drop and loss. A
+reverse-polarity circuit also depends on MOSFET orientation, body diode, gate
+limits, and all possible source connections. Require a reviewed schematic; a
+part number alone is not a protection design.
 
 ## Decoupling is local energy plus a low-impedance loop
 
@@ -192,6 +181,19 @@ can respond. A nearby capacitor supplies or absorbs some of that current:
 
 ```text
 I = C × ΔV/Δt        so        ΔV = I × Δt/C
+```
+
+The capacitor belongs physically beside the load so the fast transient loop
+does not include the longer supply path:
+
+```text
+3V3 from converter -- wiring/trace impedance ---+-----+
+                                                |     |
+                                             C_local  load
+                                                |     |
+GND/return -------------------------------------+-----+
+                                                <----->
+                                              short loop
 ```
 
 For example, an ideal `100 µF` capacitor supplying an extra `0.4 A` for
@@ -222,12 +224,19 @@ placement. A generic assortment is not a traceable power-integrity design.
 
 Undervoltage lockout prevents operation when the source can no longer support
 the load safely or predictably. It must have hysteresis so startup current does
-not make the system chatter on and off:
+not make the system chatter on and off. A two-state view makes that hysteresis
+explicit:
 
 ```text
-turn off below Voff
-remain off until source recovers above Von
-where Von > Voff
+                    Vsource >= Von
+              +------------------------+
+              |                        v
+            [OFF]                    [ON]
+              ^                        |
+              +------------------------+
+                    Vsource <= Voff
+
+Voff < Von; between the thresholds, retain the previous state.
 ```
 
 The thresholds must be chosen from the exact cell, load, converter, temperature
@@ -236,10 +245,8 @@ cell system's desired cutoff. Firmware can estimate state of charge and request
 shutdown, but firmware alone cannot disconnect a wedged or unpowered system.
 
 A protected cell's internal PCB is a last-resort fault layer. It is not the
-normal low-battery control and its exact thresholds and timing must be sourced
-from the cell manufacturer. Nitecore's public NL169 page gives capacity,
-energy, dimensions, and 2 A maximum continuous discharge, but not the internal
-resistance or protection thresholds/timing assumed in the old project lesson.
+normal low-battery control, and its exact thresholds and timing must be sourced
+from the cell manufacturer.
 
 ## Charging is a separate controlled process
 
@@ -315,33 +322,16 @@ measurement nor a safe thermometer. Use a thermocouple or calibrated thermal
 method, stabilize at the worst credible average mode, and keep the cell out of
 early thermal tests.
 
-## Current Pocket Assistant release status
-
-The following are not yet durable facts and must not be copied into a purchase
-freeze as guarantees:
-
-- the XL63070 marketplace module's claimed 2.0 V cold start;
-- a fixed current limit inferred from the TPS63802 IC for an unknown module;
-- `0.12 Ω` NL169 internal resistance or unpublished protection timing;
-- exact doubling of two parallel RUEF110 ratings;
-- treating AO3401A and DMG2301L as equal 20–40 mΩ devices;
-- the generic holder's fit and loaded contact resistance;
-- capacitance or ferrite impedance inferred from generic kit names;
-- a 3.0 V normal shutdown when no qualified battery sensing/UVLO exists; and
-- safe USB powering of the complete peripheral rail through an unknown clone.
-
-The battery-free Phase 0 path is therefore the only released learning path:
-qualify one exact power chain from a current-limited supply, record its part
-markings and serial/sample identity, and keep it disconnected from the MCU
-until its output and faults are understood.
-
 ## Safe lab: characterize a buck-boost without a cell
 
 Use a current-limited bench supply, DMM, scope if available, exact converter
-sample, `100 Ω` resistor rated at least `0.25 W`, and later a `10 Ω` resistor
-rated at least `2 W` or a suitable electronic load. Do not use a solderless
-breadboard for the higher-current step. Do not connect the MCU, battery,
-charger, or complete harness.
+sample, a high-resistance test load, and optionally a suitable electronic load
+or power resistor. Calculate `P = Vout²/R` at the highest allowed output and
+choose a rating with documented derating and at least 2× margin. For example,
+`100 Ω` at 5 V dissipates 0.25 W, so use at least 0.5 W; `10 Ω` dissipates
+2.5 W, so use at least 5 W. Do not use a solderless breadboard for the
+higher-current step. Do not connect the MCU, battery, charger, or complete
+harness.
 
 1. Photograph both module faces and record markings, dimensions, jumper state,
    and seller/lot.
@@ -351,15 +341,16 @@ charger, or complete harness.
    end before connecting.
 4. Power the module with no load. Stop for unexpected current limiting, output
    above the intended rail, heat, odor, or noise.
-5. After confirming the output, attach `100 Ω`. Measure input voltage at the
-   module pins, output voltage at the resistor, and input current.
+5. After confirming the output, attach the calculated high-resistance load.
+   Measure input voltage at the module pins, output voltage at the load, and
+   input current.
 6. Sweep source voltage from `4.2 V` toward `3.0 V` in small steps. At each
    step, turn power fully off and back on as well as testing continued
    operation. Startup and run behavior are separate columns.
-7. If the exact module specifications, wiring, resistor rating, and supervision
-   permit it, replace the load with `10 Ω`, raise the current limit only as
-   calculated, and repeat. The resistor becomes hot; mount it clear of wires
-   and do not touch it.
+7. If the exact module specifications, wiring, load rating, cooling, and
+   supervision permit it, substitute the calculated higher-current load, raise
+   the current limit only as calculated, and repeat. A power resistor becomes
+   hot; mount it clear of wires and do not touch it.
 8. Add a known series resistor or the unpowered upstream protection chain to
    simulate source impedance. Measure source voltage and module-pin voltage
    under the same load; calculate path resistance from the loaded drop.
@@ -410,13 +401,9 @@ charger, or complete harness.
 
 </details>
 
-## Primary sources for the project-specific statements
+## Authoritative further reading
 
 - [TI TPS63070 datasheet](https://www.ti.com/lit/ds/symlink/tps63070.pdf)
 - [TI TPS63802 datasheet](https://www.ti.com/lit/ds/symlink/tps63802.pdf)
-- [Nitecore NL169 product page](https://www.nitecore.com/product/nl169)
-- [Littelfuse RUEF radial PPTC datasheet](https://www.littelfuse.com/assetdocs/littelfuse-ptc-radial-leaded-ruef-datasheet?assetguid=2139d828-f887-4a2a-9b25-01ddf761ab3a)
 - [Eaton resettable-PTC application guidelines](https://www.eaton.com/content/dam/eaton/products/electronic-components/resources/technical/eaton-ptc-resettable-fuse-application-guidelines.pdf)
-- [AOS AO3401A datasheet](https://www.aosmd.com/sites/default/files/res/datasheets/AO3401A.pdf)
-- [Diodes Incorporated DMG2301L datasheet](https://www.diodes.com/assets/Datasheets/DMG2301L.pdf)
 - [Espressif ESP32-C3 schematic checklist](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32c3/schematic-checklist.html)

@@ -123,6 +123,21 @@ A DMM may update only a few times per second. A rail can average 3.30 V while
 briefly collapsing during Wi-Fi or speaker peaks. A scope can show those
 events, clock edges, ripple, ringing, and startup order.
 
+This conceptual rail trace shows why the two instruments can report different
+views of the same event (not to scale):
+
+```text
+rail voltage
+3.30 V  --------------------+       +--------------------
+                            |       |
+                            +-------+
+                              short dip
+        -------------------------------------------------> time
+
+DMM:   a few slow readings may miss the interval
+scope: a captured trace shows the dip's depth and duration
+```
+
 Three settings matter immediately:
 
 - **vertical scale:** volts per division;
@@ -176,7 +191,7 @@ Every instrument has limits:
 Measure the rail at the load as well as at the supply. A cable or connector may
 drop voltage under current even when the supply display looks perfect.
 
-## Worked Pocket Assistant example
+## Worked rail-drop example
 
 Suppose the supply display says 3.30 V and 420 mA during a loud tone, while a
 DMM at the controller reads 3.21 V.
@@ -214,25 +229,9 @@ Do not substitute an LED without a series resistor.
 
 ## A reproducible measurement record
 
-Write down:
-
-```text
-question:
-date/time and operator:
-device/module identifier:
-schematic revision and firmware commit:
-instrument and relevant settings:
-probe points and polarity:
-supply voltage and current limit:
-load, temperature, and operating mode:
-result with units:
-evidence label:
-pass/fail rule decided before the test:
-photo, trace, or log path:
-```
-
-“It worked” cannot be audited. A dated trace tied to an exact unit and test
-condition can.
+Use a fresh [lab record template](reference/lab-record-template.md) rather than
+maintaining another field list here. “It worked” cannot be audited; a dated
+trace tied to an exact unit, setup, prediction, and pass/fail rule can.
 
 ## Common mistakes
 

@@ -2,12 +2,27 @@
 
 This repository turns the [Huy Vector Pocket AI Assistant](https://www.huyvector.org/robots-kinetic/pocket-ai-assistant) reference build into a reviewable project with a pinned vendor image, safe host-side flashing tools, a source-buildable Xiaozhi board port, an audited bill of materials, and an assembly/test checklist.
 
+## Start here: a simple USB prototype
+
+Follow [the prototype quickstart](docs/PROTOTYPE_QUICKSTART.md). You do **not**
+need to finish the electronics course or buy another batch of parts first.
+Start with the controller and a USB data cable, then add your OLED and
+microphone one at a time. The default source build is an **offline bench test**:
+it reports microphone levels over USB and tests the OLED without Wi-Fi, a
+cloud account, an amplifier, or a battery.
+
+Leave the battery, charger, external regulators, amplifier, and metal case off
+this first prototype. OLED/microphone power comes only from the controller's
+3.3 V output. Never connect an external power source to that rail while USB is
+connected. [The daily plan](plan/DAILY_STUDY_AND_LAB_PLAN.md) provides optional
+2–3 hour learning sessions alongside the build.
+
 ## Choose a firmware path
 
 | Path | Use it when | What is reproducible |
 | --- | --- | --- |
-| Pinned vendor image | You want the creator's published behavior and face assets | The downloaded bytes are checked against a pinned size and SHA-256 before flashing |
-| Source build | You want editable firmware, auditable pins, or a different backend | The upstream Xiaozhi release, ESP-IDF SDK, board overlay, partition map, and build steps are pinned |
+| Corrected source — recommended | Offline prototype tests first; assistant mode later | Pinned upstream/SDK, checked overlay, and a manifest of the actual local build |
+| Pinned vendor image — historical | Investigating the creator's published behavior and face assets | Download integrity only; its GPIO8 microphone and 24 kHz audio are not the corrected prototype contract |
 
 These paths are deliberately separate. The creator published only a merged binary, not the custom `pocket-wall-e-c3` source or face assets. Inspection identifies it as a private Xiaozhi `2.4.0` build made with `ESP-IDF v5.5.2-dirty`. The editable port in [`firmware/`](firmware/) reconstructs the board against public [Xiaozhi v2.4.0](https://github.com/78/xiaozhi-esp32/releases/tag/v2.4.0) and its supported ESP-IDF v6.0.2 toolchain; it is not claimed to be byte-identical.
 
@@ -23,10 +38,11 @@ These paths are deliberately separate. The creator published only a merged binar
 │   ├── WIRING_AND_ASSEMBLY.md    archived R1 power wiring; not build authority
 │   └── BOM.md                    historical creator-page ↔ R1 reconciliation
 ├── edu/
-│   ├── README.md                 course index and evidence boundary
-│   ├── 02_COMPONENTS_*.md        historical component rationale
-│   ├── 03_HOW_IT_WORKS.md        corrected source-build wiring contract
-│   └── 04–06_*.md                assembly, finish, and acceptance checks
+│   ├── README.md                 course index and source-of-truth map
+│   ├── STUDY_PLAN.md             battery-free fifteen-session curriculum
+│   ├── 01-how-it-fits-together.md applied system and signal overview
+│   ├── 05_COLOR_AND_FINISH.md    provisional finish study
+│   └── fundamentals/             durable electronics lessons and references
 ├── firmware/
 │   ├── src/                      editable pocket-wall-e-c3 board overlay
 │   ├── scripts/                  prepare, build, and source-flash helpers
@@ -46,23 +62,28 @@ A [partial Wokwi fixture](simulation/README.md) checks the corrected OLED and
 GPIO10 button diagram. It intentionally does not model the power or audio
 hardware.
 
-**Use [docs/FINAL_MATERIALS_FOR_REVIEW.md](docs/FINAL_MATERIALS_FOR_REVIEW.md)
-as the only current purchase decision source.** Its F0 decision is deliberately
-narrow: buy one reversible `BUY-P0` qualification batch, but do not connect the
-cell, cut brass, assemble a final power chain, or pocket-carry the device until
-the listed promotion gates pass. The former complete-cart decision is retained
+The USB quickstart needs no new purchase decision. For a **later battery-powered
+assembly**, [docs/FINAL_MATERIALS_FOR_REVIEW.md](docs/FINAL_MATERIALS_FOR_REVIEW.md)
+records the proposed F0 hardware and its unresolved tests; it is not a prerequisite
+shopping list for the USB prototype. Do not connect the cell, cut brass, assemble
+that power chain, or pocket-carry it without completing the relevant tests.
+The former complete-cart decision is retained
 unchanged in [docs/CLAUDE_R1_BUILD_PROPOSAL.md](docs/CLAUDE_R1_BUILD_PROPOSAL.md)
 for review; [docs/MATERIALS.md](docs/MATERIALS.md),
 [docs/BUILD_GUIDE.md](docs/BUILD_GUIDE.md), and
 [docs/WIRING_AND_ASSEMBLY.md](docs/WIRING_AND_ASSEMBLY.md) describe that
 superseded R1 candidate and are not purchasing or assembly authority.
 
-Start with the [build course](edu/README.md) and the corrected
-[source-build wiring contract](edu/03_HOW_IT_WORKS.md). Regardless of revision,
+Use the [electronics course](edu/README.md) as a reference when a step introduces
+a new concept, not an entrance exam. Regardless of revision,
 do **not** strip a lithium cell, solder to its can, use the brass frame as a
 conductor, or charge an undocumented cell.
 
-## Flash the exact published image
+## Historical vendor-image workflow
+
+Skip this section for the beginner prototype. Use the corrected source below;
+a matching vendor checksum does not establish compatible microphone wiring or
+MAX98357A audio timing.
 
 For Phase 0, flash a bare SuperMini. An assembled service design is not yet
 released. Until the proposed supply and I2S/control isolation pass every
@@ -93,12 +114,17 @@ Replace `/dev/ttyACM0` with the explicit port reported on your machine. The imag
 The source workflow fetches the pinned upstream repository into an ignored working directory, applies the local board files, checks the upstream commit, and builds with ESP-IDF v6.0.2:
 
 ```bash
-cd firmware
-./scripts/prepare.sh
-./scripts/build.sh
+firmware/scripts/setup.sh
+. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh
 ```
 
-Read [`firmware/README.md`](firmware/README.md) before using the source-flash helper. It records the expected toolchain, generated output, pin assignments, and the differences from the opaque vendor image.
+Setup is needed once; activate `export.sh` again in each new terminal.
+`build.sh` defaults to offline diagnostics. Use `build.sh --assistant` only
+after those tests pass and you are ready to configure the third-party service.
+Read [`firmware/README.md`](firmware/README.md) before using the source-flash helper.
+It records the expected toolchain, generated output, pin assignments, and the
+differences from the opaque vendor image.
 
 ## Hardware contract
 
@@ -116,5 +142,8 @@ The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at add
 
 - The published binary's size, digest, merged-image markers, chip target, application metadata, and partition offsets were inspected and pinned.
 - The host CLI has unit tests and refuses an unverified image or implicit serial-port target.
-- The source overlay compiled successfully twice from clean, pinned inputs on the validation host; both merged images were identical. The size, digest, SDK/source commits, local-input hashes, effective configuration, and observed tool versions are recorded in [`firmware/source-build.json`](firmware/source-build.json).
-- No physical ESP32-C3 or assembled battery circuit was connected in this workspace — `hardware_tested` is still `false`. The [staged assembly plan](edu/04_ASSEMBLY_STEP_BY_STEP.md) is retained as a candidate sequence, while the [acceptance worksheet](edu/06_ACCEPTANCE_TESTS.md) and current F0 decision define what must be proved before any cell connection or pocket carry.
+- Each successful source build records its exact inputs, effective configuration,
+  mode, and output digest in ignored `firmware/dist/source-build.json`. The
+  [checked-in reference record](firmware/source-build.json) describes one specific
+  build; neither a checksum nor successful compilation proves hardware operation.
+- No physical ESP32-C3 or assembled battery circuit was connected in this workspace — `hardware_tested` is still `false`. Follow [Lesson 13's staged integration method](edu/fundamentals/13-debugging-integration-and-capstone.md), keep a separate [lab record](edu/fundamentals/reference/lab-record-template.md) for each article, and use the [current F0 promotion gates](docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) before any cell connection or pocket carry.

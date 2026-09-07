@@ -104,6 +104,17 @@ anchor. Motion concentrates stress where flexible wire becomes rigid with
 solder. Provide strain relief so the load is transferred to the enclosure or a
 tie point before it reaches the pad.
 
+In this mechanical-load sketch, arrows show force rather than current:
+
+```text
+external cable force
+          ↓
+cable jacket ── clamp / tie point ──→ enclosure
+                         │
+                         └── slack loop ── conductor ── solder pad
+                                                        (little cable load)
+```
+
 Useful methods include a clamped cable jacket, lacing/tie points, adhesive made
 for the materials and temperature, a service loop, and heat-shrink over a
 spliced wire. Check that strain relief does not block a connector latch,

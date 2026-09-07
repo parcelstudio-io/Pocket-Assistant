@@ -1,0 +1,2 @@
+# Unified patches must preserve upstream blank/context-line whitespace.
+firmware/patches/*.patch whitespace=-blank-at-eol

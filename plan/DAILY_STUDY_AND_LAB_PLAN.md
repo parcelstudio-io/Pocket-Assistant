@@ -10,6 +10,13 @@ objective is to create one new piece of trustworthy evidence each session.
 Do not read this entire plan in one sitting: read the ground rules once, then
 open only the section for the day you are working on.
 
+To get the hardware doing something first, use the
+[USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md). It uses the owned
+controller, button, OLED, and microphone, with one source-firmware pin map and
+offline diagnostics. Then work through these sessions around that prototype;
+the first five theory labs are useful practice, not prerequisites for bare-board
+USB boot. No additional parts are required for that starting point.
+
 After Session 15, the intended result is:
 
 - a documented set of basic circuit and measurement labs;
@@ -22,10 +29,11 @@ After Session 15, the intended result is:
 
 It is **not** a release to connect or charge a lithium cell, assemble the final
 power system, cut the final brass stock, or pocket-carry the device. The current
-project authority is
-[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md); the old
-step-by-step build and wiring guides are archived references, not current
-assembly instructions.
+power/enclosure design discussion is
+[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md). Its future
+power-fixture work is separate from the USB prototype. Use the quickstart for
+that prototype; the old step-by-step build and wiring guides are archived
+references.
 
 ## How to use the plan
 
@@ -161,8 +169,12 @@ proof of the delivered item.
 - Keep every lithium cell terminal-protected, electrically disconnected, and
   outside the active work area. Do not probe, connect, charge, discharge,
   solder, heat, bend, clamp, puncture, or unwrap it.
-- Use USB only on a bare controller with external power, 3.3 V, and amplifier
-  harnesses detached. Never connect both device USB-C ports.
+- Use the controller's USB cable as the only power source for the beginner
+  prototype. The button, OLED, and microphone may use its documented GPIO,
+  3.3 V output, and GND connections. Disconnect any external 3.3 V/5 V source,
+  regulator, charger, battery, and amplifier harness. Flash the controller
+  bare initially. Later reflashes may keep the tested USB-powered button,
+  OLED, and microphone connected; unplug USB before every wiring change.
 - Turn off and disconnect power before changing wiring or using resistance or
   continuity mode.
 - Never put a current-mode meter directly across a source. Return its red lead
@@ -180,11 +192,11 @@ proof of the delivered item.
 - Keep flux, solvent, glue, paint, hot air, and compressed air away from the
   microphone port.
 
-Use the full
-[lab record template](../edu/fundamentals/reference/lab-record-template.md) for
-each powered experiment. At minimum, record the test-article ID, one question,
-prediction, diagram, current limit, stop conditions, acceptance rule, results,
-and next action.
+For each prototype experiment, save the board ID, wiring photograph, firmware
+identity, expected result, observed result, and next action. For bench-supply
+labs also record voltage and current-limit settings. The full
+[lab record template](../edu/fundamentals/reference/lab-record-template.md) is
+available when a more detailed measurement needs it.
 
 ## Standard 2–3 hour session rhythm
 
@@ -204,22 +216,23 @@ create useful evidence.
 
 ## Firmware contract card
 
-Choose and record one firmware contract before connecting a peripheral. A
-temporary bare-board vendor-image smoke test is fine, but its wiring map must
-not be carried into the corrected-source build by memory.
+Use the corrected source build throughout this plan and the quickstart. This
+provides an editable, consistent pin map and offline diagnostics. Label the
+controller `SOURCE / MIC GPIO4 / 16 kHz` before connecting peripherals.
 
-| Property | Pinned vendor image | Corrected source build |
-| --- | --- | --- |
-| Microphone data | GPIO8 | GPIO4 |
-| Audio sample rate | 24 kHz | 16 kHz |
-| Expected I2S bit clock | Contract-specific; verify | 1.024 MHz |
-| OLED address | `0x3C` | `0x3C` or `0x3D` |
-| Editable | No | Yes |
+| Property | Corrected source build |
+| --- | --- |
+| Microphone data | GPIO4 |
+| Audio sample rate | 16 kHz |
+| Expected I2S bit clock | 1.024 MHz |
+| OLED address | `0x3C` or `0x3D` |
+| Amplifier | Absent from beginner prototype; GPIO5 enable stays low |
 
-Both use GPIO1 for I2S word select, GPIO2 for I2S bit clock, GPIO3 for speaker
+The source uses GPIO1 for I2S word select, GPIO2 for I2S bit clock, GPIO3 for speaker
 data, GPIO20 for OLED SCL, GPIO21 for OLED SDA, and GPIO10 for the optional
 active-low action button. Verify the current firmware files rather than relying
-only on this summary.
+only on this summary. The historical vendor binary uses microphone GPIO8 and
+24 kHz; it is outside this beginner path. Do not flash it onto this harness.
 
 The default Xiaozhi/Tenclass service receives device metadata and microphone
 audio. Do not provision Wi-Fi or perform a voice test until you have made and
@@ -234,6 +247,22 @@ recorded a privacy/backend decision.
 **Status:** `NOT STARTED`
 
 **Question:** What is the system made of, and what work is currently allowed?
+
+**Prepare**
+
+- [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91),
+  [Hosyond OLED](https://www.amazon.com/dp/B09T6SJBV5),
+  [INMP441 microphone](https://www.amazon.com/dp/B092HWW4RS),
+  [MAX98357A amplifier](https://www.amazon.com/dp/B0CDWXZZCH), and
+  [Same Sky speaker](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309), all unpowered;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW), with its leads
+  disconnected while inspecting the jacks;
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM); and
+- existing computer, camera/phone, notebook, and drawing paper—no dedicated
+  purchase link was recorded for these general tools.
+
+Do not prepare the cells or charger; confirm they remain terminal-protected and
+away from the work area.
 
 **Study**
 
@@ -257,20 +286,19 @@ recorded a privacy/backend decision.
    ```bash
    python3 -m unittest discover -s tools/tests -v
    python3 tools/netcheck.py
-   python3 tools/pocket_ai_device.py verify
    ```
 
 **Evidence to save**
 
 - the system diagram;
 - a photograph of the labeled, unpowered parts;
-- the three command outputs; and
+- the two command outputs; and
 - five sentences distinguishing `DATASHEET`, `TYPICAL`, `ASSUMED`,
   `CALCULATED`, and `MEASURED` evidence.
 
-**Exit gate:** You can explain the complete signal path, name the current source
-of assembly authority, and state why software checks do not prove physical
-power or audio behavior.
+**Exit gate:** You can explain the signal path, find the quickstart's USB
+prototype instructions, identify the deferred battery/frame work, and state
+why software checks do not prove physical power or audio behavior.
 
 ### Day 2 — Voltage, current, resistance, power, and units
 
@@ -278,6 +306,17 @@ power or audio behavior.
 
 **Question:** Can measured voltage and resistance predict current and resistor
 power?
+
+**Prepare**
+
+- [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB), including
+  one nominal 1 kohm, 1/4 W resistor;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- [SKY TOPPOWER current-limited supply](https://www.amazon.com/dp/B0BN1F6CGZ);
+- REXQualis breadboard and TODOELEC jumpers—the exact purchase URLs were not
+  preserved in the repository; and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), notebook, and
+  calculator.
 
 **Study**
 
@@ -318,6 +357,17 @@ the calculated dissipation by a comfortable margin.
 **Question:** Can circuit laws predict node voltages and branch currents before
 power is applied?
 
+**Prepare**
+
+- [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB): one
+  1 kohm, one 2.2 kohm, and three 10 kohm resistors;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- [SKY TOPPOWER current-limited supply](https://www.amazon.com/dp/B0BN1F6CGZ);
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+  and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), notebook, and
+  calculator.
+
 **Study**
 
 - Read [Lesson 02](../edu/fundamentals/02-dc-circuits-ohm-kirchhoff-series-parallel.md).
@@ -355,6 +405,19 @@ memorizing only the formula.
 **Question:** Does a real capacitor charge according to the predicted RC time
 constant?
 
+**Prepare**
+
+- [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB), including
+  one 100 kohm resistor;
+- [ALLECIN electrolytic-capacitor kit](https://www.amazon.com/dp/B0C1VBXCQM),
+  including one known-polarity 100 uF capacitor rated at least 6.3 V;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- [SKY TOPPOWER current-limited supply](https://www.amazon.com/dp/B0BN1F6CGZ);
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+  and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), notebook, and a
+  phone/stopwatch.
+
 **Study**
 
 - Read the resistor, capacitor, decoupling, and RC sections of
@@ -389,6 +452,19 @@ disagreement with the prediction is bounded or marked for repetition.
 
 **Question:** Can you choose and connect a measuring instrument without
 changing the circuit dangerously?
+
+**Prepare**
+
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW), its manual, and
+  intact leads/fuse;
+- [SKY TOPPOWER current-limited supply](https://www.amazon.com/dp/B0BN1F6CGZ)
+  and its insulated leads;
+- [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB), including
+  1 kohm and other low-energy test values;
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+  and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), notebook, and
+  calculator.
 
 **Study**
 
@@ -429,11 +505,28 @@ and you consistently de-energize before changing modes or wiring.
 **Question:** Is `MCU-A1` the expected board, and can it boot a verified image
 with no external hardware attached?
 
+**Prepare**
+
+- one plain [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91);
+- one [Rankie USB-A-to-C data cable](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4);
+- [Neiko digital caliper](https://www.amazon.com/dp/B000GSLKIW);
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW), used only for
+  the day's planned unpowered checks;
+- existing computer with Python, Git, and an available USB-A port; and
+- camera/phone, ruler, labels, and notebook—general tools with no recorded
+  purchase URLs.
+
+The first flash uses a bare board. If its headers need soldering before Day 7,
+prepare the [Day 11 soldering materials](#day-11--soldering-practice-before-project-hardware)
+for a separate session with USB unplugged. Do not prepare the amplifier,
+external supply, charger, or cells.
+
 **Study**
 
 - Read the identity, pinout, datasheet, and connector sections of
   [Lesson 04](../edu/fundamentals/04-boards-schematics-datasheets-and-connectors.md).
-- Read the [host-tools guide](../tools/README.md).
+- Follow the controller setup in the
+  [USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md).
 - Read the source-status and pin-map sections of the
   [firmware guide](../firmware/README.md).
 
@@ -448,48 +541,48 @@ with no external hardware attached?
 **Host setup and lab**
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install --requirement tools/requirements.txt
-
-python tools/pocket_ai_device.py verify
-python tools/pocket_ai_device.py ports
-python -m esptool --chip esp32c3 --port <PORT> flash-id
-python tools/pocket_ai_device.py info --port <PORT>
-python tools/pocket_ai_device.py flash --port <PORT> --dry-run
+firmware/scripts/setup.sh
+. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh
+python3 firmware/scripts/verify_source_build.py
+python3 tools/pocket_ai_device.py ports
+python3 -m esptool --chip esp32c3 --port <PORT> flash-id
+firmware/scripts/flash.sh <PORT> --dry-run
 ```
 
 Replace `<PORT>` with the explicitly observed USB serial port. Require an
 ESP32-C3 and at least 4 MB of flash. If that gate passes, flash and monitor:
 
 ```bash
-python tools/pocket_ai_device.py flash --port <PORT>
-python tools/pocket_ai_device.py monitor --port <PORT>
+firmware/scripts/flash.sh <PORT> --monitor
 ```
 
 Flashing at `0x0` replaces the complete image and clears stored Wi-Fi data.
-The board must remain bare: no display, microphone, amplifier, external power,
-or battery harness.
+For this initial smoke test, keep the board bare: no display, microphone,
+amplifier, external power, or battery harness. Later reflashes may keep the
+tested USB-powered button/OLED/microphone connected under the quickstart's
+single-source wiring rule.
 
-If choosing the corrected-source image instead, run its verifier first:
+The default build is the offline diagnostics image. It does not provision
+Wi-Fi or send audio to a service. On a bare board, absent OLED and microphone
+results are expected; success today is a stable diagnostic log. Do not bypass
+manifest or digest failures. The first SDK setup/build needs internet access
+and may take a substantial part of this session; count that as useful setup
+work and continue the hardware portion next session if necessary.
 
-```bash
-python3 firmware/scripts/verify_source_build.py
-```
-
-Do not bypass any manifest, input-hash, size, or digest failure. At the time
-this plan was written, the local corrected-source verification reports an
-input-hash mismatch, so that path must be reconciled or rebuilt before use.
-The pinned vendor image is the simpler bare-board smoke-test path.
+**Before Day 7:** inspect the controller, OLED, and microphone headers. If they
+are loose or absent, complete Day 11's solder practice now, then follow the
+[quickstart header step](../docs/PROTOTYPE_QUICKSTART.md#prepare-reliable-headers)
+to solder and inspect the required headers with USB disconnected. Count that
+as the completed Day 11 session later. Do not wedge loose pins into unsoldered
+holes to make an electrical connection.
 
 **Evidence to save**
 
 - board evidence sheet and photographs;
 - flash ID, image digest, explicit port, flash transcript, and complete boot
   log; and
-- a label on the board record: `VENDOR / MIC GPIO8` or
-  `CORRECTED SOURCE / MIC GPIO4`.
+- a label on the board record: `SOURCE DIAGNOSTICS / MIC GPIO4 / 16 kHz`.
 
 **Exit gate:** The exact board has at least 4 MB flash, the selected artifact
 passes its verifier, and the controller produces a stable, understood boot log.
@@ -500,6 +593,19 @@ passes its verifier, and the controller produces a stable, understood boot log.
 
 **Question:** Can one input have a defined released state and a repeatable
 active-low pressed state?
+
+**Prepare**
+
+- the Day 6-qualified [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91)
+  and [Rankie USB data cable](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4);
+- one [QTEATAK tactile button](https://www.amazon.com/dp/B0FHW6HMG4);
+- [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB), including
+  1 kohm and 10 kohm values as required by the chosen test circuit;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+- optional LED—exact purchase URL not recorded; do not buy one for this day;
+  and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM) and notebook.
 
 **Study**
 
@@ -513,15 +619,16 @@ active-low pressed state?
 2. Draw the intended active-low circuit before wiring it.
 3. Use GPIO10 for the project action button. Keep GPIO9 available exclusively
    for ROM BOOT/recovery.
-4. Use the selected firmware's documented pull configuration or an explicitly
-   reviewed external pull-up; do not assume both simultaneously.
+4. Wire the button between GPIO10 and GND using the
+   [quickstart map](../docs/PROTOTYPE_QUICKSTART.md#add-the-button-and-oled).
+   The diagnostic firmware enables the input's internal pull-up.
 5. Connect USB and observe/log released and pressed states. Test multiple
    presses without changing wiring.
 6. Disconnect USB before altering or removing the circuit.
 
-If the selected firmware does not expose a useful button log, complete the
-unpowered switch test and write the smallest appropriate GPIO test program as
-a software exercise. Do not move to an undocumented pin for convenience.
+Use the source diagnostics image from Day 6. Each press is reported in its
+serial output; with the OLED added on Day 8, a press also switches its pixel
+test between all-on and all-off.
 
 If a discrete LED is already owned, the Lesson 07 LED-output exercise is an
 optional extension using its 1 kΩ series resistor. Do not buy an LED for this
@@ -543,6 +650,23 @@ works, and no boot mode is entered unintentionally.
 **Question:** Does one exact OLED acknowledge at the address and voltage
 expected by the selected firmware?
 
+**Prepare**
+
+- the qualified [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91)
+  and [Rankie USB data cable](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4);
+- one identified [Hosyond SSD1306 OLED](https://www.amazon.com/dp/B09T6SJBV5);
+- the Day 7 [QTEATAK button](https://www.amazon.com/dp/B0FHW6HMG4) for toggling
+  the diagnostic pixel test;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+- optional logic analyzer—no purchase is recorded; omit rather than buying;
+  and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), camera, and
+  notebook.
+
+Keep the microphone, amplifier, speaker, external supply, charger, and cells
+away from the setup.
+
 **Study**
 
 - Read [Lesson 08](../edu/fundamentals/08-i2c-and-the-oled.md).
@@ -553,11 +677,14 @@ expected by the selected firmware?
    markings, physical pin order, dimensions, and the evidence for its supply
    voltage. Similar-looking OLED carriers can swap VCC and GND positions.
 2. Keep the battery, converter, microphone, amplifier, and speaker absent.
-3. With USB disconnected, connect only documented ground, supply, GPIO20/SCL,
-   and GPIO21/SDA using short jumpers.
+3. With USB disconnected, connect the OLED to controller GND and 3.3 V output,
+   GPIO20/SCL, and GPIO21/SDA using the
+   [quickstart map](../docs/PROTOTYPE_QUICKSTART.md#add-the-button-and-oled).
+   Verify the carrier supports 3.3 V and identify its actual pin order first.
 4. Inspect for reversed power and shorts before connecting USB.
-5. Measure the OLED rail, scan or observe the address, and run the available
-   initialization/all-pixel test.
+5. Measure the OLED rail and read the address in the diagnostic boot log.
+   Press the GPIO10 button to switch between all pixels on and all pixels off.
+   Add the already-tested button with USB disconnected if it is absent.
 6. Power off, remove the display, and confirm the corrected-source firmware's
    headless behavior if that is the selected contract.
 
@@ -581,6 +708,20 @@ failure has been reduced to a specific next discriminating test.
 **Question:** Does the exact microphone produce plausible data using the
 selected firmware's clock, data pin, and slot contract?
 
+**Prepare**
+
+- the qualified [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91)
+  and [Rankie USB data cable](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4);
+- one identified [AITRIP/INMP441 microphone](https://www.amazon.com/dp/B092HWW4RS);
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+- optional logic analyzer—no purchase is recorded; omit rather than buying;
+  and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), camera, and
+  notebook.
+
+Do not prepare the amplifier, speaker, external supply, charger, or cells.
+
 **Study**
 
 - Read [Lesson 09](../edu/fundamentals/09-i2s-sampling-and-digital-audio.md)
@@ -592,19 +733,22 @@ selected firmware's clock, data pin, and slot contract?
    order and voltage; the IC family name does not prove the breakout layout.
 2. Calculate the expected clock from sample rate, slots, and bits per slot.
    For corrected source, show `16,000 x 2 x 32 = 1.024 MHz`.
-3. Confirm the selected contract again: vendor microphone data is GPIO8;
-   corrected-source microphone data is GPIO4. Never connect both.
-4. With USB disconnected, attach only the reviewed low-current microphone
-   fixture, including its documented left-slot selection.
-5. Reconnect USB and record samples or firmware diagnostics during silence,
-   normal speech, and a gentle tone.
+3. Confirm the source contract again: microphone data is GPIO4, at 16 kHz.
+4. With USB disconnected, connect the owned INMP441 using the
+   [quickstart microphone map](../docs/PROTOTYPE_QUICKSTART.md#add-the-microphone):
+   VDD to controller 3.3 V output, GND and L/R to GND, SCK to GPIO2, WS to GPIO1,
+   and SD to GPIO4. Check the labels on this exact carrier first.
+5. Reconnect USB and capture the diagnostic minimum, maximum, and RMS sample
+   values during silence and normal speech. They should change with sound;
+   record stuck/clipped/read-failure indications as well. This is an offline
+   serial test and requires no speaker or cloud service.
 6. If a suitable logic analyzer is already available, measure WS and BCLK.
    Otherwise mark waveform/rate confirmation `INCONCLUSIVE`; do not purchase an
    instrument merely to complete the day.
 
-Do not energize a generic carrier whose pin order or permitted use remains
-unresolved. An unpowered evidence sheet plus source-level signal trace is a
-valid `HOLD` outcome.
+If the received carrier's pin order or 3.3 V compatibility cannot be identified,
+resolve that before connecting it. Use the unpowered/source-trace portion while
+that particular question is open.
 
 **Evidence to save**
 
@@ -613,8 +757,9 @@ valid `HOLD` outcome.
 - sample/log observations; and
 - measured clock values or an explicit instrument limitation.
 
-**Exit gate:** Silence and speech produce distinguishable, non-stuck data, or
-the powered test is correctly held with the missing evidence named.
+**Exit gate:** Silence and speech produce distinguishable, non-stuck data over
+several trials. A missing instrument may leave timing accuracy inconclusive,
+but mark microphone functionality unverified if this data test has not passed.
 
 ### Day 10 — Class-D, BTL, speaker limits, and the audio gate
 
@@ -622,6 +767,22 @@ the powered test is correctly held with the missing evidence named.
 
 **Question:** What must be true before it is safe and meaningful to power the
 amplifier and speaker?
+
+**Prepare**
+
+- one unpowered [HiLetgo MAX98357A amplifier](https://www.amazon.com/dp/B0CDWXZZCH);
+- the [Same Sky CES-20134-088PM speaker](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309);
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- notebook, calculator, camera, and drawing paper—general tools with no
+  recorded product URLs; and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM).
+
+For the conditional powered extension only, also prepare the
+[SKY TOPPOWER current-limited supply](https://www.amazon.com/dp/B0BN1F6CGZ),
+an approved 8 ohm dummy load/current-rated leads, and differential-safe
+measurement equipment. No exact purchase URLs are recorded for the approved
+dummy-load fixture or differential instrument. If either is unavailable, do
+only the unpowered lab and mark powered audio `HOLD`.
 
 **Study**
 
@@ -670,6 +831,27 @@ audible result alone would not prove safe electrical or thermal operation.
 **Question:** Can you repeatedly make an electrically and mechanically
 acceptable joint without risking a project module?
 
+If loose headers were found on Day 6, do this session before Day 7. After the
+practice gate passes, prepare the needed module headers using the quickstart.
+If already completed then, reuse the record and treat this day as catch-up.
+
+**Prepare**
+
+- X-Tronic 3020-XTS station, holder/helping hands, and silicone mat—exact
+  purchase URL not recorded;
+- [MAIYUM 63/37 electronics solder](https://www.amazon.com/dp/B076QF1Y85);
+- Chip Quik CQ4LF electronics flux—exact purchase URL not recorded;
+- sacrificial perfboard—exact purchase URL not recorded; use only if owned;
+- [LuminologyPro resistors](https://www.amazon.com/dp/B0F4P352BB) and spare
+  2.54 mm headers—the header purchase URL was not recorded;
+- [CBAZY 30 AWG wire](https://www.amazon.com/dp/B073RDGTPB) and
+  [TUOFENG 26 AWG wire](https://www.amazon.com/dp/B07G2LRX68);
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW) for unpowered
+  continuity/isolation checks; and
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), ventilation/fume
+  capture, magnification, camera, and notebook. Exact purchase URLs for the
+  latter general bench items were not recorded.
+
 **Study**
 
 - Read the soldering, temperature, inspection, and electrical-versus-structural
@@ -708,6 +890,23 @@ continuity, and isolation criteria.
 **Question:** Can a wire connection survive handling without transferring
 force to a fragile electrical pad?
 
+**Prepare**
+
+- the Day 11 X-Tronic station setup—exact purchase URL not recorded;
+- [MAIYUM 63/37 solder](https://www.amazon.com/dp/B076QF1Y85) and Chip Quik
+  CQ4LF electronics flux—the flux purchase URL was not recorded;
+- [Hakko CSP-30-1 wire stripper](https://www.amazon.com/dp/B00FZPHMUG);
+- [CBAZY 30 AWG wire](https://www.amazon.com/dp/B073RDGTPB),
+  [TUOFENG 26 AWG wire](https://www.amazon.com/dp/B07G2LRX68), and
+  [Pointool heat-shrink](https://www.amazon.com/dp/B08N4W4K9X);
+- [JoTownCand solder wick](https://www.amazon.com/JoTownCand-Premium-Desoldering-Residue-Solder/dp/B0DRN688Q5);
+- [QWORK heat gun](https://www.amazon.com/QWORK-Shrink-Shrinking-Wrapping-Embossing/dp/B09NDCCW29), used only with every cell outside the work area;
+- sacrificial perfboard, spare headers, and practice wire joints—exact
+  purchase URLs not recorded; and
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW),
+  [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), ventilation,
+  magnification, camera, and notebook.
+
 **Study**
 
 - Finish [Lesson 12](../edu/fundamentals/12-soldering-mechanics-insulation-tolerance.md).
@@ -743,6 +942,27 @@ you can distinguish soldering quality from mechanical support.
 
 **Question:** Why can a circuit that works at idle fail during startup, Wi-Fi,
 or audio activity?
+
+**Prepare**
+
+- [SKY TOPPOWER current-limited supply](https://www.amazon.com/dp/B0BN1F6CGZ)
+  and insulated leads;
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB) for a
+  low-energy load;
+- [BOJACK ceramic capacitors](https://www.amazon.com/dp/B07P7HRGT9) and
+  [ALLECIN electrolytic capacitors](https://www.amazon.com/dp/B0C1VBXCQM) for
+  identification/calculation work, not automatic installation;
+- one unpowered [Chanzon slide switch](https://www.amazon.com/dp/B09R434VJQ)
+  if inspecting the older purchased candidate;
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), notebook,
+  calculator, and drawing paper; and
+- an exact converter only if it is already owned and currently permitted. No
+  confirmed purchase URL for an approved converter is preserved in the
+  inventory.
+
+Do not prepare a controller, amplifier, charger, battery harness, or cell for
+the powered resistor-load portion.
 
 **Study**
 
@@ -782,6 +1002,29 @@ the others.
 
 **Question:** Can the received parts fit while preserving antenna, connector,
 acoustic, insulation, and removal space?
+
+**Prepare**
+
+- [Neiko digital caliper](https://www.amazon.com/dp/B000GSLKIW), ruler,
+  notebook, marker, and camera;
+- clean reused cardboard/paper and removable tape—no dedicated purchase link
+  is required;
+- unpowered [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91),
+  [Hosyond OLED](https://www.amazon.com/dp/B09T6SJBV5),
+  [INMP441 microphone](https://www.amazon.com/dp/B092HWW4RS),
+  [MAX98357A amplifier](https://www.amazon.com/dp/B0CDWXZZCH),
+  [Same Sky speaker](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309), and
+  [QTEATAK button](https://www.amazon.com/dp/B0FHW6HMG4);
+- printed dimensions from the [Adafruit #1578](https://www.adafruit.com/product/1578)
+  and [Adafruit #258](https://www.adafruit.com/product/258) pages for making an
+  inert cell dummy—do not bring either real cell to the bench;
+- [fish paper](https://www.amazon.com/dp/B0GZVDKBBS) and
+  [Kapton tape](https://www.amazon.com/dp/B072Z92QZ2) for measuring reserved
+  insulation thickness only; and
+- optional uncut [K&S #9831 brass tube](https://www.amazon.com/dp/B005WPAW9M)
+  plus the qualified bare controller and
+  [Rankie USB cable](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4)
+  for the controlled RF comparison.
 
 **Study**
 
@@ -825,6 +1068,24 @@ rather than guessed away.
 **Question:** Can every previously passed subsystem be reproduced from a clean
 start and debugged without changing several variables at once?
 
+**Prepare**
+
+- the qualified [ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91)
+  and [Rankie USB data cable](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4);
+- only peripherals that passed earlier gates: the
+  [QTEATAK action button](https://www.amazon.com/dp/B0FHW6HMG4),
+  [Hosyond OLED](https://www.amazon.com/dp/B09T6SJBV5), and conditionally the
+  [INMP441 microphone](https://www.amazon.com/dp/B092HWW4RS);
+- [KAIWEETS multimeter](https://www.amazon.com/dp/B08BL288LW);
+- REXQualis breadboard and TODOELEC jumpers—exact purchase URLs not recorded;
+- [3M safety glasses](https://www.amazon.com/dp/B016KZ1ZPM), notebook, camera,
+  all earlier lab records, and a printed/handwritten subsystem matrix; and
+- access to a 2.4 GHz network only if the backend/privacy decision was
+  explicitly accepted.
+
+Keep the amplifier, external supply, charger, battery harness, cells, and brass
+frame outside this USB-only capstone. A later audio fixture is a separate setup.
+
 **Study**
 
 - Read [Lesson 13](../edu/fundamentals/13-debugging-integration-and-capstone.md).
@@ -834,19 +1095,24 @@ start and debugged without changing several variables at once?
 1. Draw the complete battery-free test article, including every source,
    return, rail, connector pin, I2C signal, I2S signal, boot/recovery control,
    and explicitly absent or held subsystem.
-2. Start from the bare controller and reproduce its flash/boot result.
-3. Add only peripherals that individually passed earlier sessions, one layer
-   at a time. A sensible ceiling is controller, action button, OLED, and an
-   approved low-current microphone on the documented USB-only fixture.
-4. Leave the amplifier absent unless Day 10's complete powered fixture passed.
+2. Cold-start the last known-good USB setup and reproduce its diagnostic boot
+   log. If reflashing, the tested USB-powered peripherals may stay connected.
+3. When rebuilding or adding a peripheral, use only ones that individually
+   passed earlier sessions, one layer at a time. A sensible ceiling is
+   controller, action button, OLED, and an
+   identified INMP441 microphone on the quickstart's USB-only wiring.
+4. Keep the amplifier absent and use the offline diagnostics build.
 5. Run a regression after each addition and save the serial output.
-6. If the backend privacy decision is accepted, provision only a 2.4 GHz
-   network and record one non-sensitive service interaction. Otherwise keep
-   network/voice behavior `HOLD`; local hardware evidence remains valuable.
-7. With power removed before every change, diagnose up to three safe planted
-   faults such as swapped OLED SDA/SCL, a removed common ground, or an
-   intentionally wrong decoder/address setting. Restore the last known-good
-   state after each fault.
+6. Reproduce the button log, OLED pixel toggle, and silence-versus-speech
+   microphone readings together. The optional regular-firmware/backend step in
+   the quickstart follows these local checks; it is separate from this offline
+   capstone and does not establish speaker output.
+7. With USB removed before every change, diagnose up to three reversible
+   faults: swapped OLED SDA/SCL, a disconnected OLED signal wire, or an
+   intentionally wrong decoder setting. Keep all ground connections intact.
+   Missing-ground and missing-I2S-clock exercises are unpowered continuity
+   exercises only; restore them before applying power. Restore the last
+   known-good state after each fault.
 8. Complete a final matrix with one row per subsystem and columns for
    `identified`, `wired`, `observed`, `documented`, and `safe to integrate`.
 

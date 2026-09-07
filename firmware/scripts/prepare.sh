@@ -14,6 +14,25 @@ DEPENDENCIES_LOCK_SOURCE="${FIRMWARE_DIR}/dependencies.lock"
 # shellcheck source=../versions.env
 source "${FIRMWARE_DIR}/versions.env"
 
+REFRESH=false
+CHECK_ONLY=false
+for option in "$@"; do
+    case "${option}" in
+        --refresh) REFRESH=true ;;
+        --check) CHECK_ONLY=true ;;
+        --help|-h)
+            echo "usage: $0 [--refresh | --check]"
+            echo "--refresh preserves a mismatched checkout in a unique .work/archive.* directory."
+            echo "--check validates the existing checkout without replacing it."
+            exit 0 ;;
+        *) echo "error: unknown option: ${option}" >&2; exit 2 ;;
+    esac
+done
+if [[ "${REFRESH}" == true && "${CHECK_ONLY}" == true ]]; then
+    echo "error: --refresh and --check are mutually exclusive" >&2
+    exit 2
+fi
+
 for command_name in git mktemp cmp; do
     if ! command -v "${command_name}" >/dev/null 2>&1; then
         echo "error: required command not found: ${command_name}" >&2
@@ -37,7 +56,8 @@ overlay_fingerprint() {
 EXPECTED_FINGERPRINT=$(overlay_fingerprint)
 
 validate_checkout() {
-    local actual_commit checkout_status
+    local actual_commit checkout_status validation_dir validation_status=0
+    [[ -d "${CHECKOUT_DIR}/.git" ]] || return 1
     actual_commit=$(git -C "${CHECKOUT_DIR}" rev-parse HEAD)
     if [[ "${actual_commit}" != "${XIAOZHI_COMMIT}" ]]; then
         return 1
@@ -53,24 +73,25 @@ validate_checkout() {
         "${CHECKOUT_DIR}/partitions/v2/pocket-ai-4m.csv" || return 1
     cmp -s "${DEPENDENCIES_LOCK_SOURCE}" \
         "${CHECKOUT_DIR}/dependencies.lock" || return 1
-    git -C "${CHECKOUT_DIR}" apply --reverse --check "${PATCH_FILE}" || return 1
+    git -C "${CHECKOUT_DIR}" diff --cached --quiet || return 1
 
-    # The patch is stored in canonical `git diff` form. Comparing the full diff
-    # rejects extra edits inside the two expected tracked files.
-    cmp -s "${PATCH_FILE}" <(
-        git -C "${CHECKOUT_DIR}" diff --no-ext-diff --no-color --unified=3 \
-            --diff-algorithm=myers --src-prefix=a/ --dst-prefix=b/ -- \
-            main/CMakeLists.txt main/Kconfig.projbuild
-    ) || return 1
-
-    # An exact porcelain status also catches staged changes and edits anywhere
-    # else in the checkout. Generated build files are covered by upstream's
-    # ignore rules and therefore do not appear here.
-    checkout_status=$(git -C "${CHECKOUT_DIR}" status --porcelain=v1 \
-        --untracked-files=all | LC_ALL=C sort)
-    if [[ "${checkout_status}" != $' M main/CMakeLists.txt\n M main/Kconfig.projbuild\n?? main/boards/pocket-wall-e-c3/config.h\n?? main/boards/pocket-wall-e-c3/config.json\n?? main/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc\n?? partitions/v2/pocket-ai-4m.csv' ]]; then
-        return 1
+    # Compare the entire expected patched tree, including new patch files,
+    # using a temporary index. The real index and user edits remain untouched.
+    validation_dir=$(mktemp -d "${WORK_ROOT}/validate.XXXXXX")
+    if ! GIT_INDEX_FILE="${validation_dir}/index" git -C "${CHECKOUT_DIR}" read-tree HEAD ||
+       ! GIT_INDEX_FILE="${validation_dir}/index" git -C "${CHECKOUT_DIR}" apply --cached "${PATCH_FILE}" ||
+       ! GIT_INDEX_FILE="${validation_dir}/index" git -C "${CHECKOUT_DIR}" diff --quiet; then
+        validation_status=1
+    else
+        checkout_status=$(GIT_INDEX_FILE="${validation_dir}/index" \
+            git -C "${CHECKOUT_DIR}" ls-files --others --exclude-standard | LC_ALL=C sort)
+        if [[ "${checkout_status}" != $'main/boards/pocket-wall-e-c3/config.h\nmain/boards/pocket-wall-e-c3/config.json\nmain/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc\npartitions/v2/pocket-ai-4m.csv' ]]; then
+            validation_status=1
+        fi
     fi
+    rm -f -- "${validation_dir}/index" "${validation_dir}/index.lock"
+    rmdir -- "${validation_dir}"
+    return "${validation_status}"
 }
 
 mkdir -p "${WORK_ROOT}"
@@ -83,8 +104,21 @@ if [[ -e "${CHECKOUT_DIR}" ]]; then
         exit 0
     fi
 
-    echo "error: ${CHECKOUT_DIR} already exists but does not match this overlay." >&2
-    echo "Its contents were preserved. Move it aside, then run prepare.sh again." >&2
+    if [[ "${REFRESH}" != true ]]; then
+        echo "error: ${CHECKOUT_DIR} does not match this overlay." >&2
+        echo "Run prepare.sh --refresh to archive it intact and prepare the current inputs." >&2
+        exit 1
+    fi
+    ARCHIVE_DIR=$(mktemp -d "${WORK_ROOT}/archive.XXXXXX")
+    mv -- "${CHECKOUT_DIR}" "${ARCHIVE_DIR}/xiaozhi-esp32"
+    if [[ -e "${FINGERPRINT_FILE}" ]]; then
+        mv -- "${FINGERPRINT_FILE}" "${ARCHIVE_DIR}/overlay.sha256"
+    fi
+    echo "Preserved the previous checkout, edits, and build files at ${ARCHIVE_DIR}"
+fi
+
+if [[ "${CHECK_ONLY}" == true ]]; then
+    echo "error: no matching prepared checkout exists: ${CHECKOUT_DIR}" >&2
     exit 1
 fi
 

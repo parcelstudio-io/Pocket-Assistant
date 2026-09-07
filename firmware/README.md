@@ -2,7 +2,7 @@
 
 This directory provides a buildable source overlay for the Pocket AI Assistant's
 ESP32-C3 hardware. It pins the public Xiaozhi application, adds the project's
-board registration and confirmed pin map, forces the real 4 MB flash layout,
+board registration and intended pin map, forces the 4 MB flash layout,
 and produces a merged image that can be flashed at address `0x0`.
 
 > **Current-contract boundary:** the corrected source targets an I2S
@@ -11,6 +11,30 @@ and produces a merged image that can be flashed at address `0x0`.
 > amplifier on GPIO3, with shared clocks on GPIO1/GPIO2 at 16 kHz. This README
 > is not purchase authority; the release decision is
 > [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
+
+## Beginner default: offline USB diagnostics
+
+Start with [the prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md), not the
+vendor binary. The default build tests the OLED and prints microphone levels
+over USB. It does not start Wi-Fi, provision an account, or send recordings
+anywhere. The amplifier is disabled. Begin with a bare controller; add the
+OLED and microphone one at a time, powered from its 3.3 V output only.
+
+From the repository root, in Bash:
+
+```bash
+firmware/scripts/setup.sh
+. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh
+python3 firmware/scripts/verify_source_build.py
+```
+
+Setup downloads the pinned SDK and its tools and can take several minutes.
+It does not need hardware or administrator privileges. Run setup once and
+source `export.sh` again in each new terminal. Use `build.sh --diagnostics`
+as an explicit alias for the default, or `build.sh --assistant` later for the
+networked application. Both supported modes keep the amplifier disabled.
+The last successful build is the one the verifier and flash helper select.
 
 ## Source status and limits
 
@@ -31,15 +55,17 @@ author's original code and not a byte-for-byte rebuild of that binary.
   manager tries to rewrite that lock.
 - `SOURCE_DATE_EPOCH` is fixed to the upstream commit timestamp so generated
   app metadata and compiler date/time strings do not depend on build time.
-- Two clean builds on the validation host with the pinned inputs produced
-  identical merged images. Their reference size/SHA-256, byte-producing local
-  input hashes, effective configuration hash, and observed tool versions are
-  recorded in `source-build.json` so a local rebuild can be compared.
+- A successful build creates ignored `dist/source-build.json`, recording the
+  actual image, all local source inputs, effective configuration, build mode,
+  and tool versions. Verification checks these again before flashing. The
+  checked-in `source-build.json` is a reference for a specific build, not a
+  permanent checksum every future source edit must reproduce. Local records
+  do not inherit old claims of identical clean builds or hardware tests.
 - The source and configuration can be compiled without the device. Electrical,
   microphone, speaker, button, and end-to-end assistant behavior still require
   a hardware smoke test.
 
-The source build additionally diverges for English users: wake word
+Assistant mode additionally diverges for English users: wake word
 `wn9s_hiesp` ("Hi, ESP") and `CONFIG_LANGUAGE_EN_US` replace the vendor
 image's Mandarin `wn9s_nihaoxiaozhi` and zh-CN strings (both set in
 `sdkconfig.defaults` and the board `config.json`; the explicit
@@ -74,9 +100,14 @@ startup/rail delay and valid zero-data I2S while `PG` independently vetoes
 `OE`. The delay before nonzero samples must cover measured worst-case `PG`
 release plus amplifier turn-on, or the final schematic needs a reviewed
 level-safe sense path.
-This control is not implemented or frozen in the current firmware; keep
-`SD_MODE` hard-grounded until the reviewed schematic, firmware sequence, and
-partial-power tests pass.
+The board codec implements the GPIO5 mute/startup/shutdown sequence, but the
+physical interface and its timing are **not hardware-qualified**. The supported
+prototype builds deliberately keep `CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER`
+off. Leave the amplifier disconnected for the USB quickstart; on a separate
+unqualified audio fixture, keep `SD_MODE` hard-grounded. Do not bypass that mute
+just to hear a sound. Enabling a qualified fixture later requires deliberate
+configuration/tooling changes and measured startup, shutdown, and partial-power
+checks. A firmware volume limit alone is not a speaker-power qualification.
 
 At 16,000 frames/s and 64 bit clocks per frame, the I2S bit clock is
 `16,000 × 64 = 1.024 MHz`. The microphone uses the intended left slot with its
@@ -99,10 +130,11 @@ breakout without revisiting the rail analysis in the materials decision.
 The editable corrected source build uses 16 kHz duplex audio, receives mic data
 on GPIO4 so GPIO8 can retain a defined high boot strap, probes SSD1306 at
 `0x3C` and `0x3D`, and continues headless when no display answers. GPIO10 is
-the active-low action/config input; GPIO9 remains ROM BOOT. The authoritative
-qualification harness in
-[`edu/03_HOW_IT_WORKS.md`](../edu/03_HOW_IT_WORKS.md) targets this corrected
-source build. Do not mix the two wiring contracts.
+the active-low action/config input; GPIO9 remains ROM BOOT. The
+[project overview](../edu/01-how-it-fits-together.md) summarizes this
+corrected-source logical contract. This README and the board configuration
+remain authoritative for firmware details. Do not mix the two wiring
+contracts.
 
 ## Directory layout
 
@@ -110,34 +142,39 @@ source build. Do not mix the two wiring contracts.
 firmware/
 ├── partitions/       reviewed 4 MB partition table
 ├── patches/          Xiaozhi CMake/Kconfig board registration
-├── scripts/          prepare, build, verify, and hardware-flash entry points
+├── scripts/          setup, prepare, build, record, verify, and flash entry points
 ├── src/boards/       project-owned board adapter and pin configuration
 ├── dependencies.lock pinned ESP-IDF component graph and registry hashes
-├── source-build.json validated source-build size, digest, and inputs
+├── source-build.json reference build record (local builds use dist/source-build.json)
 ├── sdkconfig.defaults
 └── versions.env      pinned source and SDK versions
 ```
 
 `scripts/prepare.sh` creates an ignored checkout under `.work/`, verifies the
 exact upstream commit, applies the registration patch, and copies the reviewed
-board files. It never replaces a mismatched checkout, so local experiments are
-not silently deleted. Build products go to the ignored `dist/` directory.
+board files. A plain `prepare.sh` preserves and rejects a mismatched checkout.
+`prepare.sh --refresh` archives that checkout instead of deleting it, then
+prepares the updated overlay. `build.sh` uses this recoverable refresh
+automatically, so an intentional source edit does not require manual cache
+surgery. Build products go to ignored `dist/`.
 
 ## Build
 
-The helper scripts require Bash (Linux/macOS, or a correctly configured WSL or
-Git Bash environment on Windows). Install Git, Python 3, CMake/Ninja
-prerequisites, and the official Espressif
-ESP-IDF `v6.0.2` Git checkout at commit
-`7101770dc6db2667b3c477cc31365dd1acd6db4e`. Follow Espressif's
-platform-specific installation instructions, then activate that SDK in the
-same Bash shell by sourcing its `export.sh`. The build rejects a different SDK
-version/commit or tracked modifications in the SDK checkout.
+The helper scripts require Bash and Python 3.10 or newer. Linux/macOS users
+can use `setup.sh` above; Windows users should use a configured WSL environment
+and arrange USB forwarding for the device. Git must already be installed. If
+SDK setup reports a missing OS package such as Python venv support, install
+that named prerequisite with your OS package manager and rerun setup; do not
+run the firmware or flashing workflow as root.
+
+An existing official Espressif ESP-IDF `v6.0.2` checkout at commit
+`7101770dc6db2667b3c477cc31365dd1acd6db4e` can also be used: source its
+`export.sh` instead. The build rejects a different SDK commit or tracked SDK
+modifications. Python tool versions are recorded from the actual environment.
 
 From the repository root:
 
 ```bash
-firmware/scripts/prepare.sh
 firmware/scripts/build.sh
 ```
 
@@ -150,25 +187,28 @@ firmware/dist/pocket-wall-e-c3-v2.4.0-idf-v6.0.2.bin
 
 That file is a complete merged 4 MB-layout image for offset `0x0`. The app
 partition begins at `0x10000`; do not write the merged image there.
-For the pinned inputs, the expected merged image is 3,541,638 bytes with
-SHA-256 `7f1827f21e1cfa71545025d9dc6067bf25c6d65214ace11da870f8b860ce9104`.
-The machine-readable record is in `source-build.json`; a different digest is a
-reason to inspect the host tool versions and inputs before flashing. The flash
-helper refuses it rather than assuming cross-host output identity.
+Read the exact size, digest, and selected mode from `dist/source-build.json`
+or run the verifier. There is intentionally no second, manually maintained
+checksum in this README. A changed source input or modified binary after the
+build fails verification; rebuild intentionally instead of bypassing the check.
 
-To change a Kconfig option permanently, edit `sdkconfig.defaults` and rerun the
-build. Move the existing `.work/xiaozhi-esp32` checkout aside only after changing
-the source overlay or patch, because `prepare.sh` deliberately refuses to
-replace a nonmatching worktree. Temporary `menuconfig` edits are intentionally
-replaced on the next scripted build.
+To change an ordinary Kconfig option permanently, edit `sdkconfig.defaults` and
+rerun the build. The CLI selects diagnostics versus assistant mode explicitly
+and holds amplifier enable off. Temporary `menuconfig` edits are intentionally
+replaced on the next scripted build. Source modifications belong in `src/` or
+`patches/`, not the generated `.work/` checkout; refreshed checkouts are archived
+so any earlier experiments remain recoverable.
 
 ## Flash and monitor source builds
 
-During Phase 0, connect a bare SuperMini with its external 3.3 V/peripheral
-harness disconnected. Cell removal alone does not prevent USB from driving the
-shared 3.3 V rail and reverse-driving an unpowered regulator. Do not flash a
-permanently assembled harness until its reviewed service-isolation scheme is
-installed and tested. Then identify the serial port, close other serial
+For the USB bench prototype, use only the controller, button, and optional
+OLED/microphone powered by the controller's 3.3 V output. Disconnect the
+battery, charger, external regulators, amplifier, and all separately powered
+wiring. A controller-powered peripheral is not an external supply; an
+unpowered regulator connected to the same rail still is a back-power path.
+Unplug USB before changing any wiring. Do not flash a permanently assembled
+multi-supply harness until its service-isolation scheme is tested.
+Then identify the serial port, close other serial
 monitors, preview the operation, and run it, for example:
 
 ```bash
@@ -185,9 +225,20 @@ blank NVS area clears existing Wi-Fi settings. If automatic reset fails,
 hold the module's GPIO9 **BOOT** button, tap RESET or reconnect USB, release
 BOOT, and retry.
 
-On a clean first boot, connect to the expected device-specific `Xiaozhi-XXXX`
+The default diagnostic image reports its mode over USB and remains offline;
+use the quickstart to interpret the OLED and microphone results. No raw
+recording is saved. Missing peripherals are reported, not prerequisites for
+controller bring-up.
+
+**Assistant mode only:** on a clean first boot, connect to the expected
+device-specific `Xiaozhi-XXXX`
 Wi-Fi provisioning access point, confirm its actual name in the boot log, and
 open <http://192.168.4.1> if the captive portal does not appear. Xiaozhi's
 default build uses `https://api.tenclass.net/xiaozhi/ota/` as its third-party
 bootstrap service. Review that service's privacy and operational requirements
 before sending microphone audio to it.
+
+This 4 MB layout has a factory application and no OTA application slot. The
+firmware hides the unsupported manual-update tool and refuses OTA before
+changing application state. Update this prototype using the USB flash helper,
+not an online firmware-update command.

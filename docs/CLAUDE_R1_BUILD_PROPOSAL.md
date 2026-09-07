@@ -23,9 +23,9 @@
 **GO:** the complete R1 cart below, breadboard bring-up, frame fabrication
 after the cardstock dry-fit closes, and staged final assembly per
 [BUILD_GUIDE.md](BUILD_GUIDE.md).
-**Still gated:** first cell connection (after the bench power test), first
-attended charge, and pocket carry (after the acceptance checks in
-[edu/06_ACCEPTANCE_TESTS.md](../edu/06_ACCEPTANCE_TESTS.md)).
+**Still gated:** first cell connection, first attended charge, and pocket
+carry. The current authority is the
+[F0 promotion-gate list](FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go).
 
 ## The audit question, answered
 
@@ -36,9 +36,9 @@ below.** The evidence:
 - **The reference device exists and works** with exactly these part classes:
   ESP32-C3 SuperMini + SSD1306 OLED + INMP441 + MAX98357A + 8 Ω speaker +
   1S Li-ion + Type-C charge board + slide switch, free-formed in a brass frame.
-- **The firmware is proven buildable.** The source port compiles reproducibly
-  (two identical clean builds, digest recorded in
-  [source-build.json](../firmware/source-build.json)) and its pin/rate contract
+- **Historical firmware build claim.** The then-current source port compiled
+  twice with identical output. That evidence belongs to the earlier revision,
+  not the current [source-build record](../firmware/source-build.json). Its pin/rate contract
   is legal per every datasheet involved (see
   [ASSEMBLY_EVIDENCE.md](ASSEMBLY_EVIDENCE.md)).
 - **Every electrical interface closes on paper.** All modules are 3.3 V-logic
@@ -117,7 +117,7 @@ during this audit cycle · **⚠️** = verify stated property on arrival.
 | Controller | Plain **ESP32-C3 SuperMini**, USB-C, ≥4 MB flash — 3-pack (e.g. Amazon [B0G5XS345R](https://www.amazon.com/dp/B0G5XS345R) or [B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) 10-pack) | Reference layout; matches firmware/CAD | ⚠️ gate every board with `esptool flash_id` ≥ 4 MB; plain variant only (one blue LED, no U.FL, no WS2812) |
 | Display | **0.96" SSD1306 128×64 I2C, white, 4-pin** — 5-pack (e.g. [B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5)) | Creator-faithful, thin, 3.3 V, 0x3C (firmware also probes 0x3D) | ⚠️ read silkscreen pin order — vendors ship GND-VCC and VCC-GND variants |
 | Microphone | **INMP441 I2S MEMS** breakout — 5-pack (e.g. [B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS)) | Creator's exact mic; 64-SCK I2S at 1.024 MHz is in-spec; 3.3 V | `L/R` → GND (left slot). Alternate: Adafruit [#6049 ICS-43434](https://www.adafruit.com/product/6049) (controlled board, `SEL` → GND) — either works with the source build |
-| Amplifier | **MAX98357A I2S class-D** breakout — HiLetgo 3-pack ([B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH)) or Adafruit [#3006](https://www.adafruit.com/product/3006) | Creator's amp; 2.5–5.5 V VIN covers the cell rail | Stock SD ≈ 0.30 V = mono mix = full amplitude (see [edu/04-audio.md](../edu/04-audio.md)); GAIN floating = 9 dB |
+| Amplifier | **MAX98357A I2S class-D** breakout — HiLetgo 3-pack ([B0CDWXZZCH](https://www.amazon.com/dp/B0CDWXZZCH)) or Adafruit [#3006](https://www.adafruit.com/product/3006) | Creator's amp; 2.5–5.5 V VIN covers the cell rail | Stock SD ≈ 0.30 V = mono mix = full amplitude (see the [amplifier lesson](../edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md)); GAIN floating = 9 dB |
 | Speaker | **Same Sky CES-20134-088PM** — 8 Ω, 0.8 W, factory-enclosed, ~20 × 16 × 4.9 mm, bare leads ([DigiKey 2223-CES-20134-088PM-ND](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309)) ×2 | Sealed rear cavity solves the hardest acoustic problem at phone-speaker size | Software volume limit keeps average ≤ 0.8 W. Fallback: video-style phone speaker (undocumented specs — A/B it) |
 | Action button | 6×6 mm tact switch (+cap), from any kit (e.g. [B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4)) | GPIO10 → GND, active low; chat toggle + long-press Wi-Fi reset | Onboard GPIO9 is ROM BOOT, not this input |
 
@@ -206,9 +206,9 @@ Retained as history in the linked files; none of it is in the R1 cart.
    BTL lead grounded; polarity verified at the JST before first connection.
 4. **Cell gate:** pack connected only after gates 1–3; first charge attended
    per the hard rules.
-5. **Pocket gate:** acceptance checks in
-   [edu/06_ACCEPTANCE_TESTS.md](../edu/06_ACCEPTANCE_TESTS.md) pass before the
-   device rides in a pocket.
+5. **Pocket gate:** every applicable
+   [current F0 promotion gate](FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go)
+   passes before the device rides in a pocket.
 
 ## Primary references
 
@@ -218,7 +218,7 @@ Retained as history in the linked files; none of it is in the R1 cart.
 - [MAX98357A datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/max98357a-max98357b.pdf) · [INMP441 datasheet](https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf)
 - [Same Sky CES-20134-088PM](https://www.sameskydevices.com/product/audio/speakers/miniature-%2810-mm~40-mm%29/ces-20134-088pm)
 - [ESP32-C3 datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf)
-- Procedures: [BUILD_GUIDE.md](BUILD_GUIDE.md) · [WIRING_AND_ASSEMBLY.md](WIRING_AND_ASSEMBLY.md) · [edu/04_ASSEMBLY_STEP_BY_STEP.md](../edu/04_ASSEMBLY_STEP_BY_STEP.md)
+- Procedures: [BUILD_GUIDE.md](BUILD_GUIDE.md) · [WIRING_AND_ASSEMBLY.md](WIRING_AND_ASSEMBLY.md) · [staged integration lesson](../edu/fundamentals/13-debugging-integration-and-capstone.md)
 
 ## Release verdict
 

@@ -211,6 +211,14 @@ But a divider is not an ideal voltage source. If a 10 kΩ load is connected from
 `Vout` to ground, that load is parallel with the lower 10 kΩ resistor:
 
 ```text
+                    ┌──── R2 ─────┐
+Vin ── R1 ── Vout ──┤             ├── GND
+                    └── R_load ───┘
+```
+
+Both `R2` and `R_load` connect between the same two nodes, `Vout` and `GND`.
+
+```text
 R_lower = 10 kΩ || 10 kΩ = 5 kΩ
 Vout = 3.3 V × 5 kΩ / (10 kΩ + 5 kΩ) = 1.1 V
 ```

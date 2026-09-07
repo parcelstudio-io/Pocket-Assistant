@@ -35,7 +35,8 @@ heat, clamp, or puncture a cell; stop on swelling, warmth, damage, or odor.
 Shop only from the status-marked
 **[current Phase 0 list](FINAL_MATERIALS_FOR_REVIEW.md)**. The archived R1
 [MATERIALS.md](MATERIALS.md) is comparison evidence, not an order sheet. Read
-**[the power-chain lesson](../edu/07-the-power-chain.md)** before any power work.
+the [power-integrity lesson](../edu/fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
+before any power work.
 
 ---
 
@@ -45,10 +46,11 @@ The video starts at the template. Don't. This firmware has **never run on
 physical hardware** in this workspace, and the assistant is useless if its
 cloud backend isn't acceptable to you.
 
-1. **Build or obtain the firmware.** `cd firmware && ./scripts/prepare.sh &&
-   ./scripts/build.sh` (pinned ESP-IDF v6.0.2). The corrected build compiles
-   clean and reproducibly (two clean builds, identical images — see
-   [source-build.json](../firmware/source-build.json)).
+1. **Build the current firmware.** Follow the
+   [USB prototype quickstart](PROTOTYPE_QUICKSTART.md). It now defaults to
+   offline diagnostics, not the networked application assumed by this archived
+   procedure. The old two-clean-build result applies to the earlier source
+   revision only; current evidence is recorded in the build manifest.
 2. **Qualify the boards.** `esptool flash_id` → 4 MB minimum. Plain SuperMini
    only (one blue LED, no U.FL socket — a "Plus" variant with a WS2812 on
    GPIO8 cannot use this pin map).
@@ -166,8 +168,9 @@ separate data), change the details:
 
 Amp specifics: do not assume stock `SD` mix mode plays at full amplitude.
 Source inspection predicts an active left and inactive right TX slot; capture
-both and select a compatible channel mode before any audio promotion (see
-[edu/04-audio.md](../edu/04-audio.md)). Mic select goes low for the intended
+both and select a compatible channel mode before any audio promotion (see the
+[amplifier lesson](../edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md)).
+Mic select goes low for the intended
 left slot. Speaker leads form a twisted pair at the amp's output terminals;
 **neither lead ever grounded or touching the frame**.
 
@@ -245,7 +248,8 @@ With a meter (and the bench supply for step 2):
 6. Only now does the pack live in the pager (Phase 7 checks), then Phase 8's
    attended first charge.
 
-Full acceptance list: [edu/06_ACCEPTANCE_TESTS.md](../edu/06_ACCEPTANCE_TESTS.md).
+Current acceptance authority: the
+[F0 promotion gates](FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go).
 
 ---
 

@@ -6,8 +6,11 @@
 > [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md). Mark items off
 > as boxes arrive and incoming inspection passes.
 
-**Status: every part and tool needed to build the device has been ordered.**
-What remains is a short consumables list at the bottom, none of it blocking.
+**Status: the recorded orders provide a starting set for the USB prototype.**
+Check what has actually arrived before each session. This inventory does not
+establish a complete battery-powered design. Start with the
+[USB prototype quickstart](PROTOTYPE_QUICKSTART.md), using what is already
+owned; no new purchase is needed to begin with the bare controller.
 
 ## Orders placed
 
@@ -36,7 +39,7 @@ Estimated total spend: **≈ $635–660**.
 | **Meshnology ESP32-C3 SuperMini** dev board | 10 | The brain. A postage-stamp ESP32-C3 board with Wi-Fi, native USB-C, and the GPIO layout the firmware targets. It runs the assistant, talks to the cloud backend, and drives every peripheral. **Gate each board with `esptool flash_id` — reject anything under 4 MB flash**, and reject any "Plus" variant with an RGB LED on GPIO8, which breaks this pin map. Ten boards means you can afford to throw out bad clones. |
 | **Hosyond SSD1306 OLED**, 0.96" 128×64 I²C, white | 5 | The screen — the device's only visual output, showing state, the pairing code, and responses. White pixels on black glass are also the intended white/silver accent. Firmware probes both `0x3C` and `0x3D`, so either address works. **Read the silkscreen pin order before wiring**: vendors ship GND-VCC-SCL-SDA *and* VCC-GND-SCL-SDA on identical-looking boards. |
 | **AITRIP INMP441** I²S MEMS microphone | 5 | The ears. A digital microphone that outputs I²S directly, so no analog audio wiring is needed. This is the creator's exact part. Tie `L/R` to GND to select the left slot; data goes to GPIO4. **Keep flux, IPA, glue, paint, and compressed air away from the acoustic port** — contaminating it is permanent. |
-| **HiLetgo MAX98357** I²S class-D amplifier | 3 | The voice. Takes the I²S stream straight from the ESP32-C3 and drives the speaker — no separate DAC. Runs on 2.5–5.5 V, so it can sit directly on the raw battery rail. **Meter the `SD` pin on arrival**: ~0.30 V is mono-mix mode (correct, plays at full amplitude); ~0 V means the board shipped in shutdown and needs rework. |
+| **HiLetgo MAX98357** I²S class-D amplifier | 3 | Converts I²S to speaker output. Keep it disconnected during the beginner USB prototype. Its supply range alone does not define a complete power circuit. Later inspect the exact carrier's gain and `SD/MODE` network: shutdown can be intentional, and mono-mix can attenuate left-only source audio. Do not change the mode or power it from a raw cell based on this inventory. |
 | **Same Sky CES-20134-088PM** speaker, 8 Ω 0.8 W | 1 | The mouth. A factory-enclosed micro-speaker — the sealed rear cavity is what makes it audible at this size, and it removes the hardest acoustic problem in the build. 20 × 13 × 4.87 mm, top-firing, with two mounting flanges and a built-in dust mesh. Ships with 60 mm of 32 AWG lead, longer than the whole device, so **it needs no wire from you**. Cap output at ≤ 2.53 V RMS differential to respect the 0.8 W rating. |
 | **QTEATAK tactile push buttons** | 420 | The only user control: a momentary button on GPIO10 to ground. Short press toggles chat, long press resets Wi-Fi. Pick a white cap to match the finish. Note the onboard GPIO9 button is ROM BOOT, not this input. |
 | **2.54 mm male breakaway header pins** | 22 | Snap-apart pin strips for soldering onto modules so they can plug into a breadboard. Makes the whole Phase 0 bench stack reversible instead of permanent. |
@@ -45,18 +48,18 @@ Estimated total spend: **≈ $635–660**.
 
 | Item | Qty | What it is and why it is here |
 | --- | ---: | --- |
-| **Adafruit #1578** LiPo 3.7 V **500 mAh**, protected | 2 | The compact battery option, 29 × 36 × 4.75 mm — small enough to lie flat behind the OLED and keep the device at video scale. "Protected" means an internal circuit board guards against overcharge, over-discharge (cuts at 3.0 V), and short circuit. Ships with a JST-PH lead so it is **never soldered**. Its discharge-current rating is unpublished — the open question these packs exist to answer. |
+| **Adafruit #1578** LiPo 3.7 V **500 mAh**, protected | 2 | Previously purchased compact battery candidate, nominally 29 × 36 × 4.75 mm. Keep disconnected and terminal-protected. The current material review records a 0.5 A maximum continuous-discharge rating and rejects it for the former estimated load; ownership is not permission to use it. Never solder to or alter its factory lead. |
 | **Adafruit #258** LiPo 3.7 V **1200 mAh**, protected | 2 | The margin battery option, 34 × 62 × 5 mm. Roughly 1.2 A capable and more than twice the runtime, but 62 mm long — longer than the intended device — so fitting it changes the silhouette. Buying both sizes turns the capacity-vs-size argument into a measurement. |
-| **Adafruit #4410** USB-C Micro-Lipo charger | 1 | Recharges the pack in place through a USB-C port on the frame, the way the reference build does. Runs the proper constant-current/constant-voltage lithium charge algorithm and terminates at 4.2 V. Ships at a gentle 100 mA; a solder jumper raises it to 500 mA. Has **no load sharing**, so the device must be switched **off** while charging. |
-| **Chanzon SPDT mini slide switch** | 25 | The power switch. Breaks the battery's positive lead, so "off" is a genuine disconnect rather than a sleep state. Measure the contact drop on the one you actually fit. |
+| **Adafruit #4410** USB-C Micro-Lipo charger | 1 | Purchased LiPo charger, with a default 100 mA setting and no load sharing. Store separately from the USB prototype. A future charging arrangement needs its own wiring procedure; the slide-switch OFF position alone is not evidence of source isolation. Leave the charge-rate jumper unchanged. |
+| **Chanzon SPDT mini slide switch** | 25 | Purchased switch samples. Useful for unpowered continuity exercises; not selected to carry the final device's battery current. The beginner prototype turns off by unplugging its USB cable. |
 | **daier JST-PH 2.0 mm** 2-pin connector cables | 20 pr | Mating connectors for the battery. Their real value is bench testing: they let the current-limited power supply stand in where the battery goes, so the whole power chain is proven before a cell is ever connected. ⚠️ **Verify polarity with the meter, not wire color** — generic JST-PH leads are frequently wired opposite to Adafruit's convention. |
 | **LuminologyPro resistor kit**, 25 values, 1/4 W | 1000 | Pull-up and pull-down resistors. 10 kΩ holds the I²S bit clock line (a boot-strap pin) at a defined level and pulls up the button; 100 kΩ pulls down the microphone data line. Without these the board can boot unpredictably. |
 | **BOJACK ceramic capacitor kit** | 650 | Local decoupling — small capacitors placed at each module's power pins that supply the instantaneous current spikes digital chips demand, which long wires cannot deliver fast enough. 100 nF and 10 µF are the values used here. |
 | **ALLECIN electrolytic capacitor kit**, 24 values | 1 kit | Bulk energy storage. The 220 µF sits at the amplifier's power input as a reservoir for bass notes and Wi-Fi transmit bursts, which would otherwise drag the shared battery rail down and reset the processor. |
 
-**Buying both cell sizes was the right call.** Bench the real current draw
-first, then fit whichever pack the numbers justify. Keep the unused pair
-sealed and terminal-protected.
+Both cell sizes remain stored and terminal-protected during the beginner
+prototype. Battery selection is later work and depends on a complete power
+design and measured demand.
 
 # 3 · Frame, insulation, and wire
 
@@ -103,7 +106,7 @@ use each where it belongs, and strain-relieve every conductor either way.
 | **KAIWEETS TRMS multimeter**, 6000 counts, + hard case | The most important instrument in the build. Every safety step is a meter step: battery polarity before the first connection, checking the brass frame is isolated from every circuit, continuity, switch voltage drop, charge termination voltage. Nothing electrical gets connected without it. |
 | **SKY TOPPOWER DC supply**, 0–30 V / 0–5 A | An adjustable, **current-limited** bench power supply that substitutes for the battery during testing. If something is wired wrong it politely limits current instead of dumping a lithium cell's full energy into the fault. This is what lets the entire power chain be proven before a cell is ever installed. |
 | **NEIKO digital caliper**, 0–6" | Measures parts to a hundredth of a millimetre. Every module, board, and connector needs its real measured size before the frame geometry can be trusted — listing dimensions are frequently wrong. |
-| **REXQualis breadboards**, 4 pcs (830 + 400 point) | Solderless boards for wiring the full circuit temporarily. The entire risk-reduction strategy is *prove the stack on a breadboard before soldering anything permanent*. |
+| **REXQualis breadboards**, 4 pcs (830 + 400 point) | Use for resistor labs and the controller's button/OLED/microphone connections. Check split power rails and header joints before use. Amplifier supply and speaker current do not go through breadboard contacts. Loose module headers must be soldered and inspected before jumper testing. |
 | **TODOELEC Dupont jumper kit**, 120 wires, 10 cm | Pre-terminated jumper wires for breadboarding. Bench use only — not for final assembly, and never for the speaker output or high-current runs. |
 
 # 6 · Tools — fabrication and safety
@@ -160,18 +163,12 @@ plus white styrene sheet for guards (~$10, Blick or Canal Plastics).
 
 ## What to do first
 
-The bench supply is the latest-arriving item, but it only gates the **power**
-tests. Everything digital runs from USB:
+Follow the [USB prototype quickstart](PROTOTYPE_QUICKSTART.md): identify and
+flash one bare controller, prepare reliable headers, add the button and OLED,
+then observe microphone levels in the offline diagnostic firmware. This uses
+the controller's USB supply and needs no cloud account, amplifier, battery, or
+enclosure. Save a wiring photograph and the serial output at each step.
 
-1. **Now:** build the firmware — `cd firmware && ./scripts/prepare.sh &&
-   ./scripts/build.sh`. No hardware required.
-2. **Now:** decide the backend question. The default cloud service receives
-   your microphone audio; self-hosting is the alternative.
-3. **As boards arrive:** `esptool flash_id` on several SuperMinis (≥ 4 MB
-   gate), flash one bare, provision Wi-Fi, pair, confirm one voice round trip.
-4. **Then:** breadboard OLED + microphone + amplifier + speaker at low volume.
-5. **When the supply lands:** the current-limited sweep, then the
-   500-vs-1200 mAh decision from measured numbers.
-
-Both battery packs stay sealed and terminal-protected until step 5. Nothing
-gets soldered into a frame before the breadboard stack works end to end.
+After those local tests pass, the regular source firmware provides the next
+software/backend experiment. Speaker output and portable power remain separate
+integration tasks; buying the parts did not verify them.

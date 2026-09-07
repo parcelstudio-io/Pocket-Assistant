@@ -56,7 +56,7 @@ in `firmware/src/boards/pocket-wall-e-c3`:
 | Shared I2S | WS / BCLK | 1 / 2 |
 | Amplifier | DIN | 3 |
 | Microphone | data out | 4 |
-| Amplifier | candidate hardware enable | 5; firmware change not yet implemented/frozen |
+| Amplifier | candidate hardware enable | 5; firmware sequencing implemented but disabled in supported prototype builds; physical interface/timing still unqualified |
 | Action switch | active-low input | 10 |
 | OLED | controller/address | SSD1306, 128×64, 0x3C or 0x3D |
 | Audio | sample rate / frame | 16 kHz, two 32-bit slots, 1.024 MHz BCLK |
@@ -166,9 +166,13 @@ only on a standalone fixture with the load harness physically disconnected,
 attended and outside a pocket. It cannot be promoted into the finished device
 on a remembered OFF rule: final charging needs #4755-class power-path hardware
 or an electrical/mechanical interlock that physically opens the load before a
-charger plug can mate. Likewise, the SuperMini service connector may be used
-only while bare or with the cell physically disconnected until a tested
-interlock makes every unsafe dual-source state impossible.
+charger plug can mate. For SuperMini service USB, disconnect the battery,
+charger, external regulators, amplifier, and all separately powered wiring.
+Cell removal alone is insufficient: an unpowered converter left on the shared
+rail can still be back-powered. A bare controller or the USB-only prototype
+with button/OLED/microphone supplied by the controller's own 3.3 V output is
+permitted. Unplug USB before rewiring. A later multi-supply assembly needs a
+tested service-isolation scheme before its USB connector is used.
 
 All Phase 0 powered work is attended on a nonflammable bench. For the first
 amplifier tests, `SD/MODE` is physically tied to GND while the regulator

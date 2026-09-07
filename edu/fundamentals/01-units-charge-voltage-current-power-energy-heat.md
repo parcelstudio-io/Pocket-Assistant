@@ -29,6 +29,21 @@ ask six different questions about it:
 
 These quantities are related, but they are not interchangeable.
 
+This calculation map previews how the quantities relate; each arrow names the
+operation that produces the quantity at its tip:
+
+```text
+charge moved ΔQ ─────── divide by elapsed time Δt ───────> current I
+energy change ΔE ────── divide by charge Q ──────────────> voltage V
+voltage V and current I ─────── multiply ────────────────> power P
+power P and elapsed time t ──── multiply ────────────────> energy E
+voltage V and current I ─────── divide V by I ───────────> resistance R
+```
+
+The power row uses voltage and current for the same element. The last two rows
+assume constant power and an ideal resistor at fixed conditions, respectively.
+The sections below state those limits in context.
+
 ### Charge
 
 Matter contains positive and negative electric charge. In metal wires, the
@@ -196,13 +211,12 @@ Also distinguish these two limits:
 The Pocket Assistant has radio and audio loads that change quickly, so both
 questions matter.
 
-## Worked example — an illustrative Pocket Assistant power state
+## Worked example — an illustrative load state
 
 The following numbers teach the method. They are **ASSUMED**, not a frozen BOM
 or a measured device specification.
 
-Suppose a prototype's regulated rail is 3.3 V and its average current during a
-voice exchange is 250 mA.
+Suppose a regulated rail is 3.3 V and its average load current is 250 mA.
 
 1. Convert current: `250 mA = 0.250 A`.
 2. Calculate rail power:
@@ -218,30 +232,12 @@ voice exchange is 250 mA.
          = 0.275 × 3,600 J = 990 J
    ```
 
-4. Suppose converter efficiency is **ASSUMED** to be 85% at that operating
-   point:
-
-   ```text
-   efficiency = P_out / P_in
-   P_in = 0.825 W / 0.85 = 0.971 W
-   P_loss = 0.971 W - 0.825 W = 0.146 W
-   ```
-
-5. At an **ASSUMED** 3.6 V converter input, average input current would be:
-
-   ```text
-   I_in = 0.971 W / 3.6 V = 0.270 A
-   ```
-
-The result is **CALCULATED** from assumptions. It does not prove converter
-efficiency, cell runtime, temperature, or peak-current margin. Those become
-**MEASURED** only after the exact hardware is tested under recorded conditions.
+The result is **CALCULATED** from assumptions. It does not prove runtime,
+temperature, or peak-current margin. Converter loss and input-current
+calculations are developed in [Lesson 06](06-li-ion-power-integrity-decoupling-uvlo-thermal.md).
 
 > **Durable principle:** energy in must cover useful energy out plus loss.
 >
-> **Project status:** exact rail currents, duty cycles, converter efficiency,
-> and thermal behavior remain qualification measurements. Do not size or buy a
-> final power chain from this illustrative example.
 
 ## Battery-free lab — voltage, current, and resistor power
 

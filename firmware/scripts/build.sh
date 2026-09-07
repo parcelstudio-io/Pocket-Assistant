@@ -9,11 +9,30 @@ DIST_DIR="${FIRMWARE_DIR}/dist"
 # shellcheck source=../versions.env
 source "${FIRMWARE_DIR}/versions.env"
 
+BUILD_MODE=diagnostics
+EXPLICIT_MODE=""
+for option in "$@"; do
+    case "${option}" in
+        --diagnostics|--assistant)
+            REQUESTED_MODE="${option#--}"
+            if [[ -n "${EXPLICIT_MODE}" && "${EXPLICIT_MODE}" != "${REQUESTED_MODE}" ]]; then
+                echo "error: --diagnostics and --assistant are mutually exclusive" >&2
+                exit 2
+            fi
+            BUILD_MODE="${REQUESTED_MODE}"
+            EXPLICIT_MODE="${REQUESTED_MODE}" ;;
+        --help|-h)
+            echo "usage: $0 [--diagnostics | --assistant]"
+            echo "Default: offline bench diagnostics. --assistant enables the cloud assistant."
+            echo "Both modes keep the amplifier disabled pending hardware qualification."
+            exit 0 ;;
+        *) echo "error: unknown option: ${option}" >&2; exit 2 ;;
+    esac
+done
+
 # Freeze generated timestamps and compiler __DATE__/__TIME__ values so clean
 # builds with the pinned source, SDK, and component lock can be compared.
 export SOURCE_DATE_EPOCH="${XIAOZHI_SOURCE_DATE_EPOCH}"
-
-"${SCRIPT_DIR}/prepare.sh"
 
 if ! command -v idf.py >/dev/null 2>&1; then
     echo "error: idf.py was not found." >&2
@@ -45,6 +64,9 @@ if [[ -n "${IDF_TRACKED_STATUS}" ]]; then
     exit 1
 fi
 
+"${SCRIPT_DIR}/prepare.sh" --refresh
+INPUT_FINGERPRINT=$(python3 "${SCRIPT_DIR}/record_source_build.py" --print-input-fingerprint)
+
 cd "${CHECKOUT_DIR}"
 
 # set-target regenerates sdkconfig from upstream's common and ESP32-C3 defaults.
@@ -52,7 +74,18 @@ cd "${CHECKOUT_DIR}"
 idf.py set-target esp32c3
 {
     printf '\n# Pocket AI Assistant board overrides\n'
-    sed -e 's/\r$//' "${FIRMWARE_DIR}/sdkconfig.defaults"
+    sed -e 's/\r$//' \
+        -e '/^CONFIG_POCKET_AI_BENCH_DIAGNOSTICS=/d' \
+        -e '/^# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set$/d' \
+        -e '/^CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER=/d' \
+        -e '/^# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set$/d' \
+        "${FIRMWARE_DIR}/sdkconfig.defaults"
+    if [[ "${BUILD_MODE}" == diagnostics ]]; then
+        printf '\nCONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y\n'
+    else
+        printf '\n# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set\n'
+    fi
+    printf '# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set\n'
 } >> sdkconfig
 
 idf.py -DBOARD_TYPE="${POCKET_AI_BOARD_TYPE}" \
@@ -70,4 +103,7 @@ cp build/merged-binary.bin "${OUTPUT_BIN}"
 cp "${FIRMWARE_DIR}/dependencies.lock" "${DIST_DIR}/dependencies.lock"
 
 echo "Built merged firmware: ${OUTPUT_BIN}"
-python3 "${FIRMWARE_DIR}/scripts/verify_source_build.py"
+"${SCRIPT_DIR}/prepare.sh" --check
+python3 "${SCRIPT_DIR}/record_source_build.py" --mode "${BUILD_MODE}" \
+    --expected-input-fingerprint "${INPUT_FINGERPRINT}"
+python3 "${SCRIPT_DIR}/verify_source_build.py"

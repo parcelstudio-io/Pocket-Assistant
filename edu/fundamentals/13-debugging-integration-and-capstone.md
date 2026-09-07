@@ -129,9 +129,10 @@ and reset log together before changing firmware.
 
 ## Step 5: one bus, one device
 
-For I2C, begin with the controller and one OLED. Run an address scan, then add
-the second OLED. Record addresses and pull-up resistance. Capture SDA/SCL if
-the scan fails.
+For I2C, begin with the controller and one OLED. Run an address scan and record
+the address and effective pull-up resistance. If qualifying multiple samples,
+test them one at a time under the same conditions; do not turn spare samples
+into an unintended multi-display bus. Capture SDA/SCL if the scan fails.
 
 For I2S, first confirm clock frequencies without the amplifier or microphone,
 then add one endpoint. Verify `BCLK`, `WS`, data direction, slot format, and
@@ -153,8 +154,9 @@ correct power and return?
 ## Step 6: add energy-producing loads carefully
 
 An amplifier and speaker can create large, fast current changes. Begin with a
-low digital level and a current-limited 3.3 V source. Confirm the speaker is
-connected only between the two BTL outputs; neither lead goes to ground.
+low digital level and a current-limited source at the fixture's documented
+voltage. Confirm the speaker is connected only between the two BTL outputs;
+neither lead goes to ground.
 
 Observe rail voltage and current while increasing the level in controlled
 steps. Stop for clipping, resets, unexpected CC operation, heating, or
@@ -170,7 +172,7 @@ Qualification asks whether it meets stated limits across intended conditions.
 | Power | Does 3V3 stay in bounds during worst credible transient? | scope trace at load, defined input/load/temp |
 | Startup | Can it cold-start at minimum intended input? | repeated starts with controlled input ramp and load |
 | Thermal | Is every accessible/critical part within its limit? | stabilized temperatures under defined high-average use |
-| I2C | Do both exact OLEDs ACK with adequate edge timing? | scan plus captured rise time and logic levels |
+| I2C | Does each exact OLED sample ACK with adequate edge timing when tested separately? | scan plus captured rise time and logic levels |
 | Audio | Is speech intelligible without resets/clipping? | waveform/current plus repeatable acoustic test |
 | RF | What does the final frame do relative to the bare baseline? | repeated A/B RSSI/loss/throughput trials |
 | Mechanical | Can it be assembled, controlled, and serviced safely? | exact-part fit, plug/cable/tool/removal-path checks |
@@ -191,6 +193,29 @@ Use a table instead of random rework:
 | quiet/distorted audio | wrong slot/format | bad enclosure/load | inspect I2S frame into a known load before enclosure A/B |
 | weak Wi-Fi in frame | metal detuning/coupling | power instability | repeat RF A/B while separately recording rail/reset behavior |
 | power path hot | excess current | high path resistance | measure branch current and loaded drop across segments |
+
+The result of a test updates the causal model; one observation need not prove
+a cause. The diagnostic decision flow is:
+
+```text
+symptom → preserve evidence → list competing hypotheses
+                                      ↓
+                             one safe separating test
+                                      ↓
+                              observation / result
+                                      ↓
+                          eliminate or rank hypotheses
+                               │                 │
+                      cause not isolated      cause isolated
+                               │                 └─→ correct cause
+                               └─→ next test              ↓
+                                                   rerun failure test
+                                                   and regressions
+```
+
+If the cause is not isolated, choose another separating test. Once it is
+isolated, correct it and rerun the original failure test plus the relevant
+regressions.
 
 The best test often eliminates several causes without changing the device.
 
@@ -232,7 +257,7 @@ Build a battery-free bench article with:
 
 - a current-limited supply or the controller's documented USB-only setup;
 - ESP32-C3 development board;
-- one or two qualified 3.3 V-compatible I2C OLED modules;
+- one qualified 3.3 V-compatible I2C OLED module;
 - optional I2S microphone and amplifier, with speaker initially disconnected;
 - DMM and, ideally, a logic analyzer; and
 - exact firmware built from the corrected source path.
@@ -276,15 +301,21 @@ Record:
 
 ### Deliverable D — diagnose three planted faults
 
-With power off between wiring changes, have a partner choose three safe faults:
+With USB disconnected between wiring changes, choose three reversible faults
+on the button/OLED/microphone prototype:
 
 - swap one OLED's SDA and SCL;
-- remove one common ground;
+- disconnect one OLED signal wire;
 - select the wrong I2C address in firmware;
 - make pull-up resistance too weak or too strong within safe current limits;
-- disconnect one I2S clock;
 - impose a low supply current limit; or
 - choose the wrong logic-analyzer decoder setting.
+
+Keep common ground intact during powered tests. Missing-ground and
+missing-I2S-clock faults may be inspected using unpowered continuity checks
+only; restore the complete wiring before applying power. In particular, an
+amplifier receiving BCLK without WS can produce a damaging DC output, so that
+is not a powered fault exercise.
 
 For each, write symptom → hypotheses → discriminating test → evidence → root
 cause → verified correction. Do not use the lithium cell.

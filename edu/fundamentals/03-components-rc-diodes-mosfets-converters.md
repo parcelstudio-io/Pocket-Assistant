@@ -99,6 +99,18 @@ the fast current loop is short. Adding “10 µF somewhere on the rail” is not
 electrically identical to placing it beside a radio or amplifier. Wires and PCB
 traces add impedance at high frequency.
 
+The arrows below trace the local high-frequency current loop supplied by the
+nearby capacitor; they do not claim that current always flows this way:
+
+```text
+distant rail ────────────────┬──────→──── VCC
+                             │             │
+                          [C_dec]        [ IC ]
+                             │             │
+distant ground ──────────────┴──────←──── GND
+                             short local loop
+```
+
 ## RC time constants
 
 A resistor and capacitor create a first-order time scale:
@@ -185,6 +197,16 @@ self-resonance, where the simple `Xl` model stops being sufficient.
 A diode strongly favors current in one direction. For a conventional diode
 symbol, conventional forward current flows from **anode** to **cathode**. The
 cathode is marked by the symbol's bar and often by a stripe on the package.
+
+This polarity sketch aligns the schematic bar with a common axial-package
+stripe; always confirm the actual package marking in its datasheet:
+
+```text
+schematic:  anode (A) ───|>|─── cathode (K)
+            the right-hand | in |>| is the cathode bar
+
+package:    anode end ───[ body | stripe ]─── cathode end
+```
 
 A diode is not a perfect one-way valve:
 
@@ -338,37 +360,12 @@ after 5 ms it is at 99.3%. That does not prove a 5 ms debounce time. Mechanical
 bounce, GPIO thresholds, resistor/capacitor tolerance, whether the capacitor is
 across the switch or input, and firmware debounce behavior all matter.
 
-## Worked example 2 — converter input current
-
-Use **ASSUMED** qualification numbers, not BOM promises:
-
-```text
-V_out = 3.3 V
-I_out = 0.50 A
-V_in  = 3.0 V
-η     = 0.85
-```
-
-Then:
-
-```text
-P_out = 3.3 V × 0.50 A = 1.65 W
-P_in  = 1.65 W / 0.85 = 1.94 W
-I_in  = 1.94 W / 3.0 V = 0.647 A
-P_loss = 1.94 W - 1.65 W = 0.29 W
-```
-
-At the same output load, lower input voltage means higher input current. The
-0.29 W loss is a heating rate, not a predicted temperature.
-
 > **Durable principles:** topology follows the complete input/output range;
 > input power equals output power plus loss; and `V_GS` is measured gate to
 > source.
 >
-> **Project status:** the Pocket Assistant's exact converter module, MOSFETs,
-> capacitors, power carrier, startup behavior, efficiency, and thermal margin
-> remain hardware-qualification decisions. This lesson does not authorize a
-> final purchase.
+> Input-current and loss calculations for a complete power path are developed
+> in [Lesson 06](06-li-ion-power-integrity-decoupling-uvlo-thermal.md).
 
 ## Battery-free lab — watch an RC curve
 

@@ -24,7 +24,7 @@ Three things set the honest ceiling on all of this:
 
 | Check | Command | What it proves |
 | --- | --- | --- |
-| Firmware builds reproducibly | `cd firmware && ./scripts/build.sh` | The corrected source compiles with the pinned ESP-IDF v6.0.2 and produces a byte-identical image across clean builds |
+| Compile the current source | `firmware/scripts/build.sh` | Compiles the offline diagnostic image with pinned ESP-IDF v6.0.2 and records its actual inputs/digest; one build does not establish repeat-build identity or hardware operation |
 | Static wiring checks | `python3 tools/netcheck.py` | GPIO/protocol constraints hold (pins, sample rate, strap rules). It does not check power, fit, or acoustics |
 | Stale placement study | `freecadcmd cad/fitcheck.py` | **Stale** — models the withdrawn R0 architecture. Regenerate from measured R1 parts before treating any output as fit evidence |
 
@@ -79,7 +79,7 @@ copy-mono comment. The pinned codec requests mono DMA with
 `BOTH` slot mask. Source inspection therefore predicts active left and inactive
 right TX slots. Hardware capture remains required, and the #3006 default mix
 must not be assumed to produce full amplitude. See
-    [the audio lesson](../edu/04-audio.md#exact-module-channel-and-gain-configuration).
+the [amplifier lesson](../edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md).
 
 ---
 

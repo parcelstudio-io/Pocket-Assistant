@@ -9,6 +9,11 @@ CHECKOUT_DIR="${FIRMWARE_DIR}/.work/xiaozhi-esp32"
 source "${FIRMWARE_DIR}/versions.env"
 DIST_IMAGE="${FIRMWARE_DIR}/dist/${POCKET_AI_BOARD_TYPE}-${XIAOZHI_REF}-idf-${ESP_IDF_REF}.bin"
 
+if [[ "${1:-}" == --help || "${1:-}" == -h ]]; then
+    echo "usage: $0 SERIAL_PORT [--dry-run] [--yes] [--monitor]"
+    echo "Verifies the latest local build record, or the checked-in reference if absent."
+    exit 0
+fi
 if [[ $# -lt 1 ]]; then
     echo "usage: $0 SERIAL_PORT [--dry-run] [--yes] [--monitor]" >&2
     echo "example: $0 /dev/ttyACM0 --dry-run" >&2
@@ -16,6 +21,10 @@ if [[ $# -lt 1 ]]; then
 fi
 
 PORT=$1
+if [[ -z "${PORT//[[:space:]]/}" || "${PORT}" == --* ]]; then
+    echo "error: an explicit nonempty serial port is required" >&2
+    exit 2
+fi
 shift
 DRY_RUN=false
 ASSUME_YES=false
@@ -68,11 +77,15 @@ fi
 
 # Check both build/dist copies, all byte-producing local inputs, the effective
 # sdkconfig, size, digest, and merged-image structural markers.
-python3 "${FIRMWARE_DIR}/scripts/verify_source_build.py"
+SELECTED_MANIFEST=$(python3 "${SCRIPT_DIR}/verify_source_build.py" --print-manifest)
+python3 "${SCRIPT_DIR}/verify_source_build.py" --manifest "${SELECTED_MANIFEST}"
 
 EXPECTED_ESPTOOL_VERSION=$(python3 -c \
     'import json,sys; print(json.load(open(sys.argv[1]))["toolchain"]["esptool"])' \
-    "${FIRMWARE_DIR}/source-build.json")
+    "${SELECTED_MANIFEST}")
+BUILD_MODE=$(python3 -c \
+    'import json,sys; print(json.load(open(sys.argv[1]))["build_mode"])' \
+    "${SELECTED_MANIFEST}")
 ACTUAL_ESPTOOL_VERSION=$(python3 -c \
     'from importlib.metadata import version; print(version("esptool"))' \
     2>/dev/null) || {
@@ -102,10 +115,13 @@ FLASH_COMMAND=(
 
 echo "Target serial port: ${PORT}"
 echo "Target chip/layout: ESP32-C3, verified 4 MB source-build image"
+echo "Build mode: ${BUILD_MODE}; amplifier: disabled"
+echo "Recorded software checksums do not establish hardware qualification."
 echo "This writes the merged bootloader, partitions, app, and assets at 0x0."
 echo "Its blank NVS region clears saved Wi-Fi settings."
-echo "Use a bare SuperMini or disconnect its complete external 3.3 V/peripheral harness."
-echo "Cell removal alone does not prevent USB from back-powering the shared rail."
+echo "USB-only bench: controller/button/OLED/mic powered by controller 3.3 V are permitted."
+echo "Disconnect battery, charger, external regulators, amplifier, and separately powered wiring."
+echo "Unplug USB before rewiring."
 
 if [[ "${DRY_RUN}" == true ]]; then
     printf 'Dry run command:'

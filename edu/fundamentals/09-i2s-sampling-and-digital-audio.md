@@ -1,14 +1,8 @@
 # 09 — I2S, sampling, and digital audio
 
-> **Current project contract:** the microphone data pin goes to GPIO4 and
-> the MAX98357A `DIN` comes from GPIO3, sharing GPIO1/GPIO2 clocks at 16 kHz
-> and 64 clocks/frame. The Phase 0 primary microphone is Adafruit `#6049`
-> ICS-43434 (`DOUT` to GPIO4, `SEL` low). INMP441 (`SD` to GPIO4, `L/R` low)
-> is a held alternative: its signals are analogous, but its carrier pin order
-> is not interchangeable. DFRobot DFR0954 material is alternative context
-> only. Purchase authority is
-> [FINAL_MATERIALS_FOR_REVIEW.md](../../docs/FINAL_MATERIALS_FOR_REVIEW.md),
-> not this theory lesson.
+Current project pins and hardware status live in the
+[applied overview](../01-how-it-fits-together.md) and its linked authorities.
+This lesson owns the durable interface and measurement concepts.
 
 ## Learning objectives
 
@@ -16,7 +10,7 @@ After this lesson, you should be able to:
 
 - distinguish I2S from the similarly named I2C bus;
 - identify bit clock, word select, data in, and data out;
-- calculate this project's bit-clock frequency;
+- calculate bit-clock frequency from a bus format;
 - explain samples, slots, frames, bit depth, and channel selection;
 - describe why digital audio wiring still has analog constraints; and
 - verify the microphone and amplifier without probing a BTL speaker output.
@@ -26,7 +20,7 @@ After this lesson, you should be able to:
 The names differ by one character, but the interfaces solve different
 problems:
 
-| Property | I2C | I2S in this project |
+| Property | I2C | I2S in this example |
 | --- | --- | --- |
 | Purpose | Commands and small register/data transfers | Continuous PCM audio samples |
 | Signals | SDA and SCL | BCLK, WS, and one or more directional data lines |
@@ -34,7 +28,7 @@ problems:
 | Addressing | 7-bit/10-bit target addresses | No bus address |
 | Feedback | ACK/NACK each byte | No per-sample ACK |
 | Data direction | SDA changes direction | Separate ESP output and input data wires |
-| Project clock scale | 400 kHz SCL requested | 1.024 MHz BCLK at 16 kHz |
+| Clock scale | hundreds of kilohertz is common | audio BCLK can be megahertz |
 
 I2C can discover that a target acknowledged. I2S has no equivalent scan. The
 receiver must already agree on clocking, slot format, bit alignment, sample
@@ -50,18 +44,28 @@ Classic I2S carries two time slots per frame, conventionally called left and
 right:
 
 ```text
-WS:    ________--------________--------
-slot:     left            right
-BCLK:  _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-DATA:     sample bits       sample bits
+        +--------------------------+--------------------------+
+slot:   | left: 32 BCLK periods    | right: 32 BCLK periods   |
+WS:     | LOW                      | HIGH                     |
+DATA:   | sample bits + padding    | sample bits + padding    |
+        +--------------------------+--------------------------+
+        |<----------- one frame: 64 BCLK periods ------------>|
 ```
 
 WS identifies the current slot. It changes at slot boundaries; a complete WS
 cycle corresponds to one sample period for each channel. In the Philips I2S
 format, the most-significant data bit begins one bit-clock after the WS edge.
+The boundary alignment is therefore:
 
-The project uses 32 bit-clock periods for each of two slots at a 16 kHz sample
-rate:
+```text
+time -------------------------------------------------------------->
+                 WS changes                 new-slot MSB begins
+                      |<------ 1 BCLK ------>|
+DATA: ... [previous-slot final bit] ........ [MSB] [next bit] ...
+```
+
+For example, 32 bit-clock periods in each of two slots at a 16 kHz sample rate
+requires:
 
 ```text
 BCLK = sample rate × slots per frame × bits per slot
@@ -73,17 +77,26 @@ The ICS-43434 produces 24-bit two's-complement samples within these 32-bit
 slots. Padding clocks are part of the transport; they do not create extra
 microphone resolution.
 
-## The four project signals
+## Four logical signals in a full-duplex link
 
-| Signal | ESP32-C3 pin | Direction | Connection |
-| --- | ---: | --- | --- |
-| WS / LRCLK | GPIO1 | ESP32-C3 output | Adafruit `#6049` ICS-43434 `WS/LRCLK` and Adafruit `#3006` `LRC` |
-| BCLK / SCK | GPIO2 | ESP32-C3 output | Adafruit `#6049` ICS-43434 `BCLK` and Adafruit `#3006` `BCLK` |
-| Speaker data | GPIO3 | ESP32-C3 output | Adafruit `#3006` `DIN` |
-| Microphone data | GPIO4 | ESP32-C3 input | Adafruit `#6049` ICS-43434 `DOUT` |
+A shared-clock microphone-and-speaker path needs two controller-driven clocks
+and one data wire in each direction:
 
-MCLK is not used; neither selected audio device requires it for this
-configuration. All boards need the same ground reference.
+```text
+                        ┌──────────────► microphone clock inputs
+controller ── WS/BCLK ──┤
+                        └──────────────► amplifier clock inputs
+
+microphone data ───────────────────────► controller input
+controller speaker data ───────────────► amplifier input
+
+ground/reference ────────────────────── all logic endpoints
+```
+
+The [applied overview](../01-how-it-fits-together.md#corrected-source-logical-contract)
+records the current pin mapping. Any level-shifting, enable, or partial-power
+boundary belongs in the current schematic/material decision, not in this
+interface lesson.
 
 The ESP32-C3 has one I2S peripheral. ESP-IDF can register a full-duplex TX/RX
 channel pair that shares BCLK and WS. This firmware does that, so microphone
@@ -91,11 +104,10 @@ capture and speaker output use the same 16 kHz clock domain while retaining
 separate data directions. “Both rates must match” is a constraint of this
 shared-clock project configuration, not a law of every possible I2S system.
 
-Do not connect ordinary push-pull data outputs together. On the current
-ICS-43434 fixture, `SEL` chooses which half-frame carries microphone data; tie
-it low for the left slot expected by this firmware. Verify the received
-`#6049` board, slot timing, word alignment, and idle data behavior rather than
-borrowing an INMP441 carrier's pull-down assumptions.
+Do not connect ordinary push-pull data outputs together. A microphone's channel
+select chooses which half-frame carries its data, so verify the exact device,
+carrier pin order, selected slot, word alignment, and idle behavior rather than
+borrowing assumptions from a similar-looking board.
 
 ## Sampling rate is a bandwidth choice
 
@@ -109,14 +121,10 @@ audio passband must end below it. At 24 kHz it would be below 12 kHz. Therefore
 16 kHz can be a sensible speech-band engineering choice, but “voice quality is
 unaffected” is too strong: it deliberately gives up high-frequency bandwidth.
 
-This project selects 16 kHz because it satisfies all three current constraints:
-
-- the MAX98357A on Adafruit `#3006` explicitly supports 16 kHz but excludes
-  24 kHz;
-- the ICS-43434 on Adafruit `#6049` documents a sample-rate range that includes
-  16 kHz and uses the resulting 1.024 MHz bit clock with 64 clocks per frame;
-  and
-- the firmware's input/output codec path is configured for 16 kHz.
+A project rate is valid only when it lies within every endpoint's documented
+range, produces legal clock timing, and matches the firmware's input and output
+configuration. Record the current project's rate rationale with its hardware
+decision; do not infer support because an out-of-spec rate happened to work.
 
 ## Digital audio is still an analog circuit
 
@@ -163,56 +171,80 @@ are actively driven. Neither `OUT+` nor `OUT−` may be connected to ground, the
 frame, a logic-analyzer ground clip, or an ordinary earth-referenced
 oscilloscope ground clip.
 
+The speaker connects only between the two actively driven outputs:
+
+```text
+MAX98357A OUT+ o------[ enclosed speaker ]------o OUT-
+                    neither terminal is GND
+
+circuit GND o------ logic and supply return only
+                 X no connection to OUT+ or OUT-
+```
+
 The data sheet also warns that BCLK continuing while LRCLK/WS is absent can
 produce a large DC output. That makes sound clock wiring, low-volume first
 power, and a correctly rated enclosed speaker important. It does **not** imply
 that a particular star topology is universally required.
 
-The current Adafruit `#3006` amplifier module has documented `SD`/mode and gain
-configuration. It defaults to a mono mix and 9 dB gain; inspect its fitted
-network and measure the actual `SD` voltage/channel result rather than reasoning
-from a visually similar clone. DFRobot `DFR0954` is a former primary and current
-held alternative because its 3.3 V minimum lacks guaranteed overlap with the
-candidate regulator's 3.201 V worst-case output. Do not transfer configuration
-assumptions between the two boards.
+An amplifier carrier can add its own shutdown/channel and gain network. Inspect
+the exact board and measure the actual mode voltage and channel result rather
+than transferring assumptions from another carrier. Current candidate status
+and required startup state belong in the
+[material decision](../../docs/FINAL_MATERIALS_FOR_REVIEW.md).
 
 ## Safe staged lab
 
-Use a current-limited bench supply for the peripheral stages, not the lithium
-cell. Disconnect USB before attaching an external powered harness unless the
-service-isolation procedure has been reviewed and verified. Power off before
-rewiring.
+The [USB prototype quickstart](../../docs/PROTOTYPE_QUICKSTART.md) provides
+the executable build/flash commands and the owned INMP441 wiring for Stages
+1–2. Its default diagnostics image runs offline and prints microphone sample
+statistics once per second. You need no amplifier or cloud service to compare
+silence with speech. Readings that change with speech demonstrate capture;
+they do not replace a timing capture or certify microphone performance.
+
+Keep the controller and low-current peripherals on the documented USB-only
+fixture; do not invent a 3.3 V injection point. Use an independent
+current-limited bench source only for an amplifier-side fixture explicitly
+permitted by the current material decision. Where that fixture requires common
+logic ground, keep controller VBUS/5 V physically disconnected from its
+independent rail. No lithium cell is used. Power off every affected source
+before rewiring.
 
 ### Stage 1: clocks only
 
 1. Flash and boot the bare ESP32-C3 using native USB.
-2. Disconnect USB, connect the reviewed 3.3 V bench supply and common ground,
-   and run the audio-clock test firmware.
-3. Attach a logic analyzer only to circuit GND, GPIO1 WS, and GPIO2 BCLK.
-4. Measure approximately 16 kHz WS and 1.024 MHz BCLK.
-5. Decode or count one frame and confirm 64 BCLK periods per WS cycle.
+2. Disconnect USB. Attach a logic analyzer only to circuit ground and the
+   word-select and bit-clock pins named by the current contract.
+3. Reconnect USB with the quickstart's source diagnostics image running.
+4. Calculate the expected rates from the configured sample/slot format, then
+   measure them.
+5. Decode or count one frame and confirm the configured clocks per WS cycle.
 
 ### Stage 2: microphone
 
-1. Power off. Connect the Adafruit `#6049` ICS-43434 supply, ground, WS/LRCLK,
-   BCLK, and `DOUT` to GPIO4. Tie `SEL` low for the slot expected by firmware.
-2. Power on with a conservative current limit.
-3. Record raw samples during silence, speech, and a gentle tone. Check for a
-   stuck value, clipping, wrong byte alignment, wrong slot, and excess noise.
+1. Disconnect USB. Connect the INMP441 according to the quickstart map after
+   identifying the exact carrier's power/signal labels and 3.3 V compatibility.
+   Ground L/R to select the left slot expected by firmware.
+2. Reconnect USB using the documented USB-only fixture.
+3. Save serial minimum, maximum, RMS, repeated-value, and clipping statistics
+   during silence and speech. Check that repeated speech changes the readings
+   and inspect read failures. These summary statistics are the available
+   beginner test; raw waveform/alignment analysis requires a separate capture.
 4. Keep probes, solder flux, solvent, hot air, and compressed air away from the
    acoustic port.
 
-### Stage 3: amplifier and enclosed speaker
+### Stage 3: amplifier and load
 
-1. Power off. Inspect the exact Adafruit `#3006` mode/gain components, local
-   bypass capacitors, pin order, and terminal block. Connect LRC, BCLK, DIN,
-   supply, ground, and the factory-enclosed Same Sky `CES-20134-088PM` between
-   the two BTL screw-terminal positions.
-2. Start with minimum digital volume and a short tone or speech sample.
-3. Observe voltage at the amplifier pins, `SD` mode voltage, supply current,
-   resets, distortion, and heating against the written limits.
-4. Probe only the digital input lines with the ground-referenced analyzer.
-   Never probe either BTL speaker lead with its ground clip.
+1. Follow the current material decision's approved initial shutdown and
+   partial-power state. With power off, inspect the exact carrier's mode/gain
+   components, bypassing, pin order, and output terminals.
+2. Connect only the currently approved battery-free fixture and begin with an
+   8 Ω dummy load. Verify clocks, data, mode voltage, supply current, output,
+   and heating against written limits.
+3. Introduce the approved speaker at minimum digital volume only after its
+   promotion gate allows it; keep each candidate and configuration in a
+   separate record.
+4. Probe only digital input lines with a ground-referenced analyzer. Never
+   connect its ground clip to either BTL output.
 
 An oscilloscope can assess rail droop and digital edge quality, but an
 earth-referenced bench scope requires training and a reviewed grounding plan.
@@ -254,8 +286,6 @@ skip speaker-output waveform measurements.
   Amplifier*: <https://www.analog.com/media/en/technical-documentation/data-sheets/MAX98357A-MAX98357B.pdf>
 - Adafruit, *MAX98357A I2S Class-D Mono Amplifier Breakout #3006*:
   <https://www.adafruit.com/product/3006>
-- Historical/alternative comparison: DFRobot, *DFR0954 Fermion I2S Amplifier
-  Module*: <https://wiki.dfrobot.com/dfr0954/>
 - Texas Instruments, *High-Speed Layout Guidelines for Signal Conditioners and
   USB Hubs* (return paths and decoupling principles):
   <https://www.ti.com/lit/an/scaa082a/scaa082a.pdf>

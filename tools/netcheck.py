@@ -5,18 +5,19 @@ POWER-SCOPE CORRECTION (2026-09-02): the old power/service model was removed.
 It used withdrawn cell-resistance, parallel-PPTC, P-FET, converter-startup, and
 rail-current assumptions. Passing this script does not qualify a regulator,
 battery, USB-service path, carrier, or complete harness. See
-docs/FINAL_MATERIALS_FOR_REVIEW.md and edu/07-the-power-chain.md.
+docs/FINAL_MATERIALS_FOR_REVIEW.md and
+edu/fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md.
 
 There is no published schematic for this project, so the harness net list
 lives here as data and is validated against the constraints that were
 verified from the part datasheets (see edu/ for the reasoning):
 
-* every net's pins exist and no ESP32-C3 GPIO is claimed twice
+* every component/pin endpoint appears exactly once in the net list
 * the ESP32-C3 strapping rules (GPIO2/8/9) are honored by the wiring
 * the configured I2S sample rate is one the MAX98357A and selected ICS-43434
   support, and the calculated microphone BCLK is legal on paper
 * the display address strategy covers 0x3C and 0x3D
-* the speaker stays a floating bridge load (no lead on GND or frame)
+* both speaker leads connect only to their matching amplifier bridge outputs
 
 The I2S nets below are **logical** signal relationships. The candidate
 TXU0104 physical isolation boundary, proposed GPIO5-to-A4 amplifier enable,
@@ -117,19 +118,21 @@ def main() -> int:
         check(define in cfg and gpios == [f"gpio{cfg[define]}"],
               f"{define} (GPIO{cfg.get(define, '?')}) matches net {net}")
 
-    # 2. No GPIO claimed twice.
-    used: dict[str, str] = {}
-    dup_free = True
+    # 2. No endpoint may be repeated, including peripheral and power pins.
+    # A repeated amp output on GND would join the speaker net to ground even
+    # when the speaker's own net contains no literal GND endpoint.
+    endpoint_nets: dict[tuple[str, str], list[str]] = {}
     for net, pins in NETS.items():
-        for comp, pin in pins:
-            if comp == "esp32c3" and pin.startswith("gpio"):
-                if pin in used:
-                    dup_free = False
-                used[pin] = net
-    check(dup_free, "no ESP32-C3 GPIO is claimed by two nets")
+        for endpoint in pins:
+            endpoint_nets.setdefault(endpoint, []).append(net)
+    duplicates = [f"{comp}.{pin} ({', '.join(nets)})"
+                  for (comp, pin), nets in endpoint_nets.items() if len(nets) != 1]
+    check(not duplicates, "every component/pin endpoint appears exactly once"
+          + (f"; repeated: {'; '.join(duplicates)}" if duplicates else ""))
 
     # 3. Reserved pins untouched.
-    claimed = {int(p[4:]) for p in used}
+    claimed = {int(pin[4:]) for comp, pin in endpoint_nets
+               if comp == "esp32c3" and pin.startswith("gpio")}
     check(not claimed & USB_PINS, "native USB pins (18/19) untouched")
     check(not claimed & FLASH_PINS, "SPI flash pins (11-17) untouched")
 
@@ -160,13 +163,24 @@ def main() -> int:
           and cfg.get("DISPLAY_I2C_ADDRESS_ALT") == 0x3D,
           "display probe covers 0x3C (generic) and 0x3D (Adafruit 128x64)")
 
-    # 7. Speaker isolation: bridge outputs never touch GND/frame nets.
-    spk_nets = {net for net, pins in NETS.items()
-                for c, _ in pins if c == "speaker"}
-    isolated = all(
-        not any(c in ("esp32c3", "holder", "frame") or p == "GND"
-                for c, p in NETS[net]) for net in spk_nets)
-    check(isolated, "speaker leads stay a floating bridge load")
+    # 7. The logical harness requires two distinct, complete bridge nets.
+    # Exact endpoint pairs reject missing, reversed, shorted, or grounded
+    # leads. Unique occurrences also rule out indirect shorts via a repeated
+    # amplifier endpoint elsewhere in the net list. This checks only NETS,
+    # not the physical harness or amplifier isolation/control circuitry.
+    expected_bridge_nets = {
+        frozenset({("amp", "OUT+"), ("speaker", "+")}),
+        frozenset({("amp", "OUT-"), ("speaker", "-")}),
+    }
+    spk_nets = [pins for pins in NETS.values()
+                if any(comp == "speaker" for comp, _ in pins)]
+    isolated = (
+        len(spk_nets) == 2
+        and {frozenset(pins) for pins in spk_nets} == expected_bridge_nets
+        and all(len(endpoint_nets.get(endpoint, [])) == 1
+                for pins in expected_bridge_nets for endpoint in pins)
+    )
+    check(isolated, "speaker has two distinct floating nets with matching bridge outputs")
 
     print(f"\n{checks - len(failures)}/{checks} static checks passed")
     print("Power, USB/GPIO isolation, carrier, and fit qualification: NOT CHECKED")

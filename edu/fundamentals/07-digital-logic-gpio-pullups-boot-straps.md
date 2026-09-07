@@ -156,6 +156,18 @@ The ESP32-C3 samples GPIO2, GPIO8, and GPIO9 at reset. After the sampling hold
 time—at least 3 ms after reset release—application firmware can use them as
 ordinary GPIOs.
 
+The timing relationship is conceptualized below; the strap levels must remain
+valid through the hold interval rather than changing as soon as reset releases:
+
+```text
+time -------------------------------------------------------------->
+
+CHIP_EN:    ____________/------------------------------------ HIGH
+                        ^ reset release
+GPIO2/8/9:              [ required strap level for at least 3 ms ]
+                        |<------ strap read / hold window ------>| → GPIO use
+```
+
 The manufacturer's recommended boot states are:
 
 | Intended boot | GPIO2 | GPIO8 | GPIO9 |
@@ -169,23 +181,18 @@ GPIO9 is low for Joint Download Boot; it is **not** required high for every
 normal boot. GPIO9 is the usual BOOT-button signal and should have a pull-up;
 large capacitance there can accidentally select download mode.
 
-For this project:
-
-- GPIO2 becomes I2S BCLK after boot and has a planned 10 kΩ pull-up;
-- GPIO8 is kept out of the microphone data path and has a planned 10 kΩ
-  pull-up;
-- GPIO9 remains the module's BOOT control;
-- GPIO18/GPIO19 are reserved for native USB D−/D+;
-- GPIO20/GPIO21 become I2C SCL/SDA through the GPIO matrix; and
-- GPIO10 is the active-low action button. The firmware enables an internal
-  pull-up; the planned external 10 kΩ pull-up makes the default state explicit.
+The current project assignments are kept in the
+[applied overview](../01-how-it-fits-together.md#corrected-source-logical-contract)
+and the linked firmware configuration. Review them by asking whether any
+peripheral can fight GPIO2/GPIO8/GPIO9 during reset and whether a proposed
+change consumes the native USB or recovery path.
 
 “Reserved for USB in this design” is more accurate than “incapable of GPIO.”
 Repurposing GPIO18 or GPIO19 can disable the native USB console, flasher, and
 JTAG path. Espressif documents recovery by forcing Joint Download Boot, but an
 external circuit may first have to be disconnected or reworked. Preserve
 physical access to BOOT, reset, USB, ground, and 3.3 V until the complete build
-has passed acceptance tests.
+has passed its current promotion gates.
 
 ## Safe bench lab: one input and one output
 

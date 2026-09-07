@@ -1,6 +1,11 @@
 # Select the reconstructed board adapter.
 CONFIG_BOARD_TYPE_POCKET_WALL_E_C3=y
 
+# Start with local USB diagnostics. build.sh --assistant selects the networked
+# application explicitly; neither supported build enables the amplifier.
+CONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y
+# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set
+
 # The ESP32-C3 SuperMini used by the project has 4 MB of flash. Upstream's
 # ESP32-C3 defaults assume 16 MB, so both settings below are required.
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y

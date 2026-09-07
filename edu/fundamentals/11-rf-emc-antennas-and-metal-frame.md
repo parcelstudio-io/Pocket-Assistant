@@ -19,10 +19,10 @@ ESP32-C3 SuperMini clone antenna, frame geometry, board orientation, wiring,
 speaker leads, and cell position are **PROVISIONAL project design** until the
 received unit and complete geometry are measured.
 
-The old project rule to avoid straight metal runs of `28–34 mm` and
-`58–64 mm` near the antenna is not a defensible release rule. Those numbers
-resemble free-space quarter- and half-wavelengths, but an irregular floating
-brass member does not become a predictable resonator from length alone.
+Do not derive a metal-exclusion distance from free-space quarter- or
+half-wavelength alone. An irregular floating frame member does not become a
+predictable resonator from length alone; geometry and performance must be
+evaluated as an assembled system.
 
 ## Frequency, wavelength, and scale
 
@@ -62,6 +62,20 @@ Changing the carrier board or moving metal nearby changes that system. The
 result may be reduced efficiency, shifted resonance, a different radiation
 pattern, or a changed impedance presented to the radio. “The antenna itself
 was not touched” does not mean the RF design stayed the same.
+
+This conceptual view is not a wiring schematic; it shows why the antenna feed,
+distributed RF return, and nearby objects must be evaluated together:
+
+```text
+radio + matching
+   ├── feed current ──────────── antenna element
+   └── distributed return current ── PCB ground / counterpoise
+                         \             /
+                          electromagnetic field
+                                    ↕
+                        frame / cell / cable / hand
+                          (field-coupled currents)
+```
 
 Identify the antenna on the exact received board by inspection and continuity
 against an authoritative schematic if one exists. Do not assume it is always
@@ -271,4 +285,3 @@ environment.
 
 - [Espressif ESP32-C3 PCB layout design guidance](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32c3/pcb-layout-design.html)
 - [Espressif ESP32-C3 datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf)
-

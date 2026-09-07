@@ -18,15 +18,8 @@ supply, jumper wires, and a bare ESP32-C3 plus OLED. A logic analyzer is very
 helpful; an oscilloscope is optional. No lithium cell is needed for the
 foundations course.
 
-Each lesson uses five evidence labels:
-
-- **DATASHEET** — a manufacturer-specified limit or behavior.
-- **TYPICAL** — representative, not guaranteed for every unit or condition.
-- **ASSUMED** — a design input that still requires evidence.
-- **CALCULATED** — follows from stated inputs and equations.
-- **MEASURED** — observed on an identified physical unit with recorded tools
-  and conditions.
-
+The course uses the five
+[evidence labels defined in Lesson 00](00-safety-evidence-and-course-map.md#the-five-evidence-labels).
 Never silently promote `TYPICAL` or `ASSUMED` to a guaranteed fact.
 
 For bench work, make a fresh copy of the

@@ -1,5 +1,12 @@
 # Device host tools
 
+For the beginner USB prototype, start with
+[the quickstart](../docs/PROTOTYPE_QUICKSTART.md) and the corrected source
+diagnostic build. You do not need to download the vendor binary or create a
+second Python environment after activating ESP-IDF. The tests and `netcheck.py`
+below are useful for both paths; this page's `fetch`/`flash` commands are for
+the **historical vendor image only**, not the corrected-source artifact.
+
 The Pocket AI Assistant normally runs without a laptop-side application. The
 ESP32-C3 firmware provisions Wi-Fi locally, then obtains its MQTT or WebSocket
 session details from a Xiaozhi-compatible OTA/bootstrap service. These tools are
@@ -29,6 +36,21 @@ may need membership in their distribution's serial-port group (often
 If `python3 -m venv` reports that `ensurepip` is unavailable, install your
 distribution's Python venv package (commonly `python3-venv`) and retry; do not
 fall back to installing or running the flashing stack as root.
+
+## Verify the host tools
+
+From the repository root:
+
+```bash
+python3 -m unittest discover -s tools/tests -v
+python3 tools/netcheck.py
+```
+
+The unit tests exercise image validation, write safeguards, source-build
+provenance, and intentionally invalid logical connections. `netcheck.py`
+checks the corrected-source GPIO/protocol contract, endpoint uniqueness, and
+the modeled floating speaker connections. It does not inspect your breadboard
+or qualify power, USB isolation, physical modules, audio, RF, or fit.
 
 ## Fetch and verify
 

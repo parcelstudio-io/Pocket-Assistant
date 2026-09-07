@@ -1,260 +1,208 @@
-# Three-week study plan — 2 hours a day, hands on hardware from day one
-
-> For a software engineer who did this five years ago and wants speed without
-> skipping the parts that bite. Fifteen sessions, roughly 50 minutes reading and
-> 60 minutes at the bench each, ending with a device that talks.
-
-## Is the existing course good enough?
-
-**The content: yes, genuinely.** The 14 lessons in
-[fundamentals/](fundamentals/README.md) are accurate, cite primary sources,
-and already include worked examples, battery-free labs, "common mistakes," and
-self-checks. That is better than most hobby electronics material, which tends
-to be either hand-wavy or a parts list pretending to be a tutorial.
-
-**Three gaps, and this plan fixes all three:**
+# Three-week electronics study plan
 
-| Gap | Why it matters for you | Fix |
-| --- | --- | --- |
-| **No pacing.** 5,200 lines with no reading order or schedule | Reading it front-to-back at 2 h/day is ~2 weeks of pure theory before touching hardware — exactly backwards from how you said you learn | The 15 sessions below, ordered by what unblocks the next hands-on step |
-| **No soldering practice curriculum.** Lesson 12 explains the metallurgy of a joint well, but never says "do 30 of these, here is what good looks like, here is when you are ready" | You will solder ~40 joints into a device with no undo. Practicing on the device is how people ruin an OLED | The four practice blocks below, with rep counts and pass criteria |
-| **Written in an audit register.** Phrases like "MEASURED process-qualification question," evidence labels, release gates | Correct for a build that could involve a lithium fire, but slow reading when you are relearning | Skim the gating language on first pass; it becomes useful later, when you are actually standing at that gate |
-
-**One thing nobody wrote down: what transfers from software.**
+For the current day-by-day materials lists and 2–3 hour sessions, use the
+[daily study and lab plan](../plan/DAILY_STUDY_AND_LAB_PLAN.md). To start the
+hardware immediately, follow the [USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md).
+The outline below is an optional theory sequence, not a prerequisite list.
+If module headers are unsoldered, do the solder practice before any peripheral
+wiring, following the quickstart's header preparation step.
 
-- **Transfers well.** Layered abstractions (I²S is a protocol over a physical
-  layer, same mental model as TCP over Ethernet). State machines. Reading
-  specs — a datasheet is an API doc with worse search. Debugging by bisection.
-- **Does not transfer, and this is where people get hurt.** In software, the
-  abstraction holds; in hardware, it leaks constantly — a wire has resistance,
-  a capacitor has inductance, a "3.3 V rail" is 3.1 V under load. There is no
-  undo, no `git revert` on a lifted pad. And failure is not an exception you
-  catch; it is heat, smoke, or a component that works for a week and then
-  doesn't. **Measure, don't assume** is the whole discipline.
+Fifteen two-hour sessions combine the
+[foundations course](fundamentals/README.md) with battery-free bench work.
+The outcome is the knowledge and evidence needed to qualify a prototype—not
+permission to build a finished battery-powered device.
 
----
+A useful rhythm is 45 minutes reading, 60 minutes at the bench, and 15 minutes
+for the lab record. Predict before measuring. If a bench result is unexplained,
+debug it and move the later sessions instead of advancing.
 
-## Practice materials you still need
+```text
+ Week 1   quantities → circuits → components → measurement → logic
+                                                       │
+ Week 2   display ← I2C      microphone ← I2S → amplifier → soldering
+                                                       │
+ Week 3   power theory → bench fixture → rework → RF/fit → integration
+```
 
-Everything for the *device* is bought. Practice is what you cannot do yet,
-because you have no sacrificial boards to solder to.
+## Before starting
 
-**These three are commodity items — any equivalent works.** Unlike the speaker
-or the connectors, no specific part number matters here. Search terms and the
-specs that actually matter are given with each; treat the links as examples,
-not requirements.
+Use a clear, well-lit, ventilated work area with eye protection and a
+current-limited bench supply. Have a fused multimeter, breadboard, insulated
+wire, resistors, LEDs, capacitors, and sacrificial perfboard available for the
+relevant circuit labs. The quickstart needs only its listed owned parts for
+each stage. Follow its USB wiring for the controller and low-current
+peripherals; the [current material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md)
+concerns the later amplifier and portable-power fixtures.
 
-Individual marketplace listings go out of stock constantly, so these are given
-as **searches** rather than part numbers. Pick anything on the first page that
-meets the spec column.
+Keep lithium cells terminal-protected and outside the work area throughout
+this plan. Use inert size/weight dummies for fit checks. Structural metalwork
+and finish work happen with all electronics and stored-energy devices removed.
 
-| Item | Search | What actually matters | Approx. |
-| --- | --- | --- | ---: |
-| **Perfboard** | [double sided perfboard 2.54mm](https://www.amazon.com/s?k=double+sided+perfboard+2.54mm) | **2.54 mm pitch**, **FR4** (not phenolic/paper — it scorches and delaminates), double-sided, tinned holes preferred. Tinned holes wet cleanly, so you learn what a *good* joint feels like instead of fighting bare copper | ~$13 |
-| **Magnification** | [headband magnifier LED](https://www.amazon.com/s?k=headband+magnifier+led) — e.g. [YOCTOSUN 5-lens](https://www.amazon.com/YOCTOSUN-Rechargeable-Magnifying-Professional-Interchangeable/dp/B07T4KPYN2). Or [USB microscope soldering](https://www.amazon.com/s?k=usb+microscope+soldering) for ~$28 | Hands-free, with a light. **3.5× is the lens you will live on**; the rest are filler. The purchase that most accelerates the skill — wetting, cold joints, and hairline bridges are invisible at arm's length | $13–28 |
-| **Assorted LEDs** | [5mm diffused LED assortment](https://www.amazon.com/s?k=5mm+diffused+led+assortment) | 5 mm, **diffused** rather than clear so they read from any angle. Skip kits that bundle resistors; you own a thousand | ~$7 |
-| Sacrificial brass | **Free** — dedicate 1 of your 4 tubes and 1 of your 5 rods to practice. Never practice structural soldering on the piece you intend to keep | — |
+Copy the [lab record template](fundamentals/reference/lab-record-template.md)
+for every experiment.
 
-Everything else you own: 1,000 resistors, 650 ceramic caps, electrolytics,
-420 buttons, header pins, and 60+ feet of wire in two gauges. That is a
-lifetime of practice stock.
+## Week 1 — Electrical foundations
 
----
+### Session 1: safety, evidence, and units
 
-## Week 1 — Fundamentals, and get a board talking
+Read [Lesson 00](fundamentals/00-safety-evidence-and-course-map.md) and
+[Lesson 01](fundamentals/01-units-charge-voltage-current-power-energy-heat.md).
 
-### Session 1 · Safety, evidence, and units
-**Read** [00 — Safety and evidence](fundamentals/00-safety-evidence-and-course-map.md) ·
-[01 — Charge, voltage, current, power, energy, heat](fundamentals/01-units-charge-voltage-current-power-energy-heat.md)
+At the bench, inspect the workspace and meter leads, identify the fused current
+jack, measure several de-energized resistors, and verify continuity on a loose
+wire and open circuit. Record instrument identity, range, prediction, result,
+and uncertainty.
 
-**Bench (60 min).** Set up the workspace: silicone mat, good light, ventilation.
-Unbox and inventory against [INVENTORY.md](../docs/INVENTORY.md). Then learn
-your multimeter properly — this is the tool every safety step depends on:
-measure both battery packs' open-circuit voltage, read ten resistors and check
-them against the color code, run continuity across a wire and then across air.
+### Session 2: DC circuits
 
-**Why first.** Voltage, current, and energy are the vocabulary for everything
-else, and a lithium pouch holds real energy — 1200 mAh at 3.7 V is about
-16 kJ, roughly a gram of TNT's worth, released slowly if you are lucky.
+Read [Lesson 02](fundamentals/02-dc-circuits-ohm-kirchhoff-series-parallel.md).
 
-### Session 2 · DC circuits — the load-bearing session
-**Read** [02 — Ohm, Kirchhoff, series and parallel](fundamentals/02-dc-circuits-ohm-kirchhoff-series-parallel.md)
-(includes a worked example of your own GPIO10 button)
+With a current-limited bench source, build a resistor divider and then an LED
+with a calculated current-limiting resistor. Predict each node voltage and
+current before measuring it; explain the difference between prediction and
+result.
 
-**Bench.** Build a voltage divider on the breadboard. **Predict every value
-before you measure it** — this habit is the entire difference between
-understanding a circuit and poking at it. Then an LED with a current-limiting
-resistor: calculate the resistor, measure the actual current, explain the gap.
+### Session 3: components and time constants
 
-**Why it matters most.** Ohm's law and Kirchhoff's two laws explain roughly
-80% of what your device does electrically. If only one session sticks, this one.
+Read [Lesson 03](fundamentals/03-components-rc-diodes-mosfets-converters.md).
 
-### Session 3 · Components
-**Read** [03 — Resistors, capacitors, diodes, MOSFETs, converters](fundamentals/03-components-rc-diodes-mosfets-converters.md)
+Identify resistor, capacitor, diode, and transistor markings. Measure an RC
+charge curve at several time points and compare it with the calculated time
+constant. Discharge the capacitor safely before changing the circuit.
 
-**Bench.** Charge a 220 µF capacitor through a 10 kΩ resistor and time the
-curve with your meter. You have just measured an RC time constant — and you now
-understand exactly why a bulk capacitor at the amplifier keeps Wi-Fi bursts
-from resetting your processor.
+### Session 4: measurement technique
 
-### Session 4 · Measurement technique
-**Read** [05 — DMM, supply, scope, logic analyzer](fundamentals/05-measurement-dmm-supply-scope-logic-analyzer.md)
+Read [Lesson 05](fundamentals/05-measurement-dmm-supply-scope-logic-analyzer.md).
 
-**Bench.** Measure *current*, which means breaking the circuit and putting the
-meter in series through the fused jack — and learn the rule that never moves:
-**never put a meter in current mode across a voltage source.** It is a dead
-short through a fuse. Then measure voltage drop along a wire under load, and
-estimate a battery's internal resistance.
+Practice voltage measurement in parallel and current measurement in series on
+the low-energy resistor circuit. Move the lead back to the voltage jack as soon
+as the current measurement is complete. Measure wire voltage drop under load
+and document the setup well enough to reproduce it.
 
-### Session 5 · Digital logic, GPIO, and boot straps — first light
-**Read** [07 — Digital logic, GPIO, pull resistors, boot straps](fundamentals/07-digital-logic-gpio-pullups-boot-straps.md)
+**Never connect a meter in current mode directly across a source.**
 
-**Bench.** `esptool flash_id` on all ten SuperMinis — record each one, reject
-anything under 4 MB. Flash one, get it booting, watch the serial log. You are
-now on familiar ground: it's a computer.
+### Session 5: digital logic and first boot
 
-**Connect it back.** You just read why GPIO2 needs a pull-up and why GPIO8 and
-GPIO9 are untouchable. Those are not arbitrary rules — a strap pin held wrong
-at reset means a board that will not enter download mode, which inside a
-soldered brass frame is unrecoverable.
+Read [Lesson 07](fundamentals/07-digital-logic-gpio-pullups-boot-straps.md).
 
----
+Using only the reviewed service connection, boot one bare controller, capture
+its identity and serial output, and verify that recovery controls remain
+accessible. Do not attach project peripherals yet. Record unexpected boot-pin
+levels instead of experimenting blindly with strap pins.
 
-## Week 2 — Protocols, sound, and learning to solder
+## Week 2 — Interfaces, audio, and soldering
 
-### Session 6 · I²C and the display
-**Read** [08 — I²C and the OLED](fundamentals/08-i2c-and-the-oled.md)
+### Session 6: I2C and the display
 
-**Bench.** Breadboard the OLED. Run an I²C scan, find it at `0x3C` or `0x3D`,
-get pixels on screen. Read the silkscreen pin order first — vendors swap
-VCC/GND between identical-looking boards.
+Read [Lesson 08](fundamentals/08-i2c-and-the-oled.md).
 
-### Session 7 · I²S and digital audio
-**Read** [09 — I²S, sampling, and digital audio](fundamentals/09-i2s-sampling-and-digital-audio.md)
+Verify the received display's controller and pin order before power is applied.
+On the quickstart's USB fixture, record the address log and toggle the OLED
+pixel test with GPIO10. Capture waveforms if an instrument is available. Then
+test the firmware's headless behavior with the display absent.
 
-**Bench.** Add the INMP441. Tie `L/R` low, data to GPIO4, verify it captures
-intelligible audio.
+### Session 7: I2S and microphone input
 
-**The satisfying part.** You will finally see why the whole build is pinned to
-16 kHz: the amplifier's datasheet excludes 24 kHz, the microphone needs exactly
-64 clocks per frame, and the codec is hard-wired to 16 kHz. Three independent
-constraints, one number that satisfies all of them.
+Read [Lesson 09](fundamentals/09-i2s-sampling-and-digital-audio.md) and the
+[logical contract](01-how-it-fits-together.md#corrected-source-logical-contract).
 
-### Session 8 · Class-D, bridge outputs, speakers — first sound
-**Read** [10 — Class-D, BTL, speakers, acoustics](fundamentals/10-class-d-btl-speakers-and-acoustics.md)
+Use the quickstart's owned INMP441 pin map after checking the received
+carrier's labels. Save its offline `MIC24` statistics during quiet and speech,
+and record the firmware identity. Word-select/bit-clock timing captures are
+an optional extension when an instrument is available.
 
-**Bench.** Add the amplifier and speaker. Meter the `SD` pin first (~0.30 V is
-correct). Keep the volume low. Then run a full voice round trip — wake word,
-question, spoken answer. **This is the milestone: the device works.** Everything
-after this is making it small, safe, and permanent.
+### Session 8: bridge amplifier and speaker path
 
-### Session 9 · Soldering theory + practice block 1
-**Read** [12 — Soldering, mechanics, insulation, tolerances](fundamentals/12-soldering-mechanics-insulation-tolerance.md),
-sections through "What inspection can and cannot prove"
+Read [Lesson 10](fundamentals/10-class-d-btl-speakers-and-acoustics.md).
 
-**Practice block 1 — through-hole, ~30 joints (60 min).**
-Resistor leads into perfboard. The motion that matters: tin the tip lightly,
-touch the tip to *both* pad and lead, feed solder **into the joint** rather than
-onto the tip, count two or three seconds, remove solder then iron, hold still
-while it freezes.
+Start with the approved amplifier fixture and an 8 Ω dummy load. Confirm
+shutdown state, supply current, differential output, and idle heating. A
+speaker may be introduced at low volume only after the applicable current
+material gates allow it.
 
-- **Good** — smooth concave fillet, shiny, solder visibly pulled *onto* the pad
-- **Cold** — dull, lumpy, ball-shaped, sitting *on* the pad rather than wetting it
-- **Pass criteria: 10 consecutive good joints.** Count honestly; restart the count on a bad one.
+**Neither BTL output is ground.** Never connect either speaker lead to circuit
+ground, an earth-referenced probe ground, or the metal frame.
 
-### Session 10 · Practice block 2 — wire work
-**Read** the rest of [Lesson 12](fundamentals/12-soldering-mechanics-insulation-tolerance.md):
-strain relief and insulation as a system
+### Session 9: through-hole soldering
 
-**Practice block 2 (75 min).** This is what your build actually consists of —
-almost every project joint is wire-to-pad, not component-to-board.
+Read the first half of
+[Lesson 12](fundamentals/12-soldering-mechanics-insulation-tolerance.md).
 
-- 20 wire-to-pad joints, both gauges. Pre-tin the wire, pre-tin the pad, then join
-- 10 wire-to-wire splices, each sleeved in heat-shrink — slide the shrink on *before* you solder, a mistake everyone makes once
-- One 6-pin header soldered into perfboard
-- **Destructive test:** pull five joints apart and look at the break. Solder pulled off cleanly with no copper showing means it never wetted — that joint was always going to fail, and now you know what that failure looks like *before* it happens inside the frame
+Make about 30 resistor-to-perfboard joints on sacrificial material. Inspect
+wetting, fillet shape, solder quantity, bridges, and heat damage under
+magnification. Continue until ten consecutive joints meet your written visual
+criteria.
 
-**Pass criteria: five wire-to-pad joints that survive a firm tug on the wire.**
+### Session 10: wire work and strain relief
 
----
+Finish [Lesson 12](fundamentals/12-soldering-mechanics-insulation-tolerance.md).
 
-## Week 3 — Power, rework, and the build
+Practice at least 20 wire-to-pad joints and 10 insulated wire splices, including
+both intended wire sizes. Add strain relief, inspect under magnification, then
+perform a documented pull test on sacrificial samples. Rework any joint whose
+failure mode is not understood.
 
-### Session 11 · Lithium, power integrity, and heat
-**Read** [06 — Li-ion, power integrity, decoupling, UVLO, thermal](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
-— the longest lesson, and the one where mistakes are permanent
+## Week 3 — Power, mechanics, and integration
 
-**Bench.** No cell. Re-read your own [power chain worksheet](07-the-power-chain.md)
-and predict, in writing, what the rail will do at 4.2 V and at 3.3 V under load.
-You will check those predictions next session.
+### Session 11: power integrity and heat
 
-### Session 12 · The power chain, from the bench supply
-*(Needs the supply — arriving ~Sep 21–23. If it slips, swap with Session 13.)*
+Read [Lesson 06](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md).
 
-**Bench (the full 2 hours).** Supply standing in for the battery at the JST
-position, current limit set low. Sweep 4.2 V down to 3.3 V under Wi-Fi and loud
-audio and watch for a reset. Measure the switch's contact drop. Twenty switch
-cycles, twenty clean boots. Record everything in a
-[lab record](fundamentals/reference/lab-record-template.md).
+From the current material decision, list each allowed experiment's voltage,
+current limit, expected load, cutoff behavior, and stop conditions. Calculate
+expected loss and temperature-rise questions. No cell is used.
 
-**This session decides your battery.** The measured current draw is what picks
-the 500 mAh pack or the 1200 mAh one — not the argument in the docs.
+### Session 12: battery-free power fixture
 
-### Session 13 · Datasheets + practice block 3 (rework)
-**Read** [04 — Boards, schematics, datasheets, connectors](fundamentals/04-boards-schematics-datasheets-and-connectors.md)
+Exercise only the currently approved battery-free fixture with a
+current-limited bench supply. Sweep the permitted input range and workload
+while recording input/output voltage, current, startup behavior, transients,
+and temperature. Stop on instability, unexpected heating, odor, damage, or a
+limit violation.
 
-**Practice block 3 (60 min).** Desolder twenty of your practice joints with
-wick, then re-solder them. Rework is the skill that turns a ruined build into a
-delayed one — and you *will* wire something backwards.
+This session produces evidence for the exact tested article; it does not
+automatically release a battery subsystem.
 
-**Pass criteria: remove and correctly replace a component without lifting a pad.**
+### Session 13: datasheets and rework
 
-### Session 14 · Radio, the metal frame, and fit
-**Read** [11 — RF, EMC, antennas, and the metal frame](fundamentals/11-rf-emc-antennas-and-metal-frame.md)
+Read [Lesson 04](fundamentals/04-boards-schematics-datasheets-and-connectors.md).
 
-**Bench.** The 1:1 cardstock dry-fit with real measured parts. Every port,
-control, and the pack's removal path reachable. **Nothing gets cut until this
-closes.**
+Choose several sacrificial joints from Sessions 9–10. Record pad and part
+orientation, desolder them with appropriate tools, inspect for lifted pads or
+heat damage, and restore them. The pass condition is a correct replacement
+with intact substrate and continuity—not merely a shiny surface.
 
-### Session 15 · Debugging method + practice block 4 (brass)
-**Read** [13 — Systematic debugging and the capstone](fundamentals/13-debugging-integration-and-capstone.md)
+### Session 14: RF, enclosure, and dry fit
 
-**Practice block 4 (75 min) — structural brass, a different discipline.**
-Sacrifice one tube and one rod. Acid flux, chisel tip, much higher thermal
-mass, and **no electronics anywhere in the room**. Cut with the jeweler's saw,
-deburr, bend around a form, flux, join six practice joints, then wash and
-neutralize with baking soda.
+Read [Lesson 11](fundamentals/11-rf-emc-antennas-and-metal-frame.md).
 
-**Pass criteria: a square, clean-jointed practice rectangle you would be
-willing to keep.** Then build the real one.
+Make a 1:1 nonconductive mock-up using measurements from the exact received
+parts and an inert cell dummy. Check antenna space, acoustic paths, wire bends,
+connector and recovery access, insulation, fasteners, and removal sweeps.
+Nothing is cut from the final metal stock.
 
----
+### Session 15: systematic integration
 
-## After the fifteen sessions
+Read [Lesson 13](fundamentals/13-debugging-integration-and-capstone.md).
 
-Follow [the assembly sequence](04_ASSEMBLY_STEP_BY_STEP.md) and record each
-gate. Expect the build itself to take another week of evenings — mounting,
-wiring, and the unpowered checks are slow, and rushing them is the one way to
-turn a working breadboard into a dead sculpture.
+Write the bring-up order, measurement points, expected observations, and
+rollback condition for each layer. Practice structural joining on offcuts with
+all electronics absent if that process has its own approved safety setup.
+Integrate only the battery-free stages currently permitted by the material
+decision.
 
-## How to actually keep the 2 hours
+## After the course
 
-- **Read with the hardware in front of you.** Every lesson references parts you
-  own; hold the part while you read about it.
-- **Predict before measuring, every time.** Write the number down first. Being
-  wrong on paper is how the intuition gets built — and it is free.
-- **Keep a lab log.** Copy the [template](fundamentals/reference/lab-record-template.md).
-  In three weeks you will not remember which of ten SuperMinis had the flash-ID
-  problem.
-- **Skip the gate language on first read.** The release-gate and evidence-label
-  paragraphs are for when you are standing at that gate. They are not what you
-  are learning today.
-- **When a session's bench work fails, that is the session.** Debugging a real
-  failure teaches more than the next lesson would. Slide the schedule.
+Use the
+[promotion gates in the current material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go)
+and a separate lab record for each exact article. Do not substitute archived
+assembly recipes, visual inspection, or a successful software build for those
+gates.
 
-## The two rules that never bend
+The rules that never bend:
 
-1. **Never solder to, puncture, or heat a lithium cell**, and keep both packs
-   sealed and terminal-protected until Session 12 says otherwise.
-2. **Never put a meter in current mode across a source.** It is a short circuit
-   with a fuse in it, and it is the most common way beginners destroy a meter.
+1. Never solder to, heat, puncture, strip, crush, or deliberately short a
+   lithium cell.
+2. Never place a current-mode meter directly across a source.
+3. Never treat the conductive frame or either BTL speaker lead as ground.
+4. Never advance past an unexplained failure or a written stop condition.

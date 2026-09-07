@@ -33,6 +33,10 @@
 // ESP32-C3 SuperMini's ROM BOOT strap button.
 #define ACTION_BUTTON_GPIO GPIO_NUM_10
 
+// Drives TXU0104 A4, not OE. External pull-downs keep the amplifier muted
+// through reset. The default bench build never raises this pin.
+#define AMPLIFIER_ENABLE_GPIO GPIO_NUM_5
+
 #define DISPLAY_SCL_PIN       GPIO_NUM_20
 #define DISPLAY_SDA_PIN       GPIO_NUM_21
 // Generic 4-pin SSD1306 modules answer at 0x3C; Adafruit's 128x64 breakouts

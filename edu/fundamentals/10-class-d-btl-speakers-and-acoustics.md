@@ -13,15 +13,10 @@ After this lesson, you should be able to:
 
 ## Durable theory and provisional hardware
 
-The electrical and acoustic principles below are durable. The exact Amazon
-MAX98357A clone, its `SD_MODE` resistor network, the selected generic speaker,
-and its enclosure are **PROVISIONAL project design** until the received parts
-are identified and measured.
-
-Older project notes quote dimensions, sensitivity, power, and a `1 cc`
-enclosure from one Same Sky speaker. Those values do not transfer to the
-current generic pre-boxed or Treedix speakers merely because all are described
-as `8 Ω`.
+The electrical and acoustic principles below are durable. Amplifier carriers,
+speakers, and enclosures are not interchangeable merely because they share an
+IC family or nominal impedance. Current candidate identity and status live in
+the [material decision](../../docs/FINAL_MATERIALS_FOR_REVIEW.md).
 
 ## From samples to air pressure
 
@@ -42,29 +37,9 @@ voltages with finite rise time, noise margin, ground bounce, and setup/hold
 time. Short wiring helps, but excessive ringing, crosstalk, or a broken clock
 can still turn “ones and zeros” into incorrect samples.
 
-## Sampling sets a bandwidth ceiling
-
-For sample rate `fs`, a sampled system cannot represent arbitrary content at
-or above the Nyquist frequency `fs/2`. Real anti-alias and reconstruction
-filters need transition width, so usable bandwidth is lower than that ideal
-ceiling.
-
-At `16 kHz`, Nyquist is `8 kHz`. This can be a sensible speech-band choice,
-but it is not “unaffected” compared with a higher-fidelity audio path. The
-MAX98357A datasheet also excludes 11.025, 12, 22.05, and 24 kHz LRCLK rates;
-“the module happened to play at 24 kHz” would not make that a supported design.
-
-An I2S acceptance test should record:
-
-- actual `WS/LRCLK` and `BCLK` frequencies;
-- bits and slots per frame;
-- word length and alignment;
-- channel/slot configuration;
-- amplifier channel-selection voltage; and
-- whether the firmware duplicates, zeros, or independently fills the slots.
-
-Do not resolve a left/right/mono ambiguity from a breakout-board family photo.
-Inspect the exact board and capture the exact firmware waveform.
+Sampling limits and I2S waveform qualification are covered in
+[Lesson 09](09-i2s-sampling-and-digital-audio.md). This lesson begins at the
+amplifier's conversion of that stream into speaker power.
 
 ## Class-D is switched power conversion
 
@@ -187,9 +162,9 @@ A small room, desk, hand, frame, and reflections violate the free-field model.
 Phone SPL apps are useful for repeatable relative A/B tests, but not as
 traceable absolute sound-level instruments.
 
-The archival Same Sky speaker specification reports sensitivity under its own
-input, distance, and enclosure conditions. Quoting its `91 dB` number without
-those conditions—or attaching it to a different generic speaker—is invalid.
+A sensitivity figure is meaningful only with its stated input, distance,
+frequency or bandwidth, enclosure, and tolerance. Never transfer one speaker's
+headline value to another device.
 
 ## Why the front and back of the diaphragm matter
 
@@ -197,6 +172,18 @@ When a diaphragm moves forward, front pressure increases while rear pressure
 decreases. If both sides share an easy air path, the rear wave can wrap around
 and partially cancel the front, especially where wavelength is long compared
 with the speaker and baffle.
+
+At one instant in the cycle, the pressure relationship looks like this; `+`
+means above ambient pressure, `-` means below ambient, and the signs reverse
+on the next half-cycle:
+
+```text
+unbaffled rim                         baffle plus sealed rear volume
+
+front (+) [ diaphragm ] rear (-)      front (+) |[ diaphragm ]| rear (-)
+     └──── short air path ────┘                   no path around rim
+       partial cancellation
+```
 
 A baffle lengthens that path. A sealed rear enclosure separates the waves, but
 also traps an air spring that changes resonance and diaphragm excursion. A
@@ -208,15 +195,9 @@ response, efficiency, resonance, distortion, excursion, size, and assembly
 tolerance. Use the manufacturer's specified acoustic fixture when available;
 otherwise make performance a controlled **MEASURED** comparison.
 
-For the current Pocket Assistant:
-
-- the pre-boxed speaker's internal geometry and dimensions are unknown until
-  measured;
-- the fallback rectangular speaker cannot be sealed merely by placing a round
-  cap behind it; it needs a baffle and continuous rim seal;
-- the front opening must not be smaller or more obstructed than the tested
-  configuration without a new A/B test; and
-- the speaker, enclosure, adhesive, wires, and frame form one acoustic system.
+The speaker, enclosure, adhesive, wires, opening, grille, and frame form one
+acoustic system. A different driver or geometry requires a new controlled A/B
+comparison.
 
 ## Electrical layout affects both audio and radio
 
@@ -229,17 +210,19 @@ stability must follow the exact datasheet and verified module design.
 
 ## Safe lab: relative speaker and enclosure A/B
 
-Use a current-limited `3.3 V` bench supply, one identified MAX98357A module, an
-identified `8 Ω` speaker, a bare controller, fixed test firmware, and a quiet
-room. No lithium cell is required. Keep the speaker away from your ear.
+After the dummy-load and speaker promotion gates permit an acoustic test, use
+only the approved battery-free amplifier fixture, an identified compatible
+speaker, a bare controller, fixed test firmware, and a quiet room. Set the
+current-limited bench supply to the fixture's documented voltage. Keep the
+speaker away from your ear.
 
 1. With power off, record speaker dimensions and DMM resistance. Label the
    latter DC resistance, not “impedance.”
 2. Inspect the amplifier board, trace speaker terminals, and record `SD_MODE`
    components/voltage expectations. Confirm neither speaker lead is connected
    to ground.
-3. Set the supply to `3.3 V` with a conservative current limit. Start firmware
-   muted or at its lowest documented digital gain.
+3. Set the documented supply voltage and a conservative current limit. Start
+   firmware muted or at its lowest documented digital gain.
 4. Power on. Stop for unexpected current limiting, sustained heating, odor,
    harsh mechanical noise, or output when mute is expected.
 5. Play a short speech sample and then a low-level tone within the speaker's
@@ -292,10 +275,8 @@ room. No lithium cell is required. Keep the speaker away from your ear.
 
 </details>
 
-## Primary sources for the project-specific statements
+## Authoritative further reading
 
 - [Analog Devices MAX98357A product page](https://www.analog.com/en/products/MAX98357A.html)
 - [Analog Devices MAX98357A/MAX98357B datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/max98357a-max98357b.pdf)
 - [Espressif ESP32-C3 I2S API documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/peripherals/i2s.html)
-- [Same Sky CMS-15113-078L100-67 product page](https://www.sameskydevices.com/product/audio/speakers/miniature-%2810-mm~40-mm%29/cms-15113-078l100-67)
-

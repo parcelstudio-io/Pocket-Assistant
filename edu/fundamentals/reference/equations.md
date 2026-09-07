@@ -104,13 +104,7 @@ For nominal battery energy:
 energy (Wh) ≈ nominal voltage (V) × rated capacity (Ah)
 ```
 
-Example using the published NL169 headline ratings:
-
-```text
-3.6 V × 0.95 Ah = 3.42 Wh
-```
-
-This matches a nominal rating, not guaranteed delivered energy in the pager.
+This is a nominal estimate, not guaranteed delivered energy or runtime.
 
 ## Source and path voltage sag
 
@@ -131,17 +125,6 @@ age, and electrochemistry affect the result.
 η = Pout / Pin
 Pout = Vout Iout
 Iin ≈ Vout Iout / (η Vin)
-```
-
-Example with explicitly assumed efficiency:
-
-```text
-Vout = 3.3 V
-Iout = 0.80 A
-Vin  = 3.0 V
-η    = 0.85 (ASSUMED)
-
-Iin ≈ (3.3 × 0.80) / (0.85 × 3.0) ≈ 1.04 A
 ```
 
 Use separately specified startup limits; an operating minimum after startup is
@@ -236,13 +219,6 @@ valid range; do not choose solely from this approximation.
 T = 1/f
 Nyquist frequency = sample rate / 2
 BCLK = sample rate × slots per frame × bits per slot
-```
-
-Current corrected-source contract:
-
-```text
-16,000 frames/s × 2 slots/frame × 32 bits/slot
-= 1,024,000 bits/s = 1.024 MHz BCLK
 ```
 
 The usable audio band must stay below the ideal Nyquist limit and depends on

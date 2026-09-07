@@ -36,8 +36,13 @@ is the controller and the OLED module is a target.
 The bus is normally idle high. A simplified write looks like this:
 
 ```text
-START | 7-bit address | W | ACK | data byte | ACK | ... | STOP
-                        1 bit   1 bit         1 bit
+          controller drives             target responds
+START --> [ A6 ... A0 | W = 0 ] -------> [ ACK or NACK ]
+              clocks 1--8                    clock 9
+
+      --> [ D7 ... D0 ] ----------------> [ ACK or NACK ] --> ... --> STOP
+          controller drives                 target responds
+            clocks 1--8                        clock 9
 ```
 
 1. **START:** SDA changes HIGH-to-LOW while SCL remains HIGH.
@@ -52,6 +57,16 @@ START | 7-bit address | W | ACK | data byte | ACK | ... | STOP
 During ordinary data transfer SDA must remain stable while SCL is HIGH. START
 and STOP are the intentional exceptions. A repeated START can begin another
 phase without first releasing the bus with STOP.
+
+These edge relationships distinguish the exceptions from an ordinary data bit
+(not to scale):
+
+```text
+START                       ordinary data bit              STOP
+SCL:  -------- HIGH         ___/---------\___              -------- HIGH
+SDA:  -----\______          ===== stable =====              _____/-------
+      falls while HIGH      changes only while SCL LOW      rises while HIGH
+```
 
 ## Seven-bit addresses and the shifted-byte trap
 
@@ -70,13 +85,12 @@ bit as an eight-bit byte:
 Do not pass `0x78` or `0x7A` to an API that asks for a 7-bit address. That
 double-shifts the address and contacts the wrong target.
 
-The exact Adafruit #326 module's published design supports address selection;
-the current 128×64 example uses `0x3D`. Marketplace boards are not identified
-reliably by color, size, or seller title. Read the received board's jumper,
-scan it, and record the observed address. An ACK proves that **something**
-responded at that address; it does not prove that the controller is SSD1306
-rather than a look-alike or that its display geometry and initialization
-sequence are correct.
+A display module may expose hardware address selection. Marketplace boards are
+not identified reliably by color, size, or seller title, so read the received
+board's jumper, scan it, and record the observed address. An ACK proves that
+**something** responded at that address; it does not prove that the controller
+is SSD1306 rather than a look-alike or that its display geometry and
+initialization sequence are correct.
 
 ## Pull-ups, capacitance, and rise time
 
@@ -87,6 +101,21 @@ specification:
 
 ```text
 t_r ≈ 0.8473 × R_pull-up × C_bus
+```
+
+The specified rise-time interval covers the middle of the rising edge, not the
+entire LOW-to-HIGH transition:
+
+```text
+bus voltage
+100% |                            .-------- HIGH
+ 70% |                     x-----'
+     |                  .-'
+ 30% |           x-----'
+  0% |__________/
+     +-------------------------------------> time after release
+
+t_r is the elapsed time from the 30% crossing to the 70% crossing.
 ```
 
 Fast-mode I2C at 400 kHz permits a maximum rise time of 300 ns. Standard-mode
@@ -122,23 +151,16 @@ received PCB revision is the physical evidence that matters.
 
 ## This project's I2C contract
 
-| Function | ESP32-C3 pin | OLED pin |
-| --- | ---: | --- |
-| SCL | GPIO20 | SCL |
-| SDA | GPIO21 | SDA |
-| Supply | 3.3 V rail | VIN/VCC as documented for received #326 revision |
-| Reference/return | GND | GND |
+Use the [applied overview](../01-how-it-fits-together.md#corrected-source-logical-contract)
+and linked firmware configuration for current pins, address probes, bus speed,
+and fallback behavior. Do not copy those changeable values into a second
+wiring table here.
 
-The project firmware creates I2C controller 0, enables the ESP32-C3 internal
-pull-ups as a fallback, and requests 400 kHz for the display. It probes the
-unshifted 7-bit addresses `0x3C` and `0x3D`; if neither ACKs, it logs the
-failure and continues headless.
-
-That behavior is useful fault containment, not proof of a complete electrical
-design. Before accepting 400 kHz, verify the received module's pull-ups,
-effective resistance, idle voltage, and rise time. During first bring-up, a
-100 kHz scanner is a useful diagnostic because its rise-time allowance is
-larger; passing at 100 kHz and failing at 400 kHz points toward electrical
+Headless fallback is useful fault containment, not proof of a complete
+electrical design. Before accepting the configured speed, verify the received
+module's pull-ups, effective resistance, idle voltage, and rise time. A slower
+scanner is a useful first diagnostic because its rise-time allowance is larger;
+passing slowly and failing at the configured speed points toward electrical
 timing rather than address selection.
 
 ## A disciplined debug tree
@@ -182,22 +204,27 @@ Common signatures are:
 
 ## Safe bench lab: see an ACK
 
+Use the [USB prototype quickstart](../../docs/PROTOTYPE_QUICKSTART.md) for exact
+build/flash commands and wiring. Its default source diagnostics image reports
+the detected OLED address and lets the GPIO10 button toggle all pixels on/off.
+The more detailed bus-speed/decoder experiments above are optional extensions.
+
 Use only the ESP32-C3 board, the exact OLED, short jumpers, and USB power. Keep
 the battery, converter, microphone, amplifier, and speaker disconnected.
 
-1. Disconnect USB before wiring.
-2. Connect GND first, then the documented supply, SCL to GPIO20, and SDA to
-   GPIO21.
-3. Perform the unpowered short and continuity checks above.
-4. Power by USB and verify the OLED rail and idle SDA/SCL voltages with a DMM.
-5. Run a 100 kHz scanner and record whether `0x3C` or `0x3D` ACKs.
-6. Run the display initialization and an all-pixels/orientation test.
-7. If available, attach a logic analyzer to **GND, SDA, and SCL only**, decode
-   the first transaction, and identify START, address, R/W, ACK, and STOP.
-8. Test at the project's 400 kHz setting. Passing function is necessary, but an
-   oscilloscope rise-time measurement is the stronger timing check.
-9. Disconnect USB before deliberately removing one signal wire. Reconnect
-   power, observe the logged failure, then power off before restoring it.
+1. Identify the exact board and map its physical pins to the current firmware
+   contract. Disconnect USB before wiring.
+2. Perform the power-off checklist above, then connect ground, documented
+   supply, clock, and data.
+3. Power by the quickstart's USB-only setup, measure the OLED rail and idle
+   lines, and save the diagnostic address log. Press the GPIO10 button to
+   switch all pixels on/off. For faults, work through the power-on debug tree
+   above; its adjustable-speed scan needs a separate diagnostic configuration.
+4. If available, attach a logic analyzer to **GND, SDA, and SCL only** and
+   identify START, address, R/W, ACK, and STOP. Use a suitable oscilloscope for
+   an actual rise-time claim.
+5. To test fallback behavior, power off before removing one signal. Reconnect
+   power, record the failure, and power off again before restoring the wire.
 
 Never move wires on a powered breadboard, and never attach an earth-referenced
 scope clip until its relationship to circuit ground is understood.
@@ -233,7 +260,7 @@ scope clip until its relationship to circuit ground is understood.
   characteristics): <https://documentation.espressif.com/esp32-c3_datasheet_en.pdf>
 - Solomon Systech, *SSD1306 Advance Information* (address and interface):
   <https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf>
-- Adafruit, *Monochrome 1.3 in 128×64 OLED Graphic Display #326*:
+- Adafruit, *Monochrome 128×64 OLED Graphic Display #326*:
   <https://www.adafruit.com/product/326>
 - Adafruit, *Monochrome OLED Breakouts — Wiring 128×64 OLEDs*:
   <https://learn.adafruit.com/monochrome-oled-breakouts/wiring-128x64-oleds>

@@ -73,6 +73,23 @@ to a resistance of 3 Ω.
 - A deliberate no-connect marker means a pin was reviewed and intentionally
   left open; an unlabeled dangling pin may be a mistake.
 
+This comparison uses the common “dot means joined” convention and also shows
+how identical labels can join a net without a drawn wire:
+
+```text
+joined at a junction       crossing without a junction
+         │                            │
+  ───────●───────               ─────┼─────
+         │                            │
+
+same net by label
+  MCU SDA ───[SDA]       [SDA]─── display SDA
+```
+
+Here `●` is an electrical junction; the plain crossing is unconnected only
+because this stated drawing convention says so. Both `[SDA]` labels name one
+electrical net.
+
 Always locate both the forward path and return path. A page full of signal names
 can hide the fact that two modules lack a shared electrical reference.
 
@@ -153,6 +170,19 @@ guarantee.
 Check whether a drawing is top view, bottom view, mating face, PCB side, or wire
 side. Find pin 1 marks and package orientation. For an IC, distinguish package
 pad numbering from a breakout's header order.
+
+Opposite straight-on views of the same fixed three-position connector mirror
+the apparent left-to-right order in this simplified example:
+
+```text
+mating-face view             opposite-side view
+┌─────┬─────┬─────┐          ┌─────┬─────┬─────┐
+│  1  │  2  │  3  │          │  3  │  2  │  1  │
+└─────┴─────┴─────┘          └─────┴─────┴─────┘
+```
+
+Do not mirror a real pinout from memory; use its named view, orientation mark,
+and pin-1 callout.
 
 ### 5. Find required external circuitry
 
@@ -275,55 +305,20 @@ A change to one layer can require changes elsewhere:
 Static net checks catch valuable inconsistencies, but they cannot prove exact
 part identity, solder quality, RF, acoustics, power integrity, or human access.
 
-## Pocket Assistant interface map: durable versus provisional
+## Applying the method to this project
 
-This table describes the current qualification direction, not a released BOM:
+The project's current system and interface summary lives in the
+[applied overview](../01-how-it-fits-together.md), while exact purchase status
+and release gates live in the
+[current material decision](../../docs/FINAL_MATERIALS_FOR_REVIEW.md). Keeping
+those volatile facts out of this lesson prevents a durable reading guide from
+becoming a second bill of materials.
 
-| Area | Current interface constraint | Still provisional until evidence closes |
-| --- | --- | --- |
-| MCU | corrected firmware targets ESP32-C3 and requires the recorded GPIO/flash contract | exact SuperMini vendor/revision, flash, LDO/VBUS path, LED, antenna, dimensions |
-| display | firmware expects a 128×64 SSD1306-compatible I2C device at a probed address | exact module, true controller, pin order, pull-ups, header, color, envelope |
-| microphone | current source expects 3.3 V I2S input in the selected channel and timing | exact breakout schematic, port location, pin order, decoupling, acoustic mounting |
-| amplifier | current source uses legal MAX98357A-format timing and floating BTL speaker outputs | exact board, `SD_MODE` network, gain, headers/terminal, height, thermal behavior |
-| speaker | amplifier and speaker impedance/power/enclosure must be compatible; neither BTL lead is ground | exact driver, lead/connector, dimensions, box, grille, loudness and feedback behavior |
-| power | every load needs a regulated rail and reviewed return/service path | exact converter, protection, switch, passives, carrier, USB isolation, heat and startup |
-
-The theory and interface checks narrow the choices. They do not authorize the
-final component or frame purchase. Use the current purchasing and readiness
-documents only after their contradictions are resolved and exact samples pass
-qualification.
-
-## Worked example — qualify a candidate OLED before connection
-
-Suppose a listing offers a white 0.96-inch, 128×64 “SSD1306 I2C” breakout. Do
-not begin by connecting four wires from a listing photo.
-
-1. **Record identity.** Save the exact listing/order identifier, seller, arrival
-   date, PCB markings, and clear front/back photos. If no board manufacturer and
-   revision exist, mark the module identity **ASSUMED**.
-2. **Find the controller source.** Read the SSD1306 manufacturer's datasheet for
-   protocol behavior, but do not claim it proves the board contains that IC.
-3. **Read the received silkscreen.** Record header order exactly as viewed:
-   `GND`, `VCC`, `SCL`, `SDA` or another order. Never infer the two power pins
-   from wire colors.
-4. **Inspect the module circuit.** Identify any regulator, level shifting, and
-   I2C pull-ups if possible. Supplying 5 V to a board can also pull its I2C lines
-   toward 5 V; use only a reviewed 3.3 V arrangement with the ESP32-C3.
-5. **Measure mechanics.** Use calipers for maximum PCB, display glass, header,
-   flex/overhang, and component height. Record connector and cable exit.
-6. **Check unpowered.** Confirm obvious ground continuity and absence of a
-   near-short between power and ground. A continuity result cannot prove the
-   complete schematic.
-7. **Power safely.** Only after review, use a current-limited 3.3 V supply. Check
-   rail current and temperature before attaching signal pins.
-8. **Test function.** Run an I2C scan and a full-pixel/edge pattern. An ACK at
-   `0x3C` proves a device acknowledged that address; it does not by itself prove
-   controller identity, resolution, color, or good pixels.
-9. **Update every artifact.** Put measured dimensions and verified pin order
-   into the wiring record and CAD before deciding the frame.
-
-That sequence turns a listing into a qualified physical sample one evidence
-step at a time.
+For a complete display qualification example, continue with
+[Lesson 08](08-i2c-and-the-oled.md). The same general sequence applies to any
+candidate board: record identity, inspect and map it unpowered, read the
+manufacturer source, power it from a limited source, test its actual function,
+and feed verified electrical and mechanical facts back into the design.
 
 ## Battery-free lab — make a board evidence sheet
 
