@@ -14,8 +14,15 @@ cloud account, an amplifier, or a battery.
 Leave the battery, charger, external regulators, amplifier, and metal case off
 this first prototype. OLED/microphone power comes only from the controller's
 3.3 V output. Never connect an external power source to that rail while USB is
-connected. [The daily plan](plan/DAILY_STUDY_AND_LAB_PLAN.md) provides optional
-2–3 hour learning sessions alongside the build.
+connected.
+
+Two guided programs wrap that quickstart. The
+[fast track](plan/FAST_TRACK.md) is six build-first sessions (~10–12 hours)
+written for a software engineer: each session builds one observable thing and
+teaches only the core concepts that thing needs. The
+[15-session daily plan](plan/DAILY_STUDY_AND_LAB_PLAN.md) is the deep track —
+full measurement labs, evidence discipline, and per-day material prep lists —
+worth returning to before any future battery, audio-power, or enclosure work.
 
 ## Choose a firmware path
 
