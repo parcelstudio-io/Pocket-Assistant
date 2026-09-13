@@ -28,7 +28,7 @@ session actually uses — a few minutes each, with a short illustrated note and
 a deep lesson linked if you want more. *Done when* is the exit gate. Skip any
 reading you don't need; never skip a gate.
 
-## Before session 1: the one thing you probably have to buy
+## Before session 1: the short shopping list (one item really matters)
 
 `INVENTORY.md` records a **USB-A-to-C data cable** as still needed, and
 nothing past session 1's toolchain build works without one. Order it now (the
@@ -39,10 +39,49 @@ prove a cable you already own carries data — it must enumerate a serial
 device, not just charge. A charge-only cable makes a working board look dead,
 which is the most expensive fake bug in this hobby.
 
-Worth adding to the same order, because session 2 consumes them: a strip or
-two of 2.54 mm breakaway headers (only 22 pins are in the house, and the OLED
-and microphone alone consume 10), solder wick, and a small piece of perfboard.
-None of these blocks session 1.
+Worth adding to the same order, because session 2 consumes them — none of
+these blocks session 1:
+
+| To buy | Why | Link |
+| --- | --- | --- |
+| USB-A-to-C data cable | Gates everything from the first flash on | [Rankie 3-pack — Amazon B01JRY0VE4](https://www.amazon.com/dp/B01JRY0VE4) (recorded pick) |
+| 2.54 mm breakaway header strips, 1×40, a couple | Only 22 pins are in the house; the OLED and microphone alone consume 10, leaving no slack or practice stock | No recorded pick — [Amazon search: 2.54mm male breakaway pin header](https://www.amazon.com/s?k=2.54mm+male+breakaway+pin+header+strips) |
+| Solder wick | Clearing bridges on module pads; the owned solder sucker is too coarse for them | [JoTownCand 3-pack — Amazon B0DRN688Q5](https://www.amazon.com/JoTownCand-Premium-Desoldering-Residue-Solder/dp/B0DRN688Q5) (recorded in `INVENTORY.md`) |
+| Small perfboard | Session 2 warm-up joints; otherwise you practice on wire offcuts | No recorded pick — [Amazon search: perfboard prototype 2.54mm](https://www.amazon.com/s?k=perfboard+prototype+board+2.54mm) |
+| Optional: clip-on fan or fume extractor, and a loupe | Session 2's ventilation gate and joint inspection — an open window plus any fan you own, and a phone camera at max zoom, both pass | No recorded pick; buy only if the free substitutes annoy you |
+
+The two search links are suggestions, not purchase provenance — the recorded
+picks above them are the only items `INVENTORY.md` actually names.
+
+## Everything else is already on your bench
+
+Every other item the six sessions name is in the purchase record. Links are
+the original recorded orders (an assortment link means the kit, not a new
+single-part listing); items marked *not recorded* are owned but the exact
+order URL wasn't preserved.
+
+| Already owned | Sessions | Recorded purchase link |
+| --- | --- | --- |
+| ESP32-C3 SuperMini, 10-pack (use 1, spares stay bagged) | 1–6 | [Amazon B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) |
+| X-Tronic 3020-XTS station: iron, tips, silicone mat, helping hands, tip cleaner, solder sucker, tweezers | 2 | Not recorded (X-Tronic order) |
+| MAIYUM 63/37 solder, 0.8 mm | 2 | [Amazon B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) |
+| Chip Quik CQ4LF no-clean flux pen | 2 | Not recorded (Adafruit order) |
+| Hakko CSP-30-1 wire stripper | 2 | [Amazon B00FZPHMUG](https://www.amazon.com/dp/B00FZPHMUG) |
+| BOENFU flush cutters | 2 | Not recorded |
+| CBAZY 30 AWG silicone wire (practice offcuts) | 2 | [Amazon B073RDGTPB](https://www.amazon.com/dp/B073RDGTPB) |
+| 2.54 mm breakaway headers, the 22 in-house pins | 2 | Not recorded (Amazon order #4) |
+| 3M Solus 1000 safety glasses | 2 | [Amazon B016KZ1ZPM](https://www.amazon.com/dp/B016KZ1ZPM) |
+| KAIWEETS TRMS multimeter | 2–6 | [Amazon B08BL288LW](https://www.amazon.com/dp/B08BL288LW) |
+| Hosyond SSD1306 OLED, 5-pack (use 1 + 1 swap spare) | 2, 4–6 | [Amazon B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) |
+| AITRIP INMP441 microphone, 5-pack (use 1) | 2, 5–6 | [Amazon B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS) |
+| QTEATAK tactile buttons with caps (use 1 or 2 of 420) | 3–6 | [Amazon B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) |
+| REXQualis breadboards (use the 830-point one) | 3–6 | Not recorded (Amazon order #5) |
+| TODOELEC Dupont jumpers, 120-wire kit | 3–6 | Not recorded (Amazon order #4) |
+| Computer, phone camera, notebook | 1–6 | General tools; no project purchase |
+
+The amplifier, speaker, lithium packs, charger, bench supply, and all brass
+stock are also owned — and deliberately stay in their bags for this entire
+track (see [what stays held](#what-stays-held-and-why)).
 
 ## Rules that survive the simplification
 
