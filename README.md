@@ -2,24 +2,29 @@
 
 This repository turns the [Huy Vector Pocket AI Assistant](https://www.huyvector.org/robots-kinetic/pocket-ai-assistant) reference build into a reviewable project with a pinned vendor image, safe host-side flashing tools, a source-buildable Xiaozhi board port, an audited bill of materials, and an assembly/test checklist.
 
-## Start here: a simple USB prototype
+## Start here: one small step at a time
 
-Follow [the prototype quickstart](docs/PROTOTYPE_QUICKSTART.md). You do **not**
-need to finish the electronics course or buy another batch of parts first.
-Start with the controller and a USB data cable, then add your OLED and
-microphone one at a time. The default source build is an **offline bench test**:
-it reports microphone levels over USB and tests the OLED without Wi-Fi, a
-cloud account, an amplifier, or a battery.
+Follow the [action-only fast track](plan/FAST_TRACK.md). It tells you exactly
+what to take out, what to connect, what command to run, and what result counts
+as a pass. Do one numbered step at a time; do not unpack the whole project.
+
+The first physical step needs one controller and a proven USB data cable. The
+controller order is recorded, but the planned cable purchase is not confirmed;
+the guide links the recorded candidate and shows how to test any cable you
+already own. It then adds the button, OLED, and microphone one at a time. The
+default source build is an **offline bench test**: it reports microphone levels
+over USB and tests the OLED without Wi-Fi, a cloud account, an amplifier, or a
+battery.
 
 Leave the battery, charger, external regulators, amplifier, and metal case off
 this first prototype. OLED/microphone power comes only from the controller's
 3.3 V output. Never connect an external power source to that rail while USB is
 connected.
 
-Two guided programs wrap that quickstart. The
-[fast track](plan/FAST_TRACK.md) is six build-first sessions (~10–12 hours)
-written for a software engineer: each session builds one observable thing and
-teaches only the core concepts that thing needs. The
+The [technical USB quickstart](docs/PROTOTYPE_QUICKSTART.md) remains the compact
+reference for experienced builders and troubleshooting. Engineering
+explanations moved out of the action guide into the
+[fast-track theory companion](plan/FAST_TRACK_THEORY.md). The
 [15-session daily plan](plan/DAILY_STUDY_AND_LAB_PLAN.md) is the deep track —
 full measurement labs, evidence discipline, and per-day material prep lists —
 worth returning to before any future battery, audio-power, or enclosure work.
@@ -58,6 +63,9 @@ These paths are deliberately separate. The creator published only a merged binar
 ├── simulation/
 │   ├── diagram.json              partial ESP32-C3/OLED/button Wokwi fixture
 │   └── README.md                 simulation limits and lint command
+├── plan/
+│   ├── FAST_TRACK.md             action-only beginner build guide
+│   └── FAST_TRACK_THEORY.md      optional theory mapped to each build step
 └── tools/
     ├── netcheck.py               static checker; legacy power model withdrawn
     ├── pocket_ai_device.py       vendor-image fetch/verify/flash/monitor CLI
@@ -69,8 +77,11 @@ A [partial Wokwi fixture](simulation/README.md) checks the corrected OLED and
 GPIO10 button diagram. It intentionally does not model the power or audio
 hardware.
 
-The USB quickstart needs no new purchase decision. For a **later battery-powered
-assembly**, [docs/FINAL_MATERIALS_FOR_REVIEW.md](docs/FINAL_MATERIALS_FOR_REVIEW.md)
+Software setup can start without a new purchase. The first physical boot needs
+a proven data cable, and a fully bare controller/OLED/microphone set needs 26
+header pins; check the fast track before ordering or soldering anything. For a
+**later battery-powered assembly**,
+[docs/FINAL_MATERIALS_FOR_REVIEW.md](docs/FINAL_MATERIALS_FOR_REVIEW.md)
 records the proposed F0 hardware and its unresolved tests; it is not a prerequisite
 shopping list for the USB prototype. Do not connect the cell, cut brass, assemble
 that power chain, or pocket-carry it without completing the relevant tests.

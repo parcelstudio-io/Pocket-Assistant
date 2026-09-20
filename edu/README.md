@@ -4,9 +4,10 @@ This directory teaches the electrical-engineering ideas needed to reason about
 the Pocket Assistant and provides a small set of project-specific guides. It
 assumes arithmetic and basic algebra, but no prior electronics experience.
 
-Start with the [USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) to
-boot the controller and test the button, OLED, and microphone using owned
-parts. The [daily study and lab plan](../plan/DAILY_STUDY_AND_LAB_PLAN.md)
+Start with the [action-only fast track](../plan/FAST_TRACK.md) to boot the
+controller and test the button, OLED, and microphone one part at a time. The
+[USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) is the compact
+technical reference. The [daily study and lab plan](../plan/DAILY_STUDY_AND_LAB_PLAN.md)
 adds 2–3 hour sessions around that work. Read the relevant
 [foundations lesson](fundamentals/README.md) as each circuit becomes useful;
 you do not need to finish the course before starting. Keep these references

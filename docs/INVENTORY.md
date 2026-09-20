@@ -9,8 +9,9 @@
 **Status: the recorded orders provide a starting set for the USB prototype.**
 Check what has actually arrived before each session. This inventory does not
 establish a complete battery-powered design. Start with the
-[USB prototype quickstart](PROTOTYPE_QUICKSTART.md), using what is already
-owned; no new purchase is needed to begin with the bare controller.
+[action-only fast track](../plan/FAST_TRACK.md), using what is already owned;
+software setup needs no new purchase, while the first physical boot needs any
+proven USB data cable.
 
 ## Orders placed
 
@@ -143,7 +144,9 @@ Keep the diamond set — it earns its place on the harder materials.
 
 ## Still needed
 
-Consumables only. None of this blocks the bench phase.
+The USB data cable blocks the first physical boot unless another cable proves
+it has working data lines. The other items do not block unpowered sorting or
+software setup; the fast track names the exact gate for each one.
 
 | Item | Why | Approx. |
 | --- | --- | ---: |
@@ -163,11 +166,13 @@ plus white styrene sheet for guards (~$10, Blick or Canal Plastics).
 
 ## What to do first
 
-Follow the [USB prototype quickstart](PROTOTYPE_QUICKSTART.md): identify and
-flash one bare controller, prepare reliable headers, add the button and OLED,
-then observe microphone levels in the offline diagnostic firmware. This uses
-the controller's USB supply and needs no cloud account, amplifier, battery, or
-enclosure. Save a wiring photograph and the serial output at each step.
+Follow the [action-only fast track](../plan/FAST_TRACK.md): identify and flash
+one bare controller, prepare reliable headers, add the button and OLED, then
+observe microphone levels in the offline diagnostic firmware. This uses the
+controller's USB supply and needs no cloud account, amplifier, battery, or
+enclosure. Save a wiring photograph and the serial output at each step. The
+[USB prototype quickstart](PROTOTYPE_QUICKSTART.md) remains the compact
+technical reference.
 
 After those local tests pass, the regular source firmware provides the next
 software/backend experiment. Speaker output and portable power remain separate

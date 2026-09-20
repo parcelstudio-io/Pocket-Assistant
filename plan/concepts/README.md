@@ -1,6 +1,9 @@
 # Illustrated concepts — the “why” behind each lab
 
-[Back to the daily plan](../DAILY_STUDY_AND_LAB_PLAN.md) · [USB prototype quickstart](../../docs/PROTOTYPE_QUICKSTART.md)
+[Back to the daily plan](../DAILY_STUDY_AND_LAB_PLAN.md) ·
+[Action-only fast track](../FAST_TRACK.md) ·
+[Fast-track theory map](../FAST_TRACK_THEORY.md) ·
+[USB prototype technical reference](../../docs/PROTOTYPE_QUICKSTART.md)
 
 Yes: start with the basic physics of **charge, energy, voltage, and current**,
 then learn how complete circuits behave. You do not need to master all of

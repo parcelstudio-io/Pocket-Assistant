@@ -1,36 +1,46 @@
 # USB prototype quickstart
 
-Start here to make the parts you own do something observable. The first goal
-is a USB-powered controller that logs button presses, tests the OLED, and
-reports microphone levels. The default source build includes these offline
-diagnostics, so this first prototype needs no cloud account or speaker.
+> **Technical reference:** For the one-action-at-a-time beginner procedure,
+> product-finder links, and a `PASS` box after every step, use the
+> [fast track](../plan/FAST_TRACK.md). This page stays compact for
+> troubleshooting and experienced builders.
+
+Start here to make the parts in the purchase record do something observable.
+The first goal is a USB-powered controller that logs button presses, tests the
+OLED, and reports microphone levels. The default source build includes these
+offline diagnostics, so this first prototype needs no cloud account or speaker.
 
 This is a bring-up procedure, not a claim that the physical parts have already
 passed it. Record your own results. The battery, charger, amplifier, speaker,
 and brass enclosure are later integration work.
 
-## Prepare what you already own
+## Prepare what the purchase record lists
 
-| Item | Recorded purchase link | Needed for |
-| --- | --- | --- |
-| Plain ESP32-C3 SuperMini | [Meshnology 10-pack](https://www.amazon.com/dp/B0F888JQ91) | First boot and all later steps |
-| USB data cable | [Rankie USB-A-to-C](https://www.amazon.com/dp/B01JRY0VE4) | Power, flashing, serial output |
-| Multimeter | [KAIWEETS HT118A](https://www.amazon.com/dp/B08BL288LW) | Unpowered continuity and voltage checks |
-| Tactile button | [QTEATAK kit](https://www.amazon.com/dp/B0FHW6HMG4) | GPIO input and OLED test control |
-| SSD1306 OLED | [Hosyond 0.96-inch](https://www.amazon.com/dp/B09T6SJBV5) | Pixel test |
-| INMP441 microphone | [AITRIP pack](https://www.amazon.com/dp/B092HWW4RS) | Microphone levels |
-| Breadboard, jumpers, and headers | REXQualis, TODOELEC, and breakaway headers; exact URLs not recorded | Reliable peripheral connections |
-| Soldering setup if headers are loose | See [Day 11 materials](../plan/DAILY_STUDY_AND_LAB_PLAN.md#day-11--soldering-practice-before-project-hardware) | Header preparation |
+| Item | Recorded link | Purchase-record status | Needed for |
+| --- | --- | --- | --- |
+| Plain ESP32-C3 SuperMini | [Meshnology 10-pack](https://www.amazon.com/dp/B0F888JQ91) | Ordered; find and inspect | First boot and all later steps |
+| USB data cable | [Rankie USB-A-to-C](https://www.amazon.com/dp/B01JRY0VE4) | **Not confirmed bought**; any proven data cable works | Power, flashing, serial output |
+| Multimeter | [KAIWEETS HT118A](https://www.amazon.com/dp/B08BL288LW) | Ordered; find and inspect | Unpowered continuity and voltage checks |
+| Tactile button | [QTEATAK kit](https://www.amazon.com/dp/B0FHW6HMG4) | Ordered; find and inspect | GPIO input and OLED test control |
+| SSD1306 OLED | [Hosyond 0.96-inch](https://www.amazon.com/dp/B09T6SJBV5) | Ordered; find and inspect | Pixel test |
+| INMP441 microphone | [AITRIP pack](https://www.amazon.com/dp/B092HWW4RS) | Ordered; find and inspect | Microphone levels |
+| 10 kΩ and 100 kΩ resistors | [LuminologyPro kit](https://www.amazon.com/dp/B0F4P352BB) | Ordered; find and verify values | Defined microphone clock/data states |
+| Breadboard, jumpers, and headers | REXQualis, TODOELEC, and breakaway headers; exact URLs not recorded | Ordered; find, count, and inspect | Reliable peripheral connections |
+| Soldering setup if headers are loose | See [Day 11 materials](../plan/DAILY_STUDY_AND_LAB_PLAN.md#day-11--soldering-practice-before-project-hardware) | Mixed ordered/owned record; find and inspect | Header preparation |
 
-Use an existing computer and notebook. Check which ordered items have arrived;
-start with just the controller and cable if peripherals are still boxed or
-their headers need preparation. No additional parts are prescribed here.
+The purchase record establishes that items were ordered, not that they arrived
+or are somewhere specific in the pile. Start with just the controller and
+cable. A completely bare controller/OLED/microphone set consumes 26 pins while
+only 22 loose pins are recorded, so follow the fast track's header count before
+soldering.
 
 Use the controller's USB cable as the only power source. Its **3.3 V output**
 may supply the OLED and microphone; it must not be connected to a separate
 power source, converter, charger, or battery. Unplug USB before each wiring
 change and before continuity/resistance measurements. Measure voltage with
-the meter leads in COM and the voltage jack. Keep amplifier wiring absent.
+the meter leads in COM and the voltage jack. Do not use the meter's `A` or
+`mA` current modes anywhere in this USB procedure. Keep amplifier wiring
+absent.
 
 ## Boot the controller
 
@@ -110,7 +120,10 @@ Inspect the joints and adjacent-pin isolation before powering up. Keep solder,
 flux, solvent, glue, and hot air away from the microphone port.
 
 Check the breadboard's connected rows and any split power rails with continuity
-mode. Wire by the labels on the received board, not by its position in a photo.
+mode. Choose one verified rail segment for `3V3` and another for `GND`, connect
+each to the matching controller pin, and reject a persistent continuity tone or
+near-zero resistance between them before applying USB power. Wire by the labels
+on the received board, not by its position in a photo.
 
 ## Add the button and OLED
 
@@ -122,9 +135,9 @@ serial log. Unplug USB for each change. Read the relevant portions of
 | Peripheral terminal | Controller connection |
 | --- | --- |
 | Button, one switched contact | GPIO10 |
-| Button, other switched contact | GND |
-| OLED GND | GND |
-| OLED VCC, after confirming 3.3 V compatibility | 3.3 V output |
+| Button, other switched contact | Verified GND rail |
+| OLED GND | Verified GND rail |
+| OLED VCC, after confirming 3.3 V compatibility | Verified 3V3 rail |
 | OLED SCL | GPIO20 |
 | OLED SDA | GPIO21 |
 
@@ -154,16 +167,22 @@ Use short jumpers:
 
 | INMP441 terminal | Controller connection |
 | --- | --- |
-| VDD / VCC | 3.3 V output |
-| GND | GND |
-| L/R | GND, selecting the left slot |
+| VDD / VCC | Verified 3V3 rail |
+| GND | Verified GND rail |
+| L/R | Verified GND rail, selecting the left slot |
 | SCK / BCLK | GPIO2 |
 | WS | GPIO1 |
 | SD, the microphone data output | GPIO4 |
+| 10 kΩ resistor | GPIO2 to verified 3V3 rail |
+| 100 kΩ resistor | GPIO4 to verified GND rail |
 
-The OLED and button may stay connected after their individual tests pass. No
-microphone wire connects to GPIO8; that is the historical vendor firmware's
-different contract.
+The 10 kΩ pull-up gives strap pin GPIO2 a defined startup level; the 100 kΩ
+pull-down keeps GPIO4 defined before the diagnostic firmware enables its
+internal pull. Before fitting them, measure each loose resistor in unpowered
+`Ω` mode: accept roughly 9–11 kΩ and 90–110 kΩ, respectively. Do not trust the
+color bands or kit compartments alone. The OLED and button may stay connected
+after their individual tests pass. No microphone wire connects to GPIO8; that
+is the historical vendor firmware's different contract.
 
 Reconnect USB and watch the once-per-second `MIC24` statistics: `samples`,
 `min`, `max`, `rms`, `zero`, `same`, `clipped`, and `read_errors`. These describe
@@ -202,9 +221,13 @@ all separately powered wiring disconnected. Unplug USB before any wiring
 change; reflashing alone does not require rebuilding the tested harness.
 Read the [firmware guide](../firmware/README.md) before provisioning Wi-Fi: the
 regular application's default backend receives device metadata and microphone
-audio. Amplifier enable remains disabled by default; this change alone does
-not create spoken output. Return to the diagnostics build whenever you need
-to isolate a local hardware problem.
+audio. Its temporary setup AP is open, its provisioning form uses HTTP, and it
+stores the selected Wi-Fi credentials unencrypted in flash settings. Provision
+only in private onto a dedicated guest/IoT network with a unique password, and
+fully reflash diagnostics before the board leaves your control. Amplifier
+enable remains disabled by default; this change alone does not create spoken
+output. Return to the diagnostics build whenever you need to isolate a local
+hardware problem.
 
 Continue the [2–3 hour daily plan](../plan/DAILY_STUDY_AND_LAB_PLAN.md) around
 these experiments. Keep battery and brass work separate until there is a

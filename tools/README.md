@@ -1,11 +1,13 @@
 # Device host tools
 
-For the beginner USB prototype, start with
-[the quickstart](../docs/PROTOTYPE_QUICKSTART.md) and the corrected source
-diagnostic build. You do not need to download the vendor binary or create a
-second Python environment after activating ESP-IDF. The tests and `netcheck.py`
-below are useful for both paths; this page's `fetch`/`flash` commands are for
-the **historical vendor image only**, not the corrected-source artifact.
+For the beginner USB prototype, start with the
+[action-only fast track](../plan/FAST_TRACK.md) and the corrected source
+diagnostic build. The [quickstart](../docs/PROTOTYPE_QUICKSTART.md) remains the
+compact technical reference. You do not need to download the vendor binary or
+create a second Python environment after activating ESP-IDF. The tests and
+`netcheck.py` below are useful for both paths; this page's `fetch`/`flash`
+commands are for the **historical vendor image only**, not the corrected-source
+artifact.
 
 The Pocket AI Assistant normally runs without a laptop-side application. The
 ESP32-C3 firmware provisions Wi-Fi locally, then obtains its MQTT or WebSocket

@@ -1,418 +1,934 @@
-# Fast track — build the desk prototype in six sessions
+# Fast track — build Pocket AI Assistant v0 one step at a time
 
-This is the short, hands-on version of the education program, written for a
-software engineer. Every session builds something you can observe within the
-hour, and the theory arrives only when the thing on your bench needs it. Total
-time is roughly ten to twelve hours across six sessions, against about
-thirty-five for the full [15-session plan](DAILY_STUDY_AND_LAB_PLAN.md), which
-stays available as the deep track. This track diverges from it in exactly one
-declared place: the deep plan forbids buying parts to stay on schedule, while
-this track front-loads the small order below for items `INVENTORY.md` already
-lists as still needed. Every safety boundary is unchanged, and the deep plan's
-no-buy fallbacks still work if you skip the order.
+This is the main beginner build guide. **Do not read the whole guide before
+starting.** Complete one `PASS` box, stop, and come back for the next one.
+Stopping after any passed step is a successful work session.
 
-**What you have at the end:** a USB-powered prototype — controller, button,
-OLED, and microphone — that boots reproducibly from a cold start, logs button
-presses, toggles the display, and shows microphone levels that track your
-voice. That is the fastest version of the pocket assistant that current
-project decisions allow anyone to build. The battery, the speaker, and the
-brass frame are design-gated, not education-gated: reading faster does not
-unlock them, so this track does not pretend to. See
-[what stays held](#what-stays-held-and-why) at the end.
+## What this guide builds
 
-**How to read a session:** *Build* is the work, and it links into the
-[USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) for exact commands;
-wiring is summarized inline for the bench, and the quickstart's tables are
-authoritative if the two ever differ. *Core ideas* is the theory that
-session actually uses — a few minutes each, with a short illustrated note and
-a deep lesson linked if you want more. *Done when* is the exit gate. Skip any
-reading you don't need; never skip a gate.
+At the end you will have a loose, USB-powered desk prototype with:
 
-## Before session 1: the short shopping list (one item really matters)
+- one ESP32-C3 controller running firmware you built;
+- one push button;
+- one OLED display; and
+- one microphone whose readings change when you speak.
 
-`INVENTORY.md` records a **USB-A-to-C data cable** as still needed, and
-nothing past session 1's toolchain build works without one. Order it now (the
-recorded pick is a [Rankie 3-pack](https://www.amazon.com/dp/B01JRY0VE4); the
-Phase 0 cart separately lists two labelled Adafruit #4473 cables for the later
-charger era, and any proven data cable serves this USB-only track) or
-prove a cable you already own carries data — it must enumerate a serial
-device, not just charge. A charge-only cable makes a working board look dead,
-which is the most expensive fake bug in this hobby.
+This is **Pocket AI Assistant v0**, not the finished pocket device. The
+supported firmware deliberately keeps the amplifier disabled. This guide does
+not connect a battery, charger, amplifier, speaker, external power supply, or
+brass enclosure, and the loose breadboard must not be carried in a pocket or
+bag.
 
-Worth adding to the same order, because session 2 consumes them — none of
-these blocks session 1:
+The project is intentionally split into three milestones:
 
-| To buy | Why | Link |
+1. **Build now:** the USB hardware prototype in Steps 0–9.
+2. **Optional after a privacy decision:** the networked assistant experiment
+   in Step 10. It uses a third-party service and still has no spoken output.
+3. **Wait for later engineering tests:** powered speaker, battery, charging,
+   enclosure, and pocket carry.
+
+Two companion pages sit beside this one, and both are optional while you
+build:
+
+- [Parts outline](FAST_TRACK_PARTS.md) — every component this guide names,
+  grouped by step, with its purchase link and whether that link is a recorded
+  order or only a candidate.
+- [Theory companion](FAST_TRACK_THEORY.md) — why each step works, linking out
+  to the illustrated concept notes and the full course.
+
+Theory is optional while building; the safety instructions on this page are
+not.
+
+The `PASS` boxes are targets for **you** to establish on your received parts,
+not claims that the hardware has already passed. No physical-board results are
+recorded in this repository yet.
+
+If you feel overwhelmed, make today's whole assignment Step 0. Finding two
+items, sorting the pile into safe groups, and stopping is real progress.
+
+## Safety rules for every step
+
+> **This guide uses USB power only.** Keep every battery, charger, amplifier,
+> speaker, bench supply, regulator, and brass part off the bench. Power the
+> OLED and microphone only from the controller's `3V3` pin—never from `5V` or
+> `VBUS`.
+
+1. Unplug USB before touching or moving any wire.
+2. Use continuity or resistance mode only while USB is unplugged.
+3. Do not use the meter's `A` or `mA` current modes anywhere in this guide.
+   Keep the black lead in `COM` and the red lead in `V/Ω`.
+4. Before reconnecting USB, read the labels on the actual boards and compare
+   every wire with the table. Amazon photos are not pinout authority.
+5. After Step 6 creates `3V3` and `GND` rails, check between them with
+   unpowered continuity mode before every reconnection. A brief chirp can be
+   capacitance; a persistent steady tone is a stop condition.
+6. If anything becomes hot, smells unusual, smokes, behaves erratically, or
+   repeatedly resets, disconnect USB at the computer end if safe and stop.
+7. GPIO9 is the controller's **BOOT** button. The project button uses GPIO10.
+
+## When you reopen a terminal
+
+Use a Bash terminal and run commands from the repository root. Check that you
+are in the right folder before doing anything else:
+
+```bash
+pwd
+test -f firmware/scripts/setup.sh && echo "Project folder found"
+```
+
+If the second command does not print `Project folder found`, open a terminal in
+the `pocket_ai_assistant` folder and try again. In every new terminal after
+Step 1, activate the installed ESP-IDF tools first:
+
+```bash
+. firmware/.work/esp-idf/export.sh
+```
+
+Replace `/dev/ttyACM0` in later commands with the exact port printed on your
+computer. It may instead be `/dev/ttyUSB0`, `/dev/cu.*`, or a Windows `COM`
+port.
+
+Product links identify the listings saved in the purchase record unless they
+are explicitly marked as a candidate or search link. Marketplace sellers and
+revisions can change; the labels on the received part control. The
+[parts outline](FAST_TRACK_PARTS.md) collects every one of those links in one
+place with its provenance marked.
+
+## Know the two likely stopping points
+
+- Steps 0–4 need only one plain controller and one proven USB data cable.
+- Step 5 needs 26 usable header pins, practice material, soldering tools, and
+  solder wick if you need to remove excess solder. It is fine to finish Step 4
+  today and wait for those items.
+
+---
+
+## Step 0 — clear the desk and find the first two items
+
+### Take out
+
+- One plain [Meshnology ESP32-C3 SuperMini](https://www.amazon.com/dp/B0F888JQ91).
+  The purchase record says ten were ordered, but you still need to find and
+  inspect the package.
+- One USB-A-to-C **data** cable. The project record does **not** confirm that
+  the planned [Rankie data-cable 3-pack](https://www.amazon.com/dp/B01JRY0VE4)
+  was bought. Any cable you already own is fine if Step 3 proves that it
+  carries data.
+- A small label or masking tape, a pen, and your phone.
+
+### Do
+
+1. Keep lithium packs disconnected and terminal-protected in their own
+   nonconductive storage, away from brass, sharp parts, tools, and heat. Do not
+   use a pack that is swollen, damaged, leaking, unusually warm, or smells
+   unusual. If a pack is already hot, hissing, venting, smoking, or leaking,
+   do not connect, charge, squeeze, puncture, or pick it up just to store it.
+   Move people away and follow the maker's and local emergency guidance.
+2. Put the charger, amplifier, speaker, regulators, and bench supply in a box
+   labeled `LATER — POWER/AUDIO — DO NOT CONNECT`.
+3. Put brass and cutting tools in a separate box labeled
+   `LATER — BRASS/SHARP`.
+4. Leave the button, OLEDs, microphones, breadboards, jumpers, resistors, and
+   spare controllers in their packages in a box labeled
+   `USB BUILD — WAIT FOR ITS STEP`. Do not inventory that box now.
+5. Leave only one controller and one cable in the active work area.
+6. Confirm the controller is a plain ESP32-C3 SuperMini matching the linked
+   listing, not a `Plus` variant with an RGB LED or antenna socket. If the
+   package says `Plus`, return it to the `USB BUILD` box with a note saying
+   `not for this guide`, then find a plain one.
+7. Label its bag or written record `A1` and photograph both sides. Keep tape
+   off the board, especially its antenna end.
+
+### PASS
+
+- [ ] Only board `A1` and one possible data cable remain in the active work
+      area; batteries are separately protected; the `USB BUILD`,
+      `POWER/AUDIO`, and `BRASS/SHARP` groups are put away; and `A1` is the
+      plain SuperMini, not a `Plus` variant.
+
+If you cannot find a cable, you can complete Steps 1–2 on the computer, but
+Step 3 must wait for a proven data cable.
+
+Optional theory: [why the build starts with one power source and one unknown](FAST_TRACK_THEORY.md#step-0--why-the-boundary-is-so-small).
+
+---
+
+## Step 1 — install the firmware tools
+
+### Take out
+
+- Your computer. Hardware can stay unplugged.
+
+### Do
+
+From the repository root, run setup by itself:
+
+```bash
+firmware/scripts/setup.sh
+```
+
+If setup prints an error, stop and use the troubleshooting list below. Only
+after setup finishes without an error, run:
+
+```bash
+test -f firmware/.work/esp-idf/export.sh && echo "Setup ready"
+```
+
+The first run downloads a large toolchain and may appear quiet for a while.
+
+### PASS
+
+- [ ] The commands finish without an error and print `Setup ready`.
+
+### If it does not pass
+
+1. Confirm the computer has internet access.
+2. Run `firmware/scripts/setup.sh` once more; setup is designed to resume
+   safely.
+3. If it still fails, stop and save the last 30 lines of output. Do not use
+   `sudo` to work around it.
+
+Optional theory: [how source code becomes firmware](FAST_TRACK_THEORY.md#steps-1-through-4--from-source-code-to-a-running-board).
+
+---
+
+## Step 2 — build and verify the diagnostic firmware
+
+### Do
+
+Run these commands in order:
+
+```bash
+. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh
+python3 firmware/scripts/verify_source_build.py
+```
+
+The first build may download pinned source and components, so keep the computer
+online and expect it to take a while. “Offline” describes the resulting
+diagnostic firmware: after flashing, it does not start Wi-Fi or send microphone
+audio anywhere.
+
+### PASS
+
+- [ ] The verifier prints `Build mode: diagnostics; amplifier: disabled` and
+      `Verified source artifact:` without printing an error.
+
+### If it does not pass
+
+1. Run the `export.sh` command again in the same terminal.
+2. Run `firmware/scripts/build.sh` again.
+3. If verification still fails, stop. Never flash a build that fails its
+   verifier; use the [firmware troubleshooting guide](../firmware/README.md).
+
+Optional theory: [what building and verifying actually prove](FAST_TRACK_THEORY.md#steps-1-through-4--from-source-code-to-a-running-board).
+
+---
+
+## Step 3 — prove the cable and identify board A1
+
+### Take out
+
+- Board `A1`.
+- The possible USB data cable.
+
+Do not attach the button, OLED, microphone, or any other wire yet.
+
+### Do
+
+1. Leave board `A1` unplugged and run:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py ports
+   ```
+
+2. Save or photograph that first port list.
+3. Connect bare board `A1` directly to the computer and run the same command
+   again:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py ports
+   ```
+
+4. The new entry is board `A1`'s port. Substitute that exact entry here:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 -m esptool --chip esp32c3 --port /dev/ttyACM0 flash-id
+   ```
+
+### PASS
+
+- [ ] The board appears as a serial port, is identified as an ESP32-C3, and
+      reports at least 4 MB of flash.
+
+### If it does not pass
+
+1. Try another USB port and reconnect the cable firmly.
+2. Try a different known data-capable cable; a charge-only cable can power the
+   board without creating a serial port.
+3. If a port is listed but the command says `Permission denied` or `busy`, do
+   not blame the board. Close serial programs and use the
+   [host-tool troubleshooting guide](../tools/README.md#troubleshooting) to fix
+   host access.
+4. After port access works, hold **BOOT**, tap **RESET**, release **BOOT**, and
+   retry. If it still fails, try `A2` with the same cable and computer USB port.
+   Label `A1` `QUARANTINE` only if `A2` identifies successfully under those
+   same conditions.
+
+If you found additional controller boards, leave them in their package.
+
+Optional theory: [why flash identity is a hardware test](FAST_TRACK_THEORY.md#steps-1-through-4--from-source-code-to-a-running-board).
+
+---
+
+## Step 4 — flash the bare board and see it run
+
+### Do
+
+1. Preview the exact flash operation, using your real port:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   firmware/scripts/flash.sh /dev/ttyACM0 --dry-run
+   ```
+
+2. Read the preview. Do not continue if it printed any error.
+
+### PASS 4A — safe to flash
+
+- [ ] The preview names the exact port from Step 3 and prints
+      `Build mode: diagnostics; amplifier: disabled`.
+
+### Do, after PASS 4A
+
+3. Flash and open the monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   firmware/scripts/flash.sh /dev/ttyACM0 --monitor
+   ```
+
+4. When asked, type the exact confirmation shown by the script.
+5. Watch the log for at least 60 seconds. Exit the monitor with `Ctrl+]`.
+6. Save a screenshot or copy of the log.
+
+### PASS 4B — board runs
+
+- [ ] The log contains
+      `BENCH DIAGNOSTICS: offline; Wi-Fi/cloud off; amplifier GPIO5 LOW` once,
+      then continues printing diagnostic lines for 60 seconds without showing
+      another boot sequence or repeated resets.
+
+Missing-display messages and meaningless microphone numbers are expected
+because those parts are not connected yet.
+
+### If it does not pass
+
+1. Retry the **BOOT → RESET → release BOOT** sequence from Step 3.
+2. Confirm you used the port printed by the port-list command.
+3. If flashing succeeded but the board loops, save the entire log and stop
+   before adding hardware.
+
+Label the board record `SOURCE DIAGNOSTICS / MIC GPIO4 / 16 kHz`.
+
+Optional theory: [flash, boot, reset, and serial logs](FAST_TRACK_THEORY.md#steps-1-through-4--from-source-code-to-a-running-board).
+
+---
+
+## Step 5 — prepare reliable header pins
+
+Start with Step 5A. Do Steps 5B–5E only for modules whose header pins are not
+already straight, firmly soldered, and electrically tested.
+
+### Find before starting
+
+- [Hosyond SSD1306 OLED](https://www.amazon.com/dp/B09T6SJBV5), recorded as
+  purchased in a five-pack.
+- [AITRIP INMP441 microphone](https://www.amazon.com/dp/B092HWW4RS), recorded
+  as purchased in a five-pack.
+- X-Tronic 3020-XTS soldering kit, Chip Quik CQ4LF electronics flux pen, and
+  loose 2.54 mm headers are recorded as ordered; BOENFU flush cutters are
+  separately recorded as owned. Their exact order links were not saved, and
+  none is confirmed found. Use these
+  [X-Tronic search results](https://www.amazon.com/s?k=X-Tronic+3020-XTS),
+  [Chip Quik search results](https://www.amazon.com/s?k=Chip+Quik+CQ4LF), and
+  [BOENFU search results](https://www.amazon.com/s?k=BOENFU+flush+cutters) only
+  to compare names and packaging with your pile.
+- [MAIYUM 63/37 0.8 mm solder](https://www.amazon.com/dp/B076QF1Y85).
+- [3M Solus 1000 safety glasses](https://www.amazon.com/dp/B016KZ1ZPM).
+- [KAIWEETS HT118A meter](https://www.amazon.com/dp/B08BL288LW).
+- Optional but strongly useful for a beginner:
+  [JoTownCand solder wick](https://www.amazon.com/dp/B0DRN688Q5). It is listed
+  as still needed, not as already purchased.
+
+### Step 5A — inspect and count
+
+1. Keep USB unplugged. Put the meter's black lead in `COM`, its red lead in
+   `V/Ω`, and select continuity/beeper mode. Touch the probes together: expect
+   a steady tone or near-zero reading. Separate them: expect no tone or an
+   open/over-range display. Stop if the meter does not pass this self-check.
+2. Inspect the controller's 16 header positions, the
+   OLED's 4, and the microphone's 6. Put the phone in a clean clear bag before
+   using its camera near soldered boards.
+3. For any header already soldered, use phone zoom to inspect every joint.
+   Check continuity from each pad to its pin, no persistent short between
+   adjacent pins, and no persistent short from the module's supply to ground.
+4. Count only the pins still missing. A completely bare set needs 26 pins:
+   16 + 4 + 6. Only 22 loose pins are confirmed in the purchase record.
+5. If you do not have enough usable pins for the missing positions, stop here
+   and obtain extra
+   [Sullins PRPC040SAAN-RC 1×40 male breakaway headers](https://www.digikey.com/en/products/detail/sullins-connector-solutions/PRPC040SAAN-RC/2775214).
+   This exact current candidate is not recorded as bought.
+
+### PASS 5A
+
+- [ ] Every already-soldered header passes inspection and unpowered tests. If
+      all 26 positions are already good, go directly to Step 6. Otherwise you
+      found enough pins for the missing positions plus safety glasses,
+      electronics flux, iron and stand, silicone mat, ventilation, meter, and
+      practice material.
+
+If every header was already good, wash your hands before removing the phone
+from its bag, then continue to Step 6.
+
+If you have no practice material, use a cheap
+[2.54 mm perfboard](https://www.amazon.com/s?k=2.54mm+perfboard+prototype)
+rather than making a project module your first attempt. This is a candidate
+search, not a recorded purchase.
+
+### Stop-safe rule for every soldering pause
+
+If you end a work session after PASS 5B, 5C, 5D, or 5E, the safe shutdown is
+part of that pass:
+
+1. Switch off and unplug the iron.
+2. Leave it untouched in its stand until fully cool.
+3. Clean the mat and work area without handling hot waste.
+4. Wash your hands before removing the phone from its bag or touching food.
+
+### Step 5B — make three practice joints
+
+1. Unplug USB. Keep all lithium batteries outside the work area.
+2. Put on eye protection. Use the silicone mat and ventilation that moves
+   fumes away from your face. Keep food and drink away. If you will use phone
+   zoom, put the phone in a clean clear bag before handling solder.
+3. Use only the electronics flux pen. Keep the Harris acid brass flux sealed
+   in its separate storage container.
+4. Set the iron to about 340 °C and keep it in its stand when not in use.
+5. Clean and lightly tin the tip.
+6. Touch the tip to the practice pad and pin together. Feed solder to the
+   heated joint—not directly onto the tip. Remove the solder, remove the iron,
+   and hold the parts still while the joint solidifies.
+7. Limit one heating attempt to about 2–3 seconds. If it needs longer, remove
+   the iron, let the joint cool, and clean or change the tip before retrying.
+8. Inspect with phone-camera zoom. Repeat until three consecutive joints fully
+   wet the pad and pin with no bridge or burned material.
+
+#### PASS 5B
+
+- [ ] Three consecutive practice joints pass visual inspection.
+
+If stopping here today, complete the stop-safe rule before leaving the bench.
+
+### Step 5C — solder the controller
+
+If the controller's headers passed Step 5A, leave them alone and continue to
+Step 5D. Otherwise:
+
+1. With glasses on, cut two 8-pin header strips.
+2. Use the spare 400-point breadboard as a soldering jig if you found it; heat
+   can damage its contacts, so keep the 830-point final breadboard away.
+   Otherwise use the helping hands.
+3. Put the long ends into the jig and place the controller over the short ends.
+4. Solder all 16 joints using the Step 5B motion.
+5. After it cools, inspect all 16. In unpowered continuity mode, every pad must
+   show continuity to its matching pin. Adjacent pins and `3V3` to `GND` must
+   not show a persistent steady tone or near-zero resistance.
+
+#### PASS 5C
+
+- [ ] All 16 controller joints and unpowered checks pass.
+
+If stopping here today, complete the stop-safe rule before leaving the bench.
+
+### Step 5D — solder the OLED
+
+If the OLED header passed Step 5A, leave it alone and continue to Step 5E.
+Otherwise:
+
+1. Cut one 4-pin strip and solder all four joints using the same jig and motion.
+2. After it cools, inspect all four. Every pad must show continuity to its
+   matching pin. Adjacent pins and `VCC` to `GND` must not show a persistent
+   steady tone or near-zero resistance.
+
+#### PASS 5D
+
+- [ ] All four OLED joints and unpowered checks pass.
+
+If stopping here today, complete the stop-safe rule before leaving the bench.
+
+### Step 5E — solder the microphone
+
+If the microphone header passed Step 5A, leave it alone, complete the stop-safe
+rule if the iron was used, and finish Step 5. Otherwise:
+
+1. Count the module's header rows before cutting anything. The common INMP441
+   breakout carries its six positions as **two rows of three on opposite
+   edges**, not one row of six. Cut strips to match the board in front of you,
+   not this sentence. Do not let flux, solder, solvent, glue, compressed air,
+   or hot air touch or enter the microphone's acoustic port.
+2. Write down the label printed beside every pad, edge by edge, before you
+   solder. Step 8 wires this module by label, and vendors change layouts
+   without changing the product photo.
+3. Solder all six joints using the same motion. Jig a two-row module the way
+   you jigged the controller: the pin rows straddle the breadboard's center
+   trench so the two sides stay electrically separate.
+4. After it cools, inspect all six. Every pad must show continuity to its
+   matching pin. Adjacent pins within a row, and `VDD` to `GND` wherever those
+   two sit, must not show a persistent steady tone or near-zero resistance.
+5. Complete the stop-safe rule before leaving the bench.
+
+A brief meter chirp can be a capacitor charging. A persistent near-zero
+reading or steady tone between supply and ground is a stop condition.
+
+#### PASS 5E
+
+- [ ] All six microphone joints and unpowered checks pass; the unplugged iron
+      is fully cool in its stand or stored; the area and final breadboard are
+      clean; and hands are washed.
+
+### If it does not pass
+
+1. Do not power the module.
+2. Reinspect the failed joint with phone-camera zoom.
+3. Let the joint cool. For a dry joint, add electronics flux and repeat one
+   brief 2–3 second heating attempt.
+4. For excess solder, stop if you do not have solder wick. If you do, add
+   electronics flux, hold the wick with tweezers because it gets hot, heat it
+   on the joint for at most 2–3 seconds, then lift the iron and wick together
+   without dragging. Let everything cool before reinspecting.
+5. Quarantine the module if a pad lifts, the microphone port is contaminated,
+   or one careful rework attempt does not fix it. Use another module only if
+   you actually found a packaged spare.
+
+Wash your hands before removing the phone from its bag or touching food.
+
+Put the soldering tools away before beginning the breadboard steps.
+
+Optional theory: [why solder joints and continuity checks matter](FAST_TRACK_THEORY.md#step-5--soldering-and-connections).
+
+---
+
+## Step 6 — add only the button
+
+### Take out
+
+- Flashed board `A1`, its data cable, and the clean 830-point final breadboard.
+  Do not use the 400-point board that may have been heated as a soldering jig.
+- Four short male-to-male Dupont jumpers.
+- One [QTEATAK tactile button](https://www.amazon.com/dp/B0FHW6HMG4).
+- The [KAIWEETS meter](https://www.amazon.com/dp/B08BL288LW).
+
+The REXQualis breadboards and TODOELEC 10 cm jumper kit are recorded as
+purchased, but their exact order links were not saved. These
+[breadboard search results](https://www.amazon.com/s?k=REXQualis+830+400+breadboard)
+and [jumper search results](https://www.amazon.com/s?k=TODOELEC+10cm+Dupont+jumper+120)
+are only for comparing package names and photos.
+
+### Do
+
+1. Unplug USB.
+2. Place board `A1` across the breadboard's center gap so its two header rows
+   are on electrically separate sides and its USB connector remains reachable.
+3. Learn this breadboard before powering it. Each ordinary group of five holes
+   should be connected; the group across the center trench should not be. Long
+   side rails may be split halfway. Use continuity mode to map the exact rail
+   segments you will use.
+4. Choose one side-rail segment for `3V3` and a separate segment for `GND`.
+   Wire controller `3V3` to the first and controller `GND` to the second with
+   male-to-male jumpers. A red or blue stripe is only a label, not proof.
+5. With USB still unplugged, prove continuity from the controller pin to each
+   point you plan to use on its rail. Then check between the two rails: a brief
+   chirp can be capacitance, but a persistent tone or near-zero resistance is a
+   stop condition.
+6. Place the button so it straddles the breadboard's center trench. Use meter
+   continuity mode to find two legs that are disconnected when released and
+   connected only while pressed.
+7. Wire exactly this:
+
+   | Button | Connection |
+   | --- | --- |
+   | One tested switched contact | GPIO10 |
+   | Other tested switched contact | verified `GND` rail |
+
+   The power branches created here are:
+
+   ```text
+   controller 3V3 ── 3V3 rail ── later: OLED VCC, mic VDD, 10 kΩ
+   controller GND ── GND rail ── button, later: OLED GND, mic GND/L-R, 100 kΩ
+   ```
+
+8. Recheck the rail mapping, both power jumpers, the button wires, and rail
+   isolation. Then reconnect USB.
+9. Reopen the monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py monitor --port /dev/ttyACM0
+   ```
+
+10. Press the external button slowly ten times.
+
+### PASS
+
+- [ ] Both rails map correctly, there is no persistent supply-to-ground short,
+      ten deliberate presses produce ten increasing `BUTTON GPIO10: click N`
+      messages, and the board still boots normally.
+
+### If it does not pass
+
+1. Unplug USB before changing anything.
+2. If it always reads pressed, the chosen button legs are probably one
+   permanently connected pair. Repeat the unpowered continuity test.
+3. Confirm the wire says GPIO10. Do not use the onboard GPIO9 **BOOT** button.
+
+Keep the working button connected for the next step.
+
+Optional theory: [how a button becomes a digital input](FAST_TRACK_THEORY.md#step-6--button-and-digital-input).
+
+---
+
+## Step 7 — add the OLED display
+
+### Take out
+
+- One soldered [Hosyond SSD1306 OLED](https://www.amazon.com/dp/B09T6SJBV5).
+- Four short male-to-male jumpers. If you found more OLEDs, keep one packaged
+  as a possible swap spare.
+
+### Do
+
+1. Unplug USB.
+2. Read the labels printed on your exact OLED. Identical-looking boards can
+   reverse `VCC` and `GND`; never copy their physical order from a photo.
+3. Put the OLED in unused breadboard rows with each pin in a different
+   five-hole node. Keep the glass visible and do not let the module touch the
+   controller or button.
+4. Wire by **label**:
+
+   | OLED label | Connection |
+   | --- | --- |
+   | `GND` | verified `GND` rail |
+   | `VCC` | verified `3V3` rail |
+   | `SCL` | GPIO20 |
+   | `SDA` | GPIO21 |
+
+5. Compare all four wires with the table. Confirm that every used point on each
+   rail connects to its controller pin and that `3V3` and `GND` do not have a
+   persistent continuity tone or near-zero resistance.
+6. Reconnect USB and reopen the monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py monitor --port /dev/ttyACM0
+   ```
+
+7. Tap the controller's **RESET** button once so the open monitor captures the
+   complete startup log. Do not hold the GPIO9 **BOOT** button.
+8. Watch startup, then press the external GPIO10 button ten times.
+
+### PASS
+
+- [ ] The log reports OLED address `0x3C` or `0x3D`, startup reports
+      `OLED: ALL ON` and `OLED: ALL OFF`, and ten button presses toggle the
+      pixels without resets.
+
+### If it does not pass
+
+1. Unplug USB immediately and reread the actual `VCC` and `GND` labels.
+2. Confirm `SCL → GPIO20` and `SDA → GPIO21`; then inspect the four solder
+   joints and breadboard rows.
+3. Only after the wiring passes those checks, try another OLED if you actually
+   found a packaged spare; otherwise stop and record the failure.
+
+Keep the working button and OLED connected.
+
+Optional theory: [how I2C addresses and the OLED work](FAST_TRACK_THEORY.md#step-7--i2c-and-the-oled).
+
+---
+
+## Step 8 — add the microphone
+
+### Take out
+
+- One soldered [AITRIP INMP441 microphone](https://www.amazon.com/dp/B092HWW4RS).
+- Six short male-to-male jumpers.
+- One 10 kΩ and one 100 kΩ resistor from the recorded
+  [LuminologyPro resistor kit](https://www.amazon.com/dp/B0F4P352BB).
+- The meter.
+
+### Do
+
+1. Unplug USB.
+2. Keep fingers, flux, solvent, glue, hot air, and compressed air away from
+   the microphone's acoustic port.
+3. With both resistors still loose, set the unplugged meter to resistance
+   (`Ω`) mode and measure them one at a time. Accept and label the pull-up only
+   if it reads roughly 9–11 kΩ; accept and label the pull-down only if it reads
+   roughly 90–110 kΩ. Do not trust only the color bands or kit compartment.
+   Resistors are not polarized, so either end may face either way.
+4. Put the microphone in unused breadboard rows with every pin in a different
+   five-hole node. Its acoustic port must face open air; if the port is on the
+   underside, keep a clear air gap rather than pressing it against the
+   breadboard or table.
+5. Read the microphone's actual labels and wire:
+
+   | Microphone label | Connection |
+   | --- | --- |
+   | `VDD` or `VCC` | verified `3V3` rail |
+   | `GND` | verified `GND` rail |
+   | `L/R` | verified `GND` rail |
+   | `SCK` or `BCLK` | GPIO2 |
+   | `WS` | GPIO1 |
+   | `SD` | GPIO4 |
+
+6. Add the two measured stability resistors:
+
+   | Resistor | Connect between |
+   | --- | --- |
+   | measured 9–11 kΩ pull-up | GPIO2 and verified `3V3` rail |
+   | measured 90–110 kΩ pull-down | GPIO4 and verified `GND` rail |
+
+7. There must be no microphone wire on GPIO8. GPIO8 belongs only to the
+   historical vendor firmware, which this guide does not use.
+8. Compare all eight new connections with the tables and keep the I2S jumpers
+   short. With USB still unplugged, prove both rail segments still connect to
+   the correct controller pins. Confirm that `3V3` and `GND` do not have a
+   persistent tone or near-zero resistance.
+9. Reconnect USB and reopen the monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py monitor --port /dev/ttyACM0
+   ```
+
+10. Read the once-per-second `MIC24` lines. Confirm `samples` is nonzero,
+    `min` and `max` differ, and `read_errors=0`. One nonzero error can be a
+    transient, but recurring nonzero errors fail this step.
+11. For each trial, write down one quiet `rms` value, speak normally from the
+    same distance, and write down one speech `rms` value:
+
+    | Trial | Quiet `rms` | Speech `rms` |
+    | --- | --- | --- |
+    | 1 |  |  |
+    | 2 |  |  |
+    | 3 |  |  |
+
+12. Press the external button and confirm the OLED still toggles.
+
+### PASS
+
+- [ ] `samples` is nonzero, `min` and `max` differ, recurring nonzero
+      `read_errors` are absent, and the recorded speech `rms` is higher than
+      quiet in all three trials. The button and OLED still pass.
+
+There is no universal good `rms` number. The repeatable change between quiet
+and speech is the result that matters.
+
+### If it does not pass
+
+1. Unplug USB. Confirm `SD → GPIO4`, `L/R → GND`, and a common ground. If
+   `samples` counts up but `min` and `max` both stay at `0` with
+   `read_errors=0`, that is the slot-mismatch signature: the mic is talking in
+   the other slot, not broken. Recheck `L/R → GND` before suspecting a joint.
+2. Confirm `SCK → GPIO2`, `WS → GPIO1`, and both resistor values/endpoints.
+3. Inspect all six microphone header joints before trying another microphone,
+   and do that only if you actually found a packaged spare.
+
+Optional theory: [how the microphone turns sound into numbers](FAST_TRACK_THEORY.md#step-8--i2s-microphone-and-rms).
+
+---
+
+## Step 9 — prove the complete USB prototype
+
+### Do
+
+1. Save one clear overhead photograph that shows every wire and every board
+   label.
+2. For **cold start 1**, exit the monitor with `Ctrl+]` and unplug USB. Check
+   that `3V3` and `GND` have no persistent continuity tone, then wait five
+   seconds.
+3. Reconnect USB. Watch the OLED perform its startup test, then open the
+   monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py monitor --port /dev/ttyACM0
+   ```
+
+4. Watch for 60 seconds without another boot sequence. Press the external
+   button three times, confirm three clicks and OLED toggles, then record one
+   quiet and one speech `rms` value.
+5. For **cold start 2**, exit the monitor, unplug USB, repeat the unpowered
+   rail check, and wait five seconds.
+6. Reconnect USB, watch the OLED startup test, and reopen the monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   python3 tools/pocket_ai_device.py monitor --port /dev/ttyACM0
+   ```
+
+7. Repeat the same 60-second, three-click, OLED, quiet, and speech tests.
+8. Save the final log next to the wiring photograph.
+
+### PASS — USB hardware prototype complete
+
+- [ ] Cold start 1 and cold start 2 both boot without a reset loop; the
+      external button logs all presses; the OLED starts and toggles; and speech
+      produces a higher microphone RMS than quiet.
+
+You have now built a real working hardware prototype. Keep it on the
+breadboard in a tray; do not pocket-carry the loose assembly.
+
+If a cold start fails, unplug USB first. Remove the microphone and its two
+resistors, then confirm the button/OLED layer still passes. Remove the OLED
+next only if that earlier layer also fails. Use the
+[technical quickstart](../docs/PROTOTYPE_QUICKSTART.md) plus the saved photo to
+find the first difference.
+
+Optional theory: [why repeatability matters](FAST_TRACK_THEORY.md#step-9--integration-and-repeatability).
+
+---
+
+## Step 10 — optional, experimental networked assistant
+
+Stop here unless Step 9 passes and you deliberately accept the privacy tradeoff.
+Assistant mode uses the third-party Xiaozhi/Tenclass bootstrap service, which
+receives device metadata and microphone audio. Do not continue if that is not
+acceptable to you.
+
+The amplifier remains disabled, so this experiment does **not** produce spoken
+output. Its goal is only one successful backend round trip visible in the log
+or display. This cloud path is not yet verified on your exact board and can
+change when the third-party service changes.
+
+> **Provisioning warning:** the temporary configuration network is open and
+> the form at `http://192.168.4.1` is not encrypted. A nearby person could
+> observe or interfere. Provision only in a private location and use a
+> dedicated 2.4 GHz guest/IoT network with a unique password—not the password
+> for an important network or account. The firmware stores those credentials
+> unencrypted in flash settings. A reset does not erase them; the board retains
+> them until a full reflash or flash erase.
+
+### Do
+
+1. Read the [assistant-mode privacy and provisioning notes](../firmware/README.md#flash-and-monitor-source-builds).
+2. Prepare the dedicated 2.4 GHz guest/IoT network described above.
+3. With the existing USB-only hardware, build assistant mode:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   firmware/scripts/build.sh --assistant
+   ```
+
+   If that command prints an error, stop. Do not run a later command using an
+   older artifact.
+
+4. After the build succeeds, verify it:
+
+   ```bash
+   python3 firmware/scripts/verify_source_build.py
+   ```
+
+   Stop unless it prints `Build mode: assistant; amplifier: disabled` without
+   an error.
+
+5. Preview the flash using the exact port from Step 3:
+
+   ```bash
+   firmware/scripts/flash.sh /dev/ttyACM0 --dry-run
+   ```
+
+### PASS 10A — safe to flash assistant mode
+
+- [ ] The build and verifier finished without errors, the verifier and preview
+      print `Build mode: assistant; amplifier: disabled`, and the preview names
+      the exact port from Step 3.
+
+### Do, after PASS 10A
+
+6. Flash and open the monitor:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   firmware/scripts/flash.sh /dev/ttyACM0 --monitor
+   ```
+
+7. Confirm the actual `Xiaozhi-XXXX` network name in the boot log.
+8. From a phone or computer, join that temporary Wi-Fi network. If its captive
+   portal does not appear, open <http://192.168.4.1>.
+9. Select your dedicated **2.4 GHz** guest/IoT network and enter its
+   credentials in the device-hosted form.
+10. Follow any activation instruction shown by the current display or log. The
+   backend is third-party and its account flow may change independently of
+   this repository.
+11. Give the external GPIO10 button one quick press. When the log or display
+    shows that it is listening, ask one short question such as “What is two
+    plus two?” Wait for a remote response to appear in the log or display.
+    Quick-press the button once more if the interface remains active.
+
+### PASS 10B — one assistant round trip
+
+- [ ] The device joins Wi-Fi, your quick press starts listening, and one spoken
+      question produces a remote response in the display or serial log without
+      a reset. Record the evidence.
+
+Return to offline diagnostics whenever you need to isolate a hardware problem.
+Build first:
+
+```bash
+. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh --diagnostics
+```
+
+If the build prints an error, stop. After it succeeds, verify it:
+
+```bash
+python3 firmware/scripts/verify_source_build.py
+```
+
+Continue only when it prints `Build mode: diagnostics; amplifier: disabled`.
+Preview the exact port:
+
+```bash
+firmware/scripts/flash.sh /dev/ttyACM0 --dry-run
+```
+
+Continue only when the preview repeats diagnostics mode, disabled amplifier,
+and the right port. Then flash:
+
+```bash
+firmware/scripts/flash.sh /dev/ttyACM0 --monitor
+```
+
+That full diagnostic reflash writes this project's blank NVS area and clears
+the saved Wi-Fi settings. Do not loan, sell, or discard a provisioned board
+until that reflash succeeds or you deliberately erase its flash.
+
+Optional theory: [what changes when the cloud is added](FAST_TRACK_THEORY.md#step-10--network-and-cloud-boundary).
+
+## Stop here before speaker, battery, or brass
+
+Those are separate projects, not additional beginner steps:
+
+| Later milestone | Why it waits | Read before beginning |
 | --- | --- | --- |
-| USB-A-to-C data cable | Gates everything from the first flash on | [Rankie 3-pack — Amazon B01JRY0VE4](https://www.amazon.com/dp/B01JRY0VE4) (recorded pick) |
-| 2.54 mm breakaway header strips, 1×40, a couple | Only 22 pins are in the house; the OLED and microphone alone consume 10, leaving no slack or practice stock | No recorded pick — [Amazon search: 2.54mm male breakaway pin header](https://www.amazon.com/s?k=2.54mm+male+breakaway+pin+header+strips) |
-| Solder wick | Clearing bridges on module pads; the owned solder sucker is too coarse for them | [JoTownCand 3-pack — Amazon B0DRN688Q5](https://www.amazon.com/JoTownCand-Premium-Desoldering-Residue-Solder/dp/B0DRN688Q5) (recorded in `INVENTORY.md`) |
-| Small perfboard | Session 2 warm-up joints; otherwise you practice on wire offcuts | No recorded pick — [Amazon search: perfboard prototype 2.54mm](https://www.amazon.com/s?k=perfboard+prototype+board+2.54mm) |
-| Optional: clip-on fan or fume extractor, and a loupe | Session 2's ventilation gate and joint inspection — an open window plus any fan you own, and a phone camera at max zoom, both pass | No recorded pick; buy only if the free substitutes annoy you |
-
-The two search links are suggestions, not purchase provenance — the recorded
-picks above them are the only items `INVENTORY.md` actually names.
-
-## Everything else is already on your bench
-
-Every other item the six sessions name is in the purchase record. Links are
-the original recorded orders (an assortment link means the kit, not a new
-single-part listing); items marked *not recorded* are owned but the exact
-order URL wasn't preserved.
-
-| Already owned | Sessions | Recorded purchase link |
-| --- | --- | --- |
-| ESP32-C3 SuperMini, 10-pack (use 1, spares stay bagged) | 1–6 | [Amazon B0F888JQ91](https://www.amazon.com/dp/B0F888JQ91) |
-| X-Tronic 3020-XTS station: iron, tips, silicone mat, helping hands, tip cleaner, solder sucker, tweezers | 2 | Not recorded (X-Tronic order) |
-| MAIYUM 63/37 solder, 0.8 mm | 2 | [Amazon B076QF1Y85](https://www.amazon.com/dp/B076QF1Y85) |
-| Chip Quik CQ4LF no-clean flux pen | 2 | Not recorded (Adafruit order) |
-| Hakko CSP-30-1 wire stripper | 2 | [Amazon B00FZPHMUG](https://www.amazon.com/dp/B00FZPHMUG) |
-| BOENFU flush cutters | 2 | Not recorded |
-| CBAZY 30 AWG silicone wire (practice offcuts) | 2 | [Amazon B073RDGTPB](https://www.amazon.com/dp/B073RDGTPB) |
-| 2.54 mm breakaway headers, the 22 in-house pins | 2 | Not recorded (Amazon order #4) |
-| 3M Solus 1000 safety glasses | 2 | [Amazon B016KZ1ZPM](https://www.amazon.com/dp/B016KZ1ZPM) |
-| KAIWEETS TRMS multimeter | 2–6 | [Amazon B08BL288LW](https://www.amazon.com/dp/B08BL288LW) |
-| Hosyond SSD1306 OLED, 5-pack (use 1 + 1 swap spare) | 2, 4–6 | [Amazon B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) |
-| AITRIP INMP441 microphone, 5-pack (use 1) | 2, 5–6 | [Amazon B092HWW4RS](https://www.amazon.com/dp/B092HWW4RS) |
-| QTEATAK tactile buttons with caps (use 1 or 2 of 420) | 3–6 | [Amazon B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) |
-| REXQualis breadboards (use the 830-point one) | 3–6 | Not recorded (Amazon order #5) |
-| TODOELEC Dupont jumpers, 120-wire kit | 3–6 | Not recorded (Amazon order #4) |
-| Computer, phone camera, notebook | 1–6 | General tools; no project purchase |
-
-The amplifier, speaker, lithium packs, charger, bench supply, and all brass
-stock are also owned — and deliberately stay in their bags for this entire
-track (see [what stays held](#what-stays-held-and-why)).
-
-## Rules that survive the simplification
-
-The deep plan carries pages of boundaries; for USB-only work they reduce to
-seven. These are non-negotiable because they protect the parts, the house, and
-the later build:
-
-1. Every lithium cell and the charger stay unmated, terminal-protected, and
-   off the bench for all six sessions. Nothing here needs them.
-2. USB is the only power source. No *other* source ever connects to the
-   3.3 V rail — it feeds the OLED and microphone, and nothing feeds it. The
-   amplifier and speaker stay in their bags.
-3. Unplug USB before every wiring change and before any continuity or
-   resistance measurement. Reconnect only after a visual check.
-4. Measure voltage only, with the meter leads in COM and the voltage jack.
-   Never connect a current-mode meter across the rail, USB, or any supply,
-   and after any deliberate current measurement return the red lead to the
-   voltage jack immediately.
-5. GPIO9 belongs to ROM boot/recovery. The project button is GPIO10.
-6. Soldering needs eye protection and real airflow away from your face, and
-   only the electronics flux pen — the Harris acid flux never enters the
-   room.
-7. Keep flux, solvent, glue, hot air, and compressed air away from the
-   microphone's acoustic port; contaminating it is permanent.
-
-If a session produces heat, smell, instability, or a reading you cannot
-explain, stop and write down what you saw before changing anything.
-
----
-
-## Session 1 — Flash it and watch it boot (~2 h, mostly waiting)
-
-The software-engineer on-ramp: no wiring, no soldering, no meter. You turn a
-$3 board into a device running code you built, and learn the board's power
-anatomy while the toolchain downloads.
-
-**Grab from the bench:** one bare SuperMini (label it `A1`; the other nine
-stay bagged), the proven data cable, your computer, notebook.
-
-**Build:** follow the quickstart's
-[Boot the controller](../docs/PROTOTYPE_QUICKSTART.md#boot-the-controller)
-section end to end: `setup.sh`, source `export.sh`, `build.sh`, the source
-verifier, then `flash-id`, a dry-run, and the real flash with monitor. The
-first `setup.sh` run downloads the pinned ESP-IDF toolchain and can eat most
-of the session — start it first and read this session's concepts while it
-runs.
-
-**Core ideas (read while the toolchain downloads):**
-
-- Electricity only does work in loops. The USB cable is not "power in" — it
-  is 5 V out *and* the return path back. Every wire you add later either
-  starts or completes a loop.
-  → [Charge, energy, and circuits](concepts/01-charge-energy-and-circuits.md)
-- The board's LDO turns USB's 5 V into the 3.3 V rail everything else will
-  drink from. `3V3` and `GND` pins are the rail's public API; the peripherals
-  you add in sessions 3–5 are its callers.
-- Flashing at offset `0x0` replaces the entire image — bootloader, partition
-  table, app — like re-imaging a disk, not deploying an artifact. It also
-  wipes stored Wi-Fi settings.
-  → [From code to boot](concepts/06-from-code-to-boot.md)
-- A passing build and a matching SHA-256 prove *bytes*, not hardware. The
-  boot log is your first piece of physical evidence; treat everything before
-  it as CI passing on a machine you've never seen.
-
-**Done when:** `flash-id` reports an ESP32-C3 with ≥4 MB flash, and the
-monitor shows a stable `BENCH DIAGNOSTICS: offline; Wi-Fi/cloud off;
-amplifier GPIO5 LOW` loop with no resets. Save the boot log, label the board
-record `SOURCE DIAGNOSTICS / MIC GPIO4 / 16 kHz`.
-
-**If stuck:** no serial port → suspect the cable before the board (that's why
-you proved it). Boot loop → hold BOOT (GPIO9), tap RESET, release, re-flash.
-A board that fails `flash-id` twice gets rejected — you own ten precisely so
-you never debug a bad clone.
-
----
-
-## Session 2 — Solder the headers (~2 h)
-
-The one manual-skill session. The modules ship with loose header strips, and
-pins pushed through unsoldered holes are intermittent-contact generators that
-will poison every later debugging session. You practice briefly, then make
-the roughly 22 joints the prototype needs — 26 if your ordered strips arrived
-and the controller gets full rows.
-
-**Grab from the bench:** X-Tronic station with its silicone mat, tip cleaner,
-and helping hands; MAIYUM 63/37 solder; Chip Quik flux pen; flush cutters;
-Hakko stripper and offcut 30 AWG wire for practice; the 22 header pins; OLED,
-microphone, and controller; KAIWEETS meter; safety glasses.
-
-**Not in hand, decide before you start:** ventilation is a gate — write down
-the actual arrangement (open window plus a fan pulling fumes away from your
-face is acceptable) before the iron heats. If the before-session-1 order
-arrived, warm up on that perfboard and keep the wick beside the iron for
-bridges. Building from the recorded inventory alone instead: warm up on
-stripped wire offcuts
-twisted to header scraps, and a bridged joint gets reflowed or its pin
-replaced — the coarse solder sucker is the only removal tool in the house.
-No magnifier either way: inspect every joint through your phone camera at
-max zoom.
-
-**The header budget, explicitly:** 22 pins must cover the OLED (4) and the
-microphone (6), leaving 12 for the controller — enough for the used pins
-(3V3, GND, GPIO1, 2, 4, 10, 20, 21) plus corners for mechanical support, and
-zero practice stock. If you bought strips per the note above, practice on
-those instead and give the controller full rows.
-
-**Build:** set the X-Tronic to about 330–350 °C for the 63/37 solder with the
-chisel tip; a good header joint takes two to three seconds, and if it needs
-longer the fix is a cleaner or bigger tip, not more heat. Make ~10 warm-up
-joints on scrap until three in a row look right, then follow
-[Prepare reliable headers](../docs/PROTOTYPE_QUICKSTART.md#prepare-reliable-headers):
-one module at a time, inspect both sides, then meter continuity pad-to-pin
-and isolation pin-to-neighbor for every used pin. Where that quickstart
-section detours you to the deep plan's "Day 11 solder practice", this warm-up
-already covers it — continue at "Then solder the required header joints".
-
-**Core ideas:**
-
-- Solder is not glue; it's a metallurgical bond that only forms on metal
-  above the melting point. Heat the pad *and* pin, feed solder into the
-  joint, not onto the iron. A gray, lumpy joint is a cold joint — a future
-  intermittent.
-  → [Soldering and heat](concepts/11-soldering-and-heat.md)
-- The joint is electrical; strain relief is mechanical. Any tug on a wire
-  must land on something other than the joint, or the connection's lifetime
-  is measured in flexes.
-  → [Joints and strain relief](concepts/12-joints-and-strain-relief.md)
-- Continuity mode is your unit test: pad-to-pin must beep, pin-to-neighbor
-  must not. Run it on every used pin before power ever arrives.
-
-**Done when:** every used pin on all three modules passes both continuity
-checks, and your last three inspected joints are shiny, concave, and fully
-wetted. Photograph the worst joint too — honest evidence beats pretty
-evidence.
-
----
-
-## Session 3 — One input: the button (~1.5 h)
-
-First wiring, first live measurements, and the core of digital electronics in
-one sitting: how a voltage becomes a bit.
-
-**Grab from the bench:** the flashed `A1`, data cable, one breadboard, a few
-jumpers, one QTEATAK button (you own 420 — take two), KAIWEETS meter, safety
-glasses.
-
-**Build:** follow the button half of
-[Add the button and OLED](../docs/PROTOTYPE_QUICKSTART.md#add-the-button-and-oled).
-With USB unplugged, use continuity mode to find which button legs are the
-actual switched pair (four-leg switches join legs in pairs — pick wrong and
-the input reads pressed forever). Wire GPIO10 to one contact, GND to the
-other. Reconnect USB and press: each click logs `BUTTON GPIO10: click N`.
-While you're powered and stable, take your first two measurements: 3.3 V rail
-with the meter, and the GPIO10 voltage pressed versus released.
-
-**Core ideas:**
-
-- A digital input is a voltage comparator: near 3.3 V reads 1, near 0 V
-  reads 0, and a disconnected pin reads *noise*. Floating inputs are
-  uninitialized variables — the pull-up resistor is the default value.
-  → [GPIO and buttons](concepts/07-gpio-and-buttons.md)
-- The firmware enables the internal pull-up, so the resting state is 1 and a
-  press shorts to GND: active-low. That's why the log fires on the
-  *falling* edge, and why the meter shows ~3.3 V released, ~0 V pressed.
-- Ohm's law earns its keep here: the pull-up (tens of kΩ) and your pressed
-  button form the whole circuit — `I = V/R` says a press wastes microamps.
-  You now understand every resistor this project plans to use: they set
-  default states, like the internal pull-up you just measured — that one
-  simply lives inside the chip.
-  → [Voltage, current, resistance, power](concepts/02-voltage-current-resistance-and-power.md)
-- Some GPIOs are read *once at boot* to choose the boot mode — environment
-  variables sampled at process start. GPIO9 is one; that's why it's
-  reserved.
-
-**Done when:** ten presses log ten clicks, reset still works, and your
-notebook has the measured rail and both input voltages.
-
----
-
-## Session 4 — One bus: the OLED (~1.5 h)
-
-Two wires, a whole bus of addressable devices: I2C is closer to networking
-than to wiring, which makes it the most software-engineer-friendly hardware
-on the board.
-
-**Grab from the bench:** everything from session 3 still wired, plus one
-soldered OLED and four jumpers. Keep the second OLED bagged as the swap unit.
-
-**Build:** the OLED half of
-[Add the button and OLED](../docs/PROTOTYPE_QUICKSTART.md#add-the-button-and-oled).
-Before wiring, read the silkscreen: identical-looking carriers ship both
-`GND-VCC-SCL-SDA` and `VCC-GND-SCL-SDA`, and reversed power kills the module.
-USB unplugged → wire GND, VCC (3.3 V), SCL to GPIO20, SDA to GPIO21 → visual
-check → USB in. The log reports the detected address (`0x3C` or `0x3D`) and
-runs `OLED: ALL ON` / `ALL OFF`; each button press toggles the pixel test.
-
-**Core ideas:**
-
-- I2C is a two-wire bus: SDA is data, SCL is the clock, and every device has
-  a 7-bit address. Think of it as a tiny network segment — every chip is a
-  host with an address on a shared bus, and the ACK is the SYN-ACK: proof
-  somebody is listening at that address, not that the application works.
-  → [I2C and the OLED](concepts/08-i2c-and-the-oled.md)
-- Nobody ever drives the bus high — devices only pull it low or let go, and
-  pull-up resistors restore the idle-high state. That's why an unpowered or
-  missing device can't fight the bus, and it's the same
-  default-state-by-resistor trick as the button.
-- An ACK at `0x3C` proves a chip answered; lit pixels prove the display
-  initialized. Two different claims, two different tests — keep them apart
-  when debugging.
-
-**Done when:** cold USB start brings up the display, the address appears in
-the log, and ten button presses toggle the pixels. Then run the negative
-test: power off, pull SDA, power on — watch the diagnostic loop survive
-without the display. Reconnect.
-
----
-
-## Session 5 — One stream: the microphone (~1.5 h)
-
-Sound becomes numbers. The INMP441 is a digital microphone: it samples on the
-chip and ships bits over I2S, so there is no analog stage for you to get
-wrong — only clocks, slots, and one data pin.
-
-**Grab from the bench:** the running button+OLED stack, one soldered INMP441,
-six short jumpers.
-
-**Build:** follow [Add the microphone](../docs/PROTOTYPE_QUICKSTART.md#add-the-microphone).
-USB unplugged: VDD→3.3 V, GND→GND, L/R→GND (selects the left slot), SCK→GPIO2,
-WS→GPIO1, SD→GPIO4. USB in, then watch the once-per-second `MIC24` stats: ten
-seconds of quiet, speak at fixed distance, quiet again, repeated a few times.
-
-**Core ideas:**
-
-- Sampling: 16,000 times per second the chip freezes the sound pressure into
-  a signed 24-bit number. WS (word select) is the 16 kHz "whose turn"
-  clock, BCLK shifts the bits. The math you can predict and (with an
-  analyzer) verify: 16,000 samples × 2 slots × 32 bits = **1.024 MHz** bit
-  clock.
-  → [Sampling and I2S](concepts/09-sampling-and-i2s.md)
-- The stream has two time slots per frame: a two-element interleaved array
-  clocked out on one wire, left in index 0, right in index 1. Tying L/R low
-  is how this mic claims index 0, and the firmware reads index 0.
-- RMS is the useful number in the stats: a power-style average that tracks
-  perceived loudness while `min`/`max` catch clipping and stuck bits.
-  Ambient noise means silence never reads zero — judge *change*, not
-  absolute values, because every measurement sits on a noise floor.
-  → [Measurement and uncertainty](concepts/05-measurement-and-uncertainty.md)
-
-**Done when:** silence and speech are clearly distinguishable in RMS across
-several trials, with no stuck values or read errors. Without a logic
-analyzer the 1.024 MHz clock stays unverified — write `timing: INCONCLUSIVE,
-data: plausible` and move on; that's an honest, complete result.
-
----
-
-## Session 6 — Prove it's a system, not a lucky afternoon (~2 h)
-
-Anyone can get hardware working once. This session is the difference between
-"it worked when I stopped touching it" and a prototype you trust: a clean
-cold-start rebuild, a regression per layer, and one deliberately planted bug.
-
-**Grab from the bench:** everything from session 5, your saved logs and
-photos from sessions 1–5, notebook.
-
-**Build:**
-
-1. Unplug everything from the breadboard. Rebuild from the bare board up —
-   flash check, button, OLED, microphone — running the diagnostic loop after
-   each layer and saving each log. This is the integration-test suite; the
-   earlier sessions were unit tests.
-2. Plant one fault (swap SDA/SCL, or disconnect the mic's SD line), predict
-   the exact symptom before powering — which log line changes, and to what —
-   then verify and restore. Debugging hardware
-   is hypothesis testing: the best measurement is the one that splits two
-   candidate causes.
-   → [Debugging as experiments](concepts/15-debugging-as-experiments.md)
-3. Write the closing three-list review from the deep plan, shrunk to one
-   page: **proven on this article** (boot, button, OLED, mic data — with
-   logs), **inconclusive** (I2S timing, anything you couldn't measure),
-   **held by design** (everything below).
-
-**Done when:** the full stack reproduces from a cold start twice, the
-planted fault behaved as predicted, and the one-page review exists.
-
-## What stays held, and why
-
-Fast is allowed; unsafe is not. Three things are gated by open engineering
-questions, not by unread lessons — the gates live in
-[FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md):
-
-- **Battery.** The packs in the house are not approved for this load, no
-  fused/guarded fixture exists, and charging has its own release process.
-  The cells stay sealed. When that work happens, it starts from the bench
-  supply, never from a pocket.
-- **Speaker and amplifier.** The hold is architectural, not probe etiquette:
-  the amplifier needs a qualified 5 V rail the USB prototype doesn't have,
-  shutdown sequencing proven against its real comparator thresholds, and a
-  firmware output cap that doesn't exist yet — and its bridge-tied outputs
-  mean neither speaker wire is ground, so a careless probe kills it anyway.
-  Powered audio waits for the approved fixture
-  (→ [Speakers and amplifiers](concepts/10-speakers-and-amplifiers.md),
-  [Power integrity](concepts/13-power-integrity.md)).
-- **Brass frame and pocket carry.** The frame stays uncut stock (offcut
-  practice coupons excepted) until every promotion gate closes and a written
-  final-fabrication release is signed — a measured fit design is only the
-  first of those gates. The mock-up work lives in the deep plan's Day 14
-  (→ [Fit and radio](concepts/14-fit-and-radio.md)).
-
-Optional next step, decision required first: the assistant firmware
-(`build.sh --assistant`) sends microphone audio to a third-party backend once
-Wi-Fi is provisioned. Read the
-[quickstart's closing section](../docs/PROTOTYPE_QUICKSTART.md#what-this-proves-and-what-comes-next)
-and the [firmware guide](../firmware/README.md), and make the privacy call
-deliberately, in writing — it is a one-command experiment *after* you choose,
-not a default.
-
-## Where the rest of the course went
-
-Nothing was deleted; the fast track just stops making it mandatory. If a
-session leaves you wanting the real thing:
-
-| Cut from the fast path | It lives in | Do it when |
-| --- | --- | --- |
-| Bench-supply labs: Ohm's law, KVL/KCL, RC charging, current limiting | Deep plan Days 2–5 | You want measurement fluency, or before any future power-fixture work |
-| Instrument technique beyond the meter basics | Deep plan Day 5, [Lesson 05](../edu/fundamentals/05-measurement-dmm-supply-scope-logic-analyzer.md) | Before trusting any measurement that gates a safety decision |
-| Audio power, BTL, speaker limits | Deep plan Day 10, [Lesson 10](../edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md) | Before the amplifier is ever powered |
-| Wire splices, strain relief, controlled rework | Deep plan Day 12, [Lesson 12](../edu/fundamentals/12-soldering-mechanics-insulation-tolerance.md) | Before building any permanent harness |
-| Power integrity, decoupling, UVLO | Deep plan Day 13, [Lesson 06](../edu/fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md) | Before any battery-fixture design work |
-| RF, antennas, 1:1 fit mock-up | Deep plan Day 14, [Lesson 11](../edu/fundamentals/11-rf-emc-antennas-and-metal-frame.md) | Before committing to enclosure geometry |
-| The full evidence discipline (lab records, status labels, prep tables) | The whole [deep plan](DAILY_STUDY_AND_LAB_PLAN.md) | Whenever a result surprises you — that's the signal you've outgrown the fast track for that topic |
-
-The [illustrated concept notes](concepts/README.md) index all fifteen short
-explanations; the six sessions above link the ten that carry the build.
+| Powered amplifier and speaker | Output power, I2S slot behavior, mute timing, and bridge-tied speaker leads still require bench qualification | [Speaker theory](concepts/10-speakers-and-amplifiers.md) and [current promotion gates](../docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) |
+| Portable power and charging | USB back-power, regulator startup, current, thermal behavior, fuse choice, and charging isolation are unresolved | [Power theory](concepts/13-power-integrity.md) and [current power architecture](../docs/FINAL_MATERIALS_FOR_REVIEW.md#candidate-power-architecture) |
+| Enclosure and brass frame | The existing CAD models an old architecture; real parts must be measured and mocked up first | [Fit theory](concepts/14-fit-and-radio.md) and [CAD status](../cad/README.md) |
+
+Buying or finding those parts does not release them for connection. The USB
+prototype is the complete fast-track win.

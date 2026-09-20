@@ -14,11 +14,13 @@ and produces a merged image that can be flashed at address `0x0`.
 
 ## Beginner default: offline USB diagnostics
 
-Start with [the prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md), not the
-vendor binary. The default build tests the OLED and prints microphone levels
-over USB. It does not start Wi-Fi, provision an account, or send recordings
-anywhere. The amplifier is disabled. Begin with a bare controller; add the
-OLED and microphone one at a time, powered from its 3.3 V output only.
+Start with the [action-only fast track](../plan/FAST_TRACK.md), not the vendor
+binary. The [prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) is the
+compact technical reference. The default build tests the OLED and prints
+microphone levels over USB. It does not start Wi-Fi, provision an account, or
+send recordings anywhere. The amplifier is disabled. Begin with a bare
+controller; add the OLED and microphone one at a time, powered from its 3.3 V
+output only.
 
 From the repository root, in Bash:
 
@@ -237,6 +239,15 @@ open <http://192.168.4.1> if the captive portal does not appear. Xiaozhi's
 default build uses `https://api.tenclass.net/xiaozhi/ota/` as its third-party
 bootstrap service. Review that service's privacy and operational requirements
 before sending microphone audio to it.
+
+The pinned provisioning component creates that temporary access point without
+Wi-Fi authentication and serves the form over unencrypted HTTP. It stores the
+selected SSID and password in unencrypted NVS. Provision only in a private
+location, preferably onto a dedicated guest/IoT SSID with a unique password;
+nearby parties could otherwise observe or interfere. A reset does not remove
+the saved credentials. The full source-flash operation above writes blank NVS
+and clears them, so complete that reflash before a provisioned board leaves
+your control.
 
 This 4 MB layout has a factory application and no OTA application slot. The
 firmware hides the unsupported manual-update tool and refuses OTA before

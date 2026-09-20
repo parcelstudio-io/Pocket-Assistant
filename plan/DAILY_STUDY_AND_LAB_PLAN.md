@@ -94,7 +94,13 @@ archived order sheet and inventory history. They identify what was bought; they
 do **not** override the current safety or design status in
 [FINAL_MATERIALS_FOR_REVIEW.md](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
 
-Use this index whenever a daily session names an item. An entry marked
+Each daily **Prepare** table repeats the recorded links in an **Original purchase
+link** column so you can open them beside the item and quantity. Kit components
+link to the purchased kit, not to a new individual-part listing. General/reused
+tools and items without a preserved URL are labelled explicitly; no substitute
+shopping links have been added.
+
+Use this index for the consolidated list. An entry marked
 `not recorded` means the repository names the owned item or order batch but
 does not preserve its exact product URL. Do not silently replace it with a
 similar search result. Add the original order-page URL here if it becomes
@@ -290,21 +296,21 @@ recorded a privacy/backend decision.
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| Meshnology ESP32-C3 SuperMini dev board | 1 of the 10 (the other 9 stay bagged and unopened) | Lab step 1: becomes MCU-A1 for the ID label, the block diagram, and the unpowered parts photograph |
-| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 1 of the 5 | Lab step 1: becomes OLED-A1; its silkscreen pin order is read and photographed while nothing is wired |
-| AITRIP INMP441 I2S MEMS microphone | 1 of the 5 | Lab step 1: becomes MIC-A1; handled by the board edges only, acoustic port left open, dry, and untaped |
-| HiLetgo MAX98357A I2S class-D amplifier | 1 of the 3 | Lab steps 1 and 4: labelled AMP-A1 and drawn into the block diagram only — it is never wired or powered in this plan |
-| Same Sky CES-20134-088PM speaker, 8 ohm 0.8 W, factory-enclosed | 1 — the only unit in hand, no spare and no A/B partner | Lab step 1: labelled SPK-A1 and photographed; the 60 mm 32 AWG factory leads are inspected, coiled, and strain-relieved, never cut, tinned, or tugged |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 1 pair of test leads + hard case + manual | Lab step 3: identify the DC-voltage, resistance, continuity, and fused-current jacks and record lead condition, with the leads out of the jacks during the inspection |
-| 3M Solus 1000 safety glasses, clear | 1 | Worn for the whole physical session, per the plan's every-physical-lab rule |
-| X-Tronic bundle: tweezers | 1 pair | Position the five modules for the labelled-parts photograph without touching pads or the mic port; also inspected for an ESD marking and the result written down |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll (about 5 flags, ~20 mm each) | Write MCU-A1 / OLED-A1 / MIC-A1 / AMP-A1 / SPK-A1 on tape flags applied to each part's bag or a bare board edge — never across the mic acoustic port, the OLED glass, or the speaker mesh |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Layout surface for labelling and the parts photograph; there is no hot work today, so the X-Tronic silicone mat stays stored |
-| Existing computer with Python 3 and the repository checkout (general tool, not a project purchase) | 1 | Lab step 5: run `python3 -m unittest discover -s tools/tests -v` and `python3 tools/netcheck.py` from the repository root and save both transcripts |
-| Camera or phone (general tool, not a project purchase) | 1 | Photograph the labelled unpowered parts, the OLED silkscreen, the board markings, and the meter jacks |
-| Notebook, pen, and one sheet of blank drawing paper (general tools, not a project purchase) | 1 set | Lab step 4 one-page block diagram, plus the five sentences distinguishing DATASHEET / TYPICAL / ASSUMED / CALCULATED / MEASURED evidence |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| Meshnology ESP32-C3 SuperMini dev board | 1 of the 10 (the other 9 stay bagged and unopened) | Lab step 1: becomes MCU-A1 for the ID label, the block diagram, and the unpowered parts photograph | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 1 of the 5 | Lab step 1: becomes OLED-A1; its silkscreen pin order is read and photographed while nothing is wired | [Amazon](https://www.amazon.com/dp/B09T6SJBV5) |
+| AITRIP INMP441 I2S MEMS microphone | 1 of the 5 | Lab step 1: becomes MIC-A1; handled by the board edges only, acoustic port left open, dry, and untaped | [Amazon](https://www.amazon.com/dp/B092HWW4RS) |
+| HiLetgo MAX98357A I2S class-D amplifier | 1 of the 3 | Lab steps 1 and 4: labelled AMP-A1 and drawn into the block diagram only — it is never wired or powered in this plan | [Amazon](https://www.amazon.com/dp/B0CDWXZZCH) |
+| Same Sky CES-20134-088PM speaker, 8 ohm 0.8 W, factory-enclosed | 1 — the only unit in hand, no spare and no A/B partner | Lab step 1: labelled SPK-A1 and photographed; the 60 mm 32 AWG factory leads are inspected, coiled, and strain-relieved, never cut, tinned, or tugged | [DigiKey](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 1 pair of test leads + hard case + manual | Lab step 3: identify the DC-voltage, resistance, continuity, and fused-current jacks and record lead condition, with the leads out of the jacks during the inspection | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| 3M Solus 1000 safety glasses, clear | 1 | Worn for the whole physical session, per the plan's every-physical-lab rule | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| X-Tronic bundle: tweezers | 1 pair | Position the five modules for the labelled-parts photograph without touching pads or the mic port; also inspected for an ESD marking and the result written down | Included in X-Tronic kit; exact URL not recorded |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll (about 5 flags, ~20 mm each) | Write MCU-A1 / OLED-A1 / MIC-A1 / AMP-A1 / SPK-A1 on tape flags applied to each part's bag or a bare board edge — never across the mic acoustic port, the OLED glass, or the speaker mesh | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Layout surface for labelling and the parts photograph; there is no hot work today, so the X-Tronic silicone mat stays stored | Exact purchase URL not recorded |
+| Existing computer with Python 3 and the repository checkout (general tool, not a project purchase) | 1 | Lab step 5: run `python3 -m unittest discover -s tools/tests -v` and `python3 tools/netcheck.py` from the repository root and save both transcripts | General/reused item; no project purchase URL |
+| Camera or phone (general tool, not a project purchase) | 1 | Photograph the labelled unpowered parts, the OLED silkscreen, the board markings, and the meter jacks | General/reused item; no project purchase URL |
+| Notebook, pen, and one sheet of blank drawing paper (general tools, not a project purchase) | 1 set | Lab step 4 one-page block diagram, plus the five sentences distinguishing DATASHEET / TYPICAL / ASSUMED / CALCULATED / MEASURED evidence | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -453,21 +459,21 @@ power?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 3 x nominal 1 kΩ 1/4 W (one under test, two spares in case a lead breaks or a part reads outside its tolerance band) | The entire circuit: measured unpowered, then driven at 3.3 V so current is inferred with I = V/R and power with P = VI |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 1 pair of test leads + hard case + manual | Lab step 2 unpowered resistance reading, then lab step 5 DC volts across the resistor; red lead stays in the V/Ω jack for the whole session |
-| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | Lab step 1: set 3.3 V and a 20 mA current limit with the output OFF, then energize in step 4 and switch off again in step 7 |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board; the other three stay boxed) | Holds the single resistor and the two supply landing points; mapped with continuity before anything is energized |
-| TODOELEC Dupont jumper kit, 10 cm | 6 wires (2 to bridge the split power rails, 2 as landing wires for the supply's clip leads, 2 spare) | Low-current bench wiring only — 3.3 mA at 3.3 V is far inside their rating |
-| BOENFU 6-inch flush cutters | 1 | Trim the 1 kΩ resistor's leads so it seats flat in the breadboard; component leads and wire only, never brass |
-| X-Tronic bundle: tweezers | 1 pair | Seat and remove the resistor and jumpers without flexing the breadboard clips or touching a part that has been carrying current |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll (3 flags) | Tape flags marking '+' and '−' on the supply's output leads after polarity is meter-verified, and the MEASURED ohms on the resistor under test |
-| 3M Solus 1000 safety glasses, clear | 1 | Worn from the moment leads are trimmed until the supply output is off and the bench is cleared |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Bench surface under the breadboard; catches trimmed lead offcuts. No hot work today, so the X-Tronic silicone mat stays stored |
-| Notebook and pen (general tools, not a project purchase) | 1 set | Circuit diagram, the set/measured/calculated table with units, and the question-prediction-acceptance-rule-stop-conditions block |
-| Calculator (general tool, not a project purchase) | 1 | I = V/R, P = VI, and the percentage difference between predicted and inferred current — with the prefix written next to every number |
-| Camera or phone (general tool, not a project purchase) | 1 | Wiring photograph before energizing, plus a photo of the supply's set voltage and current limit with the output still off |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 3 x nominal 1 kΩ 1/4 W (one under test, two spares in case a lead breaks or a part reads outside its tolerance band) | The entire circuit: measured unpowered, then driven at 3.3 V so current is inferred with I = V/R and power with P = VI | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 1 pair of test leads + hard case + manual | Lab step 2 unpowered resistance reading, then lab step 5 DC volts across the resistor; red lead stays in the V/Ω jack for the whole session | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | Lab step 1: set 3.3 V and a 20 mA current limit with the output OFF, then energize in step 4 and switch off again in step 7 | [Amazon](https://www.amazon.com/dp/B0BN1F6CGZ) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board; the other three stay boxed) | Holds the single resistor and the two supply landing points; mapped with continuity before anything is energized | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 6 wires (2 to bridge the split power rails, 2 as landing wires for the supply's clip leads, 2 spare) | Low-current bench wiring only — 3.3 mA at 3.3 V is far inside their rating | Exact purchase URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Trim the 1 kΩ resistor's leads so it seats flat in the breadboard; component leads and wire only, never brass | Exact purchase URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Seat and remove the resistor and jumpers without flexing the breadboard clips or touching a part that has been carrying current | Included in X-Tronic kit; exact URL not recorded |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll (3 flags) | Tape flags marking '+' and '−' on the supply's output leads after polarity is meter-verified, and the MEASURED ohms on the resistor under test | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| 3M Solus 1000 safety glasses, clear | 1 | Worn from the moment leads are trimmed until the supply output is off and the bench is cleared | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Bench surface under the breadboard; catches trimmed lead offcuts. No hot work today, so the X-Tronic silicone mat stays stored | Exact purchase URL not recorded |
+| Notebook and pen (general tools, not a project purchase) | 1 set | Circuit diagram, the set/measured/calculated table with units, and the question-prediction-acceptance-rule-stop-conditions block | General/reused item; no project purchase URL |
+| Calculator (general tool, not a project purchase) | 1 | I = V/R, P = VI, and the percentage difference between predicted and inferred current — with the prefix written next to every number | General/reused item; no project purchase URL |
+| Camera or phone (general tool, not a project purchase) | 1 | Wiring photograph before energizing, plus a photo of the supply's set voltage and current limit with the output still off | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -601,21 +607,21 @@ power is applied?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 7 x 1/4 W (1 kΩ x1, 2.2 kΩ x1, 10 kΩ x4 — three for the divider and its load plus one spare) | Lab steps 1-5 use the measured 1 kΩ and 2.2 kΩ in series and then in parallel; step 6 builds the 10 kΩ/10 kΩ divider and adds the third 10 kΩ as a load from Vout to ground |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 1 pair of test leads + hard case + manual | Unpowered resistance measurement of all five resistors, then DC volts across each element for the KVL, KCL, and divider checks; red lead stays in the V/Ω jack all session |
-| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | 3.3 V with a 10 mA limit (lower than Day 2), switched off before every one of the three reconfigurations |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board; the other three stay boxed) | Carries three successive networks — series, parallel, and loaded divider — each rebuilt with the output off |
-| TODOELEC Dupont jumper kit, 10 cm | 10 wires (2 rail bridges, 2 supply landing wires, 4 node links across the three rebuilds, 2 spare) | Low-current bench wiring only; the largest network here draws about 4.8 mA |
-| BOENFU 6-inch flush cutters | 1 | Trim the five resistors' leads to seat flat and stay in the intended five-hole node; component leads and wire only |
-| X-Tronic bundle: tweezers | 1 pair | Move resistors between the series, parallel, and divider configurations without bending leads or springing a breadboard clip |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll (7 small flags) | Flag each resistor with its own MEASURED value and an ID (R1, R2, R3...). The three 10 kΩ parts are not identical and the 1.65 V / 1.10 V divider predictions depend on per-part measured values; also flags '+' and '−' on the supply leads after meter verification |
-| 3M Solus 1000 safety glasses, clear | 1 | Worn from lead-trimming through the last power-down |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Bench surface under the breadboard and a tray area for the labelled resistors between the three configurations |
-| Notebook and pen (general tools, not a project purchase) | 1 set | Three schematics (series, parallel, loaded divider), the prediction-versus-measurement tables, and the paragraph on why parallel equivalent resistance is below either branch |
-| Calculator (general tool, not a project purchase) | 1 | Predictions from measured values: series I and both drops, each parallel branch current and the KCL sum, and the unloaded/loaded divider outputs |
-| Camera or phone (general tool, not a project purchase) | 1 | One wiring photograph per configuration, taken before energizing, with the labelled resistor flags legible |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 7 x 1/4 W (1 kΩ x1, 2.2 kΩ x1, 10 kΩ x4 — three for the divider and its load plus one spare) | Lab steps 1-5 use the measured 1 kΩ and 2.2 kΩ in series and then in parallel; step 6 builds the 10 kΩ/10 kΩ divider and adds the third 10 kΩ as a load from Vout to ground | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 1 pair of test leads + hard case + manual | Unpowered resistance measurement of all five resistors, then DC volts across each element for the KVL, KCL, and divider checks; red lead stays in the V/Ω jack all session | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | 3.3 V with a 10 mA limit (lower than Day 2), switched off before every one of the three reconfigurations | [Amazon](https://www.amazon.com/dp/B0BN1F6CGZ) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board; the other three stay boxed) | Carries three successive networks — series, parallel, and loaded divider — each rebuilt with the output off | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 10 wires (2 rail bridges, 2 supply landing wires, 4 node links across the three rebuilds, 2 spare) | Low-current bench wiring only; the largest network here draws about 4.8 mA | Exact purchase URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Trim the five resistors' leads to seat flat and stay in the intended five-hole node; component leads and wire only | Exact purchase URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Move resistors between the series, parallel, and divider configurations without bending leads or springing a breadboard clip | Included in X-Tronic kit; exact URL not recorded |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll (7 small flags) | Flag each resistor with its own MEASURED value and an ID (R1, R2, R3...). The three 10 kΩ parts are not identical and the 1.65 V / 1.10 V divider predictions depend on per-part measured values; also flags '+' and '−' on the supply leads after meter verification | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| 3M Solus 1000 safety glasses, clear | 1 | Worn from lead-trimming through the last power-down | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Bench surface under the breadboard and a tray area for the labelled resistors between the three configurations | Exact purchase URL not recorded |
+| Notebook and pen (general tools, not a project purchase) | 1 set | Three schematics (series, parallel, loaded divider), the prediction-versus-measurement tables, and the paragraph on why parallel equivalent resistance is below either branch | General/reused item; no project purchase URL |
+| Calculator (general tool, not a project purchase) | 1 | Predictions from measured values: series I and both drops, each parallel branch current and the KCL sum, and the unloaded/loaded divider outputs | General/reused item; no project purchase URL |
+| Camera or phone (general tool, not a project purchase) | 1 | One wiring photograph per configuration, taken before energizing, with the labelled resistor flags legible | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -750,23 +756,23 @@ constant?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 2 × 100 kΩ, 1/4 W (one for the RC branch, one spare) | Sets τ = RC with the 100 µF, and is the only permitted discharge path in lab step 5. |
-| ALLECIN electrolytic capacitor kit, 24 values | 2 × 100 µF rated ≥ 6.3 V (take the kit's 16 V or 25 V part if it has one); second unit is the spare if the first is reversed | The capacitor under test for lab steps 3–5. |
-| BOJACK ceramic capacitor kit | 2 (one 100 nF, one 10 µF) | Unpowered side-by-side comparison for the Lesson 03 decoupling and polarity reading — ceramics are unpolarized, the electrolytic is not; these are not wired into the RC branch. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 (plus its two test leads; keep the hard case on the bench so the meter is stowed between runs) | Measures the 100 kΩ unpowered, verifies supply-lead polarity at the cable end before connection, then reads capacitor voltage in DC volts every 10 s. |
-| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | Supplies the 3.3 V step at a 10 mA current limit; the only energy source on this bench. |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 400-point board is enough) | Holds the resistor–capacitor node so nothing is hand-held while the output is on. |
-| TODOELEC Dupont jumper kit, 10 cm | 4 (2 supply-to-board, 2 rail-to-row links) | Low-current wiring of the RC branch; bench use only. |
-| BOENFU 6-inch flush cutters | 1 | Trims and straightens the resistor and capacitor leads so they seat fully in the breadboard; component leads and wire only, never brass. |
-| X-Tronic bundle: tweezers | 1 pair | Seats and removes the electrolytic with the output off, keeping fingers off the leads of a capacitor that may still hold charge. |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Non-conductive layout surface for loose leads and kit strips; it is a layout mat only, never a hot-work surface. |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, 2 short flags | Flag-labels the exact resistor and capacitor used (for example R4-A and C4-A) so a repeat run measures the same two parts. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab; an incorrectly polarized electrolytic can vent. |
-| GENERAL TOOL (not an INVENTORY item): notebook and pen | 1 | Prediction table for 1τ/2τ/3τ/5τ, the measured 10-second readings, and the three named sources of difference. |
-| GENERAL TOOL (not an INVENTORY item): phone with stopwatch and camera | 1 | Times the 10-second sampling interval through 60 s and photographs the wired, inspected circuit before power-on. |
-| GENERAL TOOL (not an INVENTORY item): computer or calculator with a spreadsheet | 1 | Computes τ = RC from the measured resistance and plots voltage versus time. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 2 × 100 kΩ, 1/4 W (one for the RC branch, one spare) | Sets τ = RC with the 100 µF, and is the only permitted discharge path in lab step 5. | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| ALLECIN electrolytic capacitor kit, 24 values | 2 × 100 µF rated ≥ 6.3 V (take the kit's 16 V or 25 V part if it has one); second unit is the spare if the first is reversed | The capacitor under test for lab steps 3–5. | [Amazon](https://www.amazon.com/dp/B0C1VBXCQM) |
+| BOJACK ceramic capacitor kit | 2 (one 100 nF, one 10 µF) | Unpowered side-by-side comparison for the Lesson 03 decoupling and polarity reading — ceramics are unpolarized, the electrolytic is not; these are not wired into the RC branch. | [Amazon](https://www.amazon.com/dp/B07P7HRGT9) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 (plus its two test leads; keep the hard case on the bench so the meter is stowed between runs) | Measures the 100 kΩ unpowered, verifies supply-lead polarity at the cable end before connection, then reads capacitor voltage in DC volts every 10 s. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | Supplies the 3.3 V step at a 10 mA current limit; the only energy source on this bench. | [Amazon](https://www.amazon.com/dp/B0BN1F6CGZ) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 400-point board is enough) | Holds the resistor–capacitor node so nothing is hand-held while the output is on. | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 4 (2 supply-to-board, 2 rail-to-row links) | Low-current wiring of the RC branch; bench use only. | Exact purchase URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Trims and straightens the resistor and capacitor leads so they seat fully in the breadboard; component leads and wire only, never brass. | Exact purchase URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Seats and removes the electrolytic with the output off, keeping fingers off the leads of a capacitor that may still hold charge. | Included in X-Tronic kit; exact URL not recorded |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Non-conductive layout surface for loose leads and kit strips; it is a layout mat only, never a hot-work surface. | Exact purchase URL not recorded |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, 2 short flags | Flag-labels the exact resistor and capacitor used (for example R4-A and C4-A) so a repeat run measures the same two parts. | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab; an incorrectly polarized electrolytic can vent. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| GENERAL TOOL (not an INVENTORY item): notebook and pen | 1 | Prediction table for 1τ/2τ/3τ/5τ, the measured 10-second readings, and the three named sources of difference. | General/reused item; no project purchase URL |
+| GENERAL TOOL (not an INVENTORY item): phone with stopwatch and camera | 1 | Times the 10-second sampling interval through 60 s and photographs the wired, inspected circuit before power-on. | General/reused item; no project purchase URL |
+| GENERAL TOOL (not an INVENTORY item): computer or calculator with a spreadsheet | 1 | Computes τ = RC from the measured resistance and plots voltage versus time. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -890,21 +896,21 @@ changing the circuit dangerously?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both test leads and the printed manual from the hard case | The instrument under study: continuity baseline in step 1, voltage at three points in step 2, and — only if the manual, fuse, range, and jack are all confirmed — one series current reading in the optional step 5. |
-| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | Provides 3.3 V and is deliberately driven into constant-current operation in step 3, then restored to constant voltage in step 4. |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 6 (one 1 kΩ load, one spare 1 kΩ, plus four assorted kit values — for example 10 Ω, 2.2 kΩ, 10 kΩ, 100 kΩ — as the resistance sanity set) | The 1 kΩ is the CV/CC load; the assorted values give step 1 several known parts to measure across ranges after the continuity baseline. |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 400-point board is enough) | Holds the 1 kΩ load so the circuit is not hand-held while the supply is in CC. |
-| TODOELEC Dupont jumper kit, 10 cm | 6 (2 supply-to-board, 2 rail-to-row links, 2 spare to reach the separate source / cable-end / load measurement points) | Low-current wiring only; step 2 measures voltage at three points along this run. |
-| BOENFU 6-inch flush cutters | 1 | Trims resistor leads so each of the six sanity-set parts seats cleanly; wire and component leads only. |
-| X-Tronic bundle: tweezers | 1 pair | Swaps resistors in and out of the breadboard with the output off between runs. |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Non-conductive layout surface; keeps the six loose resistors separated and identifiable. |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, 3 short flags | The Evidence section requires instrument IDs — flag the meter (MTR-A1), the supply (PSU-A1), and the 1 kΩ load sample so the record names exact units. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab. |
-| GENERAL TOOL (not an INVENTORY item): notebook and pen | 1 | Holds the CV-versus-CC table and the personal pre-power checklist of no more than ten items required by the exit gate. |
-| GENERAL TOOL (not an INVENTORY item): calculator or spreadsheet | 1 | Computes expected current (about 3.3 mA at 3.3 V into 1 kΩ), the resistor's dissipation, and R = V/I for comparison against the unpowered reading. |
-| GENERAL TOOL (not an INVENTORY item): phone camera | 1 | Photographs the meter face during CV and during CC, and the lead-in-jack position before the optional current step. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both test leads and the printed manual from the hard case | The instrument under study: continuity baseline in step 1, voltage at three points in step 2, and — only if the manual, fuse, range, and jack are all confirmed — one series current reading in the optional step 5. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with its own insulated output leads | Provides 3.3 V and is deliberately driven into constant-current operation in step 3, then restored to constant voltage in step 4. | [Amazon](https://www.amazon.com/dp/B0BN1F6CGZ) |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 6 (one 1 kΩ load, one spare 1 kΩ, plus four assorted kit values — for example 10 Ω, 2.2 kΩ, 10 kΩ, 100 kΩ — as the resistance sanity set) | The 1 kΩ is the CV/CC load; the assorted values give step 1 several known parts to measure across ranges after the continuity baseline. | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 400-point board is enough) | Holds the 1 kΩ load so the circuit is not hand-held while the supply is in CC. | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 6 (2 supply-to-board, 2 rail-to-row links, 2 spare to reach the separate source / cable-end / load measurement points) | Low-current wiring only; step 2 measures voltage at three points along this run. | Exact purchase URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Trims resistor leads so each of the six sanity-set parts seats cleanly; wire and component leads only. | Exact purchase URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Swaps resistors in and out of the breadboard with the output off between runs. | Included in X-Tronic kit; exact URL not recorded |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Non-conductive layout surface; keeps the six loose resistors separated and identifiable. | Exact purchase URL not recorded |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, 3 short flags | The Evidence section requires instrument IDs — flag the meter (MTR-A1), the supply (PSU-A1), and the 1 kΩ load sample so the record names exact units. | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| GENERAL TOOL (not an INVENTORY item): notebook and pen | 1 | Holds the CV-versus-CC table and the personal pre-power checklist of no more than ten items required by the exit gate. | General/reused item; no project purchase URL |
+| GENERAL TOOL (not an INVENTORY item): calculator or spreadsheet | 1 | Computes expected current (about 3.3 mA at 3.3 V into 1 kΩ), the resistor's dissipation, and R = V/I for comparison against the unpowered reading. | General/reused item; no project purchase URL |
+| GENERAL TOOL (not an INVENTORY item): phone camera | 1 | Photographs the meter face during CV and during CC, and the lead-in-jack position before the optional current step. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -1061,18 +1067,18 @@ with no external hardware attached?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| Meshnology ESP32-C3 SuperMini dev board | 3 of the 10 (one designated MCU-A1 plus two spares, so a failed flash_id or an RGB/'Plus' variant does not end the session) | The subject of the evidence sheet and the only device powered today; it must stay bare — no display, microphone, amplifier, external power, or battery harness. |
-| NEIKO digital caliper, 0-6 in (01407A) | 1 | Lesson 04 step 8: measures the complete envelope, PCB width and thickness at maximum protrusion, mounting holes, header pitch, and the USB-C connector's approach space. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both leads | Unpowered continuity only, with USB unplugged — for low-risk questions such as whether the labelled GND pins join. No powered probing today. |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, 3 short flags | Labels the three boards MCU-A1/A2/A3 on their bags or record cards (not across the antenna end), and carries the required firmware-identity label — `CORRECTED SOURCE / MIC GPIO4`, the contract this plan uses throughout — onto the board record. |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Non-conductive layout and photography surface for a bare board; it is a layout mat only and never a soldering surface. |
-| X-Tronic bundle: tweezers | 1 pair | Lifts the board from its bag by the edges without touching the castellated pads. Note `FINAL_MATERIALS_FOR_REVIEW.md` — inspect whether this pair is ESD-marked; if it is not, treat it as a handling aid only and hold the board by its edges. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab. |
-| GENERAL TOOL (not an INVENTORY item): computer with Python 3.10 or newer, Git, a free USB-A port, and network access | 1 | Creates the.venv, installs tools/requirements.txt, fetches and verifies the pinned image, and runs ports / flash-id / info / flash --dry-run / flash / monitor. On Linux, serial-group membership (often dialout) must already be sorted — do not run the flashing stack as root. |
-| GENERAL TOOL (not an INVENTORY item): phone or camera | 1 | Photographs both sides of MCU-A1 next to a scale and captures every readable marking; on Day 6 it also substitutes for the magnifier (see not-owned). |
-| GENERAL TOOL (not an INVENTORY item): notebook, board evidence sheet, and pen | 1 | The Lesson 04 three-column claim / evidence-label / test-needed table, the transcribed markings, the block-level schematic, and the closing release sentence. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| Meshnology ESP32-C3 SuperMini dev board | 3 of the 10 (one designated MCU-A1 plus two spares, so a failed flash_id or an RGB/'Plus' variant does not end the session) | The subject of the evidence sheet and the only device powered today; it must stay bare — no display, microphone, amplifier, external power, or battery harness. | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| NEIKO digital caliper, 0-6 in (01407A) | 1 | Lesson 04 step 8: measures the complete envelope, PCB width and thickness at maximum protrusion, mounting holes, header pitch, and the USB-C connector's approach space. | [Amazon](https://www.amazon.com/dp/B000GSLKIW) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both leads | Unpowered continuity only, with USB unplugged — for low-risk questions such as whether the labelled GND pins join. No powered probing today. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, 3 short flags | Labels the three boards MCU-A1/A2/A3 on their bags or record cards (not across the antenna end), and carries the required firmware-identity label — `CORRECTED SOURCE / MIC GPIO4`, the contract this plan uses throughout — onto the board record. | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Non-conductive layout and photography surface for a bare board; it is a layout mat only and never a soldering surface. | Exact purchase URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Lifts the board from its bag by the edges without touching the castellated pads. Note `FINAL_MATERIALS_FOR_REVIEW.md` — inspect whether this pair is ESD-marked; if it is not, treat it as a handling aid only and hold the board by its edges. | Included in X-Tronic kit; exact URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| GENERAL TOOL (not an INVENTORY item): computer with Python 3.10 or newer, Git, a free USB-A port, and network access | 1 | Creates the.venv, installs tools/requirements.txt, fetches and verifies the pinned image, and runs ports / flash-id / info / flash --dry-run / flash / monitor. On Linux, serial-group membership (often dialout) must already be sorted — do not run the flashing stack as root. | General/reused item; no project purchase URL |
+| GENERAL TOOL (not an INVENTORY item): phone or camera | 1 | Photographs both sides of MCU-A1 next to a scale and captures every readable marking; on Day 6 it also substitutes for the magnifier (see not-owned). | General/reused item; no project purchase URL |
+| GENERAL TOOL (not an INVENTORY item): notebook, board evidence sheet, and pen | 1 | The Lesson 04 three-column claim / evidence-label / test-needed table, the transcribed markings, the block-level schematic, and the closing release sentence. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -1274,23 +1280,23 @@ active-low pressed state?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| Meshnology ESP32-C3 SuperMini dev board | 2 (MCU-A1 from Day 6, plus 1 unopened spare from the 10-pack) | MCU-A1 carries the GPIO10 input under test; the spare exists only so a board that fails re-qualification with `esptool flash_id` is discarded, not debugged |
-| QTEATAK 6x6 mm tactile push buttons with caps | 3 switches + 1 white cap | lab step 1 identifies the true switch terminals by continuity on all three; the best one is wired and the others stay spare (420 in the kit) |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 2 (one 10 kΩ, one 1 kΩ) | the 10 kΩ is the external GPIO10 pull-up to 3.3 V for the reviewed active-low circuit; the 1 kΩ stays unfitted because the LED it would feed is not owned |
-| BOJACK ceramic capacitor kit | 1 (one 100 nF) | the documented GPIO10 debounce cap (`WIRING_AND_ASSEMBLY.md`) — fit it only if step 2's drawn circuit includes it, and change one variable at a time |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads + the hard case | unpowered continuity to find the switch pair, then DC volts GPIO10-to-GND released/pressed and the drop across the 10 kΩ for the current check |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 400-point board is enough) | holds MCU-A1, the pull-up, and the button; low-current logic only |
-| TODOELEC Dupont jumper kit, 10 cm | 5 short jumpers (3.3 V to rail, GND to rail, GPIO10 to the pull-up node, and two button legs) | the only wiring on the bench today; bench low-current use only |
-| 2.54 mm male breakaway header pins | up to 16 pins (SuperMini pad count) — stage them only to confirm the count, do not solder during this session | MCU-A1 cannot sit in a breadboard without attached pins; stock is 22 pins total, so decide the split before spending any |
-| X-Tronic bundle: tweezers | 1 pair | seating the 6x6 tactile switch and short jumpers without bending pins |
-| BOENFU 6-inch flush cutters | 1 | trimming the 10 kΩ leads to breadboard length — wire and component leads only |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | non-conductive layout surface for the board, switches, and loose parts (never a soldering surface) |
-| 3M Solus 1000 safety glasses, clear | 1 | required for every physical lab, and lead trimming throws clippings |
-| Computer with Python venv and a free USB-A port (general tool — no purchase record) | 1 | runs the monitor/log for released and pressed states, or hosts the written GPIO test program if flashing is not possible |
-| Camera or phone (general tool — no purchase record) | 1 | the wiring photograph required in Evidence to save |
-| Notebook, pen, calculator, and paper labels/masking tape (general tools — no purchase record) | 1 each | the truth table, the 3.3 V / 10 kΩ = 0.33 mA and 1.09 mW calculation, and re-labelling MCU-A1 with its firmware contract |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| Meshnology ESP32-C3 SuperMini dev board | 2 (MCU-A1 from Day 6, plus 1 unopened spare from the 10-pack) | MCU-A1 carries the GPIO10 input under test; the spare exists only so a board that fails re-qualification with `esptool flash_id` is discarded, not debugged | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| QTEATAK 6x6 mm tactile push buttons with caps | 3 switches + 1 white cap | lab step 1 identifies the true switch terminals by continuity on all three; the best one is wired and the others stay spare (420 in the kit) | [Amazon](https://www.amazon.com/dp/B0FHW6HMG4) |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 2 (one 10 kΩ, one 1 kΩ) | the 10 kΩ is the external GPIO10 pull-up to 3.3 V for the reviewed active-low circuit; the 1 kΩ stays unfitted because the LED it would feed is not owned | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| BOJACK ceramic capacitor kit | 1 (one 100 nF) | the documented GPIO10 debounce cap (`WIRING_AND_ASSEMBLY.md`) — fit it only if step 2's drawn circuit includes it, and change one variable at a time | [Amazon](https://www.amazon.com/dp/B07P7HRGT9) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads + the hard case | unpowered continuity to find the switch pair, then DC volts GPIO10-to-GND released/pressed and the drop across the 10 kΩ for the current check | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 400-point board is enough) | holds MCU-A1, the pull-up, and the button; low-current logic only | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 5 short jumpers (3.3 V to rail, GND to rail, GPIO10 to the pull-up node, and two button legs) | the only wiring on the bench today; bench low-current use only | Exact purchase URL not recorded |
+| 2.54 mm male breakaway header pins | up to 16 pins (SuperMini pad count) — stage them only to confirm the count, do not solder during this session | MCU-A1 cannot sit in a breadboard without attached pins; stock is 22 pins total, so decide the split before spending any | Exact purchase URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | seating the 6x6 tactile switch and short jumpers without bending pins | Included in X-Tronic kit; exact URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | trimming the 10 kΩ leads to breadboard length — wire and component leads only | Exact purchase URL not recorded |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | non-conductive layout surface for the board, switches, and loose parts (never a soldering surface) | Exact purchase URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | required for every physical lab, and lead trimming throws clippings | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Computer with Python venv and a free USB-A port (general tool — no purchase record) | 1 | runs the monitor/log for released and pressed states, or hosts the written GPIO test program if flashing is not possible | General/reused item; no project purchase URL |
+| Camera or phone (general tool — no purchase record) | 1 | the wiring photograph required in Evidence to save | General/reused item; no project purchase URL |
+| Notebook, pen, calculator, and paper labels/masking tape (general tools — no purchase record) | 1 each | the truth table, the 3.3 V / 10 kΩ = 0.33 mA and 1.09 mW calculation, and re-labelling MCU-A1 with its firmware contract | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -1426,22 +1432,22 @@ expected by the selected firmware?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| Meshnology ESP32-C3 SuperMini dev board | 1 (MCU-A1, still carrying its Day 6 firmware-contract label) | the I2C controller; GPIO20 = SCL, GPIO21 = SDA |
-| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 2 of the 5-pack (OLED-A1 under test, 1 unopened as the discriminating swap) | OLED-A1 is the target under test; the second board is the one-variable swap if A1 NACKs at both addresses — five in the pack means a bad module is replaced, not debugged forever |
-| QTEATAK 6x6 mm tactile push button with cap | 1 (the Day 7-qualified button, or add it with USB disconnected if it is not still wired) | Lab step 5 presses the GPIO10 button to toggle all-pixels-on and all-pixels-off, so the display test has an input to drive it |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads + the hard case | unpowered short sweep and GPIO20/21 continuity, the module's fitted pull-up resistance, then the OLED rail and idle SDA/SCL levels once USB is connected |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (830-point, so MCU-A1 and OLED-A1 sit on one board with short jumpers) | holds both modules on a common ground with the shortest practical bus wiring |
-| TODOELEC Dupont jumper kit, 10 cm | 4 of the shortest jumpers (GND, 3.3 V, GPIO20 to SCL, GPIO21 to SDA) | the only four connections permitted today; short wires keep bus capacitance and rise time in range |
-| 2.54 mm male breakaway header pins | 4 pins for the OLED's strip, only if it did not arrive factory-soldered | the OLED cannot be breadboarded on loose pins; stage them to confirm the count against the 22-pin total, do not solder in a Day 8 session |
-| NEIKO digital caliper, 0-6 in (01407A) | 1 | lab step 1 requires OLED-A1's measured dimensions on its evidence sheet; listed module sizes are frequently wrong |
-| X-Tronic bundle: tweezers | 1 pair | handling the glass-fronted OLED carrier and seating jumpers without touching the flex tail |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | non-conductive layout and photography surface for the both-sides evidence photographs |
-| 3M Solus 1000 safety glasses, clear | 1 | required for every physical lab |
-| Computer with Python venv, esptool, and a free USB-A port (general tool — no purchase record) | 1 | runs the address scan and the initialization/all-pixel test, and captures the serial output |
-| Camera or phone (general tool — no purchase record) | 1 | both-side module photographs, the silkscreen close-up, and the lit-display photograph required in Evidence to save |
-| Notebook, pen, calculator, and paper labels/masking tape (general tools — no purchase record) | 1 each | the physical-to-logical pin map, the parallel pull-up and t_r ≈ 0.8473 × R × C calculation, and labelling OLED-A1 |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| Meshnology ESP32-C3 SuperMini dev board | 1 (MCU-A1, still carrying its Day 6 firmware-contract label) | the I2C controller; GPIO20 = SCL, GPIO21 = SDA | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 2 of the 5-pack (OLED-A1 under test, 1 unopened as the discriminating swap) | OLED-A1 is the target under test; the second board is the one-variable swap if A1 NACKs at both addresses — five in the pack means a bad module is replaced, not debugged forever | [Amazon](https://www.amazon.com/dp/B09T6SJBV5) |
+| QTEATAK 6x6 mm tactile push button with cap | 1 (the Day 7-qualified button, or add it with USB disconnected if it is not still wired) | Lab step 5 presses the GPIO10 button to toggle all-pixels-on and all-pixels-off, so the display test has an input to drive it | [Amazon](https://www.amazon.com/dp/B0FHW6HMG4) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads + the hard case | unpowered short sweep and GPIO20/21 continuity, the module's fitted pull-up resistance, then the OLED rail and idle SDA/SCL levels once USB is connected | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (830-point, so MCU-A1 and OLED-A1 sit on one board with short jumpers) | holds both modules on a common ground with the shortest practical bus wiring | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 4 of the shortest jumpers (GND, 3.3 V, GPIO20 to SCL, GPIO21 to SDA) | the only four connections permitted today; short wires keep bus capacitance and rise time in range | Exact purchase URL not recorded |
+| 2.54 mm male breakaway header pins | 4 pins for the OLED's strip, only if it did not arrive factory-soldered | the OLED cannot be breadboarded on loose pins; stage them to confirm the count against the 22-pin total, do not solder in a Day 8 session | Exact purchase URL not recorded |
+| NEIKO digital caliper, 0-6 in (01407A) | 1 | lab step 1 requires OLED-A1's measured dimensions on its evidence sheet; listed module sizes are frequently wrong | [Amazon](https://www.amazon.com/dp/B000GSLKIW) |
+| X-Tronic bundle: tweezers | 1 pair | handling the glass-fronted OLED carrier and seating jumpers without touching the flex tail | Included in X-Tronic kit; exact URL not recorded |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | non-conductive layout and photography surface for the both-sides evidence photographs | Exact purchase URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | required for every physical lab | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Computer with Python venv, esptool, and a free USB-A port (general tool — no purchase record) | 1 | runs the address scan and the initialization/all-pixel test, and captures the serial output | General/reused item; no project purchase URL |
+| Camera or phone (general tool — no purchase record) | 1 | both-side module photographs, the silkscreen close-up, and the lit-display photograph required in Evidence to save | General/reused item; no project purchase URL |
+| Notebook, pen, calculator, and paper labels/masking tape (general tools — no purchase record) | 1 each | the physical-to-logical pin map, the parallel pull-up and t_r ≈ 0.8473 × R × C calculation, and labelling OLED-A1 | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -1583,23 +1589,23 @@ selected firmware's clock, data pin, and slot contract?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| Meshnology ESP32-C3 SuperMini dev board | 1 (MCU-A1, labelled CORRECTED SOURCE / MIC GPIO4 / 16 kHz) | drives WS on GPIO1 and BCLK on GPIO2 and reads mic data on GPIO4 |
-| AITRIP INMP441 I2S MEMS microphone | 1 (MIC-A1) — the other four stay sealed in their bag | the carrier under test; do not open a spare unless MIC-A1 is proven dead, because an exposed acoustic port can be contaminated permanently |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 2 (one 10 kΩ, one 100 kΩ) | 10 kΩ pull-up to 3.3 V on GPIO2 because the I2S bit clock shares a boot-strap pin, and 100 kΩ pull-down on GPIO4 mic data (`WIRING_AND_ASSEMBLY.md`, `INVENTORY.md`) |
-| BOJACK ceramic capacitor kit | 1 (one 100 nF) | the VDD bypass close to the microphone that Lesson 09 cites from the datasheet — fit it only if the received carrier does not already have one; inspect the PCB before adding a duplicate |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads + the hard case | unpowered pin-order continuity on the carrier, verifying L/R is tied to GND, then the 3.3 V rail measured at the microphone and its MIN/MAX watch as the stand-in for the unavailable scope |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (830-point) | holds MCU-A1 and MIC-A1 on a common ground with the shortest clock and data stubs |
-| TODOELEC Dupont jumper kit, 10 cm | 6 of the shortest jumpers (3.3 V to VDD, GND to GND, GND to L/R, GPIO1 to WS, GPIO2 to SCK, GPIO4 to SD) | the complete permitted low-current microphone fixture; short stubs because BCLK is a megahertz-class edge |
-| 2.54 mm male breakaway header pins | 6 pins for the INMP441 strip, only if it did not arrive factory-soldered | the mic carrier cannot be breadboarded on loose pins; stage them to confirm the count, do not solder in a Day 9 session |
-| NEIKO digital caliper, 0-6 in (01407A) | 1 | lab step 1 requires MIC-A1's measured dimensions on its evidence sheet |
-| X-Tronic bundle: tweezers | 1 pair | handling MIC-A1 by its board edges and seating jumpers without ever touching or covering the acoustic port |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | clean non-conductive layout and photography surface; keep it free of solder debris and adhesive residue near the mic |
-| 3M Solus 1000 safety glasses, clear | 1 | required for every physical lab |
-| Computer with Python venv and a free USB-A port (general tool — no purchase record) | 1 | records raw samples or firmware diagnostics during silence, speech, and a gentle tone, and stores the sample logs |
-| Camera or phone (general tool — no purchase record) | 1 | both-side carrier photographs, the wiring photograph, and the phone's tone generator for the gentle-tone run in lab step 5 |
-| Notebook, pen, calculator, and paper labels/masking tape (general tools — no purchase record) | 1 each | the pin map, the 16,000 x 2 x 32 = 1.024 MHz clock calculation, and the firmware-contract label on MIC-A1 |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| Meshnology ESP32-C3 SuperMini dev board | 1 (MCU-A1, labelled CORRECTED SOURCE / MIC GPIO4 / 16 kHz) | drives WS on GPIO1 and BCLK on GPIO2 and reads mic data on GPIO4 | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| AITRIP INMP441 I2S MEMS microphone | 1 (MIC-A1) — the other four stay sealed in their bag | the carrier under test; do not open a spare unless MIC-A1 is proven dead, because an exposed acoustic port can be contaminated permanently | [Amazon](https://www.amazon.com/dp/B092HWW4RS) |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 2 (one 10 kΩ, one 100 kΩ) | 10 kΩ pull-up to 3.3 V on GPIO2 because the I2S bit clock shares a boot-strap pin, and 100 kΩ pull-down on GPIO4 mic data (`WIRING_AND_ASSEMBLY.md`, `INVENTORY.md`) | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| BOJACK ceramic capacitor kit | 1 (one 100 nF) | the VDD bypass close to the microphone that Lesson 09 cites from the datasheet — fit it only if the received carrier does not already have one; inspect the PCB before adding a duplicate | [Amazon](https://www.amazon.com/dp/B07P7HRGT9) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads + the hard case | unpowered pin-order continuity on the carrier, verifying L/R is tied to GND, then the 3.3 V rail measured at the microphone and its MIN/MAX watch as the stand-in for the unavailable scope | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (830-point) | holds MCU-A1 and MIC-A1 on a common ground with the shortest clock and data stubs | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 6 of the shortest jumpers (3.3 V to VDD, GND to GND, GND to L/R, GPIO1 to WS, GPIO2 to SCK, GPIO4 to SD) | the complete permitted low-current microphone fixture; short stubs because BCLK is a megahertz-class edge | Exact purchase URL not recorded |
+| 2.54 mm male breakaway header pins | 6 pins for the INMP441, cut to match its actual row layout (commonly two rows of three, not one row of six), only if it did not arrive factory-soldered | the mic carrier cannot be breadboarded on loose pins; stage them to confirm the count, do not solder in a Day 9 session | Exact purchase URL not recorded |
+| NEIKO digital caliper, 0-6 in (01407A) | 1 | lab step 1 requires MIC-A1's measured dimensions on its evidence sheet | [Amazon](https://www.amazon.com/dp/B000GSLKIW) |
+| X-Tronic bundle: tweezers | 1 pair | handling MIC-A1 by its board edges and seating jumpers without ever touching or covering the acoustic port | Included in X-Tronic kit; exact URL not recorded |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | clean non-conductive layout and photography surface; keep it free of solder debris and adhesive residue near the mic | Exact purchase URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | required for every physical lab | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Computer with Python venv and a free USB-A port (general tool — no purchase record) | 1 | records raw samples or firmware diagnostics during silence, speech, and a gentle tone, and stores the sample logs | General/reused item; no project purchase URL |
+| Camera or phone (general tool — no purchase record) | 1 | both-side carrier photographs, the wiring photograph, and the phone's tone generator for the gentle-tone run in lab step 5 | General/reused item; no project purchase URL |
+| Notebook, pen, calculator, and paper labels/masking tape (general tools — no purchase record) | 1 each | the pin map, the 16,000 x 2 x 32 = 1.024 MHz clock calculation, and the firmware-contract label on MIC-A1 | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -1755,19 +1761,19 @@ amplifier and speaker?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| HiLetgo MAX98357A I2S class-D amplifier | 1 of the 3 in hand (label it AMP-A1; leave the other 2 bagged and untouched) | Lab steps 1-3: photograph, trace supply/GND/I2S/SD-MODE/OUT+/OUT- from silkscreen, and prove neither output pad is continuous with the board's GND pad. |
-| Same Sky CES-20134-088PM speaker, 8 ohm 0.8 W, factory-enclosed | 1 — the only unit in hand, no spare and no A/B partner | Lab steps 1 and 4: identify it and measure voice-coil DC resistance on its 60 mm factory leads (leads are never cut and never soldered to the amplifier today). |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads, taken out of the hard case and inspected | Continuity mode for step 3 (speaker terminal vs circuit ground) and resistance mode for step 4 (speaker DC resistance); red lead stays in the voltage/ohms jack all session. |
-| NEIKO digital caliper, 0-6 in (01407A) | 1 | Lesson 10 safe-lab step 1: record the speaker body's real measured dimensions (nominally 20 x 13 x 4.87 mm) and the amplifier board outline onto the evidence sheets. |
-| X-Tronic bundle: helping hands | 1 of the 2 (clips only — the iron stays off the bench today) | Hold the small amplifier board steady so both DMM probes can land on pads without pressing the module against the bench. |
-| X-Tronic bundle: tweezers | 1 pair | Position the bare amplifier for photographs by its edges instead of touching its pads. |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, ~4 short tabs | Tape the speaker's 32 AWG factory leads flat to the bench so probing cannot tug the solder tabs; also carries the handwritten AMP-A1 / SPK-A1 labels. |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Nonconductive layout and photo surface for the unpowered modules — legitimate today only because no hot work happens on Day 10. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab, including handling stiff 32 AWG leads and probe tips. |
-| Camera or phone with macro/zoom (general item — not in INVENTORY, no purchase URL recorded) | 1 | Evidence photographs of both modules and, because no magnifier is in hand, the substitute for close visual inspection of the SD/MODE network. |
-| Notebook, pen, drawing paper, and a calculator (general items — not in INVENTORY) | 1 set | Step 5 arithmetic (Vrms = sqrt(0.8 x 8) = 2.53 V) and step 6's BTL sketch showing three explicitly forbidden ground connections. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| HiLetgo MAX98357A I2S class-D amplifier | 1 of the 3 in hand (label it AMP-A1; leave the other 2 bagged and untouched) | Lab steps 1-3: photograph, trace supply/GND/I2S/SD-MODE/OUT+/OUT- from silkscreen, and prove neither output pad is continuous with the board's GND pad. | [Amazon](https://www.amazon.com/dp/B0CDWXZZCH) |
+| Same Sky CES-20134-088PM speaker, 8 ohm 0.8 W, factory-enclosed | 1 — the only unit in hand, no spare and no A/B partner | Lab steps 1 and 4: identify it and measure voice-coil DC resistance on its 60 mm factory leads (leads are never cut and never soldered to the amplifier today). | [DigiKey](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + its 2 test leads, taken out of the hard case and inspected | Continuity mode for step 3 (speaker terminal vs circuit ground) and resistance mode for step 4 (speaker DC resistance); red lead stays in the voltage/ohms jack all session. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| NEIKO digital caliper, 0-6 in (01407A) | 1 | Lesson 10 safe-lab step 1: record the speaker body's real measured dimensions (nominally 20 x 13 x 4.87 mm) and the amplifier board outline onto the evidence sheets. | [Amazon](https://www.amazon.com/dp/B000GSLKIW) |
+| X-Tronic bundle: helping hands | 1 of the 2 (clips only — the iron stays off the bench today) | Hold the small amplifier board steady so both DMM probes can land on pads without pressing the module against the bench. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Position the bare amplifier for photographs by its edges instead of touching its pads. | Included in X-Tronic kit; exact URL not recorded |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, ~4 short tabs | Tape the speaker's 32 AWG factory leads flat to the bench so probing cannot tug the solder tabs; also carries the handwritten AMP-A1 / SPK-A1 labels. | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | Nonconductive layout and photo surface for the unpowered modules — legitimate today only because no hot work happens on Day 10. | Exact purchase URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab, including handling stiff 32 AWG leads and probe tips. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Camera or phone with macro/zoom (general item — not in INVENTORY, no purchase URL recorded) | 1 | Evidence photographs of both modules and, because no magnifier is in hand, the substitute for close visual inspection of the SD/MODE network. | General/reused item; no project purchase URL |
+| Notebook, pen, drawing paper, and a calculator (general items — not in INVENTORY) | 1 set | Step 5 arithmetic (Vrms = sqrt(0.8 x 8) = 2.53 V) and step 6's BTL sketch showing three explicitly forbidden ground connections. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -1939,28 +1945,28 @@ If already completed then, reuse the record and treat this day as catch-up.
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| X-Tronic 3020-XTS soldering station (75 W) with iron holder | 1 station + its iron holder | The heat source for all ~30 practice joints, and the stable holder that lab step 2 requires before the iron is switched on. |
-| X-Tronic bundle: soldering tips | 1 fitted (the T-2.4D chisel) with the other 4, including the T-K knife, in the tray | Lesson 12: a broader chisel tip heats pad and lead faster and cuts total dwell time; the fitted tip and its set temperature are two of the five settings step 3 records. |
-| MAIYUM 63/37 rosin-core solder, 0.8 mm | 1 roll (100 g) — the alloy of record for the session | The known 63/37 alloy for every practice joint; its low melting point is what keeps dwell time short. |
-| X-Tronic bundle: solder roll (~50 g), alloy not yet identified | 1 roll — staged only to read its label, then set aside | Incoming check per `FINAL_MATERIALS_FOR_REVIEW.md`: identify the alloy from the label; if it is lead-free or unmarked it is not used today and the MAIYUM roll is the only solder on the bench. |
-| Chip Quik CQ4LF no-clean flux pen, 10 ml | 1 pen of the 2 in hand | The only flux permitted on the electronics bench; step 3 records it by name alongside alloy, tip, temperature and dwell. |
-| 2.54 mm male breakaway header pins | 22 pins exist in total — split them before you start, e.g. 12 pins for practice and 10 reserved in a labelled bag | The primary practice substrate for step 4 now that no perfboard exists; `INVENTORY.md` earmarks these same pins for making the bench stack reversible, so the split is a decision you record, not an assumption. |
-| LuminologyPro resistor kit, 25 values, 1/4 W | about 10 resistors, any value (1 kΩ is convenient) — they are coupons, the value is irrelevant | Through-hole leads to solder to wire and header for step 4, and lead pairs for the adjacent-node isolation check in step 6. |
-| CBAZY 30 AWG silicone stranded wire, 6 colours | about 1 m total across 2 colours, cut into ~40 mm pieces | Signal-gauge practice joints — the gauge that will later carry I2C, I2S and the button. |
-| TUOFENG 26 AWG silicone stranded wire, 6 colours | about 1 m total across 2 colours, cut into ~40 mm pieces | Power-gauge practice joints, so the recorded settings cover both thermal masses rather than only thin wire. |
-| Hakko CHP CSP-30-1 wire stripper, 30-20 AWG | 1 | Strip both 30 AWG and 26 AWG without nicking strands; nicked strands are the defect that breaks later inside a sealed frame. |
-| BOENFU 6-inch flush cutters | 1 | Trim resistor leads and wire ends to length; wire and component leads only — never the brass tube. |
-| X-Tronic bundle: helping hands | 2 | Lab step 2's 'stable holder' — one holds the coupon, one holds the wire, so neither hand is holding work next to a 300 C tip. |
-| X-Tronic bundle: silicone work mat | 1 | The only heat-safe work surface owned (`FINAL_MATERIALS_FOR_REVIEW.md`); all hot work happens on it. |
-| X-Tronic bundle: tip cleaner | 1 | Keep the tip wetted and oxide-free — Lesson 12 names an oxidised or undersized tip as the real problem people wrongly answer with more temperature. |
-| X-Tronic bundle: tweezers | 1 pair | Hold and reposition header pins and resistor bodies near the hot joint instead of fingers. |
-| X-Tronic bundle: solder sucker (desoldering pump) | 1 | Clear a bridge on a through-hole practice joint found during step 5; it is too coarse for fine pads, and no fine-pad work exists on Day 11. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 2 leads | Step 6, with power absent: intended continuity through each joint and isolation between adjacent pins. |
-| 3M Solus 1000 safety glasses, clear | 1 | Step 2 requirement; flux spatter and flicked clippings are the hazards. |
-| Camera or phone with macro/zoom, plus a timer (general items — not in INVENTORY) | 1 | Close photographs of early, middle and final joints, the substitute for the magnifier in step 5, and the approximate dwell-time measurement for step 3. |
-| Notebook, pen, and a labelled bag or envelope for the reserved header pins (general items — not in INVENTORY) | 1 set | Record the settings that produced ten consecutive acceptable joints, and physically quarantine the header pins you decided not to spend. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| X-Tronic 3020-XTS soldering station (75 W) with iron holder | 1 station + its iron holder | The heat source for all ~30 practice joints, and the stable holder that lab step 2 requires before the iron is switched on. | Exact purchase URL not recorded |
+| X-Tronic bundle: soldering tips | 1 fitted (the T-2.4D chisel) with the other 4, including the T-K knife, in the tray | Lesson 12: a broader chisel tip heats pad and lead faster and cuts total dwell time; the fitted tip and its set temperature are two of the five settings step 3 records. | Included in X-Tronic kit; exact URL not recorded |
+| MAIYUM 63/37 rosin-core solder, 0.8 mm | 1 roll (100 g) — the alloy of record for the session | The known 63/37 alloy for every practice joint; its low melting point is what keeps dwell time short. | [Amazon](https://www.amazon.com/dp/B076QF1Y85) |
+| X-Tronic bundle: solder roll (~50 g), alloy not yet identified | 1 roll — staged only to read its label, then set aside | Incoming check per `FINAL_MATERIALS_FOR_REVIEW.md`: identify the alloy from the label; if it is lead-free or unmarked it is not used today and the MAIYUM roll is the only solder on the bench. | Included in X-Tronic kit; exact URL not recorded |
+| Chip Quik CQ4LF no-clean flux pen, 10 ml | 1 pen of the 2 in hand | The only flux permitted on the electronics bench; step 3 records it by name alongside alloy, tip, temperature and dwell. | Exact purchase URL not recorded |
+| 2.54 mm male breakaway header pins | 22 pins exist in total — split them before you start, e.g. 12 pins for practice and 10 reserved in a labelled bag | The primary practice substrate for step 4 now that no perfboard exists; `INVENTORY.md` earmarks these same pins for making the bench stack reversible, so the split is a decision you record, not an assumption. | Exact purchase URL not recorded |
+| LuminologyPro resistor kit, 25 values, 1/4 W | about 10 resistors, any value (1 kΩ is convenient) — they are coupons, the value is irrelevant | Through-hole leads to solder to wire and header for step 4, and lead pairs for the adjacent-node isolation check in step 6. | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| CBAZY 30 AWG silicone stranded wire, 6 colours | about 1 m total across 2 colours, cut into ~40 mm pieces | Signal-gauge practice joints — the gauge that will later carry I2C, I2S and the button. | [Amazon](https://www.amazon.com/dp/B073RDGTPB) |
+| TUOFENG 26 AWG silicone stranded wire, 6 colours | about 1 m total across 2 colours, cut into ~40 mm pieces | Power-gauge practice joints, so the recorded settings cover both thermal masses rather than only thin wire. | [Amazon](https://www.amazon.com/dp/B07G2LRX68) |
+| Hakko CHP CSP-30-1 wire stripper, 30-20 AWG | 1 | Strip both 30 AWG and 26 AWG without nicking strands; nicked strands are the defect that breaks later inside a sealed frame. | [Amazon](https://www.amazon.com/dp/B00FZPHMUG) |
+| BOENFU 6-inch flush cutters | 1 | Trim resistor leads and wire ends to length; wire and component leads only — never the brass tube. | Exact purchase URL not recorded |
+| X-Tronic bundle: helping hands | 2 | Lab step 2's 'stable holder' — one holds the coupon, one holds the wire, so neither hand is holding work next to a 300 C tip. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: silicone work mat | 1 | The only heat-safe work surface owned (`FINAL_MATERIALS_FOR_REVIEW.md`); all hot work happens on it. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: tip cleaner | 1 | Keep the tip wetted and oxide-free — Lesson 12 names an oxidised or undersized tip as the real problem people wrongly answer with more temperature. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Hold and reposition header pins and resistor bodies near the hot joint instead of fingers. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: solder sucker (desoldering pump) | 1 | Clear a bridge on a through-hole practice joint found during step 5; it is too coarse for fine pads, and no fine-pad work exists on Day 11. | Included in X-Tronic kit; exact URL not recorded |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 2 leads | Step 6, with power absent: intended continuity through each joint and isolation between adjacent pins. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| 3M Solus 1000 safety glasses, clear | 1 | Step 2 requirement; flux spatter and flicked clippings are the hazards. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Camera or phone with macro/zoom, plus a timer (general items — not in INVENTORY) | 1 | Close photographs of early, middle and final joints, the substitute for the magnifier in step 5, and the approximate dwell-time measurement for step 3. | General/reused item; no project purchase URL |
+| Notebook, pen, and a labelled bag or envelope for the reserved header pins (general items — not in INVENTORY) | 1 set | Record the settings that produced ten consecutive acceptable joints, and physically quarantine the header pins you decided not to spend. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -2107,30 +2113,30 @@ force to a fragile electrical pad?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| X-Tronic 3020-XTS soldering station (75 W) with iron holder | 1 station + iron holder — the same setup left from Day 11 | Steps 1, 2 and 5: wire-to-header joints, splices, and the desolder/restore cycle. |
-| X-Tronic bundle: soldering tips | 1 fitted (T-2.4D chisel) | Same tip and temperature carried over from Day 11's qualified settings, so rework results are comparable to the practice record. |
-| MAIYUM 63/37 rosin-core solder, 0.8 mm | 1 roll | All 20+ wire joints, 10 splices, and the three restored sacrificial joints. |
-| Chip Quik CQ4LF no-clean flux pen, 10 ml | 1 pen | Electronics flux for the joints and, especially, for rewetting old solder during the step 5 restore. |
-| Hakko CHP CSP-30-1 wire stripper, 30-20 AWG | 1 | Step 1-2: strip both gauges cleanly; a nicked strand is the exact defect strain relief is supposed to prevent. |
-| CBAZY 30 AWG silicone stranded wire, 6 colours | about 2 m across 2 colours — roughly 20 x 40 mm pieces for joints plus 10 x 60 mm pairs for splices | The signal gauge for step 1's wire-to-pad practice and half of step 2's ten splices. |
-| TUOFENG 26 AWG silicone stranded wire, 6 colours | about 1.5 m across 2 colours | The power gauge for step 1, and the stiffer conductor that makes the step 3-4 strain-relief comparison visible. |
-| 2.54 mm male breakaway header pins | only the practice share you set aside on Day 11, out of the 22 that exist | The wire-to-pad targets for step 1 and the three sacrificial joints desoldered in step 5; the reserved pins stay in their labelled bag. |
-| Pointool heat-shrink tubing kit, 14 sizes, white | 10 pieces, sizes chosen after measuring the splice OD (the kit is white only) | Step 2's ten insulated splices, and the heat-shrink form of strain relief in step 3. |
-| QWORK mini heat gun, 300 W, with stand | 1 gun + its stand | Shrink the ten splices with controlled hot air — used only with every cell outside the work area, and only over the silicone mat. |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, ~10 tabs | Step 3's tie point and lacing anchor for the strain-relieved sample, and the marker distinguishing it from the matched unsupported sample; it survives soldering heat where vinyl tape does not. |
-| X-Tronic bundle: helping hands | 2 | One holds the anchored sample and one the unsupported sample, so step 4's gentle comparison is repeatable instead of a hand-held tug. |
-| X-Tronic bundle: solder sucker (desoldering pump) | 1 | The only desoldering tool in hand for step 5 — usable on through-hole header and wire joints, and explicitly too coarse for small module pads. |
-| X-Tronic bundle: silicone work mat | 1 | The heat-safe surface for both the iron and the heat gun; nothing hot touches any other surface. |
-| X-Tronic bundle: tip cleaner | 1 | Rework wets old, oxidised solder, so tip condition matters more here than on Day 11. |
-| X-Tronic bundle: tweezers | 1 pair | Hold the wire steady during the restore in step 5 and slide heat-shrink into position without fingers in the hot-air stream. |
-| BOENFU 6-inch flush cutters | 1 | Cut wire and heat-shrink to length and trim restored joints; wire only, never brass. |
-| NEIKO digital caliper, 0-6 in (01407A) | 1 | Measure the finished splice OD before choosing a heat-shrink size — Lesson 12's rule is measure the joint first, then pick the tubing. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 2 leads | Step 6, sources absent: continuity through every reworked joint and isolation between adjacent nodes. |
-| 3M Solus 1000 safety glasses, clear | 1 | Worn for the whole session — hot air, flicked clippings, and flux spatter. |
-| Camera or phone with macro/zoom (general item — not in INVENTORY) | 1 | Before/after rework photographs, the substrate inspection in step 5, and the substitute for the magnifier that is not in hand. |
-| Notebook and pen (general items — not in INVENTORY) | 1 set | The splice/continuity/isolation checklist and the written note on where bending concentrated with and without strain relief. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| X-Tronic 3020-XTS soldering station (75 W) with iron holder | 1 station + iron holder — the same setup left from Day 11 | Steps 1, 2 and 5: wire-to-header joints, splices, and the desolder/restore cycle. | Exact purchase URL not recorded |
+| X-Tronic bundle: soldering tips | 1 fitted (T-2.4D chisel) | Same tip and temperature carried over from Day 11's qualified settings, so rework results are comparable to the practice record. | Included in X-Tronic kit; exact URL not recorded |
+| MAIYUM 63/37 rosin-core solder, 0.8 mm | 1 roll | All 20+ wire joints, 10 splices, and the three restored sacrificial joints. | [Amazon](https://www.amazon.com/dp/B076QF1Y85) |
+| Chip Quik CQ4LF no-clean flux pen, 10 ml | 1 pen | Electronics flux for the joints and, especially, for rewetting old solder during the step 5 restore. | Exact purchase URL not recorded |
+| Hakko CHP CSP-30-1 wire stripper, 30-20 AWG | 1 | Step 1-2: strip both gauges cleanly; a nicked strand is the exact defect strain relief is supposed to prevent. | [Amazon](https://www.amazon.com/dp/B00FZPHMUG) |
+| CBAZY 30 AWG silicone stranded wire, 6 colours | about 2 m across 2 colours — roughly 20 x 40 mm pieces for joints plus 10 x 60 mm pairs for splices | The signal gauge for step 1's wire-to-pad practice and half of step 2's ten splices. | [Amazon](https://www.amazon.com/dp/B073RDGTPB) |
+| TUOFENG 26 AWG silicone stranded wire, 6 colours | about 1.5 m across 2 colours | The power gauge for step 1, and the stiffer conductor that makes the step 3-4 strain-relief comparison visible. | [Amazon](https://www.amazon.com/dp/B07G2LRX68) |
+| 2.54 mm male breakaway header pins | only the practice share you set aside on Day 11, out of the 22 that exist | The wire-to-pad targets for step 1 and the three sacrificial joints desoldered in step 5; the reserved pins stay in their labelled bag. | Exact purchase URL not recorded |
+| Pointool heat-shrink tubing kit, 14 sizes, white | 10 pieces, sizes chosen after measuring the splice OD (the kit is white only) | Step 2's ten insulated splices, and the heat-shrink form of strain relief in step 3. | [Amazon](https://www.amazon.com/dp/B08N4W4K9X) |
+| QWORK mini heat gun, 300 W, with stand | 1 gun + its stand | Shrink the ten splices with controlled hot air — used only with every cell outside the work area, and only over the silicone mat. | [Amazon](https://www.amazon.com/QWORK-Shrink-Shrinking-Wrapping-Embossing/dp/B09NDCCW29) |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll, ~10 tabs | Step 3's tie point and lacing anchor for the strain-relieved sample, and the marker distinguishing it from the matched unsupported sample; it survives soldering heat where vinyl tape does not. | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| X-Tronic bundle: helping hands | 2 | One holds the anchored sample and one the unsupported sample, so step 4's gentle comparison is repeatable instead of a hand-held tug. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: solder sucker (desoldering pump) | 1 | The only desoldering tool in hand for step 5 — usable on through-hole header and wire joints, and explicitly too coarse for small module pads. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: silicone work mat | 1 | The heat-safe surface for both the iron and the heat gun; nothing hot touches any other surface. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: tip cleaner | 1 | Rework wets old, oxidised solder, so tip condition matters more here than on Day 11. | Included in X-Tronic kit; exact URL not recorded |
+| X-Tronic bundle: tweezers | 1 pair | Hold the wire steady during the restore in step 5 and slide heat-shrink into position without fingers in the hot-air stream. | Included in X-Tronic kit; exact URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Cut wire and heat-shrink to length and trim restored joints; wire only, never brass. | Exact purchase URL not recorded |
+| NEIKO digital caliper, 0-6 in (01407A) | 1 | Measure the finished splice OD before choosing a heat-shrink size — Lesson 12's rule is measure the joint first, then pick the tubing. | [Amazon](https://www.amazon.com/dp/B000GSLKIW) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1 meter + 2 leads | Step 6, sources absent: continuity through every reworked joint and isolation between adjacent nodes. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| 3M Solus 1000 safety glasses, clear | 1 | Worn for the whole session — hot air, flicked clippings, and flux spatter. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Camera or phone with macro/zoom (general item — not in INVENTORY) | 1 | Before/after rework photographs, the substrate inspection in step 5, and the substitute for the magnifier that is not in hand. | General/reused item; no project purchase URL |
+| Notebook and pen (general items — not in INVENTORY) | 1 set | The splice/continuity/isolation checklist and the written note on where bending concentrated with and without strain relief. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -2284,24 +2290,24 @@ or audio activity?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with both of its insulated leads | The only energy source on the bench today; drives the low-energy resistor load for lab step 3's Day 5 startup and constant-current repeat. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both test leads and the hard case | Measure each resistor before energising, read output at the supply terminals and again at the load end, and check the slide switch unpowered. |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 6 pieces (3 x 1 kΩ, 1 x 2.2 kΩ, 1 x 10 kΩ, 1 x 100 kΩ) | First 1 kΩ is the step-3 load, second 1 kΩ goes in series to simulate source impedance (Lesson 06 step 8), third is the spare for the measured-tolerance check; 2.2 kΩ gives a second load point; 10 kΩ is the paper high-resistance load for the P = Vout²/R rating calculation; 100 kΩ for the pull-network arithmetic in the source-state table. |
-| BOJACK ceramic capacitor kit | 4 pieces (2 x 100 nF, 2 x 10 µF) | Identification and calculation only — read the marking code, dielectric class, and voltage rating for Lesson 06's decoupling section; they are not installed in any circuit today. |
-| ALLECIN electrolytic capacitor kit, 24 values | 2 pieces (1 x 100 µF, 1 x 220 µF) | Work the ΔV = I × Δt / C example (0.4 A for 100 µs into 100 µF = 0.4 V) and the 220 µF bulk-rail discussion; read the polarity stripe and printed voltage rating on each. |
-| Chanzon SPDT mini slide switch | 1 of the 25 | Lab step 4's owned-candidate inspection — unpowered continuity and contact resistance across each throw, nothing else. |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board) | Holds the milliamp resistor load only; no amplifier and no full-load current ever passes through breadboard contacts. |
-| TODOELEC Dupont jumper kit, 10 cm | 4 wires of the 120 | Supply positive and negative to the breadboard rails plus two meter tap points; low-current bench use only. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab in this plan. |
-| X-Tronic bundle: tweezers | 1 pair | Place and lift the small ceramic capacitors and trimmed resistor leads without dropping parts across the supply leads. |
-| BOENFU 6-inch flush cutters | 1 | Trim resistor leads so they seat fully in the breadboard; component leads and wire only, never the brass stock. |
-| X-Tronic bundle: silicone work mat | 1 | Non-conductive, non-slip layout surface so loose component leads cannot bridge the supply leads on the bench top. |
-| Notebook, pen, and drawing paper (general item — no project purchase recorded) | 1 notebook + several loose sheets | Step 1's power-block diagram, step 5's source-state table, and the calculation sheet with DATASHEET/ASSUMED/CALCULATED/MEASURED labels. |
-| Calculator (general item — no project purchase recorded) | 1 | Step 2's Iin = Pout / (efficiency x Vin) at two input voltages, and the ΔV = I × Δt / C decoupling arithmetic. |
-| Camera or phone (general item — no project purchase recorded) | 1 | Photograph the supply front panel showing the set voltage and current limit for every recorded run. |
-| Computer (general item — no project purchase recorded) | 1 | Re-read the current power architecture in docs/FINAL_MATERIALS_FOR_REVIEW.md for step 1's drawing. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| SKY TOPPOWER DC bench supply, 0-30 V / 0-5 A (PS305H) | 1, with both of its insulated leads | The only energy source on the bench today; drives the low-energy resistor load for lab step 3's Day 5 startup and constant-current repeat. | [Amazon](https://www.amazon.com/dp/B0BN1F6CGZ) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both test leads and the hard case | Measure each resistor before energising, read output at the supply terminals and again at the load end, and check the slide switch unpowered. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 6 pieces (3 x 1 kΩ, 1 x 2.2 kΩ, 1 x 10 kΩ, 1 x 100 kΩ) | First 1 kΩ is the step-3 load, second 1 kΩ goes in series to simulate source impedance (Lesson 06 step 8), third is the spare for the measured-tolerance check; 2.2 kΩ gives a second load point; 10 kΩ is the paper high-resistance load for the P = Vout²/R rating calculation; 100 kΩ for the pull-network arithmetic in the source-state table. | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| BOJACK ceramic capacitor kit | 4 pieces (2 x 100 nF, 2 x 10 µF) | Identification and calculation only — read the marking code, dielectric class, and voltage rating for Lesson 06's decoupling section; they are not installed in any circuit today. | [Amazon](https://www.amazon.com/dp/B07P7HRGT9) |
+| ALLECIN electrolytic capacitor kit, 24 values | 2 pieces (1 x 100 µF, 1 x 220 µF) | Work the ΔV = I × Δt / C example (0.4 A for 100 µs into 100 µF = 0.4 V) and the 220 µF bulk-rail discussion; read the polarity stripe and printed voltage rating on each. | [Amazon](https://www.amazon.com/dp/B0C1VBXCQM) |
+| Chanzon SPDT mini slide switch | 1 of the 25 | Lab step 4's owned-candidate inspection — unpowered continuity and contact resistance across each throw, nothing else. | [Amazon](https://www.amazon.com/dp/B09R434VJQ) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board) | Holds the milliamp resistor load only; no amplifier and no full-load current ever passes through breadboard contacts. | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | 4 wires of the 120 | Supply positive and negative to the breadboard rails plus two meter tap points; low-current bench use only. | Exact purchase URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab in this plan. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| X-Tronic bundle: tweezers | 1 pair | Place and lift the small ceramic capacitors and trimmed resistor leads without dropping parts across the supply leads. | Included in X-Tronic kit; exact URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Trim resistor leads so they seat fully in the breadboard; component leads and wire only, never the brass stock. | Exact purchase URL not recorded |
+| X-Tronic bundle: silicone work mat | 1 | Non-conductive, non-slip layout surface so loose component leads cannot bridge the supply leads on the bench top. | Included in X-Tronic kit; exact URL not recorded |
+| Notebook, pen, and drawing paper (general item — no project purchase recorded) | 1 notebook + several loose sheets | Step 1's power-block diagram, step 5's source-state table, and the calculation sheet with DATASHEET/ASSUMED/CALCULATED/MEASURED labels. | General/reused item; no project purchase URL |
+| Calculator (general item — no project purchase recorded) | 1 | Step 2's Iin = Pout / (efficiency x Vin) at two input voltages, and the ΔV = I × Δt / C decoupling arithmetic. | General/reused item; no project purchase URL |
+| Camera or phone (general item — no project purchase recorded) | 1 | Photograph the supply front panel showing the set voltage and current limit for every recorded run. | General/reused item; no project purchase URL |
+| Computer (general item — no project purchase recorded) | 1 | Re-read the current power architecture in docs/FINAL_MATERIALS_FOR_REVIEW.md for step 1's drawing. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -2466,34 +2472,34 @@ acoustic, insulation, and removal space?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| NEIKO digital caliper, 0-6 in (01407A) | 1 | Lab step 1 — every module, connector, control, and speaker dimension to 0.01 mm, plus the insulation and cardboard thicknesses. |
-| Meshnology ESP32-C3 SuperMini dev board | 1 (the Day 6-qualified MCU-A1; the other 9 stay boxed) | Measured, its antenna region marked with a removable keepout, and it is the only board used in the optional step-5 metal-proximity A/B. |
-| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 1 (the identified OLED-A1) | Measure PCB outline, glass position, and the viewing-window offset so the front-panel cutout is placed from a real part, not a listing. |
-| AITRIP INMP441 I2S MEMS microphone | 1 | Measure the board outline and the acoustic port position to reserve the port path and contamination keepout. |
-| HiLetgo MAX98357A I2S class-D amplifier | 1 | Dimension article only — measure the outline, height, and the two speaker-terminal positions; no supply, no I2S, no speaker leads. |
-| Same Sky CES-20134-088PM speaker, 8 ohm 0.8 W, factory-enclosed | 1 — the only unit in the project, no spare | Measure the 20 x 13 x 4.87 mm body, the mounting flanges, and the 60 mm lead exit; set the front opening and rear-cavity keepout. |
-| QTEATAK 6x6 mm tactile push buttons with caps | 2 switches + 2 white caps | Measure actuator travel and the cap/finger envelope; a second one lets you compare cap-on and cap-off heights without refitting a cap repeatedly. |
-| 2.54 mm male breakaway header pins | 4 pins, returned to the labelled bag afterwards (only 22 exist) | Measure the seated stack height a soldered header adds under each module — measuring consumes none of the reserved stock. |
-| XFJYMXDM fish paper (flame-rated insulation board) | 1 roll, calipered at an existing edge — do not cut | Record the real barrier thickness and reserve it in the battery-bay clearance stack; this plan permits measurement only. |
-| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll | Caliper the film-plus-adhesive thickness for the same insulation stack, and hold paper templates without tearing them. |
-| TUOFENG 26 AWG silicone stranded wire, 6 colours | 1 offcut, about 150 mm | Measure the real outside diameter and minimum bend radius of a power run so the wire-bend keepout is measured, not guessed. |
-| CBAZY 30 AWG silicone stranded wire, 6 colours | 1 offcut, about 150 mm | Same measurement for a signal run (I2C, I2S, button) so both gauges get their own bend allowance. |
-| daier JST-PH 2.0 mm 2-pin connector cables | 1 pair, mated dry once then separated | Measure the connector body plus the mated plug envelope and cable bend for the connector keepout; unpowered measurement only, never near a cell. |
-| BOENFU 6-inch flush cutters | 1 | Cut the two short wire samples; never the brass tube, whose 0.225 mm wall crushes under flush cutters. |
-| WORKLION 12 x 18 inch self-healing cutting mat | 1 | The craft-cutting surface for the cardboard mock-up (this mat is never a soldering surface). |
-| OLFA CMP-1 circle cutter | 1 | Cut the speaker grille and the microphone port opening in the cardstock front panel. |
-| K&S #9831 brass tube, 1.5 mm OD x 0.225 mm wall x 300 mm | 1 uncut 300 mm tube of the 4 | The metal coupon for the optional step-5 A/B, supported on cardboard or foam so it cannot touch a powered pad; no cutting, bending, or joining. |
-| K&S #9861 1.0 mm round brass rod, 300 mm | 1 uncut 300 mm rod of the 5 | Laid alongside the mock-up to represent corner posts and braces at true diameter; do not cut or bend it. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, in continuity mode | Prove the brass coupon reads open to the controller GND and the USB shell before and after each RF run — the frame must stay electrically floating. |
-| X-Tronic bundle: tweezers | 1 pair | Hold the microphone and OLED by their edges while measuring, keeping fingers off the acoustic port and the glass. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab, including blade work on cardboard. |
-| Reused clean packaging cardboard (~1 mm), paper, and removable tape (general item — this plan says no dedicated purchase is required) | About 2 letter-size sheets of cardboard, 4 sheets of paper, 1 roll of removable tape | Lab step 2's 1:1 nonconductive mock-up and step 3's inert cell dummy. |
-| Camera or phone (general item — no project purchase recorded) | 1 | Six-view mock-up photographs and a photograph of every A/B geometry with the ruler in frame. |
-| Notebook, fine marker, and ruler (general item — no project purchase recorded) | 1 each | Dimension and clearance table, the antenna keepout marking, and the interference/removal failure list. |
-| Computer and printer (general item — no project purchase recorded) | 1 | Print the Adafruit #1578 (29 x 36 x 4.75 mm) and #258 (34 x 62 x 5 mm) dimension pages so the cell dummy is built from printed figures rather than a real pack. |
-| Link-metric test firmware on the computer plus one fixed 2.4 GHz access point (general item — no project purchase recorded) | 1 host + 1 access point | Optional step 5 only, and only if the backend/privacy decision has already been recorded; logs timestamped RSSI, packet attempts/successes, and reconnects. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| NEIKO digital caliper, 0-6 in (01407A) | 1 | Lab step 1 — every module, connector, control, and speaker dimension to 0.01 mm, plus the insulation and cardboard thicknesses. | [Amazon](https://www.amazon.com/dp/B000GSLKIW) |
+| Meshnology ESP32-C3 SuperMini dev board | 1 (the Day 6-qualified MCU-A1; the other 9 stay boxed) | Measured, its antenna region marked with a removable keepout, and it is the only board used in the optional step-5 metal-proximity A/B. | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 1 (the identified OLED-A1) | Measure PCB outline, glass position, and the viewing-window offset so the front-panel cutout is placed from a real part, not a listing. | [Amazon](https://www.amazon.com/dp/B09T6SJBV5) |
+| AITRIP INMP441 I2S MEMS microphone | 1 | Measure the board outline and the acoustic port position to reserve the port path and contamination keepout. | [Amazon](https://www.amazon.com/dp/B092HWW4RS) |
+| HiLetgo MAX98357A I2S class-D amplifier | 1 | Dimension article only — measure the outline, height, and the two speaker-terminal positions; no supply, no I2S, no speaker leads. | [Amazon](https://www.amazon.com/dp/B0CDWXZZCH) |
+| Same Sky CES-20134-088PM speaker, 8 ohm 0.8 W, factory-enclosed | 1 — the only unit in the project, no spare | Measure the 20 x 13 x 4.87 mm body, the mounting flanges, and the 60 mm lead exit; set the front opening and rear-cavity keepout. | [DigiKey](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) |
+| QTEATAK 6x6 mm tactile push buttons with caps | 2 switches + 2 white caps | Measure actuator travel and the cap/finger envelope; a second one lets you compare cap-on and cap-off heights without refitting a cap repeatedly. | [Amazon](https://www.amazon.com/dp/B0FHW6HMG4) |
+| 2.54 mm male breakaway header pins | 4 pins, returned to the labelled bag afterwards (only 22 exist) | Measure the seated stack height a soldered header adds under each module — measuring consumes none of the reserved stock. | Exact purchase URL not recorded |
+| XFJYMXDM fish paper (flame-rated insulation board) | 1 roll, calipered at an existing edge — do not cut | Record the real barrier thickness and reserve it in the battery-bay clearance stack; this plan permits measurement only. | [Amazon](https://www.amazon.com/dp/B0GZVDKBBS) |
+| ELEGOO polyimide (Kapton) tape, 4-pack | 1 roll | Caliper the film-plus-adhesive thickness for the same insulation stack, and hold paper templates without tearing them. | [Amazon](https://www.amazon.com/dp/B072Z92QZ2) |
+| TUOFENG 26 AWG silicone stranded wire, 6 colours | 1 offcut, about 150 mm | Measure the real outside diameter and minimum bend radius of a power run so the wire-bend keepout is measured, not guessed. | [Amazon](https://www.amazon.com/dp/B07G2LRX68) |
+| CBAZY 30 AWG silicone stranded wire, 6 colours | 1 offcut, about 150 mm | Same measurement for a signal run (I2C, I2S, button) so both gauges get their own bend allowance. | [Amazon](https://www.amazon.com/dp/B073RDGTPB) |
+| daier JST-PH 2.0 mm 2-pin connector cables | 1 pair, mated dry once then separated | Measure the connector body plus the mated plug envelope and cable bend for the connector keepout; unpowered measurement only, never near a cell. | Exact purchase URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Cut the two short wire samples; never the brass tube, whose 0.225 mm wall crushes under flush cutters. | Exact purchase URL not recorded |
+| WORKLION 12 x 18 inch self-healing cutting mat | 1 | The craft-cutting surface for the cardboard mock-up (this mat is never a soldering surface). | Exact purchase URL not recorded |
+| OLFA CMP-1 circle cutter | 1 | Cut the speaker grille and the microphone port opening in the cardstock front panel. | Exact purchase URL not recorded |
+| K&S #9831 brass tube, 1.5 mm OD x 0.225 mm wall x 300 mm | 1 uncut 300 mm tube of the 4 | The metal coupon for the optional step-5 A/B, supported on cardboard or foam so it cannot touch a powered pad; no cutting, bending, or joining. | [Amazon](https://www.amazon.com/dp/B005WPAW9M) |
+| K&S #9861 1.0 mm round brass rod, 300 mm | 1 uncut 300 mm rod of the 5 | Laid alongside the mock-up to represent corner posts and braces at true diameter; do not cut or bend it. | [Amazon](https://www.amazon.com/dp/B005WPB7YG) |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, in continuity mode | Prove the brass coupon reads open to the controller GND and the USB shell before and after each RF run — the frame must stay electrically floating. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| X-Tronic bundle: tweezers | 1 pair | Hold the microphone and OLED by their edges while measuring, keeping fingers off the acoustic port and the glass. | Included in X-Tronic kit; exact URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab, including blade work on cardboard. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Reused clean packaging cardboard (~1 mm), paper, and removable tape (general item — this plan says no dedicated purchase is required) | About 2 letter-size sheets of cardboard, 4 sheets of paper, 1 roll of removable tape | Lab step 2's 1:1 nonconductive mock-up and step 3's inert cell dummy. | General/reused item; no project purchase URL |
+| Camera or phone (general item — no project purchase recorded) | 1 | Six-view mock-up photographs and a photograph of every A/B geometry with the ruler in frame. | General/reused item; no project purchase URL |
+| Notebook, fine marker, and ruler (general item — no project purchase recorded) | 1 each | Dimension and clearance table, the antenna keepout marking, and the interference/removal failure list. | General/reused item; no project purchase URL |
+| Computer and printer (general item — no project purchase recorded) | 1 | Print the Adafruit #1578 (29 x 36 x 4.75 mm) and #258 (34 x 62 x 5 mm) dimension pages so the cell dummy is built from printed figures rather than a real pack. | General/reused item; no project purchase URL |
+| Link-metric test firmware on the computer plus one fixed 2.4 GHz access point (general item — no project purchase recorded) | 1 host + 1 access point | Optional step 5 only, and only if the backend/privacy decision has already been recorded; logs timestamped RSSI, packet attempts/successes, and reconnects. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
@@ -2658,25 +2664,25 @@ start and debugged without changing several variables at once?
 Everything in the first table is already in your purchase record. The
 quantities are what this session actually consumes, not what the kit contains.
 
-| Already in hand | Qty | What this session does with it |
-| --- | --- | --- |
-| Meshnology ESP32-C3 SuperMini dev board | 2 (MCU-A1 in use, plus 1 spare already gated with `esptool flash_id` at >= 4 MB) | Step 2's bare-board flash/boot reproduction; the pre-gated spare makes a suspected board fault one documented swap instead of an improvisation mid-capstone. |
-| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 1 (OLED-A1; 4 spares remain in the 5-pack — re-read the silkscreen pin order before substituting one) | Step 3's I2C layer and step 7's swapped SDA/SCL planted fault. |
-| AITRIP INMP441 I2S MEMS microphone | 1 — stage it only if Day 9's data test passed | The conditional top layer of the bring-up ladder: L/R tied to GND for the left slot, data to GPIO4 per the firmware contract card. |
-| QTEATAK 6x6 mm tactile push buttons with caps | 1 switch + 1 white cap | The first peripheral layer — GPIO10 to GND, active low, with GPIO9 left untouched as ROM BOOT. |
-| LuminologyPro resistor kit, 25 values, 1/4 W | 3 pieces (2 x 10 kΩ, 1 x 100 kΩ) | One 10 kΩ as the button pull-up if the firmware's internal pull is not the documented one, one 10 kΩ to hold the GPIO2 I2S bit-clock strap at a defined level through reset, and 100 kΩ as the microphone data-line pull-down (`INVENTORY.md`). |
-| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board) | Logic-only bring-up for controller, button, OLED, and microphone; no amplifier and no full-load current ever crosses it. |
-| TODOELEC Dupont jumper kit, 10 cm | About 14 of the 120 in use (3V3, GND, GPIO20/SCL, GPIO21/SDA, GPIO10, plus 6 for the microphone), with 4 known-good spares set aside | The wiring for each ladder layer; the four spares let a suspect jumper be swapped as a single changed variable during step 7's fault diagnosis. |
-| 2.54 mm male breakaway header pins | 22 pins is the entire stock — a fully socketed controller (16) + OLED (4) + microphone (6) needs 26 | Check the reserved-count record from Days 11-12 before staging and decide which module is socketed and which is jumpered directly, rather than discovering the shortfall mid-capstone. |
-| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both leads and the hard case | Pre-power rail isolation and ground-continuity checks at every layer, the 3V3 rail reading, the OLED carrier's onboard I2C pull-up resistance for the rise-time calculation, and the averaged idle current. |
-| X-Tronic bundle: tweezers | 1 pair | Seat and lift resistors and modules without flexing pads or touching the microphone port. |
-| BOENFU 6-inch flush cutters | 1 | Trim resistor leads so they seat fully in the breadboard; component leads only. |
-| X-Tronic bundle: silicone work mat | 1 | Non-conductive bench surface under the breadboard stack so no stray lead finds the bench top. |
-| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab, including lead trimming. |
-| Computer with Python, git, esptool, and a free USB-A port (general item — no project purchase recorded) | 1 | Step 2's flash/boot reproduction, the serial terminal for the step-5 regression logs, and the final matrix. |
-| Camera or phone (general item — no project purchase recorded) | 1 | Photograph the wiring at each ladder layer before power is applied, and photograph each header joint at macro/zoom as the substituted inspection method. |
-| Notebook, printed subsystem matrix, and every earlier day's lab record (general item — no project purchase recorded) | 1 notebook + 1 printed matrix + Days 1-14 records | Step 1's one-page system drawing, the symptom-to-root-cause records, and step 8's matrix with identified / wired / observed / documented / safe-to-integrate columns. |
-| 2.4 GHz Wi-Fi network access (general item — no project purchase recorded) | 1 network | Step 6 only, and only if the backend/privacy decision has been explicitly recorded; otherwise network and voice behaviour stay HOLD. |
+| Already in hand | Qty | What this session does with it | Original purchase link |
+| --- | --- | --- | --- |
+| Meshnology ESP32-C3 SuperMini dev board | 2 (MCU-A1 in use, plus 1 spare already gated with `esptool flash_id` at >= 4 MB) | Step 2's bare-board flash/boot reproduction; the pre-gated spare makes a suspected board fault one documented swap instead of an improvisation mid-capstone. | [Amazon](https://www.amazon.com/dp/B0F888JQ91) |
+| Hosyond SSD1306 OLED, 0.96 in 128x64 I2C, white | 1 (OLED-A1; 4 spares remain in the 5-pack — re-read the silkscreen pin order before substituting one) | Step 3's I2C layer and step 7's swapped SDA/SCL planted fault. | [Amazon](https://www.amazon.com/dp/B09T6SJBV5) |
+| AITRIP INMP441 I2S MEMS microphone | 1 — stage it only if Day 9's data test passed | The conditional top layer of the bring-up ladder: L/R tied to GND for the left slot, data to GPIO4 per the firmware contract card. | [Amazon](https://www.amazon.com/dp/B092HWW4RS) |
+| QTEATAK 6x6 mm tactile push buttons with caps | 1 switch + 1 white cap | The first peripheral layer — GPIO10 to GND, active low, with GPIO9 left untouched as ROM BOOT. | [Amazon](https://www.amazon.com/dp/B0FHW6HMG4) |
+| LuminologyPro resistor kit, 25 values, 1/4 W | 3 pieces (2 x 10 kΩ, 1 x 100 kΩ) | One 10 kΩ as the button pull-up if the firmware's internal pull is not the documented one, one 10 kΩ to hold the GPIO2 I2S bit-clock strap at a defined level through reset, and 100 kΩ as the microphone data-line pull-down (`INVENTORY.md`). | [Amazon](https://www.amazon.com/dp/B0F4P352BB) |
+| REXQualis solderless breadboards (830 + 400 point) | 1 (the 830-point board) | Logic-only bring-up for controller, button, OLED, and microphone; no amplifier and no full-load current ever crosses it. | Exact purchase URL not recorded |
+| TODOELEC Dupont jumper kit, 10 cm | About 14 of the 120 in use (3V3, GND, GPIO20/SCL, GPIO21/SDA, GPIO10, plus 6 for the microphone), with 4 known-good spares set aside | The wiring for each ladder layer; the four spares let a suspect jumper be swapped as a single changed variable during step 7's fault diagnosis. | Exact purchase URL not recorded |
+| 2.54 mm male breakaway header pins | 22 pins is the entire stock — a fully socketed controller (16) + OLED (4) + microphone (6) needs 26 | Check the reserved-count record from Days 11-12 before staging and decide which module is socketed and which is jumpered directly, rather than discovering the shortfall mid-capstone. | Exact purchase URL not recorded |
+| KAIWEETS TRMS multimeter, 6000 counts, with hard case | 1, with both leads and the hard case | Pre-power rail isolation and ground-continuity checks at every layer, the 3V3 rail reading, the OLED carrier's onboard I2C pull-up resistance for the rise-time calculation, and the averaged idle current. | [Amazon](https://www.amazon.com/dp/B08BL288LW) |
+| X-Tronic bundle: tweezers | 1 pair | Seat and lift resistors and modules without flexing pads or touching the microphone port. | Included in X-Tronic kit; exact URL not recorded |
+| BOENFU 6-inch flush cutters | 1 | Trim resistor leads so they seat fully in the breadboard; component leads only. | Exact purchase URL not recorded |
+| X-Tronic bundle: silicone work mat | 1 | Non-conductive bench surface under the breadboard stack so no stray lead finds the bench top. | Included in X-Tronic kit; exact URL not recorded |
+| 3M Solus 1000 safety glasses, clear | 1 | Required for every physical lab, including lead trimming. | [Amazon](https://www.amazon.com/dp/B016KZ1ZPM) |
+| Computer with Python, git, esptool, and a free USB-A port (general item — no project purchase recorded) | 1 | Step 2's flash/boot reproduction, the serial terminal for the step-5 regression logs, and the final matrix. | General/reused item; no project purchase URL |
+| Camera or phone (general item — no project purchase recorded) | 1 | Photograph the wiring at each ladder layer before power is applied, and photograph each header joint at macro/zoom as the substituted inspection method. | General/reused item; no project purchase URL |
+| Notebook, printed subsystem matrix, and every earlier day's lab record (general item — no project purchase recorded) | 1 notebook + 1 printed matrix + Days 1-14 records | Step 1's one-page system drawing, the symptom-to-root-cause records, and step 8's matrix with identified / wired / observed / documented / safe-to-integrate columns. | General/reused item; no project purchase URL |
+| 2.4 GHz Wi-Fi network access (general item — no project purchase recorded) | 1 network | Step 6 only, and only if the backend/privacy decision has been explicitly recorded; otherwise network and voice behaviour stay HOLD. | General/reused item; no project purchase URL |
 
 *Not in hand for this session.* Do not buy anything to stay on schedule; each
 entry says what to do instead.
