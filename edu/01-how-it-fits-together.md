@@ -9,8 +9,9 @@ device work, not a requirement for these first experiments.
 > **Scope and evidence:** this is the single applied overview for the course.
 > It summarizes the intended system; it is not a released power schematic,
 > bill of materials, or test result. The USB portion — controller, button,
-> OLED, microphone — was built and passed its cold-start gate on 2026-09-20.
-> The amplifier, battery, and enclosure described below have not been built.
+> OLED, microphone — was built and passed its cold-start gate on 2026-09-20
+> and completed one cloud round trip on 2026-09-21. The amplifier, battery,
+> and enclosure described below have not been built.
 > The firmware manifest still records `hardware_tested: false`, which
 > describes the build workflow rather than the bench.
 

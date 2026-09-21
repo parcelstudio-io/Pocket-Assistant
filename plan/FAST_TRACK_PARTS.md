@@ -30,7 +30,10 @@ the received part disagree, **the label on the part wins.**
 **The USB prototype is complete — PASS 9 established 2026-09-20.** Two cold
 starts booted without a reset loop, the button logged every press, the OLED
 started and toggled, and speech read higher than quiet. This is the first
-physical-hardware result in the project.
+physical-hardware result in the project. **Step 10 followed on 2026-09-21:**
+`A1` joined Wi-Fi under the 8.5 dBm transmit-power cap and one spoken question
+returned a remote response from the Xiaozhi backend (PASS 10C,
+builder-reported). No spoken output yet; the amplifier stays disabled.
 
 Build history:
 
@@ -136,11 +139,14 @@ tells you to stop rather than improvise. Decide before you heat the iron.
 | Six more male-to-male jumpers | 📦 [Jumper search](https://www.amazon.com/s?k=TODOELEC+10cm+Dupont+jumper+120) |
 | One 10 kΩ and one 100 kΩ resistor, **meter-verified** | ✅ [B0F4P352BB](https://www.amazon.com/dp/B0F4P352BB) |
 
-### Step 9 ✅ done · Step 10 ⬜ optional
+### Step 9 ✅ done · Step 10 ✅ done (2026-09-21)
 
 No new components. Step 9 needs the phone camera and somewhere to save the
 log. Step 10 needs a dedicated 2.4 GHz guest/IoT network with a unique
-password, and a deliberate privacy decision.
+password, and a deliberate privacy decision; it passed on `A1` with one
+remote response. No part fixes the SuperMini's
+invisible setup hotspot; the assistant build caps transmit power at 8.5 dBm
+instead. Do not buy an external antenna for these boards: they have no socket.
 
 ## The open gaps before Step 5B — resolved
 

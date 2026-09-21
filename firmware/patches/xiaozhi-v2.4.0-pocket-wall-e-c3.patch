@@ -180,3 +180,57 @@ index a8b7624..d687626 100644
  
      // Display control
  #ifdef HAVE_LVGL
+diff --git a/main/boards/common/wifi_board.cc b/main/boards/common/wifi_board.cc
+index 2883221..6ab61a8 100644
+--- a/main/boards/common/wifi_board.cc
++++ b/main/boards/common/wifi_board.cc
+@@ -10,6 +10,7 @@
+ #include <freertos/task.h>
+ #include <esp_network.h>
+ #include <esp_log.h>
++#include <esp_wifi.h>
+ #include <esp_mac.h>
+ #include <utility>
+ 
+@@ -27,6 +28,21 @@ static const char *TAG = "WifiBoard";
+ // Connection timeout in seconds
+ static constexpr int CONNECT_TIMEOUT_SEC = 60;
+ 
++#ifdef CONFIG_BOARD_TYPE_POCKET_WALL_E_C3
++// The ESP32-C3 SuperMini's ceramic chip antenna is poorly matched. At the
++// default 20 dBm the provisioning access point was invisible on three boards
++// from the build batch; board A1 became visible at 8.5 dBm (34 in 0.25 dBm
++// units, 2026-09-21). esp_wifi_set_max_tx_power() only takes effect after
++// esp_wifi_start(), so the cap is applied after every start: once for the
++// provisioning access point and once for the station connection.
++static constexpr int8_t kPocketMaxTxPowerQuarterDbm = 34;
++
++static void ApplyPocketTxPowerCap(const char* mode) {
++    ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(kPocketMaxTxPowerQuarterDbm));
++    ESP_LOGI(TAG, "Wi-Fi max TX power capped at 8.5 dBm (%s)", mode);
++}
++#endif
++
+ WifiBoard::WifiBoard() {
+     // Create connection timeout timer
+     esp_timer_create_args_t timer_args = {
+@@ -104,6 +120,9 @@ void WifiBoard::TryWifiConnect() {
+         ESP_LOGI(TAG, "Starting WiFi connection attempt");
+         esp_timer_start_once(connect_timer_, CONNECT_TIMEOUT_SEC * 1000000ULL);
+         WifiManager::GetInstance().StartStation();
++#ifdef CONFIG_BOARD_TYPE_POCKET_WALL_E_C3
++        ApplyPocketTxPowerCap("station");
++#endif
+     } else {
+         // No SSID configured, enter config mode
+         // Wait for the board version to be shown
+@@ -173,6 +192,9 @@ void WifiBoard::StartWifiConfigMode() {
+     auto& wifi_manager = WifiManager::GetInstance();
+ 
+     wifi_manager.StartConfigAp();
++#ifdef CONFIG_BOARD_TYPE_POCKET_WALL_E_C3
++    ApplyPocketTxPowerCap("provisioning AP");
++#endif
+ 
+     // Show config prompt after a short delay
+     Application::GetInstance().Schedule([&wifi_manager]() {

@@ -142,6 +142,21 @@ unencrypted flash settings. A full diagnostic reflash clears those settings;
 a reset does not. That is why the action guide calls for a private location and
 a unique guest/IoT network.
 
+**Why the transmit power goes down, not up.** The SuperMini places its ceramic
+chip antenna too close to the ground plane and neighbouring parts, so much of
+the transmitter's output is reflected instead of radiated. On three boards from
+this batch the setup hotspot was invisible at the firmware's default 20 dBm and
+board `A1` became visible once the cap was lowered to 8.5 dBm, the same
+workaround Arduino users apply to this board with
+`WiFi.setTxPower(WIFI_POWER_8_5dBm)`. The value in the source, `34`, is in
+quarter-dBm units, so it means 8.5 dBm. Why lower power helps is not settled:
+the usual explanations are the power amplifier distorting into the mismatched
+antenna, or the board's small regulator sagging under the current peaks of a
+20 dBm burst. Either way the fix is empirical, and the cost is range. ESP-IDF
+only honours the cap after the radio has started, which is why the board
+applies it after each start: once for the setup hotspot and once for the
+station connection, with a log line for each.
+
 - Project reference: [assistant-mode firmware notes](../firmware/README.md#flash-and-monitor-source-builds)
 - System overview: [how the parts fit together](../edu/01-how-it-fits-together.md)
 

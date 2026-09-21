@@ -171,4 +171,8 @@ The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at add
   automated one: no assembled battery circuit has been connected, the amplifier
   stays disabled, and `firmware/source-build.json` still records
   `hardware_tested: false` because that flag describes what the build workflow
-  verified, which remains nothing physical. Follow [Lesson 13's staged integration method](edu/fundamentals/13-debugging-integration-and-capstone.md), keep a separate [lab record](edu/fundamentals/reference/lab-record-template.md) for each article, and use the [current F0 promotion gates](docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) before any cell connection or pocket carry.
+  verified, which remains nothing physical.
+- On 2026-09-21 the builder provisioned board `A1` onto Wi-Fi under the 8.5 dBm
+  transmit-power cap and received one remote response from the Xiaozhi backend
+  (`PASS 10C`). That is also a builder-reported bench result. The amplifier
+  stays disabled, so there is still no spoken output. Follow [Lesson 13's staged integration method](edu/fundamentals/13-debugging-integration-and-capstone.md), keep a separate [lab record](edu/fundamentals/reference/lab-record-template.md) for each article, and use the [current F0 promotion gates](docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) before any cell connection or pocket carry.

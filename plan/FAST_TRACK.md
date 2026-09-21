@@ -133,7 +133,13 @@ place with its provenance marked.
    `USB BUILD — WAIT FOR ITS STEP`. Do not inventory that box now.
 5. Leave only one controller and one cable in the active work area.
 6. Confirm the controller is a plain ESP32-C3 SuperMini matching the linked
-   listing, not a `Plus` variant with an RGB LED or antenna socket. If the
+   listing, and look at the end **opposite the USB connector** to see which
+   antenna it has: a ceramic chip antenna (small red or brown block), a zigzag
+   copper trace, or a U.FL socket for an external antenna. Write it down. All
+   three work, but the SuperMini is widely reported to leave too little
+   clearance around its antenna, so plan to keep that end free of jumper
+   wires, modules and metal when you reach Step 6. Reject an RGB LED on
+   GPIO8, which is a different variant with a different pin map. If the
    package says `Plus`, return it to the `USB BUILD` box with a note saying
    `not for this guide`, then find a plain one.
 7. Label its bag or written record `A1` and photograph both sides. Keep tape
@@ -144,7 +150,12 @@ place with its provenance marked.
 - [ ] Only board `A1` and one possible data cable remain in the active work
       area; batteries are separately protected; the `USB BUILD`,
       `POWER/AUDIO`, and `BRASS/SHARP` groups are put away; and `A1` is the
-      plain SuperMini, not a `Plus` variant.
+      plain SuperMini with no RGB LED, and you have **identified what sits at
+      the end opposite the USB connector**: a ceramic chip antenna (a small
+      red or brown block), a zigzag copper trace, or a U.FL socket. Record
+      which. Nothing before Step 10 uses the radio, so an antenna problem
+      stays invisible until then — and the SuperMini's antenna is known to
+      perform poorly when anything crowds it.
 
 If you cannot find a cable, you can complete Steps 1–2 on the computer, but
 Step 3 must wait for a proven data cable.
@@ -818,8 +829,9 @@ acceptable to you.
 
 The amplifier remains disabled, so this experiment does **not** produce spoken
 output. Its goal is only one successful backend round trip visible in the log
-or display. This cloud path is not yet verified on your exact board and can
-change when the third-party service changes.
+or display. This cloud path returned one remote response on board `A1` on
+2026-09-21 (builder-reported), and it can change when the third-party service
+changes.
 
 > **Provisioning warning:** the temporary configuration network is open and
 > the form at `http://192.168.4.1` is not encrypted. A nearby person could
@@ -829,11 +841,24 @@ change when the third-party service changes.
 > unencrypted in flash settings. A reset does not erase them; the board retains
 > them until a full reflash or flash erase.
 
+> **Radio note for this board:** the SuperMini's ceramic chip antenna is poorly
+> matched. At the firmware's default 20 dBm transmit power the setup hotspot
+> was invisible on three boards from this batch, including `A1`, even with the
+> phone touching the board. The assistant build therefore caps Wi-Fi transmit
+> power at 8.5 dBm on this board, once for the setup hotspot and once for the
+> normal connection, and prints a log line each time. That is **lower** power,
+> not higher: the `34` in the source is in quarter-dBm units. Expect short
+> range. Keep the phone within about a metre of the antenna end (the end
+> opposite USB) during setup, and keep that end clear of wires and metal.
+
 ### Do
 
 1. Read the [assistant-mode privacy and provisioning notes](../firmware/README.md#flash-and-monitor-source-builds).
-2. Prepare the dedicated 2.4 GHz guest/IoT network described above.
-3. With the existing USB-only hardware, build assistant mode:
+2. Prepare the dedicated 2.4 GHz guest/IoT network described above, and
+   confirm on the router that it broadcasts on 2.4 GHz. The ESP32-C3 cannot
+   see 5 GHz networks at all.
+3. Leave the Step 9 wiring exactly as it passed. Add nothing.
+4. With the existing USB-only hardware, build assistant mode:
 
    ```bash
    . firmware/.work/esp-idf/export.sh
@@ -843,7 +868,7 @@ change when the third-party service changes.
    If that command prints an error, stop. Do not run a later command using an
    older artifact.
 
-4. After the build succeeds, verify it:
+5. After the build succeeds, verify it:
 
    ```bash
    python3 firmware/scripts/verify_source_build.py
@@ -852,7 +877,7 @@ change when the third-party service changes.
    Stop unless it prints `Build mode: assistant; amplifier: disabled` without
    an error.
 
-5. Preview the flash using the exact port from Step 3:
+6. Preview the flash using the exact port from Step 3:
 
    ```bash
    firmware/scripts/flash.sh /dev/ttyACM0 --dry-run
@@ -864,33 +889,102 @@ change when the third-party service changes.
       print `Build mode: assistant; amplifier: disabled`, and the preview names
       the exact port from Step 3.
 
-### Do, after PASS 10A
+### Do, after PASS 10A — find the hotspot and hand over the network
 
-6. Flash and open the monitor:
+7. Flash and open the monitor:
 
    ```bash
    . firmware/.work/esp-idf/export.sh
    firmware/scripts/flash.sh /dev/ttyACM0 --monitor
    ```
 
-7. Confirm the actual `Xiaozhi-XXXX` network name in the boot log.
-8. From a phone or computer, join that temporary Wi-Fi network. If its captive
-   portal does not appear, open <http://192.168.4.1>.
-9. Select your dedicated **2.4 GHz** guest/IoT network and enter its
-   credentials in the device-hosted form.
-10. Follow any activation instruction shown by the current display or log. The
-   backend is third-party and its account flow may change independently of
-   this repository.
-11. Give the external GPIO10 button one quick press. When the log or display
-    shows that it is listening, ask one short question such as “What is two
-    plus two?” Wait for a remote response to appear in the log or display.
+8. In the boot log, find these three lines in this order. Other lines appear
+   between them, and the numbers in parentheses vary. Write down the exact
+   hotspot name; its last four characters differ per board.
+
+   ```text
+   I (…) WifiManager: Starting config AP
+   I (…) WifiConfigurationAp: Access Point started with SSID Xiaozhi-XXXX
+   I (…) WifiBoard: Wi-Fi max TX power capped at 8.5 dBm (provisioning AP)
+   ```
+
+   If the third line is missing, the board is running an older image at full
+   power, which is the exact condition that was invisible on this batch. Go
+   back to item 4 and rebuild.
+
+9. The OLED shows the Wi-Fi configuration screen with the same hotspot name
+   and the address `http://192.168.4.1`.
+10. On the phone, turn mobile data off so the captive portal is not bypassed.
+    Hold the phone within about 30 cm of the board's antenna end, open the
+    Wi-Fi list, and wait up to 30 seconds. Pull down to rescan if the list
+    does not refresh. The hotspot is open, with no password. Join it, and if
+    the phone warns that the network has no internet, choose to stay
+    connected.
+11. If the captive portal does not open by itself within 15 seconds, open a
+    browser and go to `http://192.168.4.1`.
+12. In the form, choose your dedicated **2.4 GHz** guest/IoT network from the
+    scanned list, type its password, and submit. The board switches to that
+    network's channel to test the credentials. If the router refuses the first
+    attempt, the firmware waits three seconds and tries once more by itself,
+    so wait for the page's result before touching anything. The phone drops
+    off the hotspot when the board reports success; that is expected.
+13. Back in the monitor, find these lines in this order:
+
+    ```text
+    I (…) WifiBoard: Starting WiFi connection attempt
+    I (…) WifiBoard: Wi-Fi max TX power capped at 8.5 dBm (station)
+    I (…) WifiBoard: Connected to WiFi: <your guest network>
+    ```
+
+    If the board instead logs `WiFi connection timeout, entering config mode`,
+    it could not reach the router at 8.5 dBm. Move the board and the router
+    into the same room and repeat from item 10.
+
+### PASS 10B — the board is on your network at capped power
+
+- [ ] The hotspot appeared on the phone, the form accepted the guest network,
+      and the monitor shows the station cap line followed by
+      `Connected to WiFi: <your guest network>` without a reset. Record the
+      hotspot name, the network name, and the time.
+
+### Do, after PASS 10B — activation and one round trip
+
+14. Keep watching the monitor and the OLED. Once on the network the firmware
+    contacts the third-party bootstrap service. `Ota: Activation successful`
+    in the log means the service already knows this board. Otherwise the
+    display or log shows an activation instruction, usually a short code to
+    enter on the service's own site. That flow belongs to the third party and
+    may change independently of this repository. Enter the code only on the
+    service's own activation page.
+15. Give the external GPIO10 button one quick press. When the log or display
+    shows that it is listening, ask one short question such as "What is two
+    plus two?" Wait for a remote response to appear in the log or display.
     Quick-press the button once more if the interface remains active.
 
-### PASS 10B — one assistant round trip
+### PASS 10C — one assistant round trip
 
-- [ ] The device joins Wi-Fi, your quick press starts listening, and one spoken
-      question produces a remote response in the display or serial log without
-      a reset. Record the evidence.
+- [ ] Your quick press starts listening, and one spoken question produces a
+      remote response in the display or serial log without a reset. Record the
+      evidence: the log excerpt and a photograph of the display.
+
+### If the hotspot never appears
+
+Work down this list and stop at the first item that changes the result.
+
+1. Confirm the `(provisioning AP)` cap line from item 8 is in the boot log.
+   Without it the board is transmitting at 20 dBm.
+2. Move the phone to within 30 cm of the antenna end, force a rescan, and
+   wait 30 seconds. Check that no jumper wire crosses the antenna end.
+3. Flash the same image onto a bare spare board lying on an open desk. If the
+   spare's hotspot appears and `A1`'s does not, the breadboard wiring is
+   crowding the antenna. If neither appears, the 8.5 dBm cap is not enough
+   for your boards.
+4. The remaining fixes are hardware: the 31 mm wire antenna mod, or a board
+   with a real antenna socket. Both are described in the controller entry of
+   the [inventory](../docs/INVENTORY.md). The second changes the pin map and
+   is not a drop-in swap.
+
+### Return to offline diagnostics
 
 Return to offline diagnostics whenever you need to isolate a hardware problem.
 Build first:

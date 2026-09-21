@@ -41,8 +41,9 @@ changes as candidates are reviewed.
 A marketplace listing, successful compile, static check, or CAD model is not
 physical acceptance. The manifest still records `hardware_tested: false`,
 which describes the build workflow, not the bench: the USB prototype itself
-was built and passed its cold-start gate on 2026-09-20. Everything past that
-— amplifier, battery, enclosure — remains unbuilt and unqualified.
+was built and passed its cold-start gate on 2026-09-20, and completed one
+cloud round trip on 2026-09-21. Everything past that — amplifier, battery,
+enclosure — remains unbuilt and unqualified.
 
 ## Safety boundary
 

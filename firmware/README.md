@@ -235,7 +235,11 @@ controller bring-up.
 **Assistant mode only:** on a clean first boot, connect to the expected
 device-specific `Xiaozhi-XXXX`
 Wi-Fi provisioning access point, confirm its actual name in the boot log, and
-open <http://192.168.4.1> if the captive portal does not appear. Xiaozhi's
+open <http://192.168.4.1> if the captive portal does not appear. On this board
+the firmware caps Wi-Fi transmit power at 8.5 dBm after every radio start, for
+the provisioning access point and for the station connection, because the
+SuperMini's ceramic antenna left the access point invisible at the default
+20 dBm; the log prints `Wi-Fi max TX power capped at 8.5 dBm` for each. Xiaozhi's
 default build uses `https://api.tenclass.net/xiaozhi/ota/` as its third-party
 bootstrap service. Review that service's privacy and operational requirements
 before sending microphone audio to it.

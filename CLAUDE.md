@@ -78,10 +78,13 @@ stays that way: `record_source_build.py` hard-codes it, and the flag means
 "this build workflow tested hardware", which it never has. Do not hand-edit it.
 
 The builder separately established `PASS 9` on a physical board on 2026-09-20
-— the complete USB prototype, two cold starts. Treat Steps 0-9 of
-`plan/FAST_TRACK.md` as passed on hardware, and cite the builder's lab record
-rather than the manifest for that. No assembled battery circuit has been
-connected; the amplifier remains disabled; nothing past Step 9 is established.
+— the complete USB prototype, two cold starts — and reported `PASS 10C` on
+2026-09-21: board `A1` joined Wi-Fi under the 8.5 dBm transmit-power cap and
+one spoken question returned a remote response from the Xiaozhi backend.
+Treat Steps 0-10 of `plan/FAST_TRACK.md` as passed on hardware, and cite the
+builder's lab record rather than the manifest for that. No assembled battery
+circuit has been connected; the amplifier remains disabled, so there is still
+no spoken output; nothing past Step 10 is established.
 
 A matching checksum or a successful compile still does not prove hardware
 operation — do not write that it does, and do not mark a step passed that the
