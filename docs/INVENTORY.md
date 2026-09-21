@@ -1,6 +1,6 @@
 # Purchased inventory — what is in hand and what each item is for
 
-> **Factual purchase record, last updated 2026-09-02.** This tracks what was
+> **Factual purchase record, last updated 2026-09-21.** This tracks what was
 > *bought*, not what is *approved*. It takes no side in the R1/F0 design fork —
 > part-selection authority stays in
 > [FINAL_MATERIALS_FOR_REVIEW.md](FINAL_MATERIALS_FOR_REVIEW.md). Mark items off
@@ -28,8 +28,9 @@ proven USB data cable.
 | Amazon #6 | Sep 2 | K&S #9831 brass tube, TUOFENG 26 AWG wire |
 | Amazon #7 | Sep 2 | CBAZY 30 AWG wire (re-ordered after cancellation) |
 | Amazon #8 | Sep 2 | Heat gun $10.33 · hot glue gun $11.92 · diamond needle files |
+| Amazon #9 | Sep 21 | Rigol DHO802 oscilloscope, [B0CKX699F5](https://www.amazon.com/dp/B0CKX699F5); price paid not recorded |
 
-Estimated total spend: **≈ $635–660**.
+Estimated total spend: **≈ $635–660**, plus the DHO802 (Rigol list price $329; the price paid is not recorded here).
 
 ---
 
@@ -106,9 +107,12 @@ use each where it belongs, and strain-relieve every conductor either way.
 | --- | --- |
 | **KAIWEETS TRMS multimeter**, 6000 counts, + hard case | The most important instrument in the build. Every safety step is a meter step: battery polarity before the first connection, checking the brass frame is isolated from every circuit, continuity, switch voltage drop, charge termination voltage. Nothing electrical gets connected without it. |
 | **SKY TOPPOWER DC supply**, 0–30 V / 0–5 A | An adjustable, **current-limited** bench power supply that substitutes for the battery during testing. If something is wired wrong it politely limits current instead of dumping a lithium cell's full energy into the fault. This is what lets the entire power chain be proven before a cell is ever installed. |
+| **Rigol DHO802 oscilloscope**, 70 MHz, 2 channels + external trigger, 12-bit, two PVP3150 10X probes, bought 2026-09-21, **not yet received** | Shows voltage against time, which the multimeter cannot: clock edges, rail dips during Wi-Fi bursts, power-up order, and the speaker's differential signal. Two channels with both probe grounds on circuit ground plus its A−B math give the differential-safe speaker measurement the audio gate asks for; **never clip a probe ground to either speaker lead**. Its Single trigger mode catches one-off start-up events. Powered from a USB-C 15 V adapter; before first use, meter whether the BNC shells connect to the adapter's earth and to the rear GND terminal, and record the answer. Warranty three years on the mainframe, not the probes. It does not measure millisecond current peaks or log a charge cycle. |
 | **NEIKO digital caliper**, 0–6" | Measures parts to a hundredth of a millimetre. Every module, board, and connector needs its real measured size before the frame geometry can be trusted — listing dimensions are frequently wrong. |
 | **REXQualis breadboards**, 4 pcs (830 + 400 point) | Use for resistor labs and the controller's button/OLED/microphone connections. Check split power rails and header joints before use. Amplifier supply and speaker current do not go through breadboard contacts. Loose module headers must be soldered and inspected before jumper testing. |
 | **TODOELEC Dupont jumper kit**, 120 wires, 10 cm | Pre-terminated jumper wires for breadboarding. Bench use only — not for final assembly, and never for the speaker output or high-current runs. |
+
+**Instrument decision, 2026-09-21:** the DHO802 is the last instrument purchase. The purchase authority's remaining `ARRANGE` instruments — the fast current meter, the calibrated charge-voltage logger, and the three-channel temperature logger — are to be borrowed or rented if needed. Until access exists, the gates that name them stay closed.
 
 # 6 · Tools — fabrication and safety
 
