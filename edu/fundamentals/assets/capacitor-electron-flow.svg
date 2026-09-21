@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="800" viewBox="0 0 1500 800" role="img" aria-labelledby="title desc">
+  <title id="title">Electron flow while a capacitor charges, holds charge, and discharges through an LED</title>
+  <desc id="desc">Three panels show electrons moving in the wires, never through the capacitor dielectric. The first panel shows charging from a five volt source, the second shows steady state, and the third shows discharge through a resistor and LED after the source is isolated.</desc>
+
+  <defs>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#1473e6"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title { font: 700 34px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .subtitle { font: 18px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .panel-title { font: 700 23px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .label { font: 17px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #1e293b; }
+      .small { font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .tiny { font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .wire { fill: none; stroke: #334155; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+      .wire-off { fill: none; stroke: #94a3b8; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 8 8; }
+      .electron { fill: none; stroke: #1473e6; stroke-width: 6; stroke-linecap: round; marker-end: url(#arrow-blue); }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .source { fill: #f8fafc; stroke: #64748b; stroke-width: 3; }
+      .load { fill: #fff7ed; stroke: #f97316; stroke-width: 3; }
+      .cap { stroke: #0f172a; stroke-width: 7; stroke-linecap: round; }
+      .charge-plus { font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #dc2626; }
+      .charge-minus { font: 700 23px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #1473e6; }
+    </style>
+  </defs>
+
+  <rect width="1500" height="800" fill="#f1f5f9"/>
+  <text class="title" x="750" y="48" text-anchor="middle">How electrons move in the capacitor + LED example</text>
+  <text class="subtitle" x="750" y="77" text-anchor="middle">Blue arrows show electron flow in the wires — conventional current points the opposite way.</text>
+
+  <!-- Panel 1: charging -->
+  <g aria-label="Step one: charging">
+    <rect class="panel" x="25" y="100" width="460" height="620" rx="22"/>
+    <circle cx="62" cy="139" r="21" fill="#dbeafe"/>
+    <text class="panel-title" x="62" y="147" text-anchor="middle">1</text>
+    <text class="panel-title" x="93" y="147">Power ON: charging</text>
+
+    <!-- five volt source -->
+    <rect class="source" x="62" y="320" width="104" height="104" rx="14"/>
+    <text class="label" x="114" y="354" text-anchor="middle">5 V</text>
+    <text class="small" x="114" y="378" text-anchor="middle">supply</text>
+    <text class="charge-plus" x="147" y="343">+</text>
+    <text class="charge-minus" x="145" y="418">−</text>
+
+    <!-- circuit wires -->
+    <path class="wire" d="M 114 320 V 235 H 407 V 320"/>
+    <path class="wire" d="M 407 414 V 515 H 114 V 424"/>
+    <path class="wire" d="M 260 235 V 323"/>
+    <path class="wire" d="M 260 371 V 515"/>
+
+    <!-- capacitor -->
+    <line class="cap" x1="222" y1="323" x2="298" y2="323"/>
+    <line class="cap" x1="222" y1="371" x2="298" y2="371"/>
+    <text class="charge-plus" x="230" y="314">+ + +</text>
+    <text class="charge-minus" x="229" y="397">− − −</text>
+    <text class="small" x="260" y="420" text-anchor="middle">1000 µF</text>
+
+    <!-- LED load -->
+    <rect class="load" x="354" y="320" width="106" height="94" rx="13"/>
+    <text class="label" x="407" y="353" text-anchor="middle">1 kΩ</text>
+    <text class="label" x="407" y="382" text-anchor="middle">+ LED</text>
+    <path d="M 424 392 l 10 -10 M 427 399 l 13 -13" stroke="#f97316" stroke-width="2.5" marker-end="url(#arrow-gray)"/>
+
+    <!-- electron paths -->
+    <path class="electron" d="M 185 515 H 235"/>
+    <path class="electron" d="M 260 477 V 404"/>
+    <path class="electron" d="M 239 235 H 174"/>
+    <path class="electron" d="M 407 483 V 432"/>
+
+    <text class="small" x="260" y="557" text-anchor="middle">e⁻ are pushed onto the lower plate</text>
+    <text class="small" x="260" y="584" text-anchor="middle">and pulled off the upper plate.</text>
+    <rect x="72" y="610" width="366" height="76" rx="12" fill="#eff6ff" stroke="#93c5fd"/>
+    <text class="label" x="255" y="640" text-anchor="middle">No electrons cross the dielectric.</text>
+    <text class="tiny" x="255" y="666" text-anchor="middle">The changing electric field couples the plates.</text>
+  </g>
+
+  <!-- Panel 2: charged -->
+  <g aria-label="Step two: fully charged">
+    <rect class="panel" x="520" y="100" width="460" height="620" rx="22"/>
+    <circle cx="557" cy="139" r="21" fill="#dcfce7"/>
+    <text class="panel-title" x="557" y="147" text-anchor="middle">2</text>
+    <text class="panel-title" x="588" y="147">Charged: steady DC</text>
+
+    <!-- five volt source -->
+    <rect class="source" x="557" y="320" width="104" height="104" rx="14"/>
+    <text class="label" x="609" y="354" text-anchor="middle">5 V</text>
+    <text class="small" x="609" y="378" text-anchor="middle">supply</text>
+    <text class="charge-plus" x="642" y="343">+</text>
+    <text class="charge-minus" x="640" y="418">−</text>
+
+    <!-- circuit wires -->
+    <path class="wire" d="M 609 320 V 235 H 902 V 320"/>
+    <path class="wire" d="M 902 414 V 515 H 609 V 424"/>
+    <path class="wire" d="M 755 235 V 323"/>
+    <path class="wire" d="M 755 371 V 515"/>
+
+    <!-- capacitor -->
+    <line class="cap" x1="717" y1="323" x2="793" y2="323"/>
+    <line class="cap" x1="717" y1="371" x2="793" y2="371"/>
+    <text class="charge-plus" x="725" y="314">+ + +</text>
+    <text class="charge-minus" x="724" y="397">− − −</text>
+    <text class="small" x="755" y="420" text-anchor="middle">≈ 5 V stored</text>
+
+    <!-- LED load -->
+    <rect class="load" x="849" y="320" width="106" height="94" rx="13"/>
+    <text class="label" x="902" y="353" text-anchor="middle">1 kΩ</text>
+    <text class="label" x="902" y="382" text-anchor="middle">+ LED</text>
+    <path d="M 919 392 l 10 -10 M 922 399 l 13 -13" stroke="#f97316" stroke-width="2.5" marker-end="url(#arrow-gray)"/>
+
+    <!-- electron path only through LED branch -->
+    <path class="electron" d="M 677 515 H 827"/>
+    <path class="electron" d="M 902 487 V 435"/>
+    <path class="electron" d="M 832 235 H 682"/>
+    <line x1="724" y1="345" x2="786" y2="345" stroke="#ef4444" stroke-width="4"/>
+    <line x1="746" y1="334" x2="764" y2="356" stroke="#ef4444" stroke-width="4"/>
+    <line x1="764" y1="334" x2="746" y2="356" stroke="#ef4444" stroke-width="4"/>
+
+    <text class="small" x="755" y="557" text-anchor="middle">Capacitor branch: no net electron flow</text>
+    <text class="small" x="755" y="584" text-anchor="middle">in ideal steady-state DC.</text>
+    <rect x="567" y="610" width="366" height="76" rx="12" fill="#f0fdf4" stroke="#86efac"/>
+    <text class="label" x="750" y="640" text-anchor="middle">The supply still powers the LED.</text>
+    <text class="tiny" x="750" y="666" text-anchor="middle">The capacitor simply holds its charge.</text>
+  </g>
+
+  <!-- Panel 3: discharging -->
+  <g aria-label="Step three: discharging">
+    <rect class="panel" x="1015" y="100" width="460" height="620" rx="22"/>
+    <circle cx="1052" cy="139" r="21" fill="#ffedd5"/>
+    <text class="panel-title" x="1052" y="147" text-anchor="middle">3</text>
+    <text class="panel-title" x="1083" y="147">Power OFF: discharging</text>
+
+    <!-- isolated source indicator -->
+    <rect x="1048" y="203" width="113" height="64" rx="13" fill="#f8fafc" stroke="#94a3b8" stroke-width="3" stroke-dasharray="7 6"/>
+    <text class="label" x="1105" y="230" text-anchor="middle" fill="#64748b">5 V OFF</text>
+    <text class="tiny" x="1105" y="252" text-anchor="middle">isolated</text>
+    <path class="wire-off" d="M 1161 235 H 1180"/>
+    <circle cx="1186" cy="235" r="5" fill="#94a3b8"/>
+    <circle cx="1221" cy="235" r="5" fill="#94a3b8"/>
+    <line x1="1189" y1="231" x2="1213" y2="213" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- closed capacitor/load loop -->
+    <path class="wire" d="M 1245 235 H 1397 V 320"/>
+    <path class="wire" d="M 1397 414 V 515 H 1245"/>
+    <path class="wire" d="M 1245 235 V 323"/>
+    <path class="wire" d="M 1245 371 V 515"/>
+
+    <!-- capacitor -->
+    <line class="cap" x1="1207" y1="323" x2="1283" y2="323"/>
+    <line class="cap" x1="1207" y1="371" x2="1283" y2="371"/>
+    <text class="charge-plus" x="1215" y="314">+ +</text>
+    <text class="charge-minus" x="1215" y="397">− −</text>
+    <text class="small" x="1245" y="420" text-anchor="middle">voltage falling</text>
+
+    <!-- LED load -->
+    <rect class="load" x="1344" y="320" width="106" height="94" rx="13"/>
+    <text class="label" x="1397" y="353" text-anchor="middle">1 kΩ</text>
+    <text class="label" x="1397" y="382" text-anchor="middle">+ LED</text>
+    <path d="M 1414 392 l 10 -10 M 1417 399 l 13 -13" stroke="#f97316" stroke-width="2.5" marker-end="url(#arrow-gray)"/>
+
+    <!-- discharge electron loop: minus plate -> LED -> plus plate -->
+    <path class="electron" d="M 1245 414 V 479"/>
+    <path class="electron" d="M 1272 515 H 1350"/>
+    <path class="electron" d="M 1397 486 V 435"/>
+    <path class="electron" d="M 1360 235 H 1282"/>
+    <path class="electron" d="M 1245 267 V 305"/>
+
+    <text class="small" x="1245" y="557" text-anchor="middle">Stored e⁻ travel through the LED circuit</text>
+    <text class="small" x="1245" y="584" text-anchor="middle">from the − plate back to the + plate.</text>
+    <rect x="1062" y="610" width="366" height="76" rx="12" fill="#fff7ed" stroke="#fdba74"/>
+    <text class="label" x="1245" y="640" text-anchor="middle">The LED fades as the voltage falls.</text>
+    <text class="tiny" x="1245" y="666" text-anchor="middle">Eventually too little voltage remains to light it.</text>
+  </g>
+
+  <text class="tiny" x="750" y="766" text-anchor="middle">In a real circuit, wire resistance and capacitor ESR limit the brief charging surge.</text>
+</svg>
