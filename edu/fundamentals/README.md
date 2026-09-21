@@ -1,7 +1,10 @@
 # EE foundations for the Pocket Assistant
 
 The course moves from physical intuition to a complete system. Read it in
-order the first time; later, use individual lessons as references.
+order the first time; later, use individual lessons as references. Each
+lesson also exists as an illustrated three-page web page, listed in the
+[index of published learning pages](../ARTIFACTS.md); these Markdown files
+remain the authority.
 
 | Stage | Lessons | You should be able to do afterward |
 | --- | --- | --- |

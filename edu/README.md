@@ -17,9 +17,11 @@ nearby:
 - [glossary](fundamentals/reference/glossary.md); and
 - [lab record template](fundamentals/reference/lab-record-template.md).
 
-Illustrated versions of the theory companion, the Step 10 bench guide, and
-the current study plan are published as web pages; the
-[index of published learning pages](ARTIFACTS.md) holds the links.
+Every lesson of the course, the project overview, the theory companion, the
+Step 10 bench guide, and the current study plan are also published as
+illustrated three-page web pages; the
+[index of published learning pages](ARTIFACTS.md) holds the links. The
+Markdown here remains the authority.
 
 ## Project-specific guides
 
