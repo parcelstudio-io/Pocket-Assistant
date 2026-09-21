@@ -17,6 +17,10 @@ nearby:
 - [glossary](fundamentals/reference/glossary.md); and
 - [lab record template](fundamentals/reference/lab-record-template.md).
 
+Illustrated versions of the theory companion, the Step 10 bench guide, and
+the current study plan are published as web pages; the
+[index of published learning pages](ARTIFACTS.md) holds the links.
+
 ## Project-specific guides
 
 - [Pocket Assistant project overview](01-how-it-fits-together.md) — system

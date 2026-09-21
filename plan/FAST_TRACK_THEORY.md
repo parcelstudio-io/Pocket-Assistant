@@ -3,7 +3,8 @@
 [Back to the action-only fast track](FAST_TRACK.md) ·
 [Parts outline](FAST_TRACK_PARTS.md) ·
 [All illustrated concept notes](concepts/README.md) ·
-[Full electronics course](../edu/README.md)
+[Full electronics course](../edu/README.md) ·
+[Illustrated version of this page](../edu/ARTIFACTS.md)
 
 This page is optional while you build. The action guide contains every safety
 rule, command, wire, and pass condition you need. Open only the section for the
