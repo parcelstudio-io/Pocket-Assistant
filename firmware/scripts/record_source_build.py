@@ -48,7 +48,7 @@ def record_source_build(
     *, expected_input_fingerprint: str,
 ) -> Path:
     if mode not in BUILD_MODES:
-        raise VerificationError("invalid build_mode; expected diagnostics or assistant")
+        raise VerificationError("invalid build_mode; expected diagnostics, assistant, or assistant-local")
     hashes = input_hashes(firmware_dir)
     if input_fingerprint(hashes) != expected_input_fingerprint:
         raise VerificationError("local inputs changed during the build; rebuild before recording")

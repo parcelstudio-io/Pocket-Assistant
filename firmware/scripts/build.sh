@@ -11,24 +11,37 @@ source "${FIRMWARE_DIR}/versions.env"
 
 BUILD_MODE=diagnostics
 EXPLICIT_MODE=""
+BRIDGE_URL=""
 for option in "$@"; do
     case "${option}" in
-        --diagnostics|--assistant)
+        --diagnostics|--assistant|--assistant-local)
             REQUESTED_MODE="${option#--}"
             if [[ -n "${EXPLICIT_MODE}" && "${EXPLICIT_MODE}" != "${REQUESTED_MODE}" ]]; then
-                echo "error: --diagnostics and --assistant are mutually exclusive" >&2
+                echo "error: build modes are mutually exclusive" >&2
                 exit 2
             fi
             BUILD_MODE="${REQUESTED_MODE}"
             EXPLICIT_MODE="${REQUESTED_MODE}" ;;
+        --bridge-url=*) BRIDGE_URL="${option#--bridge-url=}" ;;
         --help|-h)
-            echo "usage: $0 [--diagnostics | --assistant]"
-            echo "Default: offline bench diagnostics. --assistant enables the cloud assistant."
-            echo "Both modes keep the amplifier disabled pending hardware qualification."
+            echo "usage: $0 [--diagnostics | --assistant | --assistant-local --bridge-url=http://HOST:PORT/ota/SECRET]"
+            echo "Default: offline bench diagnostics. --assistant uses Xiaozhi; --assistant-local uses a LAN voice bridge."
+            echo "All modes keep the amplifier disabled pending hardware qualification."
             exit 0 ;;
         *) echo "error: unknown option: ${option}" >&2; exit 2 ;;
     esac
 done
+if [[ "${BUILD_MODE}" == assistant-local ]]; then
+    BRIDGE_URL_PATTERN='^http://[A-Za-z0-9.-]+:([0-9]{1,5})/ota/[A-Za-z0-9_-]{24,}$'
+    if [[ ! "${BRIDGE_URL}" =~ ${BRIDGE_URL_PATTERN} ]] ||
+       (( 10#${BASH_REMATCH[1]:-0} < 1 || 10#${BASH_REMATCH[1]:-0} > 65535 )); then
+        echo "error: --assistant-local requires --bridge-url=http://HOST:PORT/ota/SECRET" >&2
+        exit 2
+    fi
+elif [[ -n "${BRIDGE_URL}" ]]; then
+    echo "error: --bridge-url requires --assistant-local" >&2
+    exit 2
+fi
 
 # Freeze generated timestamps and compiler __DATE__/__TIME__ values so clean
 # builds with the pinned source, SDK, and component lock can be compared.
@@ -79,11 +92,19 @@ idf.py set-target esp32c3
         -e '/^# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set$/d' \
         -e '/^CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER=/d' \
         -e '/^# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set$/d' \
+        -e '/^CONFIG_POCKET_AI_LOCAL_BRIDGE=/d' \
+        -e '/^# CONFIG_POCKET_AI_LOCAL_BRIDGE is not set$/d' \
         "${FIRMWARE_DIR}/sdkconfig.defaults"
     if [[ "${BUILD_MODE}" == diagnostics ]]; then
         printf '\nCONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y\n'
     else
         printf '\n# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set\n'
+    fi
+    if [[ "${BUILD_MODE}" == assistant-local ]]; then
+        printf 'CONFIG_POCKET_AI_LOCAL_BRIDGE=y\n'
+        printf 'CONFIG_OTA_URL="%s"\n' "${BRIDGE_URL}"
+    else
+        printf '# CONFIG_POCKET_AI_LOCAL_BRIDGE is not set\n'
     fi
     printf '# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set\n'
 } >> sdkconfig

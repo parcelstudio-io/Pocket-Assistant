@@ -15,7 +15,7 @@ FIRMWARE_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = FIRMWARE_DIR / "source-build.json"
 DEFAULT_BUILD_DIR = FIRMWARE_DIR / ".work" / "xiaozhi-esp32" / "build"
 DEFAULT_DIST_DIR = FIRMWARE_DIR / "dist"
-BUILD_MODES = {"diagnostics", "assistant"}
+BUILD_MODES = {"diagnostics", "assistant", "assistant-local"}
 REQUIRED_INPUTS = {
     "dependencies.lock", "versions.env", "sdkconfig.defaults",
     "partitions/pocket-ai-4m.csv",
@@ -124,7 +124,7 @@ def validate_manifest(value: dict[str, Any], firmware_dir: Path) -> None:
         if value["schema_version"] != 2:
             raise VerificationError("unsupported source-build manifest schema; rebuild with build.sh")
         if value["build_mode"] not in BUILD_MODES:
-            raise VerificationError("invalid build_mode; expected diagnostics or assistant")
+            raise VerificationError("invalid build_mode; expected diagnostics, assistant, or assistant-local")
         if value["amplifier_enabled"] is not False:
             raise VerificationError("supported source builds must keep the amplifier disabled")
         artifact = value["artifact"]
@@ -245,6 +245,17 @@ def verify_manifest_files(
     diagnostics = config.get("CONFIG_POCKET_AI_BENCH_DIAGNOSTICS", "n")
     if diagnostics != ("y" if manifest["build_mode"] == "diagnostics" else "n"):
         raise VerificationError("build_mode does not match the effective sdkconfig")
+    local_bridge = config.get("CONFIG_POCKET_AI_LOCAL_BRIDGE", "n")
+    if local_bridge != ("y" if manifest["build_mode"] == "assistant-local" else "n"):
+        raise VerificationError("build_mode does not match the local bridge setting")
+    if local_bridge == "y":
+        ota_url = config.get("CONFIG_OTA_URL", "")
+        match = re.fullmatch(
+            r'"http://[A-Za-z0-9.-]+:([0-9]{1,5})/ota/[A-Za-z0-9_-]{24,}"',
+            ota_url,
+        )
+        if match is None or not 1 <= int(match[1]) <= 65535:
+            raise VerificationError("assistant-local has no valid bridge OTA URL")
     if config.get("CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER", "n") != "n":
         raise VerificationError("effective sdkconfig enables the unqualified amplifier")
     if (config.get("CONFIG_IDF_TARGET") != '"esp32c3"'

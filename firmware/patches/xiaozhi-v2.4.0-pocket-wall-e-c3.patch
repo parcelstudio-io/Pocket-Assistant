@@ -18,7 +18,7 @@ diff --git a/main/Kconfig.projbuild b/main/Kconfig.projbuild
 index a1bb6e3..2dfaa80 100644
 --- a/main/Kconfig.projbuild
 +++ b/main/Kconfig.projbuild
-@@ -6,6 +6,55 @@ config OTA_URL
+@@ -6,6 +6,63 @@ config OTA_URL
      help
          The application will access this URL to check for new firmwares and server address.
  
@@ -33,6 +33,14 @@ index a1bb6e3..2dfaa80 100644
 +            initializes Wi-Fi or cloud services. GPIO10 toggles OLED pixels;
 +            microphone statistics are logged once per second. The amplifier
 +            stays muted. Disable only when ready to test the assistant.
++
++    config POCKET_AI_LOCAL_BRIDGE
++        bool "Use the local voice bridge OTA endpoint"
++        depends on !POCKET_AI_BENCH_DIAGNOSTICS
++        default n
++        help
++            Use the build-provided LAN endpoint even if an older OTA URL was
++            saved in NVS. Keep OpenAI credentials on the bridge computer.
 +
 +    config POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER
 +        bool "Enable amplifier on a measured, qualified GPIO5/TXU fixture"
@@ -96,7 +104,57 @@ index d3c1d5f..1886f7d 100644
  #include <arpa/inet.h>
  #include <cJSON.h>
  #include <cstring>
-@@ -1037,6 +1038,13 @@ void Application::Reboot() {
+@@ -344,9 +345,17 @@ void Application::ActivationTask() {
+     // Check for new assets version
+     CheckAssetsVersion();
+ 
+     // Check for new firmware version
+     CheckNewVersion();
+ 
++#if CONFIG_POCKET_AI_LOCAL_BRIDGE
++    // Never use a WebSocket address cached from a previous cloud session.
++    while (!ota_->HasWebsocketConfig()) {
++        vTaskDelay(pdMS_TO_TICKS(5000));
++        CheckNewVersion();
++    }
++#endif
++
+     // Initialize the protocol
+     InitializeProtocol();
+ 
+@@ -373,6 +382,11 @@ void Application::CheckAssetsVersion() {
+     Settings settings("assets", true);
+     // Check if there is a new assets need to be downloaded
++#if CONFIG_POCKET_AI_LOCAL_BRIDGE
++    settings.EraseKey("download_url");  // Do not fetch a cached cloud asset URL.
++    std::string download_url;
++#else
+     std::string download_url = settings.GetString("download_url");
++#endif
+ 
+     if (!download_url.empty()) {
+         settings.EraseKey("download_url");
+@@ -418,4 +432,8 @@ void Application::CheckNewVersion() {
++#if CONFIG_POCKET_AI_LOCAL_BRIDGE
++    const int MAX_RETRY = 1;  // ActivationTask retries the LAN bridge every 5s.
++#else
+     const int MAX_RETRY = 10;
++#endif
+     int retry_count = 0;
+     int retry_delay = 10;  // Initial retry delay in seconds
+ 
+@@ -435,6 +453,10 @@ void Application::CheckNewVersion() {
+             char error_message[128];
++#if CONFIG_POCKET_AI_LOCAL_BRIDGE
++            snprintf(error_message, sizeof(error_message), "code=%d, local bridge", err);
++#else
+             snprintf(error_message, sizeof(error_message), "code=%d, url=%s", err,
+                      ota_->GetCheckVersionUrl().c_str());
++#endif
+             char buffer[256];
+             snprintf(buffer, sizeof(buffer), Lang::Strings::CHECK_NEW_VERSION_FAILED, retry_delay,
+                      error_message);
+@@ -1037,6 +1059,13 @@ void Application::Reboot() {
  }
  
  bool Application::UpgradeFirmware(const std::string& url, const std::string& version) {
@@ -110,7 +168,7 @@ index d3c1d5f..1886f7d 100644
      auto& board = Board::GetInstance();
      auto display = board.GetDisplay();
  
-@@ -1077,6 +1085,8 @@ bool Application::UpgradeFirmware(const std::string& url, const std::string& ver
+@@ -1077,6 +1106,8 @@ bool Application::UpgradeFirmware(const std::string& url, const std::string& ver
                   "Firmware upgrade failed, restarting audio service and continuing operation...");
          audio_service_.Start();                              // Restart audio service
          board.SetPowerSaveLevel(PowerSaveLevel::LOW_POWER);  // Restore power save level
@@ -234,3 +292,24 @@ index 2883221..6ab61a8 100644
  
      // Show config prompt after a short delay
      Application::GetInstance().Schedule([&wifi_manager]() {
+diff --git a/main/ota.cc b/main/ota.cc
+--- a/main/ota.cc
++++ b/main/ota.cc
+@@ -43,12 +43,17 @@ Ota::~Ota() {
+ }
+ 
+ std::string Ota::GetCheckVersionUrl() {
++#if CONFIG_POCKET_AI_LOCAL_BRIDGE
++    // Do not let a saved cloud OTA URL override the selected LAN bridge.
++    return CONFIG_OTA_URL;
++#else
+     Settings settings("wifi", false);
+     std::string url = settings.GetString("ota_url");
+     if (url.empty()) {
+         url = CONFIG_OTA_URL;
+     }
+     return url;
++#endif
+ }
+ 
+ std::unique_ptr<Http> Ota::SetupHttp() {

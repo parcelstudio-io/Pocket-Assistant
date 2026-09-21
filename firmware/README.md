@@ -74,6 +74,33 @@ image's Mandarin `wn9s_nihaoxiaozhi` and zh-CN strings (both set in
 `# CONFIG_SR_WN_WN9S_NIHAOXIAOZHI is not set` line is required because the
 WakeNet9s entries are independent bools, not a choice group).
 
+### Local OpenAI voice bridge
+
+**Parked build note (2026-09-21):** The prepared A1 image is
+`dist/pocket-wall-e-c3-v2.4.0-idf-v6.0.2.bin` (SHA-256
+`903e5cfe6fedae2bd0f245ac432105347dc94b5688010092a39f8c20dfa753ff`).
+It is the `assistant-local` build of Xiaozhi v2.4.0 on ESP-IDF v6.0.2,
+targeting ESP32-C3 with a private bridge URL on host `192.168.1.171`.
+The amplifier is disabled. The image passed source verification and a flash
+dry run; it has **not** been flashed to A1 or tested with the OpenAI API or
+speaker. Recheck the host IP and rebuild before use if the network changes.
+
+`build.sh --assistant-local --bridge-url=http://HOST:8765/ota/SECRET` builds the
+same A1 assistant with its Xiaozhi audio WebSocket pointed at the LAN bridge
+in [`bridge/`](bridge/). Replace `HOST` with the computer's LAN IP address
+that A1 can reach; use the `A1_OTA_TOKEN` generated for the bridge as `SECRET`.
+The build keeps OpenAI credentials on that computer and
+ignores any older Xiaozhi OTA URL saved on A1. If the bridge is unavailable,
+the firmware waits for it instead of using a cached cloud WebSocket address.
+The bridge computer and A1 must be on the same reachable network while using
+this build. Reflashing the merged image at `0x0` may erase saved Wi-Fi settings;
+be ready to provision Wi-Fi again.
+
+The current supported build still holds GPIO5 low and writes silence to the
+speaker path. It can validate microphone upload and OpenAI responses, but A1
+will not speak until the MAX98357A interface and power sequence have passed
+the hardware checks below and an amplifier-enabled build mode is added.
+
 For the exact published image and its pinned checksum, use the
 [host flashing and verification tools](../tools/README.md).
 

@@ -207,6 +207,25 @@ class SourceBuildTests(unittest.TestCase):
                          "assistant")
         self.verify_record()
 
+    def test_assistant_local_requires_bridge_config(self) -> None:
+        self.sdkconfig.write_text(self.sdkconfig.read_text().replace(
+            "CONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y",
+            "# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set") +
+            'CONFIG_POCKET_AI_LOCAL_BRIDGE=y\n'
+            'CONFIG_OTA_URL="http://192.168.1.171:8765/ota/'
+            'abcdefghijklmnopqrstuvwxyzABCDEF"\n')
+        self.make_record("assistant-local")
+        self.verify_record()
+        self.manifest = json.loads(self.manifest_path.read_text())
+        self.sdkconfig.write_text(self.sdkconfig.read_text().replace(
+            'CONFIG_OTA_URL="http://192.168.1.171:8765/ota/'
+            'abcdefghijklmnopqrstuvwxyzABCDEF"',
+            'CONFIG_OTA_URL="https://api.tenclass.net/xiaozhi/ota/"'))
+        self.manifest["source"]["effective_sdkconfig_sha256"] = verify.sha256_file(self.sdkconfig)
+        self.save_manifest()
+        with self.assertRaisesRegex(verify.VerificationError, "bridge OTA URL"):
+            self.verify_record()
+
     def test_selects_local_manifest_then_reference_when_absent(self) -> None:
         self.assertEqual(verify.select_manifest(self.firmware, self.dist), self.manifest_path)
         self.manifest_path.unlink()
