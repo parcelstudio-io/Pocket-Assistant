@@ -73,8 +73,17 @@ vendor-image CLI is `tools/pocket_ai_device.py`; it needs an explicit `--port`.
 
 ## Evidence discipline
 
-`hardware_tested` is still `false`. No physical ESP32-C3 or assembled battery
-circuit has been connected in this workspace. A matching checksum or a
-successful compile does not prove hardware operation — do not write that it
-does, and do not mark a step passed that the user has not run. When a claim
-is untested, say so in the text rather than implying verification.
+`firmware/source-build.json` still records `hardware_tested: false`, and it
+stays that way: `record_source_build.py` hard-codes it, and the flag means
+"this build workflow tested hardware", which it never has. Do not hand-edit it.
+
+The builder separately established `PASS 9` on a physical board on 2026-09-20
+— the complete USB prototype, two cold starts. Treat Steps 0-9 of
+`plan/FAST_TRACK.md` as passed on hardware, and cite the builder's lab record
+rather than the manifest for that. No assembled battery circuit has been
+connected; the amplifier remains disabled; nothing past Step 9 is established.
+
+A matching checksum or a successful compile still does not prove hardware
+operation — do not write that it does, and do not mark a step passed that the
+user has not run. When a claim is untested, say so in the text rather than
+implying verification.

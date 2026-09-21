@@ -39,7 +39,10 @@ changes as candidates are reviewed.
 | Results from a physical article | A completed [lab record](fundamentals/reference/lab-record-template.md) |
 
 A marketplace listing, successful compile, static check, or CAD model is not
-physical acceptance. The manifest currently records `hardware_tested: false`.
+physical acceptance. The manifest still records `hardware_tested: false`,
+which describes the build workflow, not the bench: the USB prototype itself
+was built and passed its cold-start gate on 2026-09-20. Everything past that
+— amplifier, battery, enclosure — remains unbuilt and unqualified.
 
 ## Safety boundary
 

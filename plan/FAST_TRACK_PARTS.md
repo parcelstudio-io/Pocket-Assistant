@@ -27,17 +27,26 @@ the received part disagree, **the label on the part wins.**
 
 ## Where you are now
 
-**Step 5 is complete — there is no more soldering in this build.** As of
-2026-09-20:
+**The USB prototype is complete — PASS 9 established 2026-09-20.** Two cold
+starts booted without a reset loop, the button logged every press, the OLED
+started and toggled, and speech read higher than quiet. This is the first
+physical-hardware result in the project.
+
+Build history:
 
 | Module | Headers | Notes |
 | --- | --- | --- |
 | Controller `A1` | 16 soldered in 5C, passed | Two 8-pin strips |
 | OLED | Arrived factory-soldered | Silkscreen order `GND-VCC-SCL-SDA` |
-| Microphone | 6 soldered in 5E | Two rows of three: `SD VDD GND` / `L/R WS SCK` |
+| Microphone | 6 soldered in 5E | Two rows of three: `SD VDD GND` / `SCK WS L/R` (re-read 2026-09-20; an earlier note had the second row reversed) |
 
 The Sullins 1×40 strip is in hand, so header supply is no longer a constraint.
 Everything from Step 6 on is breadboard, jumpers, and the serial monitor.
+
+**Step 6 passed 2026-09-20:** rails built and verified, button on GPIO10, ten
+presses logged `BUTTON GPIO10: click 1`–`10`. The button's legs do not span
+the trench, so it sits on one side with each joined leg pair in its own
+column — the guide's Step 6 was corrected to state that requirement.
 
 ## Master list — everything the USB prototype touches
 
@@ -103,7 +112,7 @@ If all 26 positions already passed 5A, skip this whole block and go to Step 6.
 Without wick you have no recovery path for a solder bridge: the fast track
 tells you to stop rather than improvise. Decide before you heat the iron.
 
-### Step 6 — button ⬜ next
+### Step 6 — button ✅ done
 
 | Need | Link |
 | --- | --- |
@@ -112,14 +121,14 @@ tells you to stop rather than improvise. Decide before you heat the iron.
 | One tactile button | ✅ [B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) |
 | The meter, to map rails and find the switched legs | ✅ [B08BL288LW](https://www.amazon.com/dp/B08BL288LW) |
 
-### Step 7 — OLED ⬜
+### Step 7 — OLED ✅ done
 
 | Need | Link |
 | --- | --- |
 | One soldered OLED; keep a second packaged as a swap spare | ✅ [B09T6SJBV5](https://www.amazon.com/dp/B09T6SJBV5) |
 | Four more male-to-male jumpers | 📦 [Jumper search](https://www.amazon.com/s?k=TODOELEC+10cm+Dupont+jumper+120) |
 
-### Step 8 — microphone ⬜
+### Step 8 — microphone ✅ done
 
 | Need | Link |
 | --- | --- |
@@ -127,7 +136,7 @@ tells you to stop rather than improvise. Decide before you heat the iron.
 | Six more male-to-male jumpers | 📦 [Jumper search](https://www.amazon.com/s?k=TODOELEC+10cm+Dupont+jumper+120) |
 | One 10 kΩ and one 100 kΩ resistor, **meter-verified** | ✅ [B0F4P352BB](https://www.amazon.com/dp/B0F4P352BB) |
 
-### Steps 9–10 — proof and optional cloud ⬜
+### Step 9 ✅ done · Step 10 ⬜ optional
 
 No new components. Step 9 needs the phone camera and somewhere to save the
 log. Step 10 needs a dedicated 2.4 GHz guest/IoT network with a unique

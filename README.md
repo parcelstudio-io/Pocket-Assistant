@@ -164,4 +164,11 @@ The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at add
   mode, and output digest in ignored `firmware/dist/source-build.json`. The
   [checked-in reference record](firmware/source-build.json) describes one specific
   build; neither a checksum nor successful compilation proves hardware operation.
-- No physical ESP32-C3 or assembled battery circuit was connected in this workspace — `hardware_tested` is still `false`. Follow [Lesson 13's staged integration method](edu/fundamentals/13-debugging-integration-and-capstone.md), keep a separate [lab record](edu/fundamentals/reference/lab-record-template.md) for each article, and use the [current F0 promotion gates](docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) before any cell connection or pocket carry.
+- The USB prototype was built and established `PASS 9` on 2026-09-20: two cold
+  starts without a reset loop, every button press logged, the OLED starting and
+  toggling, and speech microphone RMS roughly 4x the quiet floor with
+  `read_errors=0`. That is a bench result recorded by the builder, not an
+  automated one: no assembled battery circuit has been connected, the amplifier
+  stays disabled, and `firmware/source-build.json` still records
+  `hardware_tested: false` because that flag describes what the build workflow
+  verified, which remains nothing physical. Follow [Lesson 13's staged integration method](edu/fundamentals/13-debugging-integration-and-capstone.md), keep a separate [lab record](edu/fundamentals/reference/lab-record-template.md) for each article, and use the [current F0 promotion gates](docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) before any cell connection or pocket carry.

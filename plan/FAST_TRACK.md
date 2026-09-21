@@ -554,9 +554,14 @@ are only for comparing package names and photos.
    point you plan to use on its rail. Then check between the two rails: a brief
    chirp can be capacitance, but a persistent tone or near-zero resistance is a
    stop condition.
-6. Place the button so it straddles the breadboard's center trench. Use meter
-   continuity mode to find two legs that are disconnected when released and
-   connected only while pressed.
+6. Seat the button so its two contacts land in two different breadboard
+   nodes. A four-leg tactile button has two permanently joined leg pairs, and
+   pressing bridges one pair to the other. Straddling the center trench does
+   this when the legs reach across it; if they do not, place the button on one
+   side with each joined pair inside a single column and the two pairs in
+   different columns. Then, with the meter probes in the holes you will wire
+   from, confirm those two nodes are open when released and connected only
+   while pressed.
 7. Wire exactly this:
 
    | Button | Connection |
@@ -591,8 +596,9 @@ are only for comparing package names and photos.
 ### If it does not pass
 
 1. Unplug USB before changing anything.
-2. If it always reads pressed, the chosen button legs are probably one
-   permanently connected pair. Repeat the unpowered continuity test.
+2. If it always reads pressed, a permanently joined leg pair is spanning two
+   nodes and the breadboard is shorting the two contacts together. Lift the
+   button, turn it 90°, and repeat the unpowered test at the holes.
 3. Confirm the wire says GPIO10. Do not use the onboard GPIO9 **BOOT** button.
 
 Keep the working button connected for the next step.
