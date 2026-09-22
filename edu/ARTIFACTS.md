@@ -37,7 +37,8 @@ Read them in order the first time.
 | Page | Built from | What it covers | Published |
 | --- | --- | --- | --- |
 | [Scope Countdown](https://claude.ai/artifact/8w8pHPXT93Y3jmfXRspfbq) | [`DAILY_STUDY_AND_LAB_PLAN.md`](../plan/DAILY_STUDY_AND_LAB_PLAN.md), [`fundamentals/README.md`](fundamentals/README.md), the promotion gates | 21–30 September 2026: an unpowered speaker and amplifier lab on Monday 21, two illustrated lessons a day from Tuesday with the bench optional, a review day, a bench day, and the DHO802's first three captures on arrival | 2026-09-21, revised the same day |
-| [Fast Track Theory](https://claude.ai/artifact/8fmiKrS74xgLZqA3zFEXDC) | [`plan/FAST_TRACK_THEORY.md`](../plan/FAST_TRACK_THEORY.md) | Why each fast-track step works, one mechanism drawing per step | 2026-09-21 |
+| [Fast Track Theory](https://claude.ai/artifact/8fmiKrS74xgLZqA3zFEXDC) | [`plan/FAST_TRACK_THEORY.md`](../plan/FAST_TRACK_THEORY.md) | Why each fast-track step works, one mechanism drawing per step, including Step 11's one-supply speaker | 2026-09-21, Step 11 added the same evening |
+| [Pocket AI Step 11](https://claude.ai/artifact/6bXhKLGEztiB1Z9zWkGJ4U) | [`plan/FAST_TRACK.md`](../plan/FAST_TRACK.md), Step 11 | Bench guide for the USB-powered speaker with owned parts only: why one supply removes the translator, the wiring, choosing the SD pull-down, the kit-resistor dummy load, and three pass gates | 2026-09-21 |
 | [Pocket AI Step 10](https://claude.ai/artifact/8FfvUGDzoj4a3Zg7EQEabr) | [`plan/FAST_TRACK.md`](../plan/FAST_TRACK.md), Step 10 | Bench guide for Wi-Fi under the transmit-power cap and one assistant round trip; three pass gates | 2026-09-21 |
 
 ## Adding a page
