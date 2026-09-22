@@ -74,6 +74,18 @@ image's Mandarin `wn9s_nihaoxiaozhi` and zh-CN strings (both set in
 `# CONFIG_SR_WN_WN9S_NIHAOXIAOZHI is not set` line is required because the
 WakeNet9s entries are independent bools, not a choice group).
 
+### Amplifier-enabled build for Step 11
+
+`build.sh --assistant --amplifier` (or `--assistant-local ... --amplifier`)
+enables the amplifier for fast-track Step 11, where the MAX98357A takes `VIN`
+from the controller's `5V` pin and GPIO5 drives its `SD` pin directly with a
+pull-down. The firmware holds GPIO5 low from its earliest board init, starts the
+I2S clocks with zero data, waits the startup delay, raises GPIO5, waits the
+turn-on delay, and only then sends audio, capped by `CONFIG_POCKET_AI_MAX_VOLUME`.
+The diagnostics build refuses `--amplifier`. The build record, verifier, and
+flash preview print `amplifier: ENABLED (Step 11, USB-powered)`. None of this
+has run on hardware yet.
+
 ### Local OpenAI voice bridge
 
 **Parked build note (2026-09-21):** The prepared A1 image is

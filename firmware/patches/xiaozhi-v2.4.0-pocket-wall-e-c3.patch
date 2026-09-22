@@ -43,24 +43,24 @@ index a1bb6e3..2dfaa80 100644
 +            saved in NVS. Keep OpenAI credentials on the bridge computer.
 +
 +    config POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER
-+        bool "Enable amplifier on a measured, qualified GPIO5/TXU fixture"
++        bool "Enable the USB-powered amplifier stage (fast-track Step 11)"
 +        depends on !POCKET_AI_BENCH_DIAGNOSTICS
 +        default n
 +        help
-+            Leave disabled for the beginner USB prototype. Enable only after
-+            the documented interface and power sequence have passed physical
-+            tests, with the two delays below set from measurements. Software
-+            defaults do not qualify hardware. GPIO5 controls TXU channel A4;
-+            power-good independently gates OE.
++            Leave disabled until fast-track Step 11 is wired and PASS 11A
++            holds. The amplifier's VIN comes only from the controller's 5V
++            pin on the same USB supply. GPIO5 drives MAX98357A SD_MODE
++            directly, with an external pull-down holding it low through
++            reset. Software defaults do not qualify hardware.
 +
 +    config POCKET_AI_AMP_STARTUP_DELAY_MS
-+        int "Measured rail/PG startup delay (ms)"
++        int "Measured clock-to-enable startup delay (ms)"
 +        range 1 10000
 +        default 100
 +        help
 +            Placeholder, not a hardware guarantee. Zero-data I2S clocks run
-+            for at least this time before GPIO5 may rise. Set this to cover
-+            measured worst-case rail and PG release, including margin.
++            for at least this time before GPIO5 may rise. Set this from the
++            scope capture of the 5V rail and clocks, including margin.
 +
 +    config POCKET_AI_AMP_TURN_ON_DELAY_MS
 +        int "Measured amplifier turn-on delay (ms)"
@@ -71,12 +71,12 @@ index a1bb6e3..2dfaa80 100644
 +            GPIO5 rises for this interval before sending nonzero samples.
 +
 +    config POCKET_AI_MAX_VOLUME
-+        int "Prototype software volume cap (0-30)"
-+        range 0 30
++        int "Prototype software volume cap (0-100)"
++        range 0 100
 +        default 15
 +        help
-+            Caps both saved and requested volume. This limits software gain;
-+            it does not establish a safe sound pressure or power level.
++            Caps saved and requested volume; raise only after PASS 11B at the
++            new value. It limits software gain, not sound pressure or power.
 +endmenu
 +
  choice

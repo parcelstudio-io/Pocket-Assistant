@@ -33,8 +33,11 @@
 // ESP32-C3 SuperMini's ROM BOOT strap button.
 #define ACTION_BUTTON_GPIO GPIO_NUM_10
 
-// Drives TXU0104 A4, not OE. External pull-downs keep the amplifier muted
-// through reset. The default bench build never raises this pin.
+// Drives MAX98357A SD_MODE directly in the USB-powered Step 11 stage, where the
+// amplifier's VIN comes only from the controller's 5V pin (one supply, so the
+// earlier TXU0104 translator design is not used). An external pull-down keeps
+// the amplifier in shutdown through reset. Firmware raises this pin only in a
+// build made with --amplifier, after silent clocks and the startup delay.
 #define AMPLIFIER_ENABLE_GPIO GPIO_NUM_5
 
 #define DISPLAY_SCL_PIN       GPIO_NUM_20

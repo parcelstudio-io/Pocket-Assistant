@@ -45,10 +45,12 @@ def collect_toolchain() -> dict[str, str]:
 
 def record_source_build(
     firmware_dir: Path, build_dir: Path, dist_dir: Path, mode: str,
-    *, expected_input_fingerprint: str,
+    *, expected_input_fingerprint: str, amplifier: bool = False,
 ) -> Path:
     if mode not in BUILD_MODES:
         raise VerificationError("invalid build_mode; expected diagnostics, assistant, or assistant-local")
+    if amplifier and mode == "diagnostics":
+        raise VerificationError("the diagnostics build must keep the amplifier disabled")
     hashes = input_hashes(firmware_dir)
     if input_fingerprint(hashes) != expected_input_fingerprint:
         raise VerificationError("local inputs changed during the build; rebuild before recording")
@@ -72,7 +74,7 @@ def record_source_build(
         "schema_version": 2,
         "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
         "build_mode": mode,
-        "amplifier_enabled": False,
+        "amplifier_enabled": amplifier,
         "artifact": {
             "filename": (f"{versions['POCKET_AI_BOARD_TYPE']}-{versions['XIAOZHI_REF']}"
                          f"-idf-{versions['ESP_IDF_REF']}.bin"),
@@ -97,8 +99,10 @@ def record_source_build(
         "validation": {"clean_builds_compared": 0, "outputs_identical": None,
                        "hardware_tested": False},
         "note": ("Local build record. No independent repeat-build comparison or hardware "
-                 "test was performed by this workflow. Amplifier remains disabled. "
-                 "Checksums detect changed recorded inputs and artifacts; they do not "
+                 "test was performed by this workflow. "
+                 + ("Amplifier enabled for the USB-powered Step 11 stage; untested by this "
+                    "workflow. " if amplifier else "Amplifier remains disabled. ")
+                 + "Checksums detect changed recorded inputs and artifacts; they do not "
                  "establish electrical or end-to-end assistant functionality."),
     }
     verify_manifest_files(manifest, build_dir, dist_dir, firmware_dir=firmware_dir)
@@ -123,6 +127,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mode", choices=sorted(BUILD_MODES))
     parser.add_argument("--expected-input-fingerprint")
     parser.add_argument("--print-input-fingerprint", action="store_true")
+    parser.add_argument("--amplifier", action="store_true",
+                        help="record an amplifier-enabled assistant build (fast-track Step 11)")
     parser.add_argument("--build-dir", type=Path, default=DEFAULT_BUILD_DIR)
     parser.add_argument("--dist-dir", type=Path, default=DEFAULT_DIST_DIR)
     args = parser.parse_args(argv)
@@ -134,8 +140,10 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("recording requires --mode and --expected-input-fingerprint")
         path = record_source_build(FIRMWARE_DIR, args.build_dir.resolve(),
                                    args.dist_dir.resolve(), args.mode,
-                                   expected_input_fingerprint=args.expected_input_fingerprint)
-        print(f"Recorded local {args.mode} build: {path}")
+                                   expected_input_fingerprint=args.expected_input_fingerprint,
+                                   amplifier=args.amplifier)
+        print(f"Recorded local {args.mode} build (amplifier "
+              f"{'enabled' if args.amplifier else 'disabled'}): {path}")
         return 0
     except (VerificationError, OSError) as exc:
         print(f"error: {exc}", file=sys.stderr)

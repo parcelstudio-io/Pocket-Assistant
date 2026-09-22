@@ -12,6 +12,7 @@ source "${FIRMWARE_DIR}/versions.env"
 BUILD_MODE=diagnostics
 EXPLICIT_MODE=""
 BRIDGE_URL=""
+AMPLIFIER=false
 for option in "$@"; do
     case "${option}" in
         --diagnostics|--assistant|--assistant-local)
@@ -23,10 +24,12 @@ for option in "$@"; do
             BUILD_MODE="${REQUESTED_MODE}"
             EXPLICIT_MODE="${REQUESTED_MODE}" ;;
         --bridge-url=*) BRIDGE_URL="${option#--bridge-url=}" ;;
+        --amplifier) AMPLIFIER=true ;;
         --help|-h)
-            echo "usage: $0 [--diagnostics | --assistant | --assistant-local --bridge-url=http://HOST:PORT/ota/SECRET]"
+            echo "usage: $0 [--diagnostics | --assistant | --assistant-local --bridge-url=http://HOST:PORT/ota/SECRET] [--amplifier]"
             echo "Default: offline bench diagnostics. --assistant uses Xiaozhi; --assistant-local uses a LAN voice bridge."
-            echo "All modes keep the amplifier disabled pending hardware qualification."
+            echo "The amplifier stays disabled unless --amplifier is given with an assistant mode."
+            echo "--amplifier is for fast-track Step 11 only: amplifier VIN from the controller's 5V pin, SD_MODE on GPIO5."
             exit 0 ;;
         *) echo "error: unknown option: ${option}" >&2; exit 2 ;;
     esac
@@ -41,6 +44,14 @@ if [[ "${BUILD_MODE}" == assistant-local ]]; then
 elif [[ -n "${BRIDGE_URL}" ]]; then
     echo "error: --bridge-url requires --assistant-local" >&2
     exit 2
+fi
+if [[ "${AMPLIFIER}" == true && "${BUILD_MODE}" == diagnostics ]]; then
+    echo "error: --amplifier requires --assistant or --assistant-local; diagnostics keeps it disabled" >&2
+    exit 2
+fi
+RECORD_EXTRA=()
+if [[ "${AMPLIFIER}" == true ]]; then
+    RECORD_EXTRA=(--amplifier)
 fi
 
 # Freeze generated timestamps and compiler __DATE__/__TIME__ values so clean
@@ -106,7 +117,11 @@ idf.py set-target esp32c3
     else
         printf '# CONFIG_POCKET_AI_LOCAL_BRIDGE is not set\n'
     fi
-    printf '# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set\n'
+    if [[ "${AMPLIFIER}" == true ]]; then
+        printf 'CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER=y\n'
+    else
+        printf '# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set\n'
+    fi
 } >> sdkconfig
 
 idf.py -DBOARD_TYPE="${POCKET_AI_BOARD_TYPE}" \
@@ -126,5 +141,5 @@ cp "${FIRMWARE_DIR}/dependencies.lock" "${DIST_DIR}/dependencies.lock"
 echo "Built merged firmware: ${OUTPUT_BIN}"
 "${SCRIPT_DIR}/prepare.sh" --check
 python3 "${SCRIPT_DIR}/record_source_build.py" --mode "${BUILD_MODE}" \
-    --expected-input-fingerprint "${INPUT_FINGERPRINT}"
+    --expected-input-fingerprint "${INPUT_FINGERPRINT}" "${RECORD_EXTRA[@]}"
 python3 "${SCRIPT_DIR}/verify_source_build.py"

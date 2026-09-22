@@ -125,8 +125,10 @@ def validate_manifest(value: dict[str, Any], firmware_dir: Path) -> None:
             raise VerificationError("unsupported source-build manifest schema; rebuild with build.sh")
         if value["build_mode"] not in BUILD_MODES:
             raise VerificationError("invalid build_mode; expected diagnostics, assistant, or assistant-local")
-        if value["amplifier_enabled"] is not False:
-            raise VerificationError("supported source builds must keep the amplifier disabled")
+        if type(value["amplifier_enabled"]) is not bool:
+            raise VerificationError("amplifier_enabled must be true or false")
+        if value["amplifier_enabled"] and value["build_mode"] == "diagnostics":
+            raise VerificationError("the diagnostics build must keep the amplifier disabled")
         artifact = value["artifact"]
         if (type(artifact["size_bytes"]) is not int
                 or not 0x10000 < artifact["size_bytes"] <= 0x400000
@@ -256,8 +258,13 @@ def verify_manifest_files(
         )
         if match is None or not 1 <= int(match[1]) <= 65535:
             raise VerificationError("assistant-local has no valid bridge OTA URL")
-    if config.get("CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER", "n") != "n":
-        raise VerificationError("effective sdkconfig enables the unqualified amplifier")
+    amplifier = config.get("CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER", "n") == "y"
+    if amplifier and not manifest["amplifier_enabled"]:
+        raise VerificationError(
+            "effective sdkconfig enables the unqualified amplifier but the build record says disabled")
+    if manifest["amplifier_enabled"] and not amplifier:
+        raise VerificationError(
+            "build record says the amplifier is enabled but the effective sdkconfig disables it")
     if (config.get("CONFIG_IDF_TARGET") != '"esp32c3"'
             or config.get("CONFIG_ESPTOOLPY_FLASHSIZE_4MB") != "y"
             or config.get("CONFIG_BOARD_TYPE_POCKET_WALL_E_C3") != "y"):
@@ -317,7 +324,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         manifest = load_manifest(manifest_path)
         print(f"Build record: {manifest_path}")
-        print(f"Build mode: {manifest['build_mode']}; amplifier: disabled")
+        amplifier = ("ENABLED (Step 11, USB-powered)" if manifest["amplifier_enabled"]
+                     else "disabled")
+        print(f"Build mode: {manifest['build_mode']}; amplifier: {amplifier}")
         print(f"Verified source artifact: {path}")
         print(f"Size: {size} bytes")
         print(f"SHA-256: {digest}")

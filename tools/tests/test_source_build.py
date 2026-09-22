@@ -167,7 +167,8 @@ class SourceBuildTests(unittest.TestCase):
             return ""
         self.fail(f"unexpected metadata command: {command}")
 
-    def make_record(self, mode: str = "diagnostics", fingerprint: str | None = None) -> Path:
+    def make_record(self, mode: str = "diagnostics", fingerprint: str | None = None,
+                    amplifier: bool = False) -> Path:
         if fingerprint is None:
             fingerprint = verify.input_fingerprint(verify.input_hashes(self.firmware))
         with (
@@ -178,7 +179,7 @@ class SourceBuildTests(unittest.TestCase):
         ):
             return record.record_source_build(
                 self.firmware, self.build, self.dist, mode,
-                expected_input_fingerprint=fingerprint,
+                expected_input_fingerprint=fingerprint, amplifier=amplifier,
             )
 
     def save_manifest(self) -> None:
@@ -290,6 +291,42 @@ class SourceBuildTests(unittest.TestCase):
         self.manifest["source"]["effective_sdkconfig_sha256"] = verify.sha256_file(self.sdkconfig)
         self.save_manifest()
         with self.assertRaisesRegex(verify.VerificationError, "enables the unqualified amplifier"):
+            self.verify_record()
+
+    def use_assistant_amplifier_config(self) -> None:
+        self.sdkconfig.write_text(self.sdkconfig.read_text()
+            .replace("CONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y",
+                     "# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set")
+            .replace("# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set",
+                     "CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER=y"))
+
+    def test_step11_amplifier_build_records_and_verifies(self) -> None:
+        self.use_assistant_amplifier_config()
+        self.make_record("assistant", amplifier=True)
+        manifest = verify.load_manifest(self.manifest_path, self.firmware)
+        self.assertTrue(manifest["amplifier_enabled"])
+        self.assertFalse(manifest["validation"]["hardware_tested"])
+        self.verify_record()
+
+    def test_record_refuses_amplifier_in_diagnostics(self) -> None:
+        with self.assertRaisesRegex(verify.VerificationError, "diagnostics build must keep"):
+            self.make_record("diagnostics", amplifier=True)
+
+    def test_rejects_amplifier_claim_when_config_disables_it(self) -> None:
+        self.sdkconfig.write_text(self.sdkconfig.read_text().replace(
+            "CONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y",
+            "# CONFIG_POCKET_AI_BENCH_DIAGNOSTICS is not set"))
+        self.make_record("assistant")
+        self.manifest = json.loads(self.manifest_path.read_text())
+        self.manifest["amplifier_enabled"] = True
+        self.save_manifest()
+        with self.assertRaisesRegex(verify.VerificationError, "effective sdkconfig disables it"):
+            self.verify_record()
+
+    def test_rejects_non_boolean_amplifier_flag(self) -> None:
+        self.manifest["amplifier_enabled"] = "yes"
+        self.save_manifest()
+        with self.assertRaisesRegex(verify.VerificationError, "must be true or false"):
             self.verify_record()
 
     def test_rejects_wrong_target_metadata(self) -> None:

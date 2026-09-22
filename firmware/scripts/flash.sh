@@ -86,6 +86,9 @@ EXPECTED_ESPTOOL_VERSION=$(python3 -c \
 BUILD_MODE=$(python3 -c \
     'import json,sys; print(json.load(open(sys.argv[1]))["build_mode"])' \
     "${SELECTED_MANIFEST}")
+AMPLIFIER_ENABLED=$(python3 -c \
+    'import json,sys; print("true" if json.load(open(sys.argv[1]))["amplifier_enabled"] else "false")' \
+    "${SELECTED_MANIFEST}")
 ACTUAL_ESPTOOL_VERSION=$(python3 -c \
     'from importlib.metadata import version; print(version("esptool"))' \
     2>/dev/null) || {
@@ -115,12 +118,22 @@ FLASH_COMMAND=(
 
 echo "Target serial port: ${PORT}"
 echo "Target chip/layout: ESP32-C3, verified 4 MB source-build image"
-echo "Build mode: ${BUILD_MODE}; amplifier: disabled"
+if [[ "${AMPLIFIER_ENABLED}" == true ]]; then
+    echo "Build mode: ${BUILD_MODE}; amplifier: ENABLED (Step 11, USB-powered)"
+else
+    echo "Build mode: ${BUILD_MODE}; amplifier: disabled"
+fi
 echo "Recorded software checksums do not establish hardware qualification."
 echo "This writes the merged bootloader, partitions, app, and assets at 0x0."
 echo "Its blank NVS region clears saved Wi-Fi settings."
 echo "USB-only bench: controller/button/OLED/mic powered by controller 3.3 V are permitted."
-echo "Disconnect battery, charger, external regulators, amplifier, and separately powered wiring."
+echo "Disconnect battery, charger, external regulators, and any separately powered wiring."
+if [[ "${AMPLIFIER_ENABLED}" == true ]]; then
+    echo "Amplifier ENABLED: its output is live after boot. VIN only from the controller's 5V pin;"
+    echo "OUT+/OUT- go to the dummy load until PASS 11B, and neither lead is ever GND."
+else
+    echo "A Step 11 amplifier powered only from the controller's 5V pin may stay wired; it stays in shutdown."
+fi
 echo "Unplug USB before rewiring."
 
 if [[ "${DRY_RUN}" == true ]]; then
