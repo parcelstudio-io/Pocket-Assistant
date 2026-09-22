@@ -49,8 +49,9 @@ kept, unchanged, for a possible future portable revision. For this prototype:
   and a tested finish.
 - **Stored, not used:** the owned cells and the #4410 charger stay
   terminal-protected in storage.
-- **Measured 2026-09-22:** the batch's SuperMini `5V` pin is the USB-C VBUS
-  node directly, with no diode (builder, diode mode, both directions). Step 11's
+- **Measured 2026-09-22:** A1's SuperMini `5V` pin is the USB-C VBUS node
+  directly, with no diode (builder, diode mode, both directions), matching the
+  published SuperMini schematic. Step 11's
   amplifier therefore sees the full USB voltage, and no other source may ever
   be connected to `5V` while USB is in. For any future battery revision this
   confirms the controller-interface finding above: the diode-only scheme stays

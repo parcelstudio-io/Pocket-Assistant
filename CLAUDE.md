@@ -41,9 +41,10 @@ instructions that violate them.
 - OLED and microphone power comes only from the controller's 3.3 V output.
   Never connect an external source to that rail while USB is connected.
 - Never connect both USB-C ports at once. SuperMini clones vary in their
-  VBUS/`5V` arrangement, so no clone diode may be assumed. On this batch the
+  VBUS/`5V` arrangement, so no clone diode may be assumed. On board `A1` the
   builder measured the `5V` pin as USB VBUS directly, with no diode
-  (2026-09-22): never connect any other source to `5V` while USB is in.
+  (2026-09-22), matching the published SuperMini schematic: never connect
+  any other source to `5V` while USB is in.
 - Never strip a lithium cell, solder to its can, use the brass frame as a
   conductor, or charge an undocumented cell.
 - Read the OLED silkscreen before wiring: vendors ship `GND-VCC-SCL-SDA` and
