@@ -148,6 +148,22 @@ remote response. No part fixes the SuperMini's
 invisible setup hotspot; the assistant build caps transmit power at 8.5 dBm
 instead. Do not buy an external antenna for these boards: they have no socket.
 
+### Step 11 ⬜ USB-powered speaker, nothing to buy
+
+Every part is already in the inventory. The purchase authority's battery
+fixture parts are not needed, by the scope decision of 2026-09-21.
+
+| Part | Status |
+| --- | --- |
+| HiLetgo MAX98357A board, one of three | ✅ owned; used as `AMP-A1` |
+| Same Sky CES-20134-088PM speaker | ✅ owned; the only one, leads never cut |
+| Seven header pins from the spare 1×40 strip | ✅ owned |
+| 220 µF electrolytic, 10 V or more | ✅ owned, ALLECIN kit |
+| 100 nF ceramic | ✅ owned, BOJACK kit |
+| `SD` pull-down, value from the board trace | ✅ owned, resistor kit |
+| Dummy load: twelve 100 Ω resistors in parallel | ✅ owned, resistor kit, plus 26 AWG wire |
+| Oscilloscope for PASS 11B | 📦 Rigol DHO802, arriving 2026-09-30 |
+
 ## The open gaps before Step 5B — resolved
 
 All three were closed during Step 5: the OLED arrived factory-soldered (so only

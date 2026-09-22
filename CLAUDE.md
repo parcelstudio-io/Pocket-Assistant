@@ -3,7 +3,10 @@
 A reviewable reconstruction of the Huy Vector Pocket AI Assistant: a pinned
 vendor image, host-side flashing tools, a source-buildable ESP32-C3 board port,
 an audited bill of materials, and a staged build plan. The hardware is an
-ESP32-C3 SuperMini with an SSD1306 OLED and an I2S MEMS microphone.
+ESP32-C3 SuperMini with an SSD1306 OLED and an I2S MEMS microphone, plus, from
+fast-track Step 11, a MAX98357A amplifier and speaker on the same USB supply.
+By the builder's decision of 2026-09-21 the prototype is a USB-powered home
+device; portable battery power is out of scope.
 
 ## Which document is authority
 
@@ -28,8 +31,13 @@ telling the user they own a part — `FAST_TRACK_PARTS.md` marks the difference.
 These are not style preferences. Do not relax them, and do not write
 instructions that violate them.
 
-- The current prototype is **USB-powered only**. Battery, charger, external
-  regulators, amplifier, and the metal case stay off it.
+- The prototype is **USB-powered only**, permanently by the builder's decision
+  of 2026-09-21. Battery, charger, external regulators, and the metal case stay
+  off it. The amplifier may be connected only as fast-track Step 11 describes:
+  `VIN` from the controller's `5V` pin on the same USB supply, `SD` on GPIO5
+  with a pull-down, first output into a dummy load.
+- Neither speaker output is ground. Never connect `OUT+` or `OUT−` to GND, and
+  never clip a scope ground to either.
 - OLED and microphone power comes only from the controller's 3.3 V output.
   Never connect an external source to that rail while USB is connected.
 - Never connect both USB-C ports at once. SuperMini clones vary in their
@@ -47,6 +55,7 @@ instructions that violate them.
 | Shared I2S clocks | WS / BCLK | 1 / 2 |
 | Microphone data | ICS-43434 primary (`SEL`→GND); INMP441 alternate (`L/R`→GND) | 4 |
 | Amplifier output | MAX98357A DIN | 3 |
+| Amplifier shutdown | MAX98357A `SD`, pull-down to GND | 5 |
 | Action button | active-low | 10 |
 
 OLED address `0x3c` or `0x3d` (firmware probes both), 16 kHz duplex audio.
@@ -68,7 +77,8 @@ python3 -m unittest discover -s tools/tests -v
 python tools/netcheck.py
 ```
 
-`build.sh --assistant` is only for after the offline tests pass. The historical
+`build.sh --assistant` is only for after the offline tests pass.
+`build.sh --assistant --amplifier` is for Step 11 only, after PASS 11A. The historical
 vendor-image CLI is `tools/pocket_ai_device.py`; it needs an explicit `--port`.
 
 ## Evidence discipline
@@ -82,9 +92,10 @@ The builder separately established `PASS 9` on a physical board on 2026-09-20
 2026-09-21: board `A1` joined Wi-Fi under the 8.5 dBm transmit-power cap and
 one spoken question returned a remote response from the Xiaozhi backend.
 Treat Steps 0-10 of `plan/FAST_TRACK.md` as passed on hardware, and cite the
-builder's lab record rather than the manifest for that. No assembled battery
-circuit has been connected; the amplifier remains disabled, so there is still
-no spoken output; nothing past Step 10 is established.
+builder's lab record rather than the manifest for that. No battery circuit
+exists or is planned for this prototype. Step 11 exists on paper and in the
+build scripts but has not run on hardware, so there is still no spoken output;
+nothing past Step 10 is established.
 
 A matching checksum or a successful compile still does not prove hardware
 operation — do not write that it does, and do not mark a step passed that the

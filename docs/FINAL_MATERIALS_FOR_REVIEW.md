@@ -21,6 +21,35 @@ audit: its 0.5 A maximum continuous-discharge rating was below that design's
 estimated 0.7–0.8 A coincident load. The new 5 V whole-load candidate must be
 recalculated because its low-cell input current can be higher still.
 
+## Scope decision 2026-09-21: a USB-powered home device
+
+The builder decided that this prototype stays on USB power. It lives at home
+or moves between Wi-Fi networks; portable battery power is out of scope. The
+rest of this document was written for a battery-powered pocket device and is
+kept, unchanged, for a possible future portable revision. For this prototype:
+
+- **Audio uses the USB-powered stage in fast-track Step 11.** The amplifier's
+  `VIN` comes from the controller's `5V` pin, the same USB supply as everything
+  else, so there is no powered-controller, unpowered-amplifier state. GPIO5
+  drives `SD_MODE` directly with a pull-down. It uses the owned HiLetgo
+  amplifier, the owned CES-20134-088PM speaker, kit passives, and a dummy load
+  built from kit resistors. Gate 7's measured output limit is met by Step 11's
+  PASS 11B instead of Fixture B.
+- **Not needed for this prototype:** Fixture A and Fixture B, the future
+  cell-discharge fixture, and gates 5, 6, 8 and 9. Gate 4's TXU sequencing
+  clause no longer applies; its clock check remains.
+- **Do not buy for this prototype:** Adafruit #3006, the TI TXU-EVM, Pololu
+  #2873 and #2810, the Molex harness, the fuse samples, the Panasonic
+  capacitors, the Yageo 1% resistors and SQP10 dummy loads, the Adafruit #1131
+  adapters and #501 charger supply, cell samples, Formex barrier, polycarbonate
+  guard, and the calibrated charge and current loggers. The CMS-20143-158SP
+  speaker stays an optional acoustic upgrade.
+- **Still in force:** gates 1 to 3, and gates 10 and 11 for any enclosure,
+  because a USB-powered frame still needs measured fit, the antenna keep-out,
+  and a tested finish.
+- **Stored, not used:** the owned cells and the #4410 charger stay
+  terminal-protected in storage.
+
 ## How to read the list
 
 | Mark | Meaning |

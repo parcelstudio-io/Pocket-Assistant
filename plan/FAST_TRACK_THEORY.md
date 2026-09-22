@@ -161,6 +161,29 @@ station connection, with a log line for each.
 - Project reference: [assistant-mode firmware notes](../firmware/README.md#flash-and-monitor-source-builds)
 - System overview: [how the parts fit together](../edu/01-how-it-fits-together.md)
 
+## Step 11 — one supply, no translator
+
+The purchase authority's amplifier fixture was designed for a battery device.
+There, the controller can run from USB while the amplifier's rail is off. Clock
+and data lines driven into an unpowered chip can push current backwards through
+its input protection diodes into its supply, so the fixture needed a translator
+that isolates the two sides until power is good. Powering the amplifier from the
+controller's own `5V` pin removes that state: both sides rise and fall together
+with USB, and the amplifier's supply, taken straight from USB, normally rises
+before the controller's 3.3 V regulator output.
+
+Three safeguards remain. A pull-down on `SD` keeps the amplifier in shutdown
+while GPIO5 floats during reset; above about 1.5 V the same pin selects the left
+channel, which is the channel the firmware fills. The volume cap limits the
+digital amplitude, and the firmware squares the setting, so a cap of 15 passes
+only about 2 % of full scale. The dummy load lets the scope measure the output
+before the only speaker sees it. Filtering the difference of the two outputs at
+about 20 kHz matters because a class-D stage switches at a few hundred kilohertz,
+and a speaker's coil, not the resistor, is what normally removes that carrier.
+
+- Short explanation: [speakers and amplifiers](concepts/10-speakers-and-amplifiers.md)
+- Deeper reference: [class-D, BTL, speakers, and acoustics](../edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md)
+
 ## Theory for the later projects
 
 Do not turn these readings into permission to connect held hardware. They
@@ -168,8 +191,7 @@ explain the questions that later qualification must answer.
 
 | Later project | Short explanation | Deeper reference |
 | --- | --- | --- |
-| Amplifier and speaker | [Speakers and amplifiers](concepts/10-speakers-and-amplifiers.md) | [Class-D, BTL, speakers, and acoustics](../edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md) |
-| Portable power | [Power integrity](concepts/13-power-integrity.md) | [Li-ion, decoupling, UVLO, and thermal behavior](../edu/fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md) |
+| Portable power, out of scope for this prototype | [Power integrity](concepts/13-power-integrity.md) | [Li-ion, decoupling, UVLO, and thermal behavior](../edu/fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md) |
 | Enclosure and radio | [Fit and radio](concepts/14-fit-and-radio.md) | [RF, EMC, antennas, and the metal frame](../edu/fundamentals/11-rf-emc-antennas-and-metal-frame.md) |
 
 The release authority for all three remains the

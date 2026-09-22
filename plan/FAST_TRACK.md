@@ -13,19 +13,22 @@ At the end you will have a loose, USB-powered desk prototype with:
 - one OLED display; and
 - one microphone whose readings change when you speak.
 
-This is **Pocket AI Assistant v0**, not the finished pocket device. The
-supported firmware deliberately keeps the amplifier disabled. This guide does
-not connect a battery, charger, amplifier, speaker, external power supply, or
-brass enclosure, and the loose breadboard must not be carried in a pocket or
-bag.
+This is **Pocket AI Assistant v0**, a USB-powered home device. By the
+builder's decision of 2026-09-21 it stays on USB power: it lives at home or
+moves between Wi-Fi networks, and portable battery power is out of scope. The
+firmware keeps the amplifier disabled unless it is built for Step 11. This
+guide never connects a battery, charger, external power supply, or brass
+enclosure, and the loose breadboard must not be carried in a pocket or bag.
 
-The project is intentionally split into three milestones:
+The project is split into four milestones:
 
 1. **Build now:** the USB hardware prototype in Steps 0–9.
 2. **Optional after a privacy decision:** the networked assistant experiment
-   in Step 10. It uses a third-party service and still has no spoken output.
-3. **Wait for later engineering tests:** powered speaker, battery, charging,
-   enclosure, and pocket carry.
+   in Step 10. It uses a third-party service.
+3. **Speak:** the USB-powered speaker in Step 11, built from parts you already
+   own.
+4. **Later:** the enclosure. Battery, charging, and pocket carry are out of
+   scope for this prototype.
 
 Two companion pages sit beside this one, and both are optional while you
 build:
@@ -1020,15 +1023,153 @@ until that reflash succeeds or you deliberately erase its flash.
 
 Optional theory: [what changes when the cloud is added](FAST_TRACK_THEORY.md#step-10--network-and-cloud-boundary).
 
-## Stop here before speaker, battery, or brass
+## Step 11 — USB-powered speaker
 
-Those are separate projects, not additional beginner steps:
+By the builder's decision of 2026-09-21 the prototype stays a USB-powered home
+device. That makes the speaker simple: the amplifier takes its power from the
+controller's `5V` pin, the same USB supply that already powers everything
+else. With one supply there is no state where the controller is powered and the
+amplifier is not, so the translator board, regulator, power switch, fuses and
+harness in the purchase authority's battery fixture are not needed. Every part
+below is already in the inventory.
+
+Nothing in this step has run on hardware yet. PASS 11A needs only the meter;
+PASS 11B needs the oscilloscope; PASS 11C follows 11B.
+
+> **Rules for this step:** USB is the only source. The amplifier's `VIN` comes
+> from the controller's `5V` pin only, never from the bench supply, a battery,
+> or the 3.3 V rail. Neither speaker output is ground: never connect `OUT+` or
+> `OUT−` to GND, and never clip a scope ground to either. The first powered
+> output drives the dummy load, never the speaker. Unplug USB before every
+> wiring change.
+
+### What you need, all owned
+
+- The HiLetgo MAX98357A board labelled `AMP-A1`, with its `SD` resistor network
+  traced during the unpowered speaker lab.
+- The speaker, `SPK-A1`. It is the only one; never cut, strip, or re-terminate
+  its leads.
+- Seven header pins from the spare 1×40 strip for the amplifier, plus the
+  board's own speaker terminal block if it came with one.
+- One 220 µF electrolytic rated 10 V or more from the ALLECIN kit, and one
+  100 nF ceramic from the BOJACK kit.
+- One pull-down resistor for `SD` from the resistor kit, chosen in item 2.
+- Twelve 100 Ω resistors from the resistor kit and two short lengths of 26 AWG
+  wire, for the dummy load.
+- Jumpers.
+
+| Amplifier pin | Goes to | Note |
+| --- | --- | --- |
+| `VIN` | controller `5V` pin | its own jumper from the `5V` pin's breadboard strip; never the 3.3 V rail |
+| `GND` | controller GND | |
+| `LRC` | GPIO1 | shares word select with the microphone |
+| `BCLK` | GPIO2 | shares the bit clock; the 10 kΩ pull-up stays |
+| `DIN` | GPIO3 | speaker data |
+| `SD` | GPIO5 | plus the pull-down from `SD` to GND |
+| `GAIN` | leave as the board shipped it | add nothing |
+| `OUT+` / `OUT−` | dummy load, later the speaker | neither ever goes to GND |
+
+Put the 220 µF across `VIN` and `GND` right at the amplifier, stripe to GND,
+with the 100 nF beside it.
+
+### Do, unpowered
+
+1. Practise two joints on scrap header, then solder the seven header pins, and
+   the terminal block if there is one, to `AMP-A1`. Inspect every joint at phone
+   macro zoom. There is no solder wick in the inventory, so a bridge has no
+   clean fix; work slowly.
+2. Choose the `SD` pull-down from your trace of the board. If the board has a
+   pull-up from `SD` to `VIN`, pick the kit value no larger than one hundredth of
+   that pull-up and no smaller than 1 kΩ: 4.7 kΩ for a 1 MΩ pull-up, 1 kΩ for a
+   100 kΩ pull-up. If the board has no pull-up, use 4.7 kΩ. Write both values
+   down. This keeps `SD` below the amplifier's guaranteed 0.08 V shutdown level
+   while GPIO5 is low or still floating during reset.
+3. Build the dummy load: twelve 100 Ω resistors side by side between the two
+   26 AWG wires, like the rungs of a ladder, each leg soldered to both wires.
+   Measure it unpowered, subtract the lead resistance, and label it with the
+   reading, about 8.3 Ω. If the kit has no 100 Ω, any value from 68 Ω to 120 Ω
+   works: use the value divided by eight of them. Each resistor then carries
+   less than half its 1/4 W rating even at the speaker's full 0.8 W.
+4. With USB unplugged, wire the amplifier as the table says with `OUT+` and
+   `OUT−` left open. Place the two capacitors. Photograph the wiring.
+5. Check with the meter, still unpowered: `VIN` to the `5V` pin and `GND` to GND
+   are continuous; `VIN` to `GND` gives at most a brief chirp, never a steady
+   tone; `OUT+` and `OUT−` are not continuous with GND.
+
+### PASS 11A — wired and silent
+
+- [ ] With the **diagnostics** build flashed (amplifier disabled, GPIO5 held
+      low) and USB connected: `VIN` to GND reads close to 5 V, perhaps a few
+      tenths below, and you record it; `SD` to GND reads below 0.08 V; the Step 9 checks
+      still pass (button clicks, OLED toggles, microphone RMS rises with
+      speech); and 60 seconds pass without a reset.
+
+### Do, after PASS 11A and once the scope has passed its incoming check
+
+6. Build and verify the amplifier-enabled image:
+
+   ```bash
+   . firmware/.work/esp-idf/export.sh
+   firmware/scripts/build.sh --assistant --amplifier
+   python3 firmware/scripts/verify_source_build.py
+   firmware/scripts/flash.sh /dev/ttyACM0 --dry-run
+   ```
+
+   Continue only when the verifier and the preview both print
+   `amplifier: ENABLED (Step 11, USB-powered)`. This full flash clears saved
+   Wi-Fi settings, so you will provision A1 again as in Step 10.
+
+7. With USB unplugged, connect the dummy load to `OUT+` and `OUT−`. Flash and
+   open the monitor. The log prints `Prototype volume cap: 15; amplifier:
+   qualified opt-in`.
+8. Scope: channel 1 on `OUT+`, channel 2 on `OUT−`, both ground clips on the
+   controller's GND. Turn on the 20 MHz bandwidth limit on both channels. Make a
+   math trace of channel 1 minus channel 2 and apply the scope's low-pass math
+   at about 20 kHz, which removes the switching carrier that a speaker's coil
+   would block.
+9. Ask for a long reply three times, capturing each with a single trigger.
+   Record the largest filtered peak of the difference trace.
+
+### PASS 11B — sound into the dummy load, measured
+
+- [ ] The largest filtered peak of `OUT+` minus `OUT−` stays at or below
+      2.53 V at the current volume cap, and the board does not reset during a
+      reply. A peak at or below 2.53 V keeps even a clipped, square-like signal
+      within 0.8 W into 8 Ω. If the scope cannot low-pass the difference trace,
+      record `INCONCLUSIVE` and stay on the dummy load.
+
+The volume cap is `CONFIG_POCKET_AI_MAX_VOLUME` and the firmware squares it:
+the default 15 passes about 2 % of full-scale amplitude, and 30 about 9 %,
+which is a large `CALCULATED` margin and probably quiet. To make the speaker
+louder, add a line such as `CONFIG_POCKET_AI_MAX_VOLUME=30` to
+`firmware/sdkconfig.defaults` (any value up to 100), rebuild, and repeat items 6
+to 9 at that value before the speaker goes back on. Raise it in steps and stop
+at the first value whose peak approaches 2.53 V.
+
+If the board resets during loud replies, suspect the USB source first: a laptop
+port may limit current. After flashing, a wall adapter rated 1 A or more can
+power the device, with the OLED as the only readout.
+
+### Do, after PASS 11B
+
+10. Unplug USB. Replace the dummy load with the speaker, one lead on `OUT+` and
+    one on `OUT−`, clamped gently. Plug USB back in and ask one question.
+
+### PASS 11C — the device speaks
+
+- [ ] The reply is audible from the speaker at the volume cap that passed 11B,
+      five replies in a row, without a reset. Stop and unplug USB if the speaker
+      buzzes harshly, smells, or warms. Record the cap value and the evidence.
+
+Optional theory: [one supply, no translator](FAST_TRACK_THEORY.md#step-11--one-supply-no-translator).
+
+## Stop here before the enclosure
+
+The enclosure is a separate project, not an additional beginner step:
 
 | Later milestone | Why it waits | Read before beginning |
 | --- | --- | --- |
-| Powered amplifier and speaker | Output power, I2S slot behavior, mute timing, and bridge-tied speaker leads still require bench qualification | [Speaker theory](concepts/10-speakers-and-amplifiers.md) and [current promotion gates](../docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) |
-| Portable power and charging | USB back-power, regulator startup, current, thermal behavior, fuse choice, and charging isolation are unresolved | [Power theory](concepts/13-power-integrity.md) and [current power architecture](../docs/FINAL_MATERIALS_FOR_REVIEW.md#candidate-power-architecture) |
-| Enclosure and brass frame | The existing CAD models an old architecture; real parts must be measured and mocked up first | [Fit theory](concepts/14-fit-and-radio.md) and [CAD status](../cad/README.md) |
+| Enclosure and brass frame | The existing CAD models an old architecture; real parts must be measured and mocked up first, and the brass must keep clear of the already-marginal antenna | [Fit theory](concepts/14-fit-and-radio.md) and [CAD status](../cad/README.md) |
+| Portable power and charging | Out of scope for this prototype by the builder's decision of 2026-09-21; the cells and charger stay stored | [Scope decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md#scope-decision-2026-09-21-a-usb-powered-home-device) |
 
-Buying or finding those parts does not release them for connection. The USB
-prototype is the complete fast-track win.
+Buying or finding parts does not release them for connection.
