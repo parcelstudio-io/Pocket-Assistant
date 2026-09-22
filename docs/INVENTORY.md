@@ -31,7 +31,6 @@ proven USB data cable.
 | Amazon #9 | Sep 21 | Rigol DHO802 oscilloscope, [B0CKX699F5](https://www.amazon.com/dp/B0CKX699F5); price paid not recorded |
 | Amazon #10 | Sep 21 | BAISDY 45-piece wet/dry sandpaper, 400–3000 grit ([B07D2YYC11](https://www.amazon.com/dp/B07D2YYC11)) · JoTownCand solder wick 3-pack ([B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5)) · Epic Medical Supply 91% isopropyl alcohol, 2 × 16 oz ([B0BSJ93RKB](https://www.amazon.com/dp/B0BSJ93RKB)); prices not recorded |
 | DigiKey | Sep 21 | 5 × Same Sky `CES-20134-088PM` speaker, 2223-CES-20134-088PM-ND, $4.10 each — $20.50 |
-| Amazon #11 | Sep 21 | Rust-Oleum `249322` automotive self-etching primer, 12 oz, dark green ([B003CT498A](https://www.amazon.com/dp/B003CT498A) or a multi-pack of it); pack size and price not recorded |
 
 Estimated total spend: **≈ $635–660**, plus the DHO802 (Rigol list price $329; the price paid is not recorded here), $20.50 for five more speakers, and the 21 September Amazon consumables (prices not recorded).
 
@@ -166,15 +165,25 @@ build. What remains is small and local.
 
 ### Optional — white/silver finish
 
-Rust-Oleum 249322 self-etch primer → 2081830 gray primer → 7791830 satin white
-(~$24; NYC Admin Code §10-117 keeps spray paint 21+ and locked).
-**Status 2026-09-21: the 249322 self-etching primer is bought;** the 2081830 gray
-primer and 7791830 satin white are not. The finish stays gated: spray test
-coupons cut from brass offcuts first and check adhesion, and paint the frame
-only after the fit and Wi-Fi checks pass. Spray the empty frame outdoors or
-with strong ventilation, never with electronics installed, and store the can
-away from the soldering iron and heat gun. White styrene sheet for guards
-(~$10, Blick or Canal Plastics) remains optional.
+Planned white system, nothing bought yet (the Rust-Oleum 249322 dark-green
+self-etching primer was ordered and then canceled on 2026-09-21):
+
+1. Sand the bare brass with the owned 400–600 wet/dry and wipe it with the owned
+   91% IPA, so the paint has a clean, keyed surface.
+2. Rust-Oleum `7780830` Stops Rust Clean Metal Primer, flat white
+   ([B000Z8C3PM](https://www.amazon.com/dp/B000Z8C3PM)).
+3. Rust-Oleum `7791830` Stops Rust satin white
+   ([B000Z8FGII](https://www.amazon.com/dp/B000Z8FGII)).
+
+Without an etching primer, adhesion on smooth non-ferrous brass is the open
+question, so the finish stays gated: spray test coupons cut from brass offcuts
+first and check that the paint does not lift, and paint the frame only after
+the fit and Wi-Fi checks pass. If the coupons peel, an etching primer returns
+under the white coats. NYC Admin Code §10-117 keeps spray paint 21+ and locked.
+Spray the empty frame outdoors or with strong ventilation, never with
+electronics installed, and store cans away from the soldering iron and heat
+gun. White styrene sheet for guards (~$10, Blick or Canal Plastics) remains
+optional.
 
 ---
 
