@@ -29,8 +29,10 @@ proven USB data cable.
 | Amazon #7 | Sep 2 | CBAZY 30 AWG wire (re-ordered after cancellation) |
 | Amazon #8 | Sep 2 | Heat gun $10.33 · hot glue gun $11.92 · diamond needle files |
 | Amazon #9 | Sep 21 | Rigol DHO802 oscilloscope, [B0CKX699F5](https://www.amazon.com/dp/B0CKX699F5); price paid not recorded |
+| Amazon #10 | Sep 21 | BAISDY 45-piece wet/dry sandpaper, 400–3000 grit ([B07D2YYC11](https://www.amazon.com/dp/B07D2YYC11)) · JoTownCand solder wick 3-pack ([B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5)) · Epic Medical Supply 91% isopropyl alcohol, 2 × 16 oz ([B0BSJ93RKB](https://www.amazon.com/dp/B0BSJ93RKB)); prices not recorded |
+| DigiKey | Sep 21 | 5 × Same Sky `CES-20134-088PM` speaker, 2223-CES-20134-088PM-ND, $4.10 each — $20.50 |
 
-Estimated total spend: **≈ $635–660**, plus the DHO802 (Rigol list price $329; the price paid is not recorded here).
+Estimated total spend: **≈ $635–660**, plus the DHO802 (Rigol list price $329; the price paid is not recorded here), $20.50 for five more speakers, and the 21 September Amazon consumables (prices not recorded).
 
 ---
 
@@ -42,7 +44,7 @@ Estimated total spend: **≈ $635–660**, plus the DHO802 (Rigol list price $32
 | **Hosyond SSD1306 OLED**, 0.96" 128×64 I²C, white | 5 | The screen — the device's only visual output, showing state, the pairing code, and responses. White pixels on black glass are also the intended white/silver accent. Firmware probes both `0x3C` and `0x3D`, so either address works. **Read the silkscreen pin order before wiring**: vendors ship GND-VCC-SCL-SDA *and* VCC-GND-SCL-SDA on identical-looking boards. |
 | **AITRIP INMP441** I²S MEMS microphone | 5 | The ears. A digital microphone that outputs I²S directly, so no analog audio wiring is needed. This is the creator's exact part. Tie `L/R` to GND to select the left slot; data goes to GPIO4. **Keep flux, IPA, glue, paint, and compressed air away from the acoustic port** — contaminating it is permanent. |
 | **HiLetgo MAX98357** I²S class-D amplifier | 3 | Converts I²S to speaker output. Used in fast-track Step 11, powered only from the controller's `5V` pin; keep it disconnected before Step 11. Its supply range alone does not define a complete power circuit. Later inspect the exact carrier's gain and `SD/MODE` network: shutdown can be intentional, and mono-mix can attenuate left-only source audio. Do not change the mode or power it from a raw cell based on this inventory. |
-| **Same Sky CES-20134-088PM** speaker, 8 Ω 0.8 W | 1 | The mouth. A factory-enclosed micro-speaker — the sealed rear cavity is what makes it audible at this size, and it removes the hardest acoustic problem in the build. 20 × 13 × 4.87 mm, top-firing, with two mounting flanges and a built-in dust mesh. Ships with 60 mm of 32 AWG lead, longer than the whole device, so **it needs no wire from you**. Cap output at ≤ 2.53 V RMS differential to respect the 0.8 W rating. |
+| **Same Sky CES-20134-088PM** speaker, 8 Ω 0.8 W | 6 | The mouth. A factory-enclosed micro-speaker — the sealed rear cavity is what makes it audible at this size, and it removes the hardest acoustic problem in the build. 20 × 13 × 4.87 mm, top-firing, with two mounting flanges and a built-in dust mesh. Ships with 60 mm of 32 AWG lead, longer than the whole device, so **it needs no wire from you**. Cap output at ≤ 2.53 V RMS differential to respect the 0.8 W rating. One bought 2026-09-02; five more bought 2026-09-21 from DigiKey at $4.10 each, so no single unit is irreplaceable. Still never cut the leads of a unit you intend to use. |
 | **QTEATAK tactile push buttons** | 420 | The only user control: a momentary button on GPIO10 to ground. Short press toggles chat, long press resets Wi-Fi. Pick a white cap to match the finish. Note the onboard GPIO9 button is ROM BOOT, not this input. |
 | **2.54 mm male breakaway header pins** | 22 | Snap-apart pin strips for soldering onto modules so they can plug into a breadboard. Makes the whole Phase 0 bench stack reversible instead of permanent. |
 
@@ -96,6 +98,8 @@ use each where it belongs, and strain-relieve every conductor either way.
 
 | Item | What it is and why it is here |
 | --- | --- |
+| **JoTownCand solder wick**, 3-pack, 3 widths, bought 2026-09-21 | Braided copper that lifts solder off a joint: the way to clear a bridge or remove header pins. Use the narrowest width on OLED, microphone and amplifier pads, with a touch of flux, and cut off the used end each time. |
+| **Epic Medical Supply 91% isopropyl alcohol**, 2 × 16 oz, bought 2026-09-21 | Cleans flux residue off boards and rinses the brass after acid flux. 91% has little enough water to evaporate cleanly; keep it away from the microphone's acoustic port and away from flame or a hot iron. |
 | **X-Tronic 3020-XTS station** + 5 tips, solder roll, solder sucker, tweezers, 2 helping hands, silicone mat | Temperature-controlled soldering iron and the bench kit around it. Temperature control matters because a MEMS microphone and an OLED flex tail are heat-sensitive. The helping hands hold parts while both of yours are busy; the silicone mat is the only heat-safe work surface you own. |
 | **MAIYUM 63/37 rosin-core solder**, 0.8 mm, 100 g | Electronics solder. The 63/37 tin-lead alloy melts lower and wets faster than lead-free, meaning less time with a hot iron pressed against fragile parts. Wash hands, do not eat at the bench, ventilate. |
 | **Chip Quik CQ4LF no-clean flux pen**, 10 ml | Flux chemically strips oxide off metal so solder actually bonds instead of balling up. "No-clean" residue is safe to leave on electronics. ⚠️ Duplicate — one was already owned. |
@@ -124,6 +128,7 @@ use each where it belongs, and strain-relieve every conductor either way.
 | **QWORK mini heat gun**, 300 W, with stand | Shrinks the heat-shrink tubing. Directed hot air is controllable in a way a lighter is not — no soot, no scorching adjacent insulation. |
 | **SHJADE hot glue gun**, 20 W mini, + 30 sticks, white | Low-temperature adhesive for retaining modules in the frame — the reference build's own method. Low-temp matters near plastic module bodies and the OLED. Keep glue away from the microphone port, the switch mechanism, and connectors. |
 | **SE 10-piece diamond needle file set**, 150 grit, 744DF-R | Small shaped files for deburring cut tube ends and fine shaping. ⚠️ **See the note below — diamond is not ideal for brass.** |
+| **BAISDY wet/dry sandpaper**, 45 sheets, 400–3000 grit, bought 2026-09-21 | Deburrs every cut brass edge so none can cut a wire or a hand; 400–800 does the deburring, the finer grits polish or key a surface before paint. Sand brass wet or with a mask, well away from the electronics. |
 | **3M Solus 1000 safety glasses**, clear | Eye protection for sawing, filing, and clipping wire, all of which throw metal fragments. Wear them; the saw is the sharpest thing on the bench. |
 
 ### ⚠️ Note on the diamond file set
@@ -138,7 +143,7 @@ This is not a problem to fix urgently:
 
 - **Clean them** with a stiff brass brush when they load up, and they keep working.
 - **Sandpaper does most of this job anyway.** Deburring a thin tube end is
-  mostly a few strokes of 400–800 grit wet/dry, which is still on the buy list.
+  mostly a few strokes of 400–800 grit wet/dry, now in hand (bought 2026-09-21).
 - **If filing gets frustrating**, a steel needle file set in cut 2 is about
   $10 and is the correct tool for brass.
 
@@ -148,17 +153,15 @@ Keep the diamond set — it earns its place on the harder materials.
 
 ## Still needed
 
-The USB data cable blocks the first physical boot unless another cable proves
-it has working data lines. The other items do not block unpowered sorting or
-software setup; the fast track names the exact gate for each one.
+A working data cable was proven at fast-track Step 3, and the 21 September
+order covered the wick, sandpaper and alcohol, so nothing below blocks the
+build. What remains is small and local.
 
 | Item | Why | Approx. |
 | --- | --- | ---: |
-| **IPA 91 %+ · swabs · baking soda** — buy **locally** (pharmacy + grocery) | **Safety-relevant** — baking soda neutralizes the Harris acid flux, IPA rinses it off. Residue left on brass corrodes joints and blisters paint. 70 % IPA has too much water | ~$6 |
-| **400–800 wet/dry sandpaper** | Deburring is a safety step — no sharp brass edge may reach the battery. Also keys the surface if you paint | ~$8 |
-| **Solder wick** — [JoTownCand 3-pack, 3 widths](https://www.amazon.com/JoTownCand-Premium-Desoldering-Residue-Solder/dp/B0DRN688Q5) | Braided copper that lifts solder off a joint when you make a mistake. The 0.08" width suits OLED and microphone pads | ~$8 |
-| **USB-A-to-C data cable** — [Rankie USB 3.0, 3-pack](https://www.amazon.com/Rankie-USB-C-Charging-Transfer-3-Pack/dp/B01JRY0VE4) | Flashing the board. Clone boards ship CC-resistor bugs that make C-to-C cables power-only; "3.0" guarantees data lines. A charge-only cable makes a working board look dead | ~$10 |
-| Gel cyanoacrylate (super glue) | Spot-bonding where hot glue is too bulky | ~$5 |
+| **Swabs · baking soda** — buy **locally** (pharmacy + grocery) | Needed only if the frame is soldered with the Harris acid flux: baking soda neutralizes it and the owned 91% IPA rinses it off. Residue left on brass corrodes joints and blisters paint | ~$5 |
+| Gel cyanoacrylate (super glue) — optional | Spot-bonding where hot glue is too bulky; keep it and its fumes away from the microphone port and the OLED glass | ~$5 |
+| USB-A-to-C data cable, spare — optional | One proven cable is enough; a spare helps once one stays plugged into the finished device | ~$10 |
 
 ### Optional — white/silver finish
 

@@ -177,7 +177,7 @@ while GPIO5 floats during reset; above about 1.5 V the same pin selects the left
 channel, which is the channel the firmware fills. The volume cap limits the
 digital amplitude, and the firmware squares the setting, so a cap of 15 passes
 only about 2 % of full scale. The dummy load lets the scope measure the output
-before the only speaker sees it. Filtering the difference of the two outputs at
+before a speaker sees it. Filtering the difference of the two outputs at
 about 20 kHz matters because a class-D stage switches at a few hundred kilohertz,
 and a speaker's coil, not the resistor, is what normally removes that carrier.
 

@@ -65,6 +65,13 @@ A failed prediction is useful learning. An unexplained success is not a pass.
 
 ## The no-purchase rule
 
+> **Purchases since these sessions were written (2026-09-21):** solder wick,
+> 91% isopropyl alcohol, 400–3000 grit wet/dry sandpaper, five more
+> CES-20134-088PM speakers (six in total), and the Rigol DHO802 oscilloscope.
+> The prototype is also now a USB-powered home device, with the speaker as
+> fast-track Step 11. Where a session below says one of these is not in hand,
+> or calls the speaker the only one, [INVENTORY.md](../docs/INVENTORY.md) governs.
+
 This plan assumes the items recorded in
 [INVENTORY.md](../docs/INVENTORY.md) are already available. Do not buy a missing
 tool or component merely to stay on schedule.

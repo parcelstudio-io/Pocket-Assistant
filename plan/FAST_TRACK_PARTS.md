@@ -68,7 +68,7 @@ column — the guide's Step 6 was corrected to state that requirement.
 | Chip Quik CQ4LF no-clean flux pen | Step 5B | 📦 [Chip Quik search](https://www.amazon.com/s?k=Chip+Quik+CQ4LF) |
 | BOENFU flush cutters | Step 5C | 📦 [BOENFU search](https://www.amazon.com/s?k=BOENFU+flush+cutters) |
 | Practice material (perfboard or offcuts) | Step 5B | 🔍 [2.54 mm perfboard search](https://www.amazon.com/s?k=2.54mm+perfboard+prototype) |
-| Solder wick | Step 5B rework | ⬜ [JoTownCand B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5) |
+| Solder wick | Step 5B rework | ✅ [JoTownCand B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5), bought 2026-09-21 |
 | REXQualis breadboards (use the clean 830-point) | Step 6 | 📦 [Breadboard search](https://www.amazon.com/s?k=REXQualis+830+400+breadboard) |
 | TODOELEC Dupont jumpers, 120 × 10 cm | Step 6 | 📦 [Jumper search](https://www.amazon.com/s?k=TODOELEC+10cm+Dupont+jumper+120) |
 | QTEATAK tactile buttons (420, use 1) | Step 6 | ✅ [Amazon B0FHW6HMG4](https://www.amazon.com/dp/B0FHW6HMG4) |
@@ -109,7 +109,7 @@ If all 26 positions already passed 5A, skip this whole block and go to Step 6.
 | Electronics flux pen — **not** the Harris acid brass flux | 📦 [Chip Quik search](https://www.amazon.com/s?k=Chip+Quik+CQ4LF) |
 | Flush cutters, to break header strips | 📦 [BOENFU search](https://www.amazon.com/s?k=BOENFU+flush+cutters) |
 | Practice material for the three warm-up joints (5B) | 🔍 [Perfboard search](https://www.amazon.com/s?k=2.54mm+perfboard+prototype) |
-| Solder wick, for removing excess solder | ⬜ [B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5) |
+| Solder wick, for removing excess solder | ✅ [B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5), bought 2026-09-21 |
 | Ventilation that moves fumes away from your face | — |
 
 Without wick you have no recovery path for a solder bridge: the fast track
@@ -156,7 +156,7 @@ fixture parts are not needed, by the scope decision of 2026-09-21.
 | Part | Status |
 | --- | --- |
 | HiLetgo MAX98357A board, one of three | ✅ owned; used as `AMP-A1` |
-| Same Sky CES-20134-088PM speaker | ✅ owned; the only one, leads never cut |
+| Same Sky CES-20134-088PM speaker | ✅ owned, six after the 2026-09-21 DigiKey order |
 | Seven header pins from the spare 1×40 strip | ✅ owned |
 | 220 µF electrolytic, 10 V or more | ✅ owned, ALLECIN kit |
 | 100 nF ceramic | ✅ owned, BOJACK kit |
@@ -168,8 +168,8 @@ fixture parts are not needed, by the scope decision of 2026-09-21.
 
 All three were closed during Step 5: the OLED arrived factory-soldered (so only
 22 pins were ever needed), the Sullins 1×40 arrived as spare stock, and the
-mic was soldered without needing rework. Solder wick remains on the
-still-needed list but nothing in Steps 6–9 uses an iron.
+mic was soldered without needing rework. Solder wick was bought on
+2026-09-21, in time for Step 11's amplifier headers.
 
 ## Held parts — bought, but not released for this build
 

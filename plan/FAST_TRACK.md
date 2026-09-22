@@ -1047,8 +1047,8 @@ PASS 11B needs the oscilloscope; PASS 11C follows 11B.
 
 - The HiLetgo MAX98357A board labelled `AMP-A1`, with its `SD` resistor network
   traced during the unpowered speaker lab.
-- The speaker, `SPK-A1`. It is the only one; never cut, strip, or re-terminate
-  its leads.
+- The speaker, `SPK-A1`, one of six. Never cut, strip, or re-terminate its
+  leads.
 - Seven header pins from the spare 1×40 strip for the amplifier, plus the
   board's own speaker terminal block if it came with one.
 - One 220 µF electrolytic rated 10 V or more from the ALLECIN kit, and one
@@ -1076,8 +1076,8 @@ with the 100 nF beside it.
 
 1. Practise two joints on scrap header, then solder the seven header pins, and
    the terminal block if there is one, to `AMP-A1`. Inspect every joint at phone
-   macro zoom. There is no solder wick in the inventory, so a bridge has no
-   clean fix; work slowly.
+   macro zoom. Clear any bridge with the solder wick and a touch of flux, then
+   inspect again.
 2. Choose the `SD` pull-down from your trace of the board. If the board has a
    pull-up from `SD` to `VIN`, pick the kit value no larger than one hundredth of
    that pull-up and no smaller than 1 kΩ: 4.7 kΩ for a 1 MΩ pull-up, 1 kΩ for a
