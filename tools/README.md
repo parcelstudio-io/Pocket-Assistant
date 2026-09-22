@@ -116,6 +116,21 @@ review its terms and privacy behavior before using it. No cloud token or API key
 belongs in this repository. A different backend requires a compatible OTA
 service URL and, preferably, a source build configured for that service.
 
+## Check which Wi-Fi network a board has saved
+
+`saved_wifi.py` reads only the board's NVS settings partition, prints the saved
+network names with every password shown as `<hidden, set>` or `<hidden, empty>`,
+and deletes its temporary copy even if a step fails. The read resets the board
+once and writes nothing. Run it inside the ESP-IDF environment:
+
+```bash
+. firmware/.work/esp-idf/export.sh
+python tools/saved_wifi.py --port /dev/ttyACM0
+```
+
+`No saved Wi-Fi network` is the expected result after a full diagnostics
+reflash, which writes a blank settings area.
+
 ## Troubleshooting
 
 - `No serial ports found`: try a known data-capable cable and another USB port.
