@@ -31,6 +31,7 @@ proven USB data cable.
 | Amazon #9 | Sep 21 | Rigol DHO802 oscilloscope, [B0CKX699F5](https://www.amazon.com/dp/B0CKX699F5); price paid not recorded |
 | Amazon #10 | Sep 21 | BAISDY 45-piece wet/dry sandpaper, 400–3000 grit ([B07D2YYC11](https://www.amazon.com/dp/B07D2YYC11)) · JoTownCand solder wick 3-pack ([B0DRN688Q5](https://www.amazon.com/dp/B0DRN688Q5)) · Epic Medical Supply 91% isopropyl alcohol, 2 × 16 oz ([B0BSJ93RKB](https://www.amazon.com/dp/B0BSJ93RKB)); prices not recorded |
 | DigiKey | Sep 21 | 5 × Same Sky `CES-20134-088PM` speaker, 2223-CES-20134-088PM-ND, $4.10 each — $20.50 |
+| Amazon #12 | Sep 21 | Rust-Oleum Stops Rust spray paint, 12 oz: `7789830` gloss canvas white ([B000PIG3AS](https://www.amazon.com/dp/B000PIG3AS)) and `7791830` satin white ([B000Z8FGII](https://www.amazon.com/dp/B000Z8FGII)); prices not recorded |
 
 Estimated total spend: **≈ $635–660**, plus the DHO802 (Rigol list price $329; the price paid is not recorded here), $20.50 for five more speakers, and the 21 September Amazon consumables (prices not recorded).
 
@@ -165,15 +166,19 @@ build. What remains is small and local.
 
 ### Optional — white/silver finish
 
-Planned white system, nothing bought yet (the Rust-Oleum 249322 dark-green
-self-etching primer was ordered and then canceled on 2026-09-21):
+White system. **Bought 2026-09-21:** both topcoats, Rust-Oleum `7789830` gloss
+canvas white, a warm off-white, and `7791830` satin white. **Not bought:** the
+`7780830` white primer. The Rust-Oleum 249322 dark-green self-etching primer
+was ordered and then canceled the same day.
 
 1. Sand the bare brass with the owned 400–600 wet/dry and wipe it with the owned
    91% IPA, so the paint has a clean, keyed surface.
 2. Rust-Oleum `7780830` Stops Rust Clean Metal Primer, flat white
    ([B000Z8C3PM](https://www.amazon.com/dp/B000Z8C3PM)).
-3. Rust-Oleum `7791830` Stops Rust satin white
-   ([B000Z8FGII](https://www.amazon.com/dp/B000Z8FGII)).
+3. One topcoat, chosen on the test coupons: Rust-Oleum `7791830` satin white
+   ([B000Z8FGII](https://www.amazon.com/dp/B000Z8FGII)) or `7789830` gloss
+   canvas white ([B000PIG3AS](https://www.amazon.com/dp/B000PIG3AS)). Use one
+   sheen on the whole frame.
 
 Without an etching primer, adhesion on smooth non-ferrous brass is the open
 question, so the finish stays gated: spray test coupons cut from brass offcuts
