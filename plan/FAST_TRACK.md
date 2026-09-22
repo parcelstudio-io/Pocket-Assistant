@@ -1099,8 +1099,9 @@ with the 100 nF beside it.
 ### PASS 11A — wired and silent
 
 - [ ] With the **diagnostics** build flashed (amplifier disabled, GPIO5 held
-      low) and USB connected: `VIN` to GND reads close to 5 V, perhaps a few
-      tenths below, and you record it; `SD` to GND reads below 0.08 V; the Step 9 checks
+      low) and USB connected: `VIN` to GND reads close to 5 V, and you record
+      it (this batch wires `5V` straight to USB VBUS, so expect the USB supply
+      minus only the cable's small drop); `SD` to GND reads below 0.08 V; the Step 9 checks
       still pass (button clicks, OLED toggles, microphone RMS rises with
       speech); and 60 seconds pass without a reset.
 
