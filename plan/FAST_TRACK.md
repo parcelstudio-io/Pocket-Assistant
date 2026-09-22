@@ -1034,13 +1034,16 @@ harness in the purchase authority's battery fixture are not needed. Every part
 below is already in the inventory.
 
 Nothing in this step has run on hardware yet. PASS 11A needs only the meter;
-PASS 11B needs the oscilloscope; PASS 11C follows 11B.
+PASS 11B needs the oscilloscope; PASS 11C follows 11B. By the builder's
+decision of 2026-09-22, the [prototype shortcut](#prototype-shortcut--speaker-without-the-scope)
+lets PASS 11C follow PASS 11A directly at a volume cap of 30 or less.
 
 > **Rules for this step:** USB is the only source. The amplifier's `VIN` comes
 > from the controller's `5V` pin only, never from the bench supply, a battery,
 > or the 3.3 V rail. Neither speaker output is ground: never connect `OUT+` or
 > `OUT−` to GND, and never clip a scope ground to either. The first powered
-> output drives the dummy load, never the speaker. Unplug USB before every
+> output drives the dummy load, never the speaker, unless you take the
+> prototype shortcut at a volume cap of 30 or less. Unplug USB before every
 > wiring change.
 
 ### What you need, all owned
@@ -1098,12 +1101,42 @@ with the 100 nF beside it.
 
 ### PASS 11A — wired and silent
 
-- [ ] With the **diagnostics** build flashed (amplifier disabled, GPIO5 held
-      low) and USB connected: `VIN` to GND reads close to 5 V, and you record
-      it (this batch wires `5V` straight to USB VBUS, so expect the USB supply
-      minus only the cable's small drop); `SD` to GND reads below 0.08 V; the Step 9 checks
-      still pass (button clicks, OLED toggles, microphone RMS rises with
-      speech); and 60 seconds pass without a reset.
+- [ ] With a build that leaves the amplifier disabled flashed (the
+      diagnostics build, or the assistant build without `--amplifier`; both
+      hold GPIO5 low) and USB connected: `VIN` to GND reads close to 5 V, and
+      you record it (this batch wires `5V` straight to USB VBUS, so expect the
+      USB supply minus only the cable's small drop); `SD` to GND reads below
+      0.08 V; the Step 9 checks still pass on the diagnostics build (button
+      clicks, OLED toggles, microphone RMS rises with speech), or one spoken
+      question still gets its reply on the assistant build; and 60 seconds
+      pass without a reset. Measuring `SD` before the GPIO5 jumper is fitted
+      proves the pull-down alone holds shutdown, which is the state `SD`
+      depends on while the controller resets.
+
+### Prototype shortcut — speaker without the scope
+
+The builder decided on 2026-09-22 to accept the risk of skipping the dummy load
+and PASS 11B for this prototype. What protects the speaker is then the firmware
+volume cap, which clamps both the saved volume and every requested change. The
+MAX98357A datasheet defines full scale as 2.1 dBV plus the gain, and its highest
+gain is 15 dB ± 0.6 dB, under 11 V peak (`DATASHEET`). The firmware squares the
+cap, so the largest peak across the speaker is (`CALCULATED`):
+
+| Cap | Amplitude kept | Peak, `GAIN` open (9 dB) | Peak, highest gain (15.6 dB) |
+| ---: | ---: | ---: | ---: |
+| 15 | 2.25 % | 0.11 V | 0.24 V |
+| 30 | 9 % | 0.46 V | 0.98 V |
+| 50 | 25 % | 1.27 V | 2.71 V |
+
+Caps up to 30 stay below the speaker's 2.53 V at any gain setting. At 50 the
+highest gain would exceed it, so a cap above 30 still goes through PASS 11B on
+the dummy load first.
+
+After PASS 11A, with USB unplugged, fit the GPIO5 jumper and leave `OUT+` and
+`OUT−` open. Do item 6, flash, and provision Wi-Fi again as in Step 10. Then
+unplug USB, connect the speaker as item 10 says, and run PASS 11C. Record the
+cap value and `PASS 11B: SKIPPED — builder decision, 2026-09-22`. The
+illustrated hour is [One hour: make A1 speak](https://claude.ai/artifact/SeJ5R6L42yetQFQMsAXTWR).
 
 ### Do, after PASS 11A and once the scope has passed its incoming check
 
@@ -1144,7 +1177,8 @@ the default 15 passes about 2 % of full-scale amplitude, and 30 about 9 %,
 which is a large `CALCULATED` margin and probably quiet. To make the speaker
 louder, add a line such as `CONFIG_POCKET_AI_MAX_VOLUME=30` to
 `firmware/sdkconfig.defaults` (any value up to 100), rebuild, and repeat items 6
-to 9 at that value before the speaker goes back on. Raise it in steps and stop
+to 9 at that value before the speaker goes back on. Under the prototype
+shortcut, a cap of 30 or less may go straight to the speaker. Raise it in steps and stop
 at the first value whose peak approaches 2.53 V.
 
 If the board resets during loud replies, suspect the USB source first: a laptop
@@ -1159,7 +1193,8 @@ power the device, with the OLED as the only readout.
 ### PASS 11C — the device speaks
 
 - [ ] The reply is audible from the speaker at the volume cap that passed 11B,
-      five replies in a row, without a reset. Stop and unplug USB if the speaker
+      or at a cap of 30 or less under the prototype shortcut, five replies in
+      a row, without a reset. Stop and unplug USB if the speaker
       buzzes harshly, smells, or warms. Record the cap value and the evidence.
 
 Optional theory: [one supply, no translator](FAST_TRACK_THEORY.md#step-11--one-supply-no-translator).

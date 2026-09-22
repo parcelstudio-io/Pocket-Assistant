@@ -130,7 +130,8 @@ echo "USB-only bench: controller/button/OLED/mic powered by controller 3.3 V are
 echo "Disconnect battery, charger, external regulators, and any separately powered wiring."
 if [[ "${AMPLIFIER_ENABLED}" == true ]]; then
     echo "Amplifier ENABLED: its output is live after boot. VIN only from the controller's 5V pin;"
-    echo "OUT+/OUT- go to the dummy load until PASS 11B, and neither lead is ever GND."
+    echo "Neither OUT+ nor OUT- is ever GND. At a volume cap of 30 or less the speaker may go on"
+    echo "directly (Step 11 prototype shortcut); above 30, the dummy load until PASS 11B."
 else
     echo "A Step 11 amplifier powered only from the controller's 5V pin may stay wired; it stays in shutdown."
 fi

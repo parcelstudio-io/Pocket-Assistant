@@ -35,7 +35,10 @@ instructions that violate them.
   of 2026-09-21. Battery, charger, external regulators, and the metal case stay
   off it. The amplifier may be connected only as fast-track Step 11 describes:
   `VIN` from the controller's `5V` pin on the same USB supply, `SD` on GPIO5
-  with a pull-down, first output into a dummy load.
+  with a pull-down, first output into a dummy load. By the builder's decision
+  of 2026-09-22 the speaker may instead go on directly at a volume cap of 30 or
+  less (Step 11's prototype shortcut); a cap above 30 goes through the dummy
+  load and PASS 11B first.
 - Neither speaker output is ground. Never connect `OUT+` or `OUT−` to GND, and
   never clip a scope ground to either.
 - OLED and microphone power comes only from the controller's 3.3 V output.
