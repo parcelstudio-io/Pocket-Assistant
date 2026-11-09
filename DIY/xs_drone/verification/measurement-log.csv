@@ -1,0 +1,33 @@
+test_id,date,operator,hardware_revision,firmware_hash,app_and_os,instrument_and_range,conditions,measured_value,uncertainty,result,evidence_path,notes
+A01,,,,,,,,,,NOT_RUN,,Inventory and PCB revision
+A02,,,,,,,,,,NOT_RUN,,Motor and prop dimensions
+A03,,,,,,,,,,NOT_RUN,,Battery and connector polarity
+A04,,,,,,,,,,NOT_RUN,,Real PCB battery and wiring envelopes
+A05,,,,,,,,,,NOT_RUN,,Physical rotor clearance and deflection
+A06,,,,,,,,,,NOT_RUN,,Frame motor PCB battery retention
+A07,,,,,,,,,,NOT_RUN,,Mass and centre of gravity
+B01,,,,,,,,,,NOT_RUN,,Unpowered continuity
+B02,,,,,,,,,,NOT_RUN,,Board-only power and sensor bring-up
+B03,,,,,,,,,,NOT_RUN,,3.3V transient measurements
+B04,,,,,,,,,,NOT_RUN,,Connector current duty and temperature
+B05,,,,,,,,,,NOT_RUN,,FET and diode repetitive stress
+B06,,,,,,,,,,NOT_RUN,,Loaded battery sag and current
+B07,,,,,,,,,,NOT_RUN,,Voltage telemetry calibration
+B08,,,,,,,,,,NOT_RUN,,Charging curve
+C01,,,,,,,,,,NOT_RUN,,Flashed firmware identity on actual board
+C02,,,,,,,,,,NOT_RUN,,No unintended startup output
+C03,,,,,,,,,,NOT_RUN,,Sensor axes
+C04,,,,,,,,,,NOT_RUN,,Motor order and rotation
+C05,,,,,,,,,,NOT_RUN,,App controller mapping
+C06,,,,,,,,,,NOT_RUN,,Actual stale-link output cutoff timing
+C07,,,,,,,,,,NOT_RUN,,Reconnect lockout and zero-throttle recovery
+C08,,,,,,,,,,NOT_RUN,,Phone lifecycle failure scenarios
+C09,,,,,,,,,,NOT_RUN,,Bench invalid packet behavior
+C10,,,,,,,,,,NOT_RUN,,Radio timing and interference
+D01,,,,,,,,,,NOT_RUN,,Motor thrust matching
+D02,,,,,,,,,,NOT_RUN,,Whole aircraft thrust and mass margin
+D03,,,,,,,,,,NOT_RUN,,Duty-cycle thermal endurance
+D04,,,,,,,,,,NOT_RUN,,Short initial hover
+D05,,,,,,,,,,NOT_RUN,,Three flight repeatability
+D06,,,,,,,,,,NOT_RUN,,Custom frame complete qualification
+D07,,,,,,,,,,NOT_RUN,,Optional FPV qualification

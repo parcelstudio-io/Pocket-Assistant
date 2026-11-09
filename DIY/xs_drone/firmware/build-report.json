@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-01",
+  "status": "ESP32-S3 target compile and link passed; no flashing or hardware testing",
+  "source_repository": "https://github.com/Seeed-Projects/Co-Create_ESP-FLY.git",
+  "source_commit": "96de4d78c4d9e561c6a7ade2865a13f16b519ac3",
+  "patch": "patches/0001-bench-link-hardening.patch",
+  "patch_sha256": "33664b6066c72c8d33994faae6541deaa884fa8f40c6c07b6209b959daf31a49",
+  "sdk": {
+    "name": "ESP-IDF",
+    "version": "v5.0.7",
+    "commit": "9cd7dad6e96f4d392dcab9cb13686c22acb4d763",
+    "target": "esp32s3",
+    "compiler": "xtensa-esp32s3-elf GCC 11.2.0 esp-2022r1",
+    "python": "3.11.15",
+    "cmake": "3.24.0",
+    "ninja": "1.10.2",
+    "esptool": "4.7.0",
+    "python_packages": "requirements-idf-build.txt"
+  },
+  "profile": {
+    "console": "USB Serial/JTAG",
+    "level_after_ms_exclusive": 300,
+    "stop_after_ms_exclusive": 500,
+    "automatic_startup_motor_pulses": false,
+    "maximum_wifi_clients": 1,
+    "wifi_security": "WPA2 PSK with randomly generated private password",
+    "rpyt_payload_bytes": 14,
+    "maximum_roll_pitch_degrees": 45,
+    "maximum_yaw_rate_degrees_per_second": 360,
+    "reject_nonfinite_commands": true,
+    "motor_gpio_order": [
+      7,
+      4,
+      3,
+      1
+    ],
+    "i2c_sda_scl_gpio": [
+      5,
+      6
+    ],
+    "battery_adc_gpio": 2
+  },
+  "compiled_artifacts": [
+    {
+      "file": "ESPDrone.bin",
+      "bytes": 872944,
+      "partition_bytes": 1048576,
+      "partition_free_bytes": 175632,
+      "flash_offset": "0x10000",
+      "sha256": "230b5c2d75f8b86c465d62f9ae6e9fc9612a84dede209e3f8baec2c32e5fd7c9"
+    },
+    {
+      "file": "bootloader/bootloader.bin",
+      "bytes": 21616,
+      "flash_offset": "0x0",
+      "sha256": "b0d0691167b20749de6f31e3303fd87156ceddb6132dd20961b1d0db65c243ec"
+    },
+    {
+      "file": "partition_table/partition-table.bin",
+      "bytes": 3072,
+      "flash_offset": "0x8000",
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    }
+  ],
+  "artifact_note": "Hashes identify this local build only. New private credentials and build metadata intentionally change the application hash. Generated binaries remain in /tmp/xs-drone-build/build-local and are not included in the public design package because they embed credentials.",
+  "tests": {
+    "script": "../tests/firmware_audit.py",
+    "control_assertions_passed": 84,
+    "udp_length_assertions_passed": 128,
+    "original_defect_reproduction_assertions_passed": 4,
+    "original_fixture": "../sources/legacy-audit",
+    "scope": "Actual extracted source functions with deterministic host stubs; does not model radio, FreeRTOS scheduling, IMU or motor hardware"
+  },
+  "remaining_upstream_build_warnings": [
+    "Legacy ADC API is deprecated in ESP-IDF 5",
+    "EXTRA_COMPONENT_DIRS contains a leading-space path style warning",
+    "Linker auto-adds missing --end-group"
+  ],
+  "not_performed": [
+    "Device flash",
+    "Power-up and reset motor waveform measurement",
+    "Physical Wi-Fi timeout measurement",
+    "Phone application interoperability test",
+    "Thrust, temperature, current or battery calibration measurements",
+    "Flight or frame vibration testing"
+  ]
+}

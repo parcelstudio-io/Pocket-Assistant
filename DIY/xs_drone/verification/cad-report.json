@@ -1,0 +1,306 @@
+{
+  "status": "PASS: virtual geometry only; physical fit/strength/flight NOT TESTED",
+  "design": {
+    "design": "XS-WIFI-75 prototype, independent frame for ESP-FLY electronics",
+    "revision": "A",
+    "units": "mm",
+    "wheelbase_diagonal": 75.0,
+    "prop_diameter": 30.0,
+    "required_horizontal_prop_clearance": 2.0,
+    "motor_diameter": 6.0,
+    "motor_length": 15.0,
+    "motor_bore": 6.2,
+    "motor_mount_outer_diameter": 8.0,
+    "motor_mount_height": 6.0,
+    "motor_seat_height": 0.6,
+    "motor_wire_hole_diameter": 4.8,
+    "motor_axis_position_tolerance": 0.25,
+    "prop_radius_tolerance": 0.25,
+    "component_xy_placement_tolerance": 0.5,
+    "deck_length": 34.0,
+    "deck_width": 24.0,
+    "deck_thickness": 1.2,
+    "deck_window_length": 18.0,
+    "deck_window_width": 12.0,
+    "arm_width": 2.8,
+    "arm_height": 1.8,
+    "electronics_envelope": [
+      26.0,
+      22.0,
+      12.0
+    ],
+    "bare_pcb_xy": [
+      17.75,
+      21.0
+    ],
+    "support_pad_centres_abs_xy": [
+      5.5,
+      8.5
+    ],
+    "support_pad_radius": 1.4,
+    "electronics_bottom_z": 2.2,
+    "support_pad_height": 0.5,
+    "insulating_spacer_thickness": 0.5,
+    "battery_envelope": [
+      30.0,
+      20.0,
+      8.0
+    ],
+    "battery_bottom_z": 16.0,
+    "battery_bridge_xy": [
+      32.0,
+      22.0
+    ],
+    "battery_bridge_plate_thickness": 0.8,
+    "battery_bridge_wall_x": 15.0,
+    "battery_bridge_wall_thickness": 1.2,
+    "battery_bridge_wall_length": 18.0,
+    "prop_bottom_z_assumption": 17.2,
+    "prop_thickness_envelope": 2.0,
+    "material_density_g_cm3": 1.24,
+    "frame_mass_budget_g": 4.0,
+    "battery_dimensions_verified": false,
+    "stack_height_verified": false,
+    "prop_height_verified": false,
+    "notes": "Motor/prop diameters are published nominal sizes. Battery, stack height and rotor Z are provisional clearance envelopes, not measured kit dimensions. Camera excluded. Values do not reproduce the paid creator frame."
+  },
+  "frame": {
+    "solid_valid": true,
+    "solid_count": 1,
+    "mesh_watertight": true,
+    "mesh_winding_consistent": true,
+    "mesh_components": 1,
+    "solid_volume_mm3": 1565.5399869779794,
+    "mesh_volume_mm3": 1565.4547960262908,
+    "stl_volume_error_percent": 0.005441633710878303,
+    "bounds_mm": [
+      [
+        -30.516504287719727,
+        -30.516267776489258,
+        0.0
+      ],
+      [
+        30.516504287719727,
+        30.516267776489258,
+        6.0
+      ]
+    ],
+    "extents_mm": [
+      61.03300857543945,
+      61.032535552978516,
+      6.0
+    ],
+    "solid_PLA_mass_estimate_g": 1.9412695838526943
+  },
+  "coupon": {
+    "solid_valid": true,
+    "solid_count": 1,
+    "mesh_watertight": true,
+    "mesh_winding_consistent": true,
+    "mesh_components": 1,
+    "solid_volume_mm3": 1011.4330317086653,
+    "mesh_volume_mm3": 1011.2979604160224,
+    "stl_volume_error_percent": 0.0133544474432219,
+    "bounds_mm": [
+      [
+        -25.0,
+        -5.0,
+        0.0
+      ],
+      [
+        25.0,
+        5.0,
+        6.0
+      ]
+    ],
+    "extents_mm": [
+      50.0,
+      10.0,
+      6.0
+    ],
+    "solid_PLA_mass_estimate_g": 1.2541769593187448
+  },
+  "battery_bridge": {
+    "solid_valid": true,
+    "solid_count": 1,
+    "mesh_watertight": true,
+    "mesh_winding_consistent": true,
+    "mesh_components": 1,
+    "solid_volume_mm3": 1167.9999999999982,
+    "mesh_volume_mm3": 1168.000400638586,
+    "stl_volume_error_percent": 3.430124894988425e-05,
+    "bounds_mm": [
+      [
+        -16.0,
+        -11.0,
+        0.0
+      ],
+      [
+        16.0,
+        11.0,
+        14.800000190734863
+      ]
+    ],
+    "extents_mm": [
+      32.0,
+      22.0,
+      14.800000190734863
+    ],
+    "solid_PLA_mass_estimate_g": 1.4483199999999976
+  },
+  "clearances": {
+    "adjacent_motor_spacing_mm": 53.03300858899106,
+    "diagonal_motor_spacing_mm": 75.0,
+    "adjacent_prop_tip_gap_mm": 23.03300858899106,
+    "electronics_to_prop_nominal_mm": 5.578090141318128,
+    "battery_to_prop_nominal_mm": 5.135162906597582,
+    "electronics_to_prop_tolerance_adjusted_mm": 4.267429969538307,
+    "battery_to_prop_tolerance_adjusted_mm": 3.8245027348177607,
+    "battery_bridge_to_prop_tolerance_adjusted_mm": 2.433906190162007,
+    "overall_prop_envelope_xy_mm": 83.03300858899107,
+    "motor_centres_xy_mm": [
+      [
+        26.51650429449553,
+        26.51650429449553
+      ],
+      [
+        26.51650429449553,
+        -26.51650429449553
+      ],
+      [
+        -26.51650429449553,
+        -26.51650429449553
+      ],
+      [
+        -26.51650429449553,
+        26.51650429449553
+      ]
+    ],
+    "required_clearance_mm": 2.0,
+    "tolerance_allowance_mm": 1.3106601717798214
+  },
+  "total_printed_structure_mass_estimate_g": 3.389589583852692,
+  "battery_bridge_to_electronics_vertical_gap_mm": 1.0,
+  "battery_bridge_to_electronics_intersection_mm3": 0,
+  "rotor_boolean_collision_tests": [
+    {
+      "motor": 1,
+      "part": "frame",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 1,
+      "part": "electronics",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 1,
+      "part": "battery",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 1,
+      "part": "battery_bridge",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 2,
+      "part": "frame",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 2,
+      "part": "electronics",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 2,
+      "part": "battery",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 2,
+      "part": "battery_bridge",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 3,
+      "part": "frame",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 3,
+      "part": "electronics",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 3,
+      "part": "battery",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 3,
+      "part": "battery_bridge",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 4,
+      "part": "frame",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 4,
+      "part": "electronics",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 4,
+      "part": "battery",
+      "intersection_mm3": 0
+    },
+    {
+      "motor": 4,
+      "part": "battery_bridge",
+      "intersection_mm3": 0
+    }
+  ],
+  "motor_boolean_collision_tests": [
+    {
+      "motor": 1,
+      "frame_intersection_mm3": 0
+    },
+    {
+      "motor": 2,
+      "frame_intersection_mm3": 0
+    },
+    {
+      "motor": 3,
+      "frame_intersection_mm3": 0
+    },
+    {
+      "motor": 4,
+      "frame_intersection_mm3": 0
+    }
+  ],
+  "pcb_support_checks": {
+    "bare_pcb_xy_mm": [
+      17.75,
+      21.0
+    ],
+    "pad_footprints_inside_bare_pcb": true,
+    "minimum_distance_to_header_hole_centre_mm": 2.2953866776645717,
+    "pad_radius_plus_header_hole_radius_mm": 1.95,
+    "spacer_mm": 0.5,
+    "populated_underside_component_clearance": "NOT VERIFIED; inspect before assembly"
+  },
+  "unverified": [
+    "Purchased kit battery dimensions",
+    "PCB populated stack and wire bend envelope",
+    "Printed bore tolerances",
+    "Prop axial height and flex",
+    "Arm strength and resonance",
+    "Motor thrust/current",
+    "Flight tuning",
+    "Camera mount"
+  ]
+}

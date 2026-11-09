@@ -1,0 +1,68 @@
+{
+  "checked_date": "2026-10-01",
+  "scope": "Public creator reference files retrieved for research. Physical hardware was not inspected or tested.",
+  "upstream_firmware": {
+    "repository": "https://github.com/Seeed-Projects/Co-Create_ESP-FLY",
+    "commit": "96de4d78c4d9e561c6a7ade2865a13f16b519ac3",
+    "path": "Firmware/esp-drone",
+    "license": "GPL-3.0; see upstream LICENSE"
+  },
+  "files": [
+    {
+      "path": "sources/reference/esp-fly-gerbers-331d8f50.zip",
+      "creator": "Max Imagination; Flux export",
+      "source_url": "https://drive.google.com/file/d/1amm8nug94fygVRlJqxQfSoNjobDGX19J/view",
+      "download_url": "https://drive.usercontent.google.com/download?id=1amm8nug94fygVRlJqxQfSoNjobDGX19J&export=download",
+      "sha256": "d7e6d1a324788ee36941429889ce43dc593f99a5615331b95224fdb22517edf6",
+      "revision": "331d8f50",
+      "export_timestamp": "2025-02-07T02:19:33+00:00",
+      "original_design_url": "https://www.flux.ai/maximagination/imu-plus-motor-driver-2",
+      "license_status": "Publicly provided build reference; an explicit redistribution license was not found. Creator attribution retained. No paid frame files downloaded."
+    },
+    {
+      "path": "sources/reference/esp-fly-creator-schematic.jpg",
+      "creator": "Max Imagination",
+      "source_url": "https://drive.google.com/file/d/1FaNqwE-UCqi3OMhoZBbWzKspX9wL3yQD/view",
+      "download_url": "https://drive.usercontent.google.com/download?id=1FaNqwE-UCqi3OMhoZBbWzKspX9wL3yQD&export=download",
+      "sha256": "0402d3a2bbfa8229ade9eafd2f12a08198cdbb7bb601f18246040c2318a03594",
+      "original_filename": "Schematic - ESP-FLY ESP32 Micro Drone by Max Imagination (Up to date).jpg",
+      "license_status": "Creator copyright retained; local research reference, not a new open-license grant."
+    },
+    {
+      "path": "sources/reference/esp-fly-creator-brushed-wiring.jpg",
+      "creator": "Max Imagination",
+      "source_url": "https://drive.google.com/file/d/1bfpXugghZp4UfVJpdKgu9iIm6AFsn5Qy/view",
+      "download_url": "https://drive.usercontent.google.com/download?id=1bfpXugghZp4UfVJpdKgu9iIm6AFsn5Qy&export=download",
+      "sha256": "13245dbef4f35cb0ada069f1d32da608ffbd22833f38f4819914a0df3e484be8",
+      "original_filename": "Wiring Diagram - ESP32S3 Brushed Drone (ESP-FLY) - Max Imagination.jpg",
+      "license_status": "Creator copyright retained; modular alternative diagram, not a requirement to add a GY-521 to the retail kit."
+    },
+    {
+      "path": "sources/reference/esp-fly-creator-bom-2025-03-29.csv",
+      "creator": "Max Imagination",
+      "source_url": "https://drive.google.com/file/d/1EBPdoYV8IRlJl5H9KqLQGCuI6NOrhwHS/view",
+      "download_url": "https://drive.usercontent.google.com/download?id=1EBPdoYV8IRlJl5H9KqLQGCuI6NOrhwHS&export=download",
+      "sha256": "92a63579fc91bf797d5e62820354af9dcdef9933dc14a93f26791e02c402b146",
+      "revision": "2025-03-29T150502246Z",
+      "limitations": "Empty footprint/JLCPCB part-number fields; KUU KSI2300DS is not Vishay Si2300DS; not a turnkey verified procurement file."
+    }
+  ],
+  "gerber_observations": {
+    "archive": "sources/reference/esp-fly-gerbers-331d8f50.zip",
+    "outline_member": "imu-plus-motor-driver-2-edge_cuts.gbr",
+    "drill_member": "imu-plus-motor-driver-2.drl",
+    "coordinate_format": "4.6 absolute, millimeters, leading-zero omission",
+    "outline_bounds_mm": {
+      "x_min": -11.1134,
+      "x_max": 6.6366,
+      "y_min": -7.8554,
+      "y_max": 13.1446
+    },
+    "outline_size_mm": [17.75, 21.0],
+    "header_drill_diameter_mm": 1.1,
+    "header_hole_count": 14,
+    "header_row_separation_mm": 15.24,
+    "header_pitch_mm": 2.54,
+    "limitations": "Historical bare PCB outline and plated electrical holes only. Not populated dimensions, current kit revision, or physical fit validation."
+  }
+}

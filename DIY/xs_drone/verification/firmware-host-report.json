@@ -1,0 +1,18 @@
+{
+  "scope": "host regression only; no hardware attached",
+  "esp": {
+    "source": "/tmp/xs-drone-build/esp-fly",
+    "patched": true,
+    "level_ms": 300,
+    "stop_ms": 500,
+    "control": "84 actual-source assertions passed",
+    "udp_bounds": "128 UDP boundary assertions passed"
+  },
+  "original": {
+    "source": "sources/legacy-audit",
+    "result": "4 assertions reproduced the upstream full-throttle timeout defect",
+    "sha256_NRF24_RX_cpp": "6cfd245942125ba3329faee32dc00c6f89b9ddd0a126926aa127a86dfd72d8d8"
+  },
+  "date": "2026-10-01",
+  "command": "python3 tests/firmware_audit.py --esp-source /tmp/xs-drone-build/esp-fly --original-source sources/legacy-audit"
+}

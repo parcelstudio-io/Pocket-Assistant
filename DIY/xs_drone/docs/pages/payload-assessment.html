@@ -1,0 +1,389 @@
+<title>XS Drone Payload Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column, 880px, tables scroll in their own box; two SVG drawings of the airframe. */
+:root{
+  --bg:#EEF0F2; --paper:#FFFFFF; --ink:#171B20; --ink-2:#5B6470; --line:#CBD1D8;
+  --steel:#3C5A74; --steel-soft:#DCE6EF;
+  --ok:#2B6A45; --ok-soft:#DCEBE1; --dev:#8A5A12; --dev-soft:#F3E7CF; --no:#9A3324; --no-soft:#F6DFDA;
+  --display:"Barlow Semi Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --mono:"Source Code Pro",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181C; --paper:#1E2228; --ink:#E6E8EB; --ink-2:#9AA3AE; --line:#343B44;
+    --steel:#8FB3D1; --steel-soft:#1F2F3D;
+    --ok:#7CC89A; --ok-soft:#1C3326; --dev:#E0B35C; --dev-soft:#3A2D14; --no:#F09080; --no-soft:#3E1E18;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181C; --paper:#1E2228; --ink:#E6E8EB; --ink-2:#9AA3AE; --line:#343B44;
+  --steel:#8FB3D1; --steel-soft:#1F2F3D;
+  --ok:#7CC89A; --ok-soft:#1C3326; --dev:#E0B35C; --dev-soft:#3A2D14; --no:#F09080; --no-soft:#3E1E18;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:880px;margin:0 auto;padding-block:28px 72px}
+h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,6vw,50px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,28px);font-weight:700;margin-top:44px;padding-top:14px;border-top:3px solid var(--steel)}
+h3{font-size:19px;font-weight:600;margin-top:22px}
+p{margin:10px 0;max-width:70ch}
+ul,ol{max-width:70ch;padding-left:22px;margin:8px 0}
+li{margin:6px 0}
+a{color:var(--steel)}
+code{font-family:var(--mono);font-size:.86em;background:var(--steel-soft);padding:1px 5px;border-radius:3px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.5;background:var(--paper);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;border-radius:4px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);font-weight:600}
+.sub{color:var(--ink-2);font-size:15px;margin-top:10px;max-width:70ch}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--paper)}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.m{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.06em;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.yes{background:var(--ok-soft);color:var(--ok)}.dev{background:var(--dev-soft);color:var(--dev)}.no{background:var(--no-soft);color:var(--no)}
+.note{border-left:4px solid var(--steel);background:var(--paper);padding:12px 16px;margin:18px 0}
+.note.bad{border-color:var(--no)}
+.note p{max-width:none;margin:4px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.kpi{background:var(--paper);border:1px solid var(--line);padding:12px 14px;min-width:0}
+.kpi .v{font-family:var(--display);font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:13px;color:var(--ink-2);margin-top:4px}
+figure{margin:20px 0;background:var(--paper);border:1px solid var(--line);padding:14px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto;font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:70ch}
+.steps li{margin:9px 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<div class="masthead">
+  <div class="eyebrow">XS drone &middot; ESP-FLY kit &middot; stainless build</div>
+  <h1>What a 32 g drone can carry</h1>
+  <div class="sub">Camera, microphone, two solid-state LiDARs and a real flashlight fit on the ESP-FLY's one spare pin; the tilt sensor is already there. A speaker and the Nitecore cell do not. Assessed on paper 2026-10-27; every "est." mass is a guess until the scale says otherwise. Source of truth: <code>xs_drone/docs/payload-assessment.md</code>.</div>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">32 g</div><div class="l">flying mass, est. (kit: 25 g)</div></div>
+  <div class="kpi"><div class="v">2.1 : 1</div><div class="l">thrust to weight on the vendor's 68 gf</div></div>
+  <div class="kpi"><div class="v">3.2 min</div><div class="l">flight time, est. (kit: 5); 2.9 with the light on</div></div>
+  <div class="kpi"><div class="v">67 mm</div><div class="l">footprint, prop tip to tip</div></div>
+</div>
+
+<h2>Verdict</h2>
+<div class="tw"><table>
+<tr><th>Wanted</th><th>Fits</th><th>How</th></tr>
+<tr><td>Camera</td><td><span class="pill dev">YES, FIRMWARE WORK</span></td><td>Swap the kit's plain XIAO ESP32-S3 for the <a href="https://www.amazon.com/dp/B0C69FFVHH">XIAO ESP32-S3 Sense</a>. Same footprint, same header pins the kit uses; the camera lives on pins the kit never touches. About 2.5 g est.</td></tr>
+<tr><td>Microphone</td><td><span class="pill yes">YES, FREE</span></td><td>The Sense's PDM mic on GPIO41/42. Nothing to add.</td></tr>
+<tr><td>Minimal LiDAR, down</td><td><span class="pill yes">YES, PLUG-IN</span></td><td><a href="https://www.pololu.com/product/3415">VL53L1X</a> single-point solid-state LiDAR on the existing I2C bus. ESP-Drone already ships the driver and height-hold. 0.5 g, 20 mA.</td></tr>
+<tr><td>Minimal LiDAR, forward</td><td><span class="pill dev">YES, DRIVER TO WRITE</span></td><td><a href="https://www.pololu.com/product/3418">VL53L7CX</a> 8&times;8 multizone laser imager, 60&deg;&times;60&deg;, 3.5 m. The smallest thing that deserves the name LiDAR. 0.5 g, 100 mA. Takes the one spare GPIO.</td></tr>
+<tr><td>Flashlight, centre</td><td><span class="pill yes">YES</span></td><td>Cree XP-G2 1 W emitter on an aluminium star behind a 10 mm narrow-spot lens, 350 or 700 mA regulated by AMC7135 chips that GPIO43 switches directly. About 150 lm in a 23&deg; beam at half power, 250 lm at full: three to five times a phone torch, in a spot. About 2.0 g est.</td></tr>
+<tr><td>Tilt, yaw, heading</td><td><span class="pill yes">ALREADY IN THE KIT</span></td><td>The driver board's MPU6050, a 6-axis IMU (accelerometer + gyroscope), is what the flight controller levels the drone with. Nothing to add. A compass for absolute heading fits the same bus but is not recommended; see below.</td></tr>
+<tr><td>Speaker + amp</td><td><span class="pill no">NO, ON THIS BOARD</span></td><td>The I2S amp needs three GPIOs; the XIAO has one spare. A speaker excludes the forward ranger and the flashlight. A piezo beeper rides on the flashlight net for free.</td></tr>
+<tr><td>Nitecore NL169 cell</td><td><span class="pill no">NO</span></td><td>20 g cell on a 25 g aircraft, and its 2 A protection trips below the 2.4 A hover current. The kit's 250 mAh LiPo recharges through the XIAO's USB-C.</td></tr>
+<tr><td>Stainless frame</td><td><span class="pill yes">YES</span></td><td>1.0 mm 304 rod cage with 1.5 mm motor collars, about 4.5 g, twice as stiff as the PLA arm.</td></tr>
+<tr><td>Scanning LiDAR, radar</td><td><span class="pill no">NO</span></td><td>LD19 weighs 47 g, RPLIDAR C1 110 g. The 24 GHz HLK modules report presence, not a range map, and need 5 V.</td></tr>
+</table></div>
+
+<h2>The battery, decided</h2>
+<div class="note bad"><p><strong>The owned Nitecore NL169 stays with Cyber Dawn and the Pocket AI.</strong> Two independent reasons, either one fatal.</p></div>
+<div class="tw"><table>
+<tr><th>Figure</th><th class="n">NL169</th><th class="n">Kit LiPo</th><th>Source</th></tr>
+<tr><td>Mass</td><td class="n">20 g</td><td class="n">about 7 g est.</td><td><a href="https://www.nitecore.com/product/nl169">Nitecore</a>; weigh the kit pack</td></tr>
+<tr><td>Continuous discharge limit</td><td class="n">2 A, protection trips</td><td class="n">6.25 A label</td><td>Nitecore; <a href="https://github.com/Seeed-Projects/Co-Create_ESP-FLY">ESP-FLY repo</a> (25C &times; 0.25 Ah)</td></tr>
+<tr><td>Hover current of the kit</td><td class="n">2.4 A</td><td class="n">2.4 A</td><td>engineering-assessment.md</td></tr>
+</table></div>
+<p>The whole kit, battery included, is 25 g. The NL169 alone would be 80 % of that, and its protection circuit would open in the air. No multirotor small enough to live on a 2 A cell can lift a 20 g cell. The kit LiPo charges from the XIAO's USB-C in two to five hours, or in minutes on a 1S whoop charger.</p>
+
+<h2>Pin budget</h2>
+<p>The XIAO exposes eleven GPIOs on its header. The kit uses ten. This table is the whole design problem.</p>
+<div class="tw"><table>
+<tr><th>Header</th><th class="n">GPIO</th><th>Kit use</th><th>After this plan</th></tr>
+<tr><td class="m">D0</td><td class="n">1</td><td>Motor M4</td><td>unchanged</td></tr>
+<tr><td class="m">D1</td><td class="n">2</td><td>Battery divider ADC</td><td>unchanged</td></tr>
+<tr><td class="m">D2</td><td class="n">3</td><td>Motor M3</td><td>unchanged</td></tr>
+<tr><td class="m">D3</td><td class="n">4</td><td>Motor M2</td><td>unchanged</td></tr>
+<tr><td class="m">D4</td><td class="n">5</td><td>I2C0 SDA, MPU6050 at 0x68</td><td>plus VL53L1X down (re-addressed to 0x2A at boot), plus VL53L7CX forward (0x29)</td></tr>
+<tr><td class="m">D5</td><td class="n">6</td><td>I2C0 SCL</td><td>same</td></tr>
+<tr><td class="m">D6</td><td class="n">43</td><td>Red battery LED, 200 &Omega;</td><td><strong>flashlight enable and PWM</strong>: drives the AMC7135 VDD pins. Red LED removed; battery state is in the app telemetry</td></tr>
+<tr><td class="m">D7</td><td class="n">44</td><td>free</td><td><strong>LPn of the forward VL53L7CX</strong>, held low at boot while the down sensor moves to 0x2A</td></tr>
+<tr><td class="m">D8</td><td class="n">7</td><td>Motor M1</td><td>unchanged. Also SD SCK on the Sense: cut jumper J3, slot stays empty</td></tr>
+<tr><td class="m">D9</td><td class="n">8</td><td>MPU6050 INT</td><td>unchanged. Also SD MISO on the Sense, same jumper</td></tr>
+<tr><td class="m">D10</td><td class="n">9</td><td>Green status LED, 200 &Omega;</td><td>unchanged. Also SD MOSI on the Sense, same jumper</td></tr>
+<tr><td class="m">Sense</td><td class="n">10-18, 38-40, 47, 48</td><td>none</td><td>camera DVP, SCCB on 39/40</td></tr>
+<tr><td class="m">Sense</td><td class="n">41, 42</td><td>none</td><td>PDM microphone data / clock</td></tr>
+<tr><td class="m">Sense</td><td class="n">21</td><td>user LED</td><td>SD chip select, unused with J3 cut</td></tr>
+</table></div>
+<p>Both ST rangers wake at 0x29. The VL53L7CX's LPn only disables its I2C, so it is the one to hold while the VL53L1X takes 0x2A through a register. The new address dies at power-off; the firmware repeats this every boot. Sources: <a href="https://www.pololu.com/product/3415">Pololu 3415</a>, <a href="https://www.pololu.com/file/0J1885/um2884-a-guide-to-using-the-vl53l5cx-multizone-timeofflight-ranging-sensor-with-wide-field-of-view-ultra-lite-driver-uld-stmicroelectronics.pdf">ST UM2884</a>.</p>
+
+<h2>Firmware: four collisions, two drivers</h2>
+<p>The kit firmware is a vendored ESP-Drone. Its committed <code>sdkconfig</code> carries pins from Espressif's own ESP32-S2 drone board that do not exist on a XIAO, and four of them land on the Sense camera.</p>
+<div class="tw"><table>
+<tr><th>Config</th><th>Kit value</th><th>Collides with</th><th>Set to</th></tr>
+<tr><td class="m">I2C1 SDA / SCL</td><td class="m">40 / 41</td><td>camera SCCB SDA, mic data</td><td>point the VL53L1X driver at I2C0: one line in <code>zranger2.c</code>, <code>I2C1_DEV</code> to <code>I2C0_DEV</code></td></tr>
+<tr><td class="m">Blue LED</td><td class="m">11</td><td>camera data Y7</td><td>disable</td></tr>
+<tr><td class="m">Buzzer</td><td class="m">39 / 38</td><td>camera SCCB SCL, VSYNC</td><td>disable</td></tr>
+<tr><td class="m">SPI MISO/MOSI/CLK/CS0</td><td class="m">37/35/36/34</td><td>not on the XIAO</td><td>leave; the PMW3901 probe fails cleanly</td></tr>
+</table></div>
+<p>Free once the VL53L1X sits on I2C0: boot auto-detect, range into the Kalman estimator, height-hold above 40 cm. Position hold needs the PMW3901 optical-flow sensor on four SPI pins the XIAO does not have free, so it is out. To write:</p>
+<ol>
+<li><strong>Camera task.</strong> The <code>esp32-camera</code> component with the XIAO Sense pin table, QVGA JPEG at 5 to 10 fps as UDP frames on a second port, or stills on request. Shared with the Pocket AI with Camera port. Seeed's FAQ says the Sense camera is not supported by the current ESP-FLY workflow; this is the work that makes it so.</li>
+<li><strong>Multizone driver.</strong> ST's VL53L7CX ULD library on the ESP-Drone I2C layer. The chip loads about 90 KB of firmware over I2C at every power-on, about a second. Output: an 8&times;8 distance grid at 15 Hz. First a telemetry stream to the phone, then a wall guard that clamps forward pitch when the middle rows read under 40 cm.</li>
+<li><strong>Flashlight and beeper.</strong> LEDC PWM on GPIO43 into the AMC7135 VDD pins. Brightness is duty, a beep is the same pin at 4 kHz, and the duty is capped at 50 % whenever the motors are stopped.</li>
+<li><strong>Boot re-addressing.</strong> GPIO44 low, init the VL53L1X, set 0x2A, GPIO44 high, init the VL53L7CX. Before auto-detect runs.</li>
+</ol>
+<div class="note"><p><strong>Open risk: the Wi-Fi link.</strong> Control is a few kB/s of UDP; QVGA JPEG at 8 fps is about 100 kB/s on the same radio. First camera flights use stills on request, with link-loss measured before any stream. The Sense runs hot streaming for minutes; the frame leaves the chip side open to propwash.</p></div>
+
+<h2>Sensors compared</h2>
+<div class="tw"><table>
+<tr><th>Sensor</th><th class="n">Mass</th><th>Range, FoV</th><th>Output</th><th class="n">Current</th><th class="n">Price</th><th>Buy</th></tr>
+<tr><td><strong>VL53L1X, Pololu 3415</strong> (down)</td><td class="n">0.5 g</td><td>4 cm to 4 m, 27&deg;</td><td>one distance, 50 Hz</td><td class="n">20 mA</td><td class="n">$22.95</td><td><a href="https://www.digikey.com/en/products/detail/pololu/3415/10451121">DigiKey</a>, <a href="https://www.pololu.com/product/3415">Pololu</a></td></tr>
+<tr><td>VL53L1X, Adafruit 3967</td><td class="n">1.8 g</td><td>same</td><td>same</td><td class="n"></td><td class="n">$14.95</td><td><a href="https://www.amazon.com/dp/B09K4V92H1">Amazon</a>. Heavier; fallback only</td></tr>
+<tr><td><strong>VL53L7CX, Pololu 3418</strong> (forward)</td><td class="n">0.5 g</td><td>2 cm to 3.5 m, 60&deg;&times;60&deg;</td><td>8&times;8 at 15 Hz</td><td class="n">100 mA</td><td class="n">$19.95</td><td><a href="https://www.pololu.com/product/3418">Pololu</a></td></tr>
+<tr><td>VL53L5CX, Pololu 3417</td><td class="n">0.5 g</td><td>2 cm to 4 m, 45&deg;&times;45&deg;</td><td>8&times;8 at 15 Hz</td><td class="n">100 mA</td><td class="n">$19.95</td><td><a href="https://www.digikey.com/en/products/detail/pololu/3417/19199889">DigiKey</a>. Narrower; L7CX chosen</td></tr>
+<tr><td>VL53L4CD, Pololu 3692</td><td class="n">0.5 g</td><td>1 to 120 cm, 18&deg;</td><td>one distance</td><td class="n">25 mA</td><td class="n">$13.95</td><td><a href="https://www.pololu.com/product/3692">Pololu</a>. Too short a ceiling</td></tr>
+<tr><td>TF-Luna</td><td class="n">5 g</td><td>0.2 to 8 m, 2&deg;</td><td>one distance</td><td class="n">70 mA</td><td class="n">~$24</td><td><a href="https://www.amazon.com/dp/B086MJQSLR">Amazon</a>. Ten times the mass, wants 3.7 V+</td></tr>
+<tr><td>HLK-LD2410 radar</td><td class="n"></td><td>5 m, &plusmn;60&deg;</td><td>presence, 0.75 m steps</td><td class="n">80 mA at 5 V</td><td class="n"></td><td>Not a ranging sensor</td></tr>
+<tr><td>LDROBOT LD19</td><td class="n">47 g</td><td>12 m, 360&deg;</td><td>scan</td><td class="n">180 mA at 5 V</td><td class="n"></td><td>Twice the aircraft</td></tr>
+</table></div>
+
+<h2>Camera, microphone, speaker</h2>
+<div class="tw"><table>
+<tr><th>XIAO ESP32-S3 Sense state</th><th class="n">Current at 3.8 V</th></tr>
+<tr><td>Wi-Fi active, no camera</td><td class="n">110 mA</td></tr>
+<tr><td>Camera streaming, average</td><td class="n">155 mA</td></tr>
+<tr><td>Camera streaming, peak</td><td class="n">366 mA</td></tr>
+<tr><td>Mic recording</td><td class="n">65 mA</td></tr>
+</table></div>
+<p>From the <a href="https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/">Seeed wiki</a>. The camera order of 2026-10-27 may have delivered two Sense boards; the second is this drone's brain. The analog alternative, a 2.8 g <a href="https://www.amazon.com/AKK-5-8GHz-Transmitter-600TVL-Antenna/dp/B06XV7G439">AKK C1T</a> camera and 25 mW transmitter, is lighter and costs the ESP32 nothing, but its picture goes to goggles, not to the drone, and it has no mic.</p>
+<p><strong>Speaker.</strong> The owned MAX98357A needs BCLK, LRC and DIN. The header has one spare pin and the two LED pins, exactly the set the forward ranger and the flashlight use. It would also add 3.5 g and 250 mA peaks: 35.5 g, a 1.9 ratio, under the floor. Substitute: a 12 mm piezo (<a href="https://www.digikey.com/en/products/detail/tdk/PS1240P02BT/935924">TDK PS1240, DigiKey</a>) across the flashlight LED. It is a few mA of capacitive load; 4 kHz PWM on the flashlight pin beeps it while the LED flickers invisibly. Speech stays with the Pocket AI and the phone.</p>
+
+<h2>Flashlight</h2>
+<p>A real flashlight, not an indicator. A Cree XP-G2 reflowed on a 20 mm aluminium star (<a href="https://www.amazon.com/dp/B00LWU5DWM">Indus Star 1-Up, cool white</a>; two bought 2026-10-28, one plus a spare), behind a <a href="https://www.digikey.com/en/products/detail/carclo-technical-plastics/10412/2641658">Carclo 10412</a> 10 mm narrow-spot TIR lens, driven by two <a href="https://www.amazon.com/dp/B0CST7GZTN">AMC7135</a> 350 mA linear regulators in parallel. It stands vertically at the nose on the centre line, pointing where the camera looks, 10&deg; down.</p>
+<div class="tw"><table>
+<tr><th class="n">PWM duty</th><th class="n">Current</th><th class="n">Power</th><th class="n">Light</th><th>Beam</th><th class="n">Heat into the star</th><th>Cost in flight</th></tr>
+<tr><td class="n">50 %</td><td class="n">350 mA avg</td><td class="n">1.0 W</td><td class="n">about 150 lm</td><td>23&deg;, about 1 000 cd: 110 lux at 3 m</td><td class="n">0.65 W</td><td>+0.35 A, about 0.3 min</td></tr>
+<tr><td class="n">100 %</td><td class="n">700 mA</td><td class="n">2.0 W</td><td class="n">about 250 lm</td><td>same lens, about 1 800 cd</td><td class="n">1.3 W</td><td>+0.7 A, about 0.5 min</td></tr>
+</table></div>
+<p>For scale: a phone torch is 30 to 50 lm in a wide flood; a Nitecore TIP keychain light is 360 lm on turbo. Half power here is three times a phone torch, concentrated into a spot about a door's width at 2.5 m.</p>
+<figure>
+<svg viewBox="0 0 860 300" role="img" aria-label="Beam of the flashlight at 30 and 60 centimetres: spot size and brightness">
+<style>
+.beam{fill:var(--dev-soft);stroke:var(--dev);stroke-width:1.2;opacity:.9}
+.beam2{fill:none;stroke:var(--dev);stroke-width:1;stroke-dasharray:5 4}
+.spot{fill:none;stroke:var(--ink);stroke-width:2}
+.bt{font-size:12px;fill:var(--ink)}
+.bs{font-size:11px;fill:var(--ink-2)}
+.bh{font-size:14px;font-weight:700;fill:var(--ink)}
+.dm{fill:none;stroke:var(--ink-2);stroke-width:1}
+.dr{fill:var(--paper);stroke:var(--ink);stroke-width:1.4}
+</style>
+<text x="20" y="24" class="bh">Beam on an object, half power (150 lm). Scale 1 px per mm.</text>
+<!-- drone at left: body 50 mm, lens at x=100 -->
+<rect x="44" y="130" width="50" height="40" class="dr" rx="3"/>
+<text x="69" y="154" class="bs" text-anchor="middle">drone</text>
+<rect x="94" y="143" width="7" height="14" class="beam"/>
+<!-- 23 deg cone: half-angle 11.5, tan=0.2035 -->
+<polygon points="101,150 701,28 701,272" class="beam"/>
+<!-- 12.4 deg cone, optional lens: half-angle 6.2, tan=0.1086 -->
+<line x1="101" y1="150" x2="701" y2="85" class="beam2"/><line x1="101" y1="150" x2="701" y2="215" class="beam2"/>
+<!-- spots -->
+<line x1="401" y1="89" x2="401" y2="211" class="spot"/>
+<line x1="701" y1="28" x2="701" y2="272" class="spot"/>
+<!-- labels -->
+<text x="401" y="78" class="bt" text-anchor="middle">30 cm, half an arm</text>
+<text x="401" y="228" class="bt" text-anchor="middle">12 cm spot, a saucer</text>
+<text x="401" y="243" class="bs" text-anchor="middle">about 11 000 lux: open shade on a sunny day</text>
+<text x="701" y="18" class="bt" text-anchor="middle">60 cm, an arm's length</text>
+<text x="712" y="150" class="bt">24 cm spot,</text><text x="712" y="165" class="bt">a dinner plate</text>
+<text x="712" y="182" class="bs">about 2 800 lux:</text><text x="712" y="195" class="bs">a bright overcast sky</text>
+<text x="250" y="108" class="bs">23° cone: Carclo 10412 lens, the plan</text>
+<text x="440" y="150" class="bs">12° dashed: optional Carclo 10003 lens</text><text x="440" y="164" class="bs">6.5 and 13 cm spots</text>
+<line x1="101" y1="286" x2="701" y2="286" class="dm"/><line x1="101" y1="281" x2="101" y2="291" class="dm"/><line x1="401" y1="281" x2="401" y2="291" class="dm"/><line x1="701" y1="281" x2="701" y2="291" class="dm"/>
+<text x="251" y="279" class="bs" text-anchor="middle">30 cm</text><text x="551" y="279" class="bs" text-anchor="middle">30 cm</text>
+</svg>
+<figcaption>Spot diameter is 2 &times; distance &times; tan(half-angle); lux is candela over distance squared, about 1 000 cd for the 10412 on 150 lm. Full power is 1.8 times the lux. The 12&deg; <a href="https://www.ledsupply.com/led-optics/10003-carclo-lens-20mm-narrow-spot-led-optic">Carclo 10003</a> is a 20 mm lens, about 1.5 g, and clears the props only with the star dropped to arm level.</figcaption>
+</figure>
+<ul>
+<li><strong>Emitter.</strong> XP-G2 R5 bin: 139 lm minimum at 350 mA, 254 lm at 700 mA, forward voltage 2.8 and 2.9 V, 1.5 A maximum (<a href="https://www.ledsupply.com/content/pdf/datasheets/1763/leds-cree-xpg2_documentation.pdf">datasheet</a>). Same footprint and optics as the XP-G, so every 10 mm Carclo lens fits. LEDSupply shows 0 in stock; the Amazon listing is the same LEDdynamics board.</li>
+<li><strong>Regulator, not resistor.</strong> The LED drops 2.8 V while the cell falls from 4.2 to 3.3 V in a flight; a resistor sized for 350 mA at 4.2 V passes 130 mA at 3.3 V. The AMC7135 is a current sink: 350 mA whenever its input is 0.12 V above the LED, which holds to a 3.0 V cell. 2.7 to 6 V, no external parts, the chip inside most 1S flashlights (<a href="https://www.circuitsonline.net/forum/file/104772">datasheet</a>). Fit one chip if 150 lm is enough.</li>
+<li><strong>No MOSFET.</strong> GPIO43 drives the AMC7135 VDD pins directly. The chip is off below 2.7 V and VDD draws under 1 mA, so the 3.3 V pin is both enable and PWM input, as the Nanjg 105C flashlight driver does with an ATtiny pin. The kit's 200 &Omega; series resistor can stay. Fallback: an AO3400A low-side on the chips' GND pins.</li>
+<li><strong>Heat.</strong> 1 W in is 0.65 W of heat, 2 W is 1.3 W. A star sawn to 14 mm rises about 60 &deg;C per watt in still air, far less in prop wash. On the bench with the props stopped, hold 50 % duty; the firmware enforces it. Stainless is not a heatsink (16 W/m&middot;K against aluminium's 200), so the star keeps its own metal: 14 mm, not smaller.</li>
+<li><strong>Why 14 mm.</strong> The star stands between the two front prop discs, whose tips are 6.8 mm apart at the centre line and 20 mm above the arms. A 14 mm disc mounted 2 mm above the arm tops out at 16 mm, 4 mm under the props; the full 20 mm hex would not clear. The lens sits 7 mm proud of the nose, 9 mm below the camera's lens centre: out of the picture.</li>
+<li><strong>Mass.</strong> 14 mm disc 0.7 g, lens 0.4 g, two SOT-89 chips 0.2 g, piezo 0.3 g, wire and solder 0.4 g: 2.0 g est.</li>
+<li><strong>It is also the camera's light.</strong> The 23&deg; spot is the middle third of the OV2640's 66&deg; picture.</li>
+</ul>
+<p>The piezo stays wired across the LED: the LED node swings 2.8 V at the PWM rate, and 4 kHz beeps it while the beam flickers invisibly.</p>
+
+<h2>Attitude: tilt, yaw and heading</h2>
+<p>The sensor is already on the kit. The driver board carries an <strong>MPU6050</strong>, a 6-axis inertial measurement unit: a 3-axis accelerometer and a 3-axis gyroscope in one 4 &times; 4 mm chip, on I2C0 at 0x68 with its data-ready interrupt on GPIO8. The flight controller cannot work without it; it is what keeps the drone level, and acceptance test C03 checks its axes.</p>
+<div class="tw"><table>
+<tr><th>What you want</th><th>Which sensor</th><th>How it is got</th></tr>
+<tr><td>Tilt: roll and pitch</td><td>accelerometer + gyroscope</td><td>The gyro integrates turn rate for a fast estimate; the accelerometer sees where gravity points and trims the drift. ESP-Drone fuses the two several hundred times a second.</td></tr>
+<tr><td>Yaw rate</td><td>gyroscope Z axis</td><td>read directly</td></tr>
+<tr><td>Heading: which way is north</td><td>magnetometer, <strong>not fitted</strong></td><td>A gyro-only yaw drifts a degree or so a minute, so the drone holds the heading it had at arming: relative, not absolute.</td></tr>
+<tr><td>Height</td><td>VL53L1X in this plan</td><td>the MPU6050 has no barometer, and a barometer cannot resolve 10 cm indoors anyway</td></tr>
+<tr><td>Pan</td><td>not a sensor</td><td>the camera is fixed to the airframe; a quad pans by yawing</td></tr>
+</table></div>
+<p>A magnetometer would cost no pin: a QMC5883L or HMC5883L breakout on I2C0 at 0x0D or 0x1E, 0.3 g, and ESP-Drone's sensor file is literally named <code>sensors_mpu6050_hm5883L_ms5611.c</code>. Still not recommended: four brushed motors 26 mm away and a 700 mA lamp wire are magnets and current loops a few centimetres from the sensor, and indoor steel bends the field by tens of degrees. A three-minute indoor flight does not need true north. If wanted later it is a $5 part and a config line.</p>
+
+<h2>Mass ledger and flight numbers</h2>
+<div class="tw"><table>
+<tr><th>Item</th><th class="n">Mass</th><th>Basis</th></tr>
+<tr><td>Kit without battery: PLA frame, plain XIAO, driver board, motors, props</td><td class="n">18 g</td><td><a href="https://github.com/Seeed-Projects/Co-Create_ESP-FLY">ESP-FLY repo</a></td></tr>
+<tr><td>Kit 250 mAh LiPo</td><td class="n">7 g est.</td><td>weigh</td></tr>
+<tr><td>Kit PLA frame, removed</td><td class="n">&minus;3.5 g est.</td><td>Rev A PLA modelled at 3.4 g</td></tr>
+<tr><td>Stainless cage: 360 mm of 1.0 mm rod, four two-turn 1.5 mm collars</td><td class="n">+4.5 g</td><td>7.93 g/cm&sup3;</td></tr>
+<tr><td>Sense expansion with camera</td><td class="n">+2.5 g est.</td><td>not published</td></tr>
+<tr><td>VL53L1X + VL53L7CX</td><td class="n">+1.0 g</td><td>Pololu</td></tr>
+<tr><td>Flashlight: 14 mm star, lens, two AMC7135, piezo</td><td class="n">+2.0 g est.</td><td>see Flashlight</td></tr>
+<tr><td>Wiring, solder, Kapton</td><td class="n">+1.0 g est.</td><td></td></tr>
+<tr><td><strong>Flying mass</strong></td><td class="n"><strong>32 g est.</strong></td><td></td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Figure</th><th class="n">25 g kit</th><th class="n">32 g this plan</th><th class="n">35.5 g with speaker</th></tr>
+<tr><td>Thrust to weight on 68 gf</td><td class="n">2.7</td><td class="n">2.1</td><td class="n">1.9</td></tr>
+<tr><td>Hover current, scaled as mass<sup>1.5</sup> from 2.4 A</td><td class="n">2.4 A</td><td class="n">3.5 A</td><td class="n">4.1 A</td></tr>
+<tr><td>Sensors and camera</td><td class="n"></td><td class="n">+0.3 A</td><td class="n">+0.5 A</td></tr>
+<tr><td>Flight time at 80 % of 250 mAh</td><td class="n">5.0 min</td><td class="n">3.2 min</td><td class="n">2.6 min</td></tr>
+<tr><td>Same with the flashlight at 50 % / 100 %</td><td class="n"></td><td class="n">2.9 / 2.7 min</td><td class="n"></td></tr>
+</table></div>
+<p>The 68 gf is the vendor's claim for four 615 motors on 30 mm props, unmeasured here. If the thrust stand says under 2.0, the fix is 716 motors on 40 mm props (2.9 g each, <a href="https://micronwings.com/product/motor-brushed-7mm-x-16mm-positive-tuned-pack-of-3/">13 gf at 1.05 A on 32 mm</a>, more on 40 mm), which the kit's SI2300 switches carry. 8520 motors are out: the JST-PH connector and the cell cannot feed them.</p>
+
+<h2>Size and layout</h2>
+<p>The kit is 67 &times; 67 &times; 31 mm on about a 52 mm diagonal wheelbase with 30 mm props. The Rev A printed frame was 75 mm for print tolerance; the rod frame does not need that margin, so the stainless build targets the kit's own geometry.</p>
+
+<figure>
+<svg viewBox="0 0 860 420" role="img" aria-label="Top view and side view of the stainless rod frame with the payload placed">
+<style>
+.rod{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round}
+.rodh{fill:none;stroke:var(--steel);stroke-width:3.4;stroke-linecap:round}
+.prop{fill:none;stroke:var(--ink-2);stroke-width:1;stroke-dasharray:4 4}
+.motor{fill:var(--steel-soft);stroke:var(--steel);stroke-width:1.6}
+.part{fill:var(--paper);stroke:var(--ink);stroke-width:1.4}
+.sens{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.4}
+.lamp{fill:var(--dev-soft);stroke:var(--dev);stroke-width:1.4}
+.t{font-size:12px;fill:var(--ink)}
+.s{font-size:11px;fill:var(--ink-2)}
+.h{font-size:14px;font-weight:700;fill:var(--ink)}
+.dim{fill:none;stroke:var(--ink-2);stroke-width:1}
+</style>
+<!-- TOP VIEW, scale 2.4 px/mm, centre (220,210) -->
+<text x="220" y="26" class="h" text-anchor="middle">Top view, nose up</text>
+<g>
+  <!-- prop sweeps: 30 mm dia = 72 px, centres at ±18.4 mm = ±44 px -->
+  <circle cx="176" cy="166" r="36" class="prop"/><circle cx="264" cy="166" r="36" class="prop"/>
+  <circle cx="176" cy="254" r="36" class="prop"/><circle cx="264" cy="254" r="36" class="prop"/>
+  <!-- arms: two crossed 1.0 mm rods -->
+  <line x1="176" y1="166" x2="264" y2="254" class="rod"/>
+  <line x1="264" y1="166" x2="176" y2="254" class="rod"/>
+  <!-- centre deck rectangle 22 x 26 mm = 53 x 62 px -->
+  <rect x="193.5" y="179" width="53" height="62" class="rod" rx="2"/>
+  <!-- motor collars 6 mm = 14.4 px -->
+  <circle cx="176" cy="166" r="7.2" class="motor"/><circle cx="264" cy="166" r="7.2" class="motor"/>
+  <circle cx="176" cy="254" r="7.2" class="motor"/><circle cx="264" cy="254" r="7.2" class="motor"/>
+  <!-- payload on deck -->
+  <rect x="199" y="186" width="42" height="50" class="part"/>
+  <text x="220" y="214" class="s" text-anchor="middle">XIAO +</text>
+  <text x="220" y="227" class="s" text-anchor="middle">Sense</text>
+  <rect x="208" y="158" width="24" height="12" class="lamp"/>
+  <rect x="203" y="184" width="34" height="5" class="lamp"/>
+  <rect x="211" y="172" width="18" height="12" class="part"/>
+  <rect x="233" y="172" width="12" height="12" class="sens"/>
+  <!-- labels with leaders -->
+  <line x1="220" y1="172" x2="150" y2="120" class="dim"/><text x="146" y="116" class="t" text-anchor="end">camera, forward</text>
+  <line x1="245" y1="174" x2="330" y2="120" class="dim"/><text x="334" y="116" class="t">VL53L7CX, forward</text>
+  <line x1="208" y1="164" x2="132" y2="164" class="dim"/><text x="128" y="160" class="t" text-anchor="end">flashlight lens,</text><text x="128" y="174" class="t" text-anchor="end">14 mm star behind</text>
+  <line x1="264" y1="261" x2="330" y2="330" class="dim"/><text x="334" y="344" class="t">615 motor in a 1.5 mm collar</text>
+  <!-- dimensions -->
+  <line x1="140" y1="380" x2="300" y2="380" class="dim"/><line x1="140" y1="375" x2="140" y2="385" class="dim"/><line x1="300" y1="375" x2="300" y2="385" class="dim"/>
+  <text x="220" y="398" class="t" text-anchor="middle">67 mm tip to tip</text>
+  <line x1="60" y1="166" x2="60" y2="254" class="dim"/><line x1="55" y1="166" x2="65" y2="166" class="dim"/><line x1="55" y1="254" x2="65" y2="254" class="dim"/>
+  <text x="52" y="214" class="t" text-anchor="end">36.8</text><text x="52" y="228" class="s" text-anchor="end">mm</text>
+</g>
+<!-- SIDE VIEW, scale 2.4 px/mm, ground y=360, centre x=640 -->
+<text x="640" y="26" class="h" text-anchor="middle">Side view, nose left</text>
+<g>
+  <line x1="470" y1="360" x2="810" y2="360" class="dim"/>
+  <!-- skids 4 mm = 10 px -->
+  <line x1="590" y1="350" x2="590" y2="360" class="rod"/><line x1="690" y1="350" x2="690" y2="360" class="rod"/>
+  <!-- arm line at z=4 -->
+  <line x1="560" y1="350" x2="720" y2="350" class="rod"/>
+  <!-- motors: 6 x 15 mm = 14 x 36 px, standing on the arm tips -->
+  <rect x="553" y="314" width="14" height="36" class="motor"/><rect x="713" y="314" width="14" height="36" class="motor"/>
+  <!-- props at top of motors -->
+  <line x1="524" y1="312" x2="596" y2="312" class="rodh"/><line x1="684" y1="312" x2="756" y2="312" class="rodh"/>
+  <!-- VL53L1X under the deck, outboard of battery, looking down: z 4..6 -->
+  <rect x="604" y="338" width="22" height="7" class="sens"/>
+  <!-- battery 7 mm tall on its side: z 6..13 -> y 345..329, width 30 mm=72 px -->
+  <rect x="604" y="322" width="72" height="17" class="part"/>
+  <text x="640" y="334" class="s" text-anchor="middle">250 mAh</text>
+  <!-- battery cradle rod at z=13 -->
+  <line x1="600" y1="322" x2="680" y2="322" class="rod"/>
+  <!-- driver board 1 mm at z 14 -->
+  <rect x="610" y="316" width="60" height="4" class="part"/>
+  <!-- XIAO + Sense stack 15 mm = 36 px: z 15..30 -> y 318..282 -->
+  <rect x="615" y="280" width="50" height="36" class="part"/>
+  <text x="640" y="301" class="s" text-anchor="middle">XIAO + Sense</text>
+  <!-- camera lens at the nose, forward -->
+  <rect x="603" y="284" width="12" height="12" class="part"/>
+  <!-- VL53L7CX beside camera (behind in this view) -->
+  <rect x="603" y="298" width="12" height="8" class="sens"/>
+  <!-- flashlight: 14 mm star standing at the nose, z 2.5..16.7; 10 mm lens 7 mm proud -->
+  <rect x="598" y="320" width="5" height="34" class="lamp"/>
+  <rect x="581" y="325" width="17" height="24" class="lamp"/>
+  <!-- labels -->
+  <line x1="603" y1="290" x2="540" y2="250" class="dim"/><text x="536" y="246" class="t" text-anchor="end">camera, 10° down</text>
+  <line x1="603" y1="302" x2="540" y2="275" class="dim"/><text x="536" y="279" class="t" text-anchor="end">VL53L7CX</text>
+  <line x1="581" y1="345" x2="540" y2="368" class="dim"/><text x="536" y="372" class="t" text-anchor="end">flashlight, 23&deg; beam</text>
+  <line x1="615" y1="342" x2="540" y2="395" class="dim"/><text x="536" y="406" class="t" text-anchor="end">VL53L1X looks down</text>
+  <line x1="670" y1="318" x2="760" y2="270" class="dim"/><text x="764" y="266" class="t">driver board, 1 g</text>
+  <line x1="690" y1="356" x2="760" y2="395" class="dim"/><text x="764" y="406" class="t">4 mm skid</text>
+  <!-- height dimension -->
+  <line x1="800" y1="280" x2="800" y2="360" class="dim"/><line x1="795" y1="280" x2="805" y2="280" class="dim"/><line x1="795" y1="360" x2="805" y2="360" class="dim"/>
+  <text x="808" y="324" class="t">35 mm</text>
+</g>
+</svg>
+<figcaption>Targets, not measurements. 52 mm diagonal wheelbase, 36.8 mm between adjacent motors, 6.8 mm between prop tips, 67 mm footprint, about 35 mm from skid to camera lens; the flashlight star tops out 4 mm under the prop plane. Scale 2.4 px per mm in both views. Measure the kit frame's motor spacing before cutting any rod.</figcaption>
+</figure>
+
+<h3>Frame construction</h3>
+<ul>
+<li><strong>Arms.</strong> Two 1.0 mm rods, 75 mm each, crossed through the centre. 0.9 g.</li>
+<li><strong>Decks.</strong> A 22 &times; 26 mm rectangle of 1.0 mm rod soldered on top of the cross for the driver board, on Kapton; a second 8 mm lower cradles the battery. 1.2 g.</li>
+<li><strong>Motor collars.</strong> Two turns of 1.5 mm rod wound on a 6.2 mm former, about 40 mm each, soldered to the arm tips. The 615 motors press in, a drop of CA holds them. 2.2 g, half the frame. The owned 150 mm coupons supply all four.</li>
+<li><strong>Skids.</strong> Four 1.0 mm legs, 4 mm, under the collars.</li>
+<li><strong>Floating.</strong> The frame touches no net. Motor leads and sensor wires keep 2 mm from any rod; Kapton under every board.</li>
+</ul>
+<p>Stiffness: a 1.0 mm stainless rod has twice the bending stiffness of the Rev A PLA arm, a 1.5 mm rod ten times. 1.0 mm is enough for a 2 g motor at 26 mm, and the crossed rods brace each other. Not modelled: prop guards and a camera cover. First flights are over a bed.</p>
+
+<h2>Buy list</h2>
+<p>Owned or ordered items are not listed: the DigiKey order of 2026-10-28 (VL53L1X, VL53L7CX, Carclo 10412, AO3400A, PS1240), the Cree XP-G2 stars, the XIAO Sense, XIAO Sense if the camera order delivered two, resistors, Kapton, heat-shrink, 1.5 mm stainless coupons, silicone wire, the Harris flux, the jeweler's saw.</p>
+<div class="tw"><table>
+<tr><th class="n">Qty</th><th>Part</th><th>Role in the drone</th><th>Where</th><th class="n">Price</th></tr>
+<tr><td class="n">1</td><td><a href="https://www.seeedstudio.com/ESP-FLY-co-create-p-6744.html">ESP-FLY DIY kit</a></td><td>The aircraft: driver board with the MPU6050 tilt/yaw sensor, four motor switches and battery sensing, four 615 motors, 30 mm props, 250 mAh LiPo, plain XIAO. Its printed frame is replaced by the rod cage.</td><td>Seeed</td><td class="n">$59.99</td></tr>
+<tr><td class="n">1 pack</td><td><a href="https://www.amazon.com/dp/B0CST7GZTN">AMC7135 350 mA regulator, SOT-89, 10</a></td><td>Flashlight driver: holds the LED current at 350 mA per chip as the battery drains; GPIO43 switches and dims it. Two are used.</td><td>Amazon</td><td class="n">about $6</td></tr>
+<tr><td class="n">1 pack</td><td><a href="https://www.neweggbusiness.com/p/9B-1SW-00JE-010G7">1.0 mm &times; 200 mm 304 stainless rod, 10</a></td><td>Frame: the crossed arms and the two decks of the soldered cage. The owned 1.5 mm coupons make the motor collars.</td><td><a href="https://www.amazon.com/dp/B082ZNWQ5Q">Amazon B082ZNWQ5Q</a>, uxcell 1 mm &times; 300 mm, 10 pieces (title read, page not; confirm the spec table says 1 mm), or <a href="https://www.neweggbusiness.com/p/9B-1SW-00JE-010G7">Newegg</a> 1 mm &times; 200 mm, verified</td><td class="n">$9.49</td></tr>
+<tr><td class="n">0 or 1</td><td><a href="https://www.amazon.com/dp/B0C69FFVHH">XIAO ESP32-S3 Sense</a></td><td>The brain: Wi-Fi, flight control, camera and microphone on one board. Replaces the kit's plain XIAO.</td><td>Amazon</td><td class="n">only if the camera order delivered one</td></tr>
+</table></div>
+<p>Prices are the vendors' pages on 2026-10-27 where readable; Amazon prices are estimates. Both ST carriers are on DigiKey; the VL53L7CX is a Marketplace listing that ships from Pololu and may arrive separately. The Amazon VL53L7CX boards (<a href="https://www.amazon.com/dp/B0H95K968V">B0H95K968V</a>, <a href="https://www.amazon.com/dp/B0HDPW3M3S">B0HDPW3M3S</a>) are generic 5 V-shifted carriers whose mass and pinout could not be read; the 0.5 g Pololu board is what the mass ledger assumes. ST's own SATEL-VL53L7CX breakout is not recommended for new designs and out of stock.</p>
+
+<h2>Build order, one variable per step</h2>
+<ol class="steps">
+<li><strong>Fly the kit stock</strong> on its own frame with the plain XIAO, as assembly-plan.md says. Weigh everything. Run the thrust stand. This is the baseline.</li>
+<li><strong>Bench the Sense swap on USB</strong>, props off: camera stills over Wi-Fi, mic capture, the four config changes, the flight stack still arming and reading the IMU.</li>
+<li><strong>VL53L1X on I2C0</strong>, bench: auto-detect logs it, height telemetry reads a ruler. Fly height-hold on the kit frame.</li>
+<li><strong>Solder the stainless frame</strong>, move the electronics, weigh, thrust-stand again. Fly.</li>
+<li><strong>Flashlight and beeper.</strong> Bench at 50 % duty with the props off, then fly at full. Weigh first.</li>
+<li><strong>VL53L7CX and its driver.</strong> The 8&times;8 grid in telemetry first, the wall guard last.</li>
+</ol>
+<p>If step 4's thrust ratio is under 2.0, stop and fit 716 motors before adding anything else.</p>
+</div>

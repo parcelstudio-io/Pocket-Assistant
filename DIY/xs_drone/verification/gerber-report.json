@@ -1,0 +1,113 @@
+{
+  "status": "PASS: source-file integrity and historical bare-PCB geometry only",
+  "hash_checks": [
+    {
+      "path": "sources/reference/esp-fly-gerbers-331d8f50.zip",
+      "sha256": "d7e6d1a324788ee36941429889ce43dc593f99a5615331b95224fdb22517edf6",
+      "match": true
+    },
+    {
+      "path": "sources/reference/esp-fly-creator-schematic.jpg",
+      "sha256": "0402d3a2bbfa8229ade9eafd2f12a08198cdbb7bb601f18246040c2318a03594",
+      "match": true
+    },
+    {
+      "path": "sources/reference/esp-fly-creator-brushed-wiring.jpg",
+      "sha256": "13245dbef4f35cb0ada069f1d32da608ffbd22833f38f4819914a0df3e484be8",
+      "match": true
+    },
+    {
+      "path": "sources/reference/esp-fly-creator-bom-2025-03-29.csv",
+      "sha256": "92a63579fc91bf797d5e62820354af9dcdef9933dc14a93f26791e02c402b146",
+      "match": true
+    }
+  ],
+  "outline": {
+    "bounds_mm": {
+      "x_min": -11.1134,
+      "x_max": 6.6366,
+      "y_min": -7.8554,
+      "y_max": 13.1446
+    },
+    "size_mm": [
+      17.75,
+      21.0
+    ],
+    "linear_segments": 516,
+    "closed_single_loop": true
+  },
+  "header_drilling": {
+    "diameter_mm": 1.1,
+    "hole_count": 14,
+    "row_separation_mm": 15.24,
+    "pitches_mm": [
+      2.54,
+      2.54,
+      2.54,
+      2.54,
+      2.54,
+      2.539999999999999
+    ],
+    "holes_xy_mm": [
+      [
+        -9.858,
+        10.184
+      ],
+      [
+        -9.858,
+        7.644
+      ],
+      [
+        -9.858,
+        5.104
+      ],
+      [
+        -9.858,
+        2.564
+      ],
+      [
+        -9.858,
+        0.024
+      ],
+      [
+        -9.858,
+        -2.516
+      ],
+      [
+        -9.858,
+        -5.056
+      ],
+      [
+        5.382,
+        10.184
+      ],
+      [
+        5.382,
+        7.644
+      ],
+      [
+        5.382,
+        5.104
+      ],
+      [
+        5.382,
+        2.564
+      ],
+      [
+        5.382,
+        0.024
+      ],
+      [
+        5.382,
+        -2.516
+      ],
+      [
+        5.382,
+        -5.056
+      ]
+    ]
+  },
+  "physical_fit_verified": false,
+  "current_retail_pcb_revision_verified": false,
+  "electrical_operation_verified": false
+}

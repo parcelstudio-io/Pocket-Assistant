@@ -1,0 +1,198 @@
+diff --git a/Firmware/esp-drone/components/core/crazyflie/hal/src/wifilink.c b/Firmware/esp-drone/components/core/crazyflie/hal/src/wifilink.c
+index a03747d..d1d137c 100644
+--- a/Firmware/esp-drone/components/core/crazyflie/hal/src/wifilink.c
++++ b/Firmware/esp-drone/components/core/crazyflie/hal/src/wifilink.c
+@@ -94,6 +94,9 @@ static void wifilinkTask(void *param)
+     while (1) {
+         /* command step - receive  03 Fetch a wifi packet off the queue */
+         wifiGetDataBlocking(&wifiIn);
++        if (wifiIn.size < 1 || wifiIn.size > sizeof(p.raw)) {
++            continue;
++        }
+         lastPacketTick = xTaskGetTickCount();
+ #ifdef CONFIG_ENABLE_LEGACY_APP
+         float rch, pch, ych;
+diff --git a/Firmware/esp-drone/components/core/crazyflie/modules/interface/commander.h b/Firmware/esp-drone/components/core/crazyflie/modules/interface/commander.h
+index a6a4de6..ef2329e 100644
+--- a/Firmware/esp-drone/components/core/crazyflie/modules/interface/commander.h
++++ b/Firmware/esp-drone/components/core/crazyflie/modules/interface/commander.h
+@@ -27,13 +27,17 @@
+ #define COMMANDER_H_
+ #include <stdint.h>
+ #include <stdbool.h>
++#include "sdkconfig.h"
+ #include "config.h"
+ #include "stabilizer_types.h"
+ 
+ #define DEFAULT_YAW_MODE  XMODE
+ 
+-#define COMMANDER_WDT_TIMEOUT_STABILIZE  M2T(500)
+-#define COMMANDER_WDT_TIMEOUT_SHUTDOWN   M2T(2000)
++#if CONFIG_XS_LINK_STOP_MS <= CONFIG_XS_LINK_LEVEL_MS
++#error "Motor stop timeout must exceed leveling timeout"
++#endif
++#define COMMANDER_WDT_TIMEOUT_STABILIZE  M2T(CONFIG_XS_LINK_LEVEL_MS)
++#define COMMANDER_WDT_TIMEOUT_SHUTDOWN   M2T(CONFIG_XS_LINK_STOP_MS)
+ 
+ #define COMMANDER_PRIORITY_DISABLE 0
+ #define COMMANDER_PRIORITY_CRTP    1
+diff --git a/Firmware/esp-drone/components/core/crazyflie/modules/src/crtp_commander.c b/Firmware/esp-drone/components/core/crazyflie/modules/src/crtp_commander.c
+index 3069a3c..60ab9e9 100644
+--- a/Firmware/esp-drone/components/core/crazyflie/modules/src/crtp_commander.c
++++ b/Firmware/esp-drone/components/core/crazyflie/modules/src/crtp_commander.c
+@@ -25,6 +25,8 @@
+  */
+ #include <stdbool.h>
+ #include <stddef.h>
++#include <math.h>
++#include <string.h>
+ 
+ #include "crtp_commander.h"
+ 
+@@ -112,6 +114,19 @@ static void commanderCrtpCB(CRTPPacket* pk)
+   static setpoint_t setpoint;
+ 
+   if(pk->port == CRTP_PORT_SETPOINT && pk->channel == 0) {
++    // Three IEEE 754 float values and one uint16_t thrust value.
++    if (pk->size != 14) {
++      return;
++    }
++    // This profile uses Angle mode: degrees for roll/pitch, deg/s for yaw.
++    // Reject invalid commands without refreshing the command watchdog.
++    float axes[3];
++    memcpy(axes, pk->data, sizeof(axes));
++    if (!isfinite(axes[0]) || !isfinite(axes[1]) || !isfinite(axes[2]) ||
++        fabsf(axes[0]) > 45.0f || fabsf(axes[1]) > 45.0f ||
++        fabsf(axes[2]) > 360.0f) {
++      return;
++    }
+     crtpCommanderRpytDecodeSetpoint(&setpoint, pk);
+     commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_CRTP);
+   } else if (pk->port == CRTP_PORT_SETPOINT_GENERIC) {
+diff --git a/Firmware/esp-drone/components/drivers/general/motors/motors.c b/Firmware/esp-drone/components/drivers/general/motors/motors.c
+index dbf09c8..9b29e54 100644
+--- a/Firmware/esp-drone/components/drivers/general/motors/motors.c
++++ b/Firmware/esp-drone/components/drivers/general/motors/motors.c
+@@ -156,6 +156,7 @@ void motorsDeInit(const MotorPerifDef **motorMapSelect)
+ 
+ bool motorsTest(void)
+ {
++#if CONFIG_XS_MOTOR_STARTUP_TEST
+     int i;
+ 
+     for (i = 0; i < sizeof(MOTORS) / sizeof(*MOTORS); i++) {
+@@ -174,6 +175,7 @@ bool motorsTest(void)
+         }
+     }
+ 
++#endif
+     return isInit;
+ }
+ 
+diff --git a/Firmware/esp-drone/components/drivers/general/wifi/wifi_esp32.c b/Firmware/esp-drone/components/drivers/general/wifi/wifi_esp32.c
+index c4cd7d6..2d857aa 100644
+--- a/Firmware/esp-drone/components/drivers/general/wifi/wifi_esp32.c
++++ b/Firmware/esp-drone/components/drivers/general/wifi/wifi_esp32.c
+@@ -15,6 +15,7 @@
+ 
+ #include "queuemonitor.h"
+ #include "wifi_esp32.h"
++#include "crtp.h"
+ #include "stm32_legacy.h"
+ #define DEBUG_MODULE  "WIFI_UDP"
+ #include "debug_cf.h"
+@@ -26,9 +27,9 @@ static struct sockaddr_in6 source_addr; // Large enough for both IPv4 or IPv6
+ 
+ //#define WIFI_SSID      "Udp Server"
+ static char WIFI_SSID[32] = "ESP-DRONE";
+-static char WIFI_PWD[64] = "12345678" ;
++static char WIFI_PWD[64] = CONFIG_XS_WIFI_PASSWORD;
+ static uint8_t WIFI_CH = 1;
+-#define MAX_STA_CONN (3)
++#define MAX_STA_CONN (1)
+ 
+ #ifndef MAC2STR
+ #define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
+@@ -146,8 +147,9 @@ static void udp_server_rx_task(void *pvParameters)
+         if (len < 0) {
+             DEBUG_PRINT_LOCAL("recvfrom failed: errno %d", errno);
+             break;
+-        } else if(len > WIFI_RX_TX_PACKET_SIZE - 4) {
+-            DEBUG_PRINT_LOCAL("Received data length = %d > 64", len);
++        } else if (len < 2 || len > CRTP_MAX_DATA_SIZE + 2) {
++            // Exactly one CRTP header, up to 30 data bytes, and one checksum.
++            DEBUG_PRINT_LOCAL("Rejected UDP packet length = %d", len);
+         } else {
+             //copy part of the UDP packet
+             rx_buffer[len] = 0;// Null-terminate whatever we received and treat like a string...
+@@ -208,6 +210,11 @@ void wifiInit(void)
+         return;
+     }
+ 
++    if (strlen(WIFI_PWD) < 12 || strlen(WIFI_PWD) > 63) {
++        DEBUG_PRINT_LOCAL("Set a private Wi-Fi password of 12 to 63 characters");
++        return;
++    }
++
+     esp_netif_t *ap_netif = NULL;
+     ESP_ERROR_CHECK(esp_netif_init());
+     ESP_ERROR_CHECK(esp_event_loop_create_default());
+@@ -230,7 +237,7 @@ void wifiInit(void)
+         .ap = {
+             .channel = WIFI_CH,
+             .max_connection = MAX_STA_CONN,
+-            .authmode = WIFI_AUTH_WPA_WPA2_PSK,
++            .authmode = WIFI_AUTH_WPA2_PSK,
+         },
+     };
+ 
+@@ -255,7 +262,7 @@ void wifiInit(void)
+     ESP_ERROR_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info));
+     ESP_ERROR_CHECK(esp_netif_dhcps_start(ap_netif));
+ 
+-    DEBUG_PRINT_LOCAL("wifi_init_softap complete.SSID:%s password:%s", WIFI_SSID, WIFI_PWD);
++    DEBUG_PRINT_LOCAL("wifi_init_softap complete.SSID:%s", WIFI_SSID);
+ 
+     // This should probably be reduced to a CRTP packet size
+     udpDataRx = xQueueCreate(5, sizeof(UDPPacket)); /* Buffer packets (max 64 bytes) */
+@@ -270,4 +277,4 @@ void wifiInit(void)
+     xTaskCreate(udp_server_tx_task, UDP_TX_TASK_NAME, UDP_TX_TASK_STACKSIZE, NULL, UDP_TX_TASK_PRI, NULL);
+     xTaskCreate(udp_server_rx_task, UDP_RX_TASK_NAME, UDP_RX_TASK_STACKSIZE, NULL, UDP_RX_TASK_PRI, NULL);
+     isInit = true;
+-}
+\ No newline at end of file
++}
+diff --git a/Firmware/esp-drone/main/Kconfig.projbuild b/Firmware/esp-drone/main/Kconfig.projbuild
+index 727b497..fe53564 100644
+--- a/Firmware/esp-drone/main/Kconfig.projbuild
++++ b/Firmware/esp-drone/main/Kconfig.projbuild
+@@ -325,4 +325,27 @@ menu "ESPDrone Config"
+     endmenu
+ 
+ 
+-endmenu
+\ No newline at end of file
++endmenu
++
++menu "XS Drone bench and Wi-Fi settings"
++    config XS_WIFI_PASSWORD
++        string "Private Wi-Fi password (12 to 63 characters)"
++        default ""
++        help
++            Set a unique password before enabling the Wi-Fi access point.
++            Empty and short values cause Wi-Fi initialization to abort safely.
++    config XS_LINK_LEVEL_MS
++        int "Command loss leveling delay in milliseconds"
++        range 100 1000
++        default 300
++    config XS_LINK_STOP_MS
++        int "Command loss motor stop delay in milliseconds"
++        range 200 2000
++        default 500
++    config XS_MOTOR_STARTUP_TEST
++        bool "Enable automatic motor pulses during startup"
++        default n
++        help
++            Keep disabled for assembly and ordinary use. When enabled the
++            inherited startup test briefly powers every motor without arming.
++endmenu
