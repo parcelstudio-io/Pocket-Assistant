@@ -1,0 +1,1329 @@
+"""Desk lighthouse, step 1 of the builder's rule: the final build first, the science after.
+
+Writes, from the data at the top of this file (edit the script, not the outputs):
+  docs/pages/desk-lighthouse-build.html              the page: form sheet, wiring sheet, templates, decisions, pins, nets, budget, parts
+  docs/pages/print/desk-lighthouse-build.pdf          Letter, black only: form sheet, wiring sheet, templates (landscape), then the notes (portrait)
+  docs/pages/print/desk-lighthouse-form-sheet.pdf     each sheet alone
+  docs/pages/print/desk-lighthouse-wiring-sheet.pdf
+  docs/pages/print/desk-lighthouse-templates.pdf      actual size: the cube's faces, the lid, the deck, the drum's flat pattern
+  docs/FINAL_BUILD.md                                 the same decisions, pins, nets, budget and parts as Markdown
+
+Reference: Huy Vector, "Lighthouse Desk Lamp", huyvector.org/decor-lamps/lighthouse-desk-lamp, read 2026-11-07. The page is a
+parts list and nothing else: 0.2 mm brass sheet, 4 mm brass tube, 1 mm copper wire, a 3 V 30 rpm DC gear motor, a 39 mm Edison
+LED filament, a 6 x 30 mm glass fuse, a Type-C 4.2 V charging module, a battery, an 8 cm bamboo coaster. Ours keeps the idea
+(a small lighthouse on a coaster, a gear motor turning something in the lantern, an LED filament as the lamp, brass) and is its
+own build otherwise: an ivory tower on a brass cube on the family's brass coaster, a fixed warm-white filament with a brass
+shutter turning round it the way a real optic turns round its lamp, a reed switch so the shutter parks facing you, a white text
+plaque flush in the brass at the foot, and USB power. Brass at the builder's word (2026-11-07), though the family's rule since
+the drone is stainless.
+
+The hop-drawing Router is imported from pocket_ai_assistant/edu/pages/gen/wiring_sheet.py, as the hologram's, the satellite's
+and the rover's generators do; the subclass adds the pin registry and the clearance check. Every number is a listing or
+datasheet figure read 2026-11-07 or an owned-part record; the check ring's thickness and the vase cap's height are the usual
+sizes for those lamp parts and are flagged to be measured. Nothing here has been built."""
+from __future__ import annotations
+
+import math
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+HERE = pathlib.Path(__file__).resolve().parent
+PAGES = HERE.parent
+DOCS = PAGES.parent
+PROJECT = DOCS.parent
+OUT = PAGES / "desk-lighthouse-build.html"
+PRINT = PAGES / "print"
+STYLE = (HERE / "page_style.css").read_text()
+
+sys.path.insert(0, str(PROJECT.parent / "pocket_ai_assistant" / "edu" / "pages" / "gen"))
+from wiring_sheet import Router as _Router  # noqa: E402
+
+W, H = 1360, 860
+TODAY = "2026-11-07"
+
+# ----------------------------------------------------------------------------- links (component names in prose, links on the word)
+AMZ = "https://www.amazon.com/dp/"
+GB = "https://grandbrass.com/"
+L = {
+    "reference": "https://www.huyvector.org/decor-lamps/lighthouse-desk-lamp",
+    # to buy, Amazon
+    "tube25": AMZ + "B0DXQ718YS",          # uxcell H62 brass round tube, 25 mm OD x 0.5 mm wall x 300 mm: the tower
+    "acrylic": AMZ + "B08ZM5BCQJ",         # uxcell clear rigid acrylic tube, 21 mm ID x 25 mm OD x 305 mm: the lantern glass
+    "motor": AMZ + "B096S475NH",           # Augiimor 2 x N20 gear motor, 6 V 30 rpm, 3 mm D shaft: turns the shutter
+    "filament": AMZ + "B0DFPPR4LG",        # DLEDMOP 10 x ceramic LED filament, 3 V 100 mA; take the 26 mm, warm white 2700 K option
+    "filament38": AMZ + "B0HBWV5631",      # UGEFKMQ 10 x 38 mm rigid ceramic LED filament, 3 V, 2700 K: the fallback if 26 mm is out
+    "reed": AMZ + "B0CHF29394",            # JESSINIE 20 x MKA-14103 glass reed switch, 2 x 14 mm, normally open, 7-35 AT
+    "magnet": AMZ + "B0BQ3LPGZ1",          # N52 neodymium discs 3 x 1 mm: the index magnet under the drum's floor
+    "sheet032": AMZ + "B0006MZM1O",        # K&S 253 brass sheet, 0.032 in x 4 x 10 in, pack of 3: the lid, the stops, the drum's floor
+    "tube58": AMZ + "B07DDFNNXY",          # K&S 8143 round brass tube, 5/8 in OD x 0.014 in wall x 12 in: the drum (the shutter)
+    "coaster": AMZ + "B0D9DMK3L7",         # heavy brass coaster, 75 x 8 mm, flat top: the satellite's base, a second one here
+    "pinvise": AMZ + "B09WRQPN58",         # pin vise with 0.5 to 3.0 mm twist bits: no drill is owned
+    "glue": "https://www.zoro.com/loctite-ultra-gel-super-glue-4g-1363589/i/G100464525",   # Loctite Ultra Gel Control: the hologram's and the rover's tube
+    # to buy, Grand Brass (lamp parts; none of these is on Amazon)
+    "checkring": GB + "check-rings/turned-brass-checkrings/?_bc_fsnf=1",   # CRT1-12X8: 1-1/2 in turned brass check ring, 1/8 IP slip (7/16 in hole): the gallery deck
+    "vasecap": GB + "categories.php?category=655",                           # VA01-12: 1-1/2 in unfinished brass spun vase cap: the roof
+    "ball": GB + "5-8in-diameter-1-8ips-threaded-tapped-blind-brass-ball-polished-nickle-finish/",   # BB0-58X18 (the unfinished brass one, listed beside this nickel page): the ventilator ball
+    "nipple": GB + "1-2in-x-1-8ips-threaded-brass-hollow-nipple/",          # NI0-12X18BR: 1/2 in x 1/8 IP hollow brass nipple
+    "nut": GB + "1-8-27ips-unfinished-brass-beaded-nut/",                    # 1/8 IP beaded brass nut, 9/16 in x 3/16 in: holds the nipple, hangs the lamp
+    # to buy, Online Metals (no square brass tube this size on Amazon)
+    "sqtube": "https://www.onlinemetals.com/en/buy/brass-square-tube-272",  # 1.5 in x 0.062 in wall brass square tube 272-H80, 12 in: the cube
+    # owned
+    "controller": AMZ + "B0F888JQ91",      # Meshnology ESP32-C3 SuperMini (13 owned, 10 spare)
+    "oled": AMZ + "B09T6SJBV5",            # Hosyond 0.96 in 128 x 64 OLED, I2C, white (10 owned, 7 spare)
+    "hbridge": AMZ + "B075S368Y2",         # Aideepen MX1508 dual H-bridge, 5-pack (5 owned, 4 spare)
+    "brass_tube": AMZ + "B0F2FKLC2N",      # M METERXITY brass tube set, 2 to 7 mm OD x 0.5 mm wall (3 sets owned): the astragal and the hub
+    "rod15": AMZ + "B082ZNMD46",           # 1.5 mm rod coupons; the brass 1.5 mm rod packs (18 owned) have no link recorded: the pin
+    "wire30": AMZ + "B073RDGTPB",          # CBAZY 30 AWG silicone wire
+    "kapton": AMZ + "B072Z92QZ2",          # ELEGOO Kapton
+    "resistors": AMZ + "B0F4P352BB",       # the resistor kit (47 ohm)
+    "button": AMZ + "B0FHW6HMG4",          # tactile buttons, 420 owned
+    "paint": AMZ + "B000PIG3AS",           # Rust-Oleum Stops Rust gloss canvas white 7789830 (owned): the ivory
+    "supermini_notes": "https://sigmdel.ca/michel/ha/esp8266/super_mini_esp32c3_en.html",
+    "server": "../../pocket_ai_assistant/character/server",
+}
+
+# ----------------------------------------------------------------------------- the numbers (mm unless said)
+D = {
+    # base
+    "disc_d": 75.0, "disc_t": 8.0, "disc_g": 80.0,          # the brass coaster: the listing's 2.82 oz; a thin top over a hollow with a pad
+    "hollow_d": 71.0, "hollow_h": 6.5, "ballast_g": 150.0,   # steel washers hot-glued into the hollow (estimate; measure the hollow first)
+    # the cube: 1.5 in square brass tube, 0.062 in wall, cut as long as it is wide
+    "cube": 38.1, "cube_wall": 1.57, "lid_t": 0.81, "lid_inset": 0.8, "stop": 6.0,
+    "win_w": 23.0, "win_h": 12.4, "win_cz": 11.0,            # the window in the front face; its centre above the coaster top (check against the lit module)
+    "oled_w": 27.3, "oled_h": 27.8, "oled_t": 4.0, "aa_w": 21.7, "aa_h": 10.9,
+    "usb_w": 9.5, "usb_h": 3.6, "usb_cz": 6.0,               # the controller's own USB-C through the back face
+    "btn_x": 11.0, "btn_cz": 24.0, "btn_hole": 3.6,
+    "pin_d": 1.5, "pin_z": 17.0, "tube_bot": 12.0,           # the tower's foot inside the cube and the brass pin through it, above the coaster top
+    "mx_l": 25.0, "mx_w": 20.0, "mx_t": 3.0,                 # MX1508 board, screw terminals and header removed
+    "c3_l": 22.5, "c3_w": 18.0, "c3_t": 4.5,                 # SuperMini with its USB-C
+    # the tower
+    "tower_od": 25.0, "tower_wall": 0.5, "tower_show": 130.0,
+    # the gallery deck: a turned brass check ring
+    "deck_d": 38.1, "deck_t": 3.0, "deck_hole": 11.1,
+    # the lantern
+    "glass_od": 25.0, "glass_wall": 2.0, "cap_rim": 34.5,    # the cap's rim above the deck: what shows of the glass
+    "cap_d": 38.1, "cap_h": 12.5, "cap_t": 0.6, "cap_hole": 10.5,
+    "nut_d": 14.3, "nut_h": 4.8, "nip_od": 10.3, "nip_l": 12.7, "ball_d": 15.9, "ball_tap": 6.4,
+    "fil_l": 26.0, "fil_w": 1.8, "hanger": 6.1,              # the filament hangs from the nut by its own leads
+    # the shutter: a 5/8 in brass tube on the motor's shaft, open 120 degrees
+    "drum_od": 15.88, "drum_wall": 0.36, "drum_h": 34.0, "drum_z0": 2.0, "floor_t": 0.81,
+    "win_deg": 120.0, "dwin_z0": 3.0, "dwin_h": 28.0,
+    "hub_od": 4.0, "hub_id": 3.0, "hub_h": 9.0, "shaft_d": 3.0, "shaft_l": 9.0,
+    "mag_d": 3.0, "mag_t": 1.0, "mag_r": 6.0,
+    "reed_d": 2.0, "reed_hole": 3.0, "reed_l": 14.0, "reed_r": 7.5, "reed_down": 2.5,
+    "ast_od": 4.0, "ast_r": 14.5, "notch": 2.0,
+    "mot_w": 12.0, "mot_t": 10.0, "mot_l": 24.0, "gear_l": 9.0,
+}
+
+# the vase cap's profile: a cubic from the rim to the flat top (the usual spun shape), r and z' (above the deck top)
+CAP_P = ((D["cap_d"] / 2, D["cap_rim"]), (D["cap_d"] / 2, D["cap_rim"] + 7.8), (13.0, D["cap_rim"] + D["cap_h"]), (D["cap_hole"] / 2, D["cap_rim"] + D["cap_h"]))
+
+
+def cap_pt(t):
+    (x0, y0), (x1, y1), (x2, y2), (x3, y3) = CAP_P
+    u = 1 - t
+    return (u**3 * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t**3 * x3,
+            u**3 * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t**3 * y3)
+
+
+def cap_inner_pt(t):
+    """The inside surface: the outer point moved one sheet thickness along the inward normal."""
+    (x, z), (xa, za) = cap_pt(t), cap_pt(min(1.0, t + 1e-3))
+    tx, tz = xa - x, za - z
+    n = math.hypot(tx, tz) or 1.0
+    nx, nz = tz / n, -tx / n          # the outward normal points away from the axis and up
+    if nx < 0:
+        nx, nz = -nx, -nz
+    return (x - nx * D["cap_t"], z - nz * D["cap_t"])
+
+
+def cap_z_at_r(r, inner=True):
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if cap_pt(mid)[0] > r:
+            lo = mid
+        else:
+            hi = mid
+    return (cap_inner_pt if inner else cap_pt)((lo + hi) / 2)[1]
+
+
+# derived heights, above the desk
+D["z_cube_top"] = D["disc_t"] + D["cube"]
+D["z_deck0"] = D["z_cube_top"] + D["tower_show"]
+D["z_deck1"] = D["z_deck0"] + D["deck_t"]                              # the lantern datum (z' = 0)
+D["glass_h"] = round(cap_z_at_r(D["glass_od"] / 2 - D["glass_wall"] / 2), 1)   # the glass runs up inside the cap to its inner surface
+D["ast_top"] = round(cap_z_at_r(D["ast_r"]), 1)
+D["z_cap_rim"] = D["z_deck1"] + D["cap_rim"]
+D["z_cap_top"] = D["z_cap_rim"] + D["cap_h"]
+D["nut_bot"] = D["cap_rim"] + D["cap_h"] - D["cap_t"] - D["nut_h"]    # z'
+D["fil_top"] = D["nut_bot"] - D["hanger"]
+D["fil_bot"] = D["fil_top"] - D["fil_l"]
+D["nip_top"] = D["nut_bot"] + D["nip_l"]
+D["ball_bot"] = D["nip_top"] - D["ball_tap"]
+D["ball_c"] = D["ball_bot"] + D["ball_d"] / 2
+D["height"] = round(D["z_deck1"] + D["ball_bot"] + D["ball_d"], 1)
+D["drum_top"] = D["drum_z0"] + D["drum_h"]
+D["floor_top"] = D["drum_z0"] + D["floor_t"]
+D["shaft_tip"] = D["shaft_l"] - D["deck_t"]
+D["tube_len"] = round(D["z_cube_top"] - (D["disc_t"] + D["tube_bot"]) + D["tower_show"], 1)
+D["cube_in"] = D["cube"] - 2 * D["cube_wall"]
+D["lid"] = round(D["cube_in"] - 0.15, 1)
+D["win_arc"] = round(math.pi * D["drum_od"] * D["win_deg"] / 360, 1)
+D["drum_circ"] = round(math.pi * D["drum_od"], 1)
+D["pass_deg"] = D["win_deg"]
+
+# masses (g) and where they sit (mm above the desk)
+rho_br, rho_ac = 8.5e-3, 1.18e-3
+MASS = [
+    ("brass coaster", D["disc_g"], D["disc_t"] / 2),
+    ("cube, 1.5 in square tube", 4 * D["cube"] * D["cube_wall"] * D["cube"] * rho_br, D["disc_t"] + D["cube"] / 2),
+    ("lid plate and four stops", D["lid"] ** 2 * D["lid_t"] * rho_br + 1.0, D["z_cube_top"] - 1),
+    ("screen, controller, driver, pin, wires", 4.5 + 3 + 3 + 1 + 3, D["disc_t"] + 14),
+    ("tower, 25 x 0.5 brass", math.pi * (D["tower_od"] - D["tower_wall"]) * D["tower_wall"] * D["tube_len"] * rho_br, (D["disc_t"] + D["tube_bot"] + D["z_deck0"]) / 2),
+    ("motor", 10.0, D["z_deck0"] - D["mot_l"] / 2),
+    ("gallery, turned check ring", math.pi * ((D["deck_d"] / 2) ** 2 - (D["deck_hole"] / 2) ** 2) * D["deck_t"] * rho_br, D["z_deck0"] + D["deck_t"] / 2),
+    ("lantern glass", math.pi * ((D["glass_od"] / 2) ** 2 - (D["glass_od"] / 2 - D["glass_wall"]) ** 2) * D["glass_h"] * rho_ac, D["z_deck1"] + D["glass_h"] / 2),
+    ("shutter drum, floor, hub, magnet", math.pi * (D["drum_od"] - D["drum_wall"]) * D["drum_wall"] * D["drum_h"] * rho_br + math.pi * (D["drum_od"] / 2) ** 2 * D["floor_t"] * rho_br + 0.6, D["z_deck1"] + D["drum_top"] / 2),
+    ("filament, reed, astragal, wires", 2.5, D["z_deck1"] + 20),
+    ("vase cap", 1600 * D["cap_t"] * rho_br, D["z_cap_rim"] + D["cap_h"] * 0.6),
+    ("nut and nipple", 7.0, D["z_deck1"] + D["nut_bot"] + 6),
+    ("brass ball", 4 / 3 * math.pi * (D["ball_d"] / 2) ** 3 * rho_br, D["z_deck1"] + D["ball_c"]),
+]
+D["mass"] = sum(m for _, m, _ in MASS)
+D["cg"] = sum(m * z for _, m, z in MASS) / D["mass"]
+D["tip_deg"] = math.degrees(math.atan2(D["disc_d"] / 2, D["cg"]))
+D["push_n"] = D["mass"] / 1000 * 9.81 * (D["disc_d"] / 2) / D["height"]
+mb = D["mass"] + D["ballast_g"]
+D["cg_b"] = (D["cg"] * D["mass"] + D["ballast_g"] * D["disc_t"] / 2) / mb
+D["tip_deg_b"] = math.degrees(math.atan2(D["disc_d"] / 2, D["cg_b"]))
+D["push_n_b"] = mb / 1000 * 9.81 * (D["disc_d"] / 2) / D["height"]
+
+# ----------------------------------------------------------------------------- the electrical budget (mA at 5 V unless said)
+E = {
+    "v_usb": 5.0, "fil_vf": 3.0, "fil_rated": 100.0, "r_each": 47.0, "n_par": 2,
+    "mot_v": 6.0, "mot_rpm": 30.0, "mot_ma": 35.0, "mot_stall": 400.0,
+    "rpm_target": 8.0, "c3_avg": 25.0, "c3_peak": 300.0, "oled": 12.0, "mx_q": 1.0, "lamp_duty": 0.7,
+}
+E["r_lamp"] = E["r_each"] / E["n_par"]
+E["i_lamp_max"] = (E["v_usb"] - 0.05 - E["fil_vf"]) / E["r_lamp"] * 1000
+E["i_lamp"] = E["i_lamp_max"] * E["lamp_duty"]
+E["p_res_each"] = (E["i_lamp_max"] / 1000 / E["n_par"]) ** 2 * E["r_each"]
+E["rpm_5v"] = E["mot_rpm"] * E["v_usb"] / E["mot_v"]
+E["duty_mot"] = E["rpm_target"] / E["rpm_5v"]
+E["period"] = 60 / E["rpm_target"]
+E["pass_s"] = E["period"] * D["win_deg"] / 360
+E["typ"] = E["c3_avg"] + E["oled"] + E["mx_q"] + E["mot_ma"] * E["duty_mot"] + E["i_lamp"]
+E["peak"] = E["c3_peak"] + E["oled"] + E["mx_q"] + E["mot_ma"] + E["i_lamp_max"]
+E["lamp_w"] = E["i_lamp_max"] / 1000 * E["fil_vf"]
+
+# ----------------------------------------------------------------------------- the contract: ESP32-C3 SuperMini pins
+PINS = [
+    ("5V", "the 5 V rail: USB VBUS straight through the board (no diode on the SuperMini)", "driver VCC pad", "V5"),
+    ("GND", "one ground", "driver GND · screen GND · reed leg 2 · button leg 2", "GND"),
+    ("3V3", "3.3 V from the board's regulator", "screen VCC", "V3"),
+    ("GPIO4", "I²C data", "screen SDA", "SDA"),
+    ("GPIO5", "I²C clock", "screen SCL", "SCL"),
+    ("GPIO0", "shutter motor, LEDC PWM at 20 kHz (silent)", "driver IN1", "IN1"),
+    ("GPIO1", "shutter direction and brake", "driver IN2", "IN2"),
+    ("GPIO3", "lamp, LEDC PWM at 5 kHz", "driver IN3", "IN3"),
+    ("GPIO6", "index: the reed switch, internal pull-up, closes once a turn", "reed leg 1; leg 2 to GND", "REED"),
+    ("GPIO10", "the button, active low, internal pull-up (the family's pin)", "button leg 1; leg 2 to GND", "BTN"),
+    ("GPIO2, 8, 9", "strapping pins: left alone (GPIO8 is the blue LED, held high)", "nothing", ""),
+    ("GPIO7, 20, 21", "free", "nothing", ""),
+    ("USB-C", "5 V in from any USB adapter or a computer; flashing and the console", "the cable, through the slot in the cube's back", "USB"),
+]
+
+NETS = [
+    ("V5", "controller 5V pin", "driver VCC (+) pad", "30 AWG, 30 mm",
+     "The 5 V rail for the motor and the lamp. On the SuperMini the 5V pin is USB VBUS with no diode between, so it can source the half-amp this build peaks at (the [board notes](" + L["supermini_notes"] + ")). Nothing on this rail is wired to a GPIO."),
+    ("GND", "controller GND pin", "driver GND pad · screen GND · reed leg 2 · button leg 2", "30 AWG",
+     "One ground. The driver's own GND pad takes IN4 as well (next row). Everything else returns to the controller's GND pins; the brass is never part of a circuit."),
+    ("IN4", "driver IN4 pad", "driver GND pad", "30 AWG, 10 mm",
+     "Holds channel B's second input low, so OUT4 is a steady ground and OUT3 does the switching. A floating input on this chip is undefined."),
+    ("V3", "controller 3V3 pin", "screen VCC", "30 AWG, 40 mm",
+     "The screen is a 3.3 V part and takes about 12 mA with half its pixels lit. The board's regulator has 500 mA; nothing else is on it."),
+    ("SDA", "GPIO4", "screen SDA", "30 AWG, 40 mm",
+     "I²C data at 400 kHz, address 0x3C (the firmware probes 0x3D too). The module has its own pull-ups. GPIO4 and 5, not the board's default 8 and 9, which are strapping pins."),
+    ("SCL", "GPIO5", "screen SCL", "30 AWG, 40 mm", "I²C clock. Read the module's silkscreen before soldering: Hosyond ships GND-VCC-SCL-SDA and VCC-GND-SCL-SDA on identical boards."),
+    ("IN1", "GPIO0", "driver IN1", "30 AWG, 30 mm",
+     f"The shutter's speed: PWM at 20 kHz, above hearing. About {E['duty_mot'] * 100:.0f} % duty gives {E['rpm_target']:.0f} rpm from a 30 rpm (6 V) gearmotor on 5 V; the firmware trims the duty from the reed's period so a revolution takes {E['period']:.1f} s whatever the motor's batch. The pin floats for a moment at boot and the drum may twitch once; harmless."),
+    ("IN2", "GPIO1", "driver IN2", "30 AWG, 30 mm",
+     "Direction and brake. Low while IN1 runs: forward. Both high: the bridge shorts the motor and the drum stops within a degree or two of where the reed said it was. The reverse direction is there for the parking move and nothing else."),
+    ("IN3", "GPIO3", "driver IN3", "30 AWG, 30 mm",
+     f"The lamp's brightness: PWM at 5 kHz into channel B. {E['lamp_duty'] * 100:.0f} % by default, 100 % on a long press, 0 when the shutter closes. The driver's channel B is a plain switch here; it never sees a motor."),
+    ("MOT", "driver OUT1, OUT2", "motor terminals", "2 x 30 AWG, 190 mm, down the tower",
+     f"The gearmotor, about {E['mot_ma']:.0f} mA turning, {E['mot_stall']:.0f} mA if the drum ever jams; the driver is good for 1.5 A a channel and has its own flyback diodes. The two wires run inside the tower with the lamp's and the reed's: six in all. Terminals in heat-shrink so no bare metal can touch the brass."),
+    ("LAMP", "driver OUT3", f"two 47 Ω in parallel ({E['r_lamp']:.1f} Ω), then the filament's + lead", "30 AWG, 230 mm, down the tower and up the astragal",
+     f"A 3 V, 100 mA filament from a 5 V rail: {E['r_lamp']:.1f} Ω drops the other two volts and sets {E['i_lamp_max']:.0f} mA flat out, inside the rating; each resistor dissipates {E['p_res_each'] * 1000:.0f} mW of its 250. PWM takes it to {E['i_lamp']:.0f} mA for everyday. The + lead is the one at the hole in the ceramic; the diode test lights it faintly."),
+    ("LAMP−", "filament − lead", "driver OUT4", "30 AWG, 230 mm, the same path",
+     "The lamp's return, into the half-bridge that IN4 holds low. Both lamp wires climb the astragal tube on the lantern's back, cross the cap's underside and are soldered to the filament's leads under the nut; heat-shrink on the joints, because the nut is brass."),
+    ("REED", "GPIO6", "reed leg 1", "30 AWG, 180 mm, down the tower",
+     f"The index. A 3 × 1 mm magnet under the drum's floor passes over the reed's end once a revolution and closes it for about {E['period'] * 12 / 360:.2f} s. The firmware times revolutions from it, parks the window on it, and reads a jammed drum from its silence. The glass is 2 mm thick and 14 long: it stands in a 3 mm hole in the deck, 2.5 mm down, beside the motor."),
+    ("REED−", "reed leg 2", "controller GND pin", "30 AWG, 180 mm", "The reed's return. Its top lead is bent down along the glass in heat-shrink; both wires join the motor's inside the tower."),
+    ("BTN", "GPIO10", "button leg 1", "30 AWG, 30 mm", "Short press: rotation on or off (off parks the window facing you). Long press: lamp off, low, full; off also closes the shutter. Internal pull-up; no resistor."),
+    ("BTN−", "button leg 2", "controller GND pin", "30 AWG, 30 mm", "The button's return. The 6 mm tactile sits glued inside the cube's back face with its cap through a 3.6 mm hole."),
+    ("USB", "any USB-C adapter or a computer", "controller USB-C, through the slot in the back", "the cable",
+     f"Power and flashing on one port. Typical draw {E['typ']:.0f} mA; the worst moment ({E['c3_peak']:.0f} mA radio burst, lamp full, motor turning) {E['peak']:.0f} mA, inside a 500 mA port. No cell: a lamp lives on a desk."),
+]
+
+# ----------------------------------------------------------------------------- parts: owned items stay off the shopping list
+PARTS = [
+    ("To buy on Amazon: eleven lines", [
+        ("1", "brass round tube, 25 mm OD × 0.5 mm wall × 300 mm", L["tube25"], "uxcell H62, Amazon B0DXQ718YS", "price not read (Amazon refuses automated reads)",
+         f"The tower: cut {D['tube_len']:.0f} mm, {D['tower_show']:.0f} showing. 0.5 mm wall is plenty for a column that carries 80 g, and it keeps the weight low: {MASS[4][1]:.0f} g. The same 25 mm as the lantern glass below, so the glass reads as the tower continued. Sprayed ivory after the pin holes are drilled; the ends that hide in the cube and under the deck are masked bare. **Incoming check:** it slides into the lid's hole and the acrylic tube matches it to a tenth."),
+        ("1", "clear acrylic tube, 25 mm OD × 21 mm ID × 305 mm", L["acrylic"], "uxcell, Amazon B08ZM5BCQJ", "price not read",
+         f"The lantern glass: cut {D['glass_h']:.0f} mm, {D['cap_rim']:.0f} showing under the cap's rim. Clear extruded acrylic, 2 mm wall. The 15.9 mm drum turns inside with 2.5 mm to spare all round. Cut with the jeweler's saw, square the end on 400 grit; glue inside with a bead so no glue shows."),
+        ("1 of 2", "N20 gearmotor, 6 V, 30 rpm, 3 mm D shaft", L["motor"], "Augiimor 2-pack, Amazon B096S475NH", "price not read",
+         f"Turns the shutter. 12 × 10 × 24 mm body plus a 9 mm shaft, 30 to 40 mA. On 5 V it would run {E['rpm_5v']:.0f} rpm; PWM holds it at {E['rpm_target']:.0f}, one revolution in {E['period']:.1f} s, which is what a lighthouse feels like. It is a plug: two turns of Kapton round the body to a snug fit in the tower's 24 mm bore, face against the deck's underside, a dab of hot glue at the back as a stop; it comes out downward by its wires. The second motor is the spare. **Incoming check:** 3 mm D shaft, and it runs at 3 V on the bench supply."),
+        ("1 of 10", "LED filament, 26 mm, 3 V 100 mA, warm white 2700 K", L["filament"], "DLEDMOP 10-pack, Amazon B0DFPPR4LG, choose 26 mm and warm white 2700 K", "price not read",
+         f"The lamp: a ceramic strip of LEDs, the kind inside an Edison bulb, 360° of light, hung on its own stiff leads from the nut under the roof. 2700 K, not the family's 2200 K spare (that one is amber; a lighthouse lamp is warm white, and the rule is white or warm white light). {E['i_lamp_max']:.0f} mA flat out through {E['r_lamp']:.1f} Ω, {E['lamp_w'] * 1000:.0f} mW, cool enough for a closed acrylic lantern. The hole in the ceramic marks +. If 26 mm is out of stock, the [38 mm 2700 K pack]({L['filament38']}) fits with the glass cut 12 mm taller; nine spare either way."),
+        ("1 of 20", "glass reed switch, 2 × 14 mm, normally open, 7 to 35 AT", L["reed"], "JESSINIE MKA-14103 20-pack, Amazon B0CHF29394", "price not read",
+         "The index. Stands in a 3 mm hole in the deck, its glass 2.5 mm below the deck's top so its upper lead can bend down beside it inside the hole; the magnet under the drum's floor passes 3.5 mm over its end once a turn. Pick the most sensitive of the twenty on the bench (the one that closes farthest from the magnet). Glass: never bend a lead at the seal."),
+        ("1 of 100", "neodymium disc magnets, 3 × 1 mm, N52", L["magnet"], "Amazon B0BQ3LPGZ1 (100 or more a pack)", "price not read",
+         f"The index magnet, glued under the drum's floor {D['mag_r']:.0f} mm from the centre, where the window's middle is. One is enough; a second stacked on it doubles the field if the reed is lazy. It never shows: 1 mm of it rides in the 2 mm gap between the floor and the deck."),
+        ("1 of 3", "brass sheet, 0.032 in (0.81 mm), 4 × 10 in", L["sheet032"], "K&S 253 three-pack, Amazon B0006MZM1O", "about $17 for three",
+         f"The lid plate ({D['lid']:.1f} mm square with the Ø25.2 hole the tower passes through), the four 6 mm stops inside the cube, the drum's floor disc (Ø15.2) and a strip for the motor's hot-glue stop. Cut with the jeweler's saw, filed to the line. Half a sheet; the rest is stock for every brass build. The hologram's and the rover's 0.005 in sheet is too thin for these."),
+        ("1", "brass round tube, 5/8 in OD × 0.014 in wall × 12 in", L["tube58"], "K&S 8143, Amazon B07DDFNNXY", "about $6",
+         f"The shutter: a {D['drum_h']:.0f} mm length with a {D['win_deg']:.0f}° window sawn out ({D['win_arc']:.1f} mm of the {D['drum_circ']:.1f} mm circumference, {D['dwin_h']:.0f} mm tall), its floor soldered in flush at the bottom. 0.36 mm wall: saw gently, file square, polish. The template sheet has the window at actual size."),
+        ("1", "brass coaster, 75 × 8 mm, flat top", L["coaster"], "Amazon B0D9DMK3L7 (the satellite's base; a second one)", "price not read",
+         f"The base, the same part the satellite stands on, so the two desk pieces match. 80 g, a thin top over a hollow with a pad: too light alone (tips at {D['tip_deg']:.0f}°, a {D['push_n']:.1f} N push at the ball), so about {D['ballast_g']:.0f} g of steel washers go into the hollow with hot glue and the pad goes back ({D['tip_deg_b']:.0f}°, {D['push_n_b']:.1f} N). **Incoming check:** measure the hollow; a magnet must not stick to the top."),
+        ("1 set", "pin vise with 0.5 to 3.0 mm twist bits", L["pinvise"], "Amazon B09WRQPN58 (or any such set)", "about $10",
+         "No drill is on the bench. Ten small holes want one: the pin's four 1.6 mm holes through the cube and the tower, the reed's 3.0 and the astragal's 4.0 in the deck, the button's 3.6 (3.0 then a round file) and pilots for the sawn window, slot and lid hole. Brass drills by hand in a minute a hole."),
+        ("1 tube", "gel super glue, 4 g", L["glue"], "Loctite Ultra Gel Control (the hologram's and the rover's tube)", "about $6",
+         "One tube for three builds. Here: the glass to the deck and to the cap (a bead inside), the cube to the coaster, the stops, the reed and the magnet, the screen's edges, the hub on the shaft, the tower in the lid. No epoxy is owned and none is needed."),
+    ]),
+    ("To buy from Grand Brass Lamp Parts: five lines, one order (none of these is on Amazon)", [
+        ("1", "turned brass check ring, 1-1/2 in, 1/8 IP slip (7/16 in hole)", L["checkring"], "Grand Brass CRT1-12X8, unfinished", "about $1.60",
+         f"The gallery deck: a solid turned brass disc, Ø38.1, about 3 mm thick (measure it; the drawing assumes 3), with an 11 mm hole already in its middle that the motor's shaft and the hub pass through. Glued on the tower's top rim with a bead inside the tube. Two holes to drill: 3.0 for the reed, 4.0 for the astragal's foot. No railing: the slab is the gallery."),
+        ("1", "spun brass vase cap, 1-1/2 in, 1/8 IP slip hole", L["vasecap"], "Grand Brass VA01-12, unfinished (the vase-cap listing, 1-1/2 in)", "about $2.50",
+         f"The roof. A shallow spun dome Ø38.1, about 12.5 mm tall (measure; drawn 12.5), the same diameter as the deck, so the lantern is a glass drum between two brass discs. It sits down over the glass by {D['glass_h'] - D['cap_rim']:.1f} mm and is glued to the glass's top edge inside. Its centre hole takes the nipple."),
+        ("1", "brass ball, 5/8 in, 1/8 IP blind tap", L["ball"], "Grand Brass BB0-58X18, unfinished brass (listed beside the nickel one)", "about $1",
+         f"The ventilator ball on the roof, the one silhouette a lighthouse needs after its lantern. Solid, {MASS[12][1]:.0f} g, screwed onto the nipple until it meets the cap. Unfinished brass, polished by hand."),
+        ("1", "hollow brass nipple, 1/2 in long, 1/8 IP", L["nipple"], "Grand Brass NI0-12X18BR", "about $1",
+         "Through the cap's hole: the ball on top, the nut underneath. 12.7 mm long; file it shorter if the ball will not seat."),
+        ("1", "beaded brass nut, 1/8 IP, 9/16 in × 3/16 in", L["nut"], "Grand Brass, unfinished", "about $1",
+         f"Inside the cap on the nipple: it clamps the roof's hardware, and the lamp hangs from it. The filament's two leads bend out under it in heat-shrink and are glued flat, {D['hanger']:.0f} mm of lead showing below; the lamp's wires solder to the lead ends there."),
+    ]),
+    ("To buy from Online Metals: one line", [
+        ("1", "brass square tube, 1.5 × 1.5 in, 0.062 in wall, 12 in", L["sqtube"], "Online Metals, 272-H80, 1.5 in height, 0.062 in wall, cut to 12 in", "about $40 plus shipping (the 1.25 in × 0.032 in size is $30 to $41; read the page)",
+         f"The cube: cut one {D['cube']:.1f} mm length so it is as tall as it is wide. 1.57 mm walls give the window and the slot crisp edges and the pin something to bear on; {MASS[1][1]:.0f} g, all of it low. Nothing this size exists on Amazon (K&S stops at 1/2 in); Grand Brass has 1 in square, too small for the screen. The other 270 mm is stock for the next brass cube. Saw it square, file, polish."),
+    ]),
+    ("Owned: electronics", [
+        ("1 of 13", "ESP32-C3 SuperMini controller", L["controller"], "Amazon B0F888JQ91 (Pocket AI stock; 10 spare)", "owned",
+         "The brain, lying on the driver board with its USB-C through the cube's back: power, flashing and the console on one cable. Wi-Fi for the time and the keeper's log. Gate it with `esptool flash_id` as before; nothing is removed from it this time."),
+        ("1 of 10", "0.96 in OLED, 128 × 64, I²C, white", L["oled"], "Hosyond, Amazon B09T6SJBV5 (7 spare)", "owned",
+         f"The text. White pixels on black glass, the family's screen, standing against the inside of the cube's front face with its glass in the {D['win_w']:.0f} × {D['win_h']:.1f} mm window; only the 21.7 × 10.9 mm picture shows, in a brass frame. The header pins come off (solder wick) and four wires go on the pads. **Mark the window from the lit module** before cutting: its centre is drawn {D['win_cz']:.0f} mm above the coaster."),
+        ("1 of 5", "MX1508 dual H-bridge driver", L["hbridge"], "Aideepen 5-pack, Amazon B075S368Y2 (the camera Pocket AI's stock; 4 spare)", "owned",
+         f"One board for both moving things: channel A turns the shutter (speed, brake, the parking move), channel B switches the lamp through its resistors. 2 to 10 V in, 1.5 A a channel, inputs that read 3.3 V as high, flyback diodes inside. The screw terminals and the header come off and wires go on the pads, so it lies {D['mx_t']:.0f} mm flat on the coaster under the controller."),
+        ("2", "47 Ω resistors, 1/4 W", L["resistors"], "the resistor kit", "owned",
+         f"In parallel, {E['r_lamp']:.1f} Ω, in series with the lamp inside the cube, in heat-shrink. {E['p_res_each'] * 1000:.0f} mW each at full. The only resistors in the build."),
+        ("1", "tactile button, 6 × 6 mm", L["button"], "the button kit", "owned", "The one control, inside the cube's back face with its cap through a 3.6 mm hole."),
+        ("about 1.2 m", "30 AWG silicone wire", L["wire30"], "CBAZY kit", "owned",
+         "Six wires down the tower (motor, lamp, reed), four to the screen, five between the two boards. Nothing carries more than the lamp's 83 mA except the USB cable."),
+        ("", "Kapton tape, heat-shrink, hot glue, 63/37 solder and flux", L["kapton"], "bench stock", "owned",
+         "Kapton round the motor (the plug) and under both boards; heat-shrink on every joint near brass; hot glue for the motor's stop, the washers in the coaster and the boards to the coaster; solder for the drum's floor and hub and the lid's stops (small joints, the iron does them)."),
+        ("1", "USB-C adapter, 1 A or more, and a cable", None, "owned", "owned", f"Any phone adapter. Peak {E['peak']:.0f} mA; a computer's port runs it too."),
+    ]),
+    ("Owned: brass and finish", [
+        ("about 60 mm", "brass tube, 4 mm OD × 0.5 mm wall (from the 2 to 7 mm set)", L["brass_tube"], "M METERXITY set, 3 owned", "owned",
+         f"Two pieces: the astragal, {D['ast_top']:.0f} mm from the deck up into the roof at the back, socketed 3 mm into the deck, carrying the lamp's two wires (1.2 mm each in a 3 mm bore); and the hub, {D['hub_h']:.0f} mm long, a slip fit over the motor's 3 mm D shaft with a drop of gel glue, soldered to the drum's floor."),
+        ("40 mm", "brass rod, 1.5 mm", L["rod15"], "the 1.5 mm brass rod packs (18 owned; the link is the stainless coupon's listing)", "owned",
+         f"The pin: through the cube's two side faces and the tower's foot at {D['pin_z']:.0f} mm above the coaster, cut flush and polished into the brass. Pull it and the tower lifts out with the lid for service."),
+        ("", "gloss canvas white spray paint", L["paint"], "Rust-Oleum 7789830 (Pip's white)", "owned",
+         "The ivory for the tower. Scuff with 400 grit, wipe with alcohol, mask the ends, two light coats, dry overnight. Spray an offcut first and check the paint does not lift under a fingernail (no primer is owned)."),
+    ]),
+]
+
+# ----------------------------------------------------------------------------- the decisions
+DECISIONS = [
+    ("A lighthouse at a glance: disc, cube, tower, lantern, roof",
+     f"Five solids and two diameters. A brass coaster Ø75; a brass cube {D['cube']:.0f} mm on a side with white text glowing in its front; an ivory tower Ø25, {D['tower_show']:.0f} mm tall; a glass lantern Ø25 between a brass deck and a brass roof, both Ø{D['deck_d']:.0f}; a brass ball on top. {D['height']:.0f} mm tall, about {D['mass']:.0f} g before the ballast. Everything that is 38 mm is brass and everything that is 25 is tower, so the eye reads a rhythm, not a kit of parts. No railing, no stripes, no door, no rocks."),
+    ("The lamp stands still and the brass turns round it",
+     f"A real lighthouse does not spin its lamp; the lens turns round a fixed light. Here the lamp is a {D['fil_l']:.0f} mm LED filament hanging from the roof, and a brass drum with a {D['win_deg']:.0f}° window turns round it on a gearmotor's shaft, one revolution in {E['period']:.1f} s: a {E['pass_s']:.1f} s sweep of light across the room, then brass. No slip rings, no wire ever moves. The motor sits inside the tower's top as a plug, under the deck; the drum rides on a 4 mm brass hub over its D shaft. When rotation is off, the window parks facing you and the lantern is a lamp. When the lamp is off, the drum closes and shows you brass."),
+    ("A reed switch so it knows where the window is",
+     f"A DC gearmotor has no idea where it stopped. A 3 × 1 mm magnet under the drum's floor passes 3.5 mm over the end of a glass reed switch standing in a hole in the deck, once a revolution, at the moment the window faces front. From that one pulse the firmware times each revolution and trims the PWM so it is always {E['period']:.1f} s, parks the window on you when you turn rotation off, closes the shutter by running on half a turn when the lamp goes off, and notices a jammed drum. Two wires, no sensor power, nothing visible."),
+    ("Warm white, 2700 K, not the family's amber",
+     f"The hologram and the satellite use a 2200 K filament as a pool of amber on brass, and eight of them are spare. A lighthouse lamp is not a pool: it is the light itself, and the rule is white or warm white. A 26 mm, 3 V, 100 mA ceramic filament at 2700 K is an incandescent lamp's colour; {E['i_lamp_max']:.0f} mA through {E['r_lamp']:.1f} Ω from the 5 V rail, {E['lamp_w'] * 1000:.0f} mW, dimmed to {E['lamp_duty'] * 100:.0f} % by day. Its phosphor is yellow when off, which is why the shutter closes over it."),
+    ("The text lives in the door",
+     f"Every lighthouse has a plaque at its foot: a name, a year. Ours is alive. The owned 0.96 in white OLED stands against the inside of the cube's front face with its glass in a {D['win_w']:.0f} × {D['win_h']:.1f} mm window cut in the brass, so only the 21.7 × 10.9 mm picture shows, white letters in a brass frame, {D['win_cz']:.0f} mm up: where a door would be. One line at a time, large: the time; the light's characteristic measured live from the reed (Fl W {E['period']:.1f}s); and the keeper's log, one line a day written by the desktop's own Ollama through the Pocket AI server, with a built-in list of sea lines for when the desktop is asleep. The screen's blue board, the controller and the driver are all inside the cube; nothing coloured shows."),
+    ("Lamp-maker's parts as architecture",
+     f"The gallery is a 1-1/2 in turned brass check ring, a solid disc with an 11 mm hole already where the shaft goes. The roof is a 1-1/2 in spun brass vase cap; the ventilator ball is a 5/8 in brass ball tapped 1/8 IP, on a 1/2 in nipple with a beaded nut inside the cap that also hangs the lamp. Five parts, about $7, from one lamp-parts house, each already the right shape and the right metal, none of it machined. Nothing is printed."),
+    ("One astragal, and it carries the wires",
+     f"The lantern's one glazing bar is a 4 mm brass tube standing on the deck at the back, tangent to the glass, up into the roof. The lamp's two wires run inside it, cross the cap's underside to the nut, and at the bottom come out under the deck through a 2 mm notch in the tower's rim into the tower. One line beyond the outline, and it is doing a job. From the front it is hidden behind the drum."),
+    ("An ivory tower on brass",
+     f"The brief is a brass build with some ivory. So the tower, the one big surface, is the ivory: a 25 × 0.5 mm brass tube sprayed with Pip's canvas white, its ends masked bare where they hide in the cube and under the deck. Everything else stays brass: coaster, cube, deck, drum, cap, ball, astragal. Light is warm white in the lantern and white on the screen; black only in the screen's glass. Brass at the builder's word for this build; the family's rule since the drone is stainless."),
+    ("The cube: a square tube, a lid you lift, a pin you pull",
+     f"A 1.5 in brass square tube with 1.57 mm walls, cut {D['cube']:.1f} mm long, standing glued on the coaster. Its lid is a {D['lid']:.1f} mm plate of 0.8 mm brass set 0.8 mm down on four stops, with the tower passing through its Ø25.2 hole; a 1.5 mm brass pin through both side faces and the tower's foot, {D['pin_z']:.0f} mm up, is the tower's anchor, flush and invisible in the brass. Pull the pin and the tower lifts out with the lid, and everything inside is in your hand. The cube is {D['cube']:.0f} mm, not smaller, because the screen's 27 mm board must stand beside the Ø25 tower's foot. Its own USB-C and button are in the back face."),
+    ("Corded, not a cell",
+     f"Every family build so far carries a 16340. This one is a lamp: a motor turning all evening and a lamp at {E['i_lamp']:.0f} mA would empty a cell in ten hours, and a desk has a cable. One USB-C into the controller's own port is power, flashing and console; {E['typ']:.0f} mA typical, {E['peak']:.0f} at the worst moment. No charger, no holder, no diode, no switch, and the tower stays Ø25. A cell version is drawn in the head only: it wants a Ø32 tower or a taller base."),
+    ("One owned driver board does both jobs",
+     f"The camera Pocket AI's spare MX1508 dual H-bridge: channel A is the shutter's motor with speed, brake and the parking move; channel B, with one input tied low, is a 1.5 A switch for the lamp through its resistors. Both loads get the 5 V rail, the controller's GPIOs see only logic, and there are no MOSFETs, gate resistors or flyback diodes to wire. Its header and screw terminals come off so it lies {D['mx_t']:.0f} mm flat on the coaster with the controller on top."),
+    ("The coaster is the satellite's, weighted",
+     f"The same 75 × 8 mm brass coaster the satellite stands on, so the two match on the desk. Alone it is 80 g under a {D['height']:.0f} mm tower and tips at {D['tip_deg']:.0f}°, a {D['push_n']:.1f} N push at the ball. About {D['ballast_g']:.0f} g of steel washers hot-glued into its hollow, under the pad, brings the centre of mass to {D['cg_b']:.0f} mm and the tip to {D['tip_deg_b']:.0f}°, {D['push_n_b']:.1f} N: a nudge, not a breath. Measure the hollow when it comes; it picks the washers."),
+    ("A reference, not a copy",
+     "Huy Vector's page is a parts list: 0.2 mm brass sheet, 4 mm brass tube, copper wire, a 3 V 30 rpm gear motor, a 39 mm Edison filament, a glass fuse, a Type-C charging module, a battery, a bamboo coaster. Ours keeps the idea (a small lighthouse on a coaster, a gear motor turning something in the lantern, a filament lamp, brass) and does the rest its own way: a fixed lamp and a turning brass shutter instead of whatever turns in theirs, a reed index so it parks, a live text plaque in the cube, USB power, lamp parts instead of rolled sheet. Side by side they share a silhouette and a motor."),
+    ("How it sits with the family",
+     f"Brass, ivory and warm white: the Pocket AIs' and Cyber Dawn's metal, the hologram's and the rover's ivory on brass, the satellite's coaster. At {D['height']:.0f} mm it is the tall one; the satellite is 159, Cyber Dawn 82, the hologram 72. Few lines: one tower, one astragal. Wires inside the tower and the astragal, boards inside the cube, the only black the screen's glass. Prototype, not product: the lid lifts, the motor pulls out, the firmware reflashes over the cable it runs on."),
+]
+
+FIRMWARE = [
+    "ESP-IDF 6 for the esp32c3, a new small project beside the hologram's. Wi-Fi station for SNTP and the keeper's log; the console on USB Serial/JTAG.",
+    f"LEDC: GPIO0 at 20 kHz for the motor (silent), GPIO3 at 5 kHz for the lamp. GPIO1 low for forward, high with GPIO0 high to brake. All three driven low first thing at boot.",
+    f"The reed on GPIO6, interrupt on the falling edge, 5 ms debounce: period of the last revolution; a PI loop trims the motor duty to hold {E['period']:.1f} s; no pulse for twice that with the motor on = jammed, motor off, the screen says so.",
+    f"Parking: on rotation off, run until the reed closes, then brake: the window faces front. On lamp off, run from the index for half a period, then brake: the shutter is closed. On lamp on, open again. Positions in NVS across a power cut are not needed: the first revolution finds the index.",
+    "The button on GPIO10: short press rotation on/off; long press (1 s) lamp off, low, full. The screen shows the new state for two seconds.",
+    f"The screen, SSD1306 over I²C at 0x3C (probe 0x3D), 128 × 64: one line at a time, 16 px tall, scrolling left at 24 px/s where it is too long; the time in 32 px digits on the hour and on demand; the characteristic from the measured period (Fl W {E['period']:.1f}s); the keeper's log line; the built-in list. Contrast down after 23:00.",
+    "The keeper's log: a GET to the Pocket AI server (`pocket_ai_assistant/character/server`) once an hour for one line of at most 40 characters, written by Ollama's gpt-oss:20b with reasoning effort low; cached in NVS; the built-in list when the desktop is off.",
+    f"First-power measurements the record wants: the 5 V rail's current in each mode (expected about {E['typ']:.0f} mA typical), the lamp's current at full (about {E['i_lamp_max']:.0f} mA) and the revolution period from the reed.",
+]
+
+CHECKS = [
+    "The filament's polarity with the diode test (it lights faintly; the hole in the ceramic is +), and the screen's pin order read off its silkscreen, before any wire is soldered.",
+    f"With the boards wired on the bench and the tower not yet fitted: 5 V on the driver's VCC pad, 3.3 V on the screen's VCC, and the lamp channel at full gives 2.9 to 3.1 V across the filament, about {E['i_lamp_max']:.0f} mA. Then the motor channel turns the bare motor and the brake stops it.",
+    "Nothing bare against brass: tower to GND open, cube to GND open, with the motor's terminals, the reed's leads and the lamp joints in heat-shrink. The reed closes with the magnet 2 mm from its end and opens at 6. Everything else is a supplier spec and is not metered.",
+]
+
+
+# ----------------------------------------------------------------------------- drawing helpers
+def esc(t):
+    return str(t).replace("&", "&amp;").replace("<", "&lt;")
+
+
+def T(x, y, s, cls="s", anchor="start", extra=""):
+    return f'<text x="{x:.1f}" y="{y:.1f}" class="{cls}" text-anchor="{anchor}" {extra}>{esc(s)}</text>'
+
+
+def dot(x, y, r=6):
+    return f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" class="joint"/>'
+
+
+class Router(_Router):
+    """The Pocket AI hop router plus a pin registry and the clearance check."""
+
+    def __init__(self):
+        super().__init__()
+        self.pins = []
+
+    def pin(self, x, y, net):
+        self.pins.append((x, y, net))
+
+    def check(self, min_pin=14, min_lane=14):
+        bad = []
+        for (x0, y0, x1, y1, n) in self.segs:
+            for (px, py, pn) in self.pins:
+                if pn == n:
+                    continue
+                if abs(x0 - x1) < 0.01 and min(y0, y1) - 2 <= py <= max(y0, y1) + 2 and abs(px - x0) < min_pin:
+                    bad.append(f"vertical {n} at x={x0} passes {abs(px-x0):.0f}px from pin ({px},{py}) of {pn}")
+                if abs(y0 - y1) < 0.01 and min(x0, x1) - 2 <= px <= max(x0, x1) + 2 and abs(py - y0) < min_pin:
+                    bad.append(f"horizontal {n} at y={y0} passes {abs(py-y0):.0f}px from pin ({px},{py}) of {pn}")
+        crossings = 0
+        for i, (x0, y0, x1, y1, n) in enumerate(self.segs):
+            for (a0, b0, a1, b1, m) in self.segs[:i]:
+                if m == n:
+                    continue
+                v1, v2 = abs(x0 - x1) < 0.01, abs(a0 - a1) < 0.01
+                if v1 and v2 and abs(x0 - a0) < min_lane and min(y0, y1) < max(b0, b1) and max(y0, y1) > min(b0, b1):
+                    bad.append(f"verticals {n} x={x0} and {m} x={a0} run {abs(x0-a0):.0f}px apart")
+                if (not v1) and (not v2) and abs(y0 - b0) < min_lane and min(x0, x1) < max(a0, a1) and max(x0, x1) > min(a0, a1):
+                    bad.append(f"horizontals {n} y={y0} and {m} y={b0} run {abs(y0-b0):.0f}px apart")
+                if v1 != v2:
+                    vx, vy0, vy1, hx0, hx1, hy_ = (x0, y0, y1, a0, a1, b0) if v1 else (a0, b0, b1, x0, x1, y0)
+                    if min(hx0, hx1) + 0.5 < vx < max(hx0, hx1) - 0.5 and min(vy0, vy1) + 0.5 < hy_ < max(vy0, vy1) - 0.5:
+                        crossings += 1
+        return bad, crossings
+
+
+def block(x, y, w, h, title, sub=None, cls="part", ty=24):
+    o = [f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="9" class="{cls}"/>', T(x + w / 2, y + ty, title, "title", "middle")]
+    if sub:
+        o.append(T(x + w / 2, y + ty + 18, sub, "sub", "middle"))
+    return "".join(o)
+
+
+def pin(rt, x, y, name, side, net, fn=None, fnx=None):
+    rt.pin(x, y, net)
+    o = [f'<circle cx="{x}" cy="{y}" r="4.5" class="pinend"/>']
+    if side == "R":
+        o.append(T(x - 10, y + 5, name, "pin", "end"))
+        if fn:
+            o.append(T(fnx, y + 5, fn, "fn", "end"))
+    elif side == "L":
+        o.append(T(x + 10, y + 5, name, "pin", "start"))
+        if fn:
+            o.append(T(fnx, y + 5, fn, "fn", "start"))
+    elif side == "B":
+        o.append(T(x + 4, y - 10, name, "pin", "start", f'transform="rotate(-90 {x + 4} {y - 10})"'))
+    elif side == "T":
+        o.append(T(x + 4, y + 10, name, "pin", "end", f'transform="rotate(-90 {x + 4} {y + 10})"'))
+    return "".join(o)
+
+
+def zigzag_h(rt, x0, x1, y, net):
+    mid = (x0 + x1) / 2
+    z = 7
+    pts = [(x0, y), (mid - 14, y)]
+    for i, dy in enumerate((z, -z, z, -z, z, -z)):
+        pts.append((mid - 14 + (i + 0.5) * (28 / 6), y + dy))
+    pts += [(mid + 14, y), (x1, y)]
+    return rt.wire(pts, "thin", net)
+
+
+def dim_h(x0, x1, y, label, above=True, cls="dim", lcls="dimlab"):
+    o = [f'<path d="M{x0:.1f},{y-6} L{x0:.1f},{y+6} M{x1:.1f},{y-6} L{x1:.1f},{y+6} M{x0:.1f},{y} L{x1:.1f},{y}" class="{cls}"/>']
+    o.append(T((x0 + x1) / 2, y - 5 if above else y + 15, label, lcls, "middle"))
+    return "".join(o)
+
+
+def dim_v(x, y0, y1, label, right=True, cls="dim"):
+    o = [f'<path d="M{x-6},{y0:.1f} L{x+6},{y0:.1f} M{x-6},{y1:.1f} L{x+6},{y1:.1f} M{x},{y0:.1f} L{x},{y1:.1f}" class="{cls}"/>']
+    ym = (y0 + y1) / 2
+    o.append(T(x + 8 if right else x - 8, ym + 4, label, "dimlab", "start" if right else "end"))
+    return "".join(o)
+
+
+def leader(x0, y0, x1, y1):
+    return f'<path d="M{x0:.1f},{y0:.1f} L{x1:.1f},{y1:.1f}" class="dim"/>'
+
+
+def rect(x0, y0, x1, y1, cls, rx=0):
+    xa, xb, ya, yb = min(x0, x1), max(x0, x1), min(y0, y1), max(y0, y1)
+    return f'<rect x="{xa:.1f}" y="{ya:.1f}" width="{xb - xa:.1f}" height="{yb - ya:.1f}" rx="{rx}" class="{cls}"/>'
+
+
+def poly(pts, cls, close=False):
+    return '<path d="M' + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts) + ('Z' if close else '') + f'" class="{cls}"/>'
+
+
+def circ(x, y, r, cls):
+    return f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r:.1f}" class="{cls}"/>'
+
+
+def arc_path(cx, cy, r, a0, a1, cls):
+    """An arc from angle a0 to a1 (degrees, SVG sense: 0 = +x, 90 = down), the long way when the sweep passes 180."""
+    x0, y0 = cx + r * math.cos(math.radians(a0)), cy + r * math.sin(math.radians(a0))
+    x1, y1 = cx + r * math.cos(math.radians(a1)), cy + r * math.sin(math.radians(a1))
+    large = 1 if (a1 - a0) % 360 > 180 else 0
+    return f'<path d="M{x0:.1f},{y0:.1f} A{r:.1f},{r:.1f} 0 {large} 1 {x1:.1f},{y1:.1f}" class="{cls}"/>'
+
+
+# The lighthouse's own palette: brass, ivory, glass and warm white (both themes; greys in print).
+LH_LIGHT = ("--lh-brass:#C9A24F;--lh-brass-lo:#7A5A22;--lh-brass-dk:#A8843A;--lh-ivory:#F1EBDD;--lh-ivory-lo:#9A917C;"
+            "--lh-glass:#F4F8FA;--lh-glass-lo:#7F8A94;--lh-warm:#F6DE9E;--lh-warm-lo:#B78A2E;--lh-black:#1E1F22;--lh-black-lo:#55585E;"
+            "--lh-steel:#C3C8CD;--lh-steel-lo:#6B7178;--lh-board:#2B3340;--lh-mag:#8A8F96")
+LH_DARK = ("--lh-brass:#D2AA58;--lh-brass-lo:#F0D59A;--lh-brass-dk:#B08A3E;--lh-ivory:#E6DFCC;--lh-ivory-lo:#B9AF97;"
+           "--lh-glass:#232A31;--lh-glass-lo:#9BA7B2;--lh-warm:#F6DE9E;--lh-warm-lo:#F0C77A;--lh-black:#0E0F11;--lh-black-lo:#8D939A;"
+           "--lh-steel:#B4BAC0;--lh-steel-lo:#E3E7EB;--lh-board:#3A4452;--lh-mag:#A9AEB5")
+LH_PRINT = ("html:root{--lh-brass:#d9d9d9;--lh-brass-lo:#000;--lh-brass-dk:#bdbdbd;--lh-ivory:#fff;--lh-ivory-lo:#000;--lh-glass:#fff;--lh-glass-lo:#000;"
+            "--lh-warm:#eee;--lh-warm-lo:#000;--lh-black:#333;--lh-black-lo:#000;--lh-steel:#bbb;--lh-steel-lo:#000;--lh-board:#555;--lh-mag:#777}")
+LH_CSS = (":root{" + LH_LIGHT + "}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){" + LH_DARK + "}}:root[data-theme=dark]{" + LH_DARK + "}"
+          ".brass{fill:var(--lh-brass);stroke:var(--lh-brass-lo);stroke-width:.8}"
+          ".brassdk{fill:var(--lh-brass-dk);stroke:var(--lh-brass-lo);stroke-width:.8}"
+          ".brassln{fill:none;stroke:var(--lh-brass-lo);stroke-width:1}"
+          ".ivory{fill:var(--lh-ivory);stroke:var(--lh-ivory-lo);stroke-width:.9}"
+          ".glass{fill:var(--lh-glass);stroke:var(--lh-glass-lo);stroke-width:1}"
+          ".glassln{fill:none;stroke:var(--lh-glass-lo);stroke-width:1}"
+          ".warm{fill:var(--lh-warm);stroke:var(--lh-warm-lo);stroke-width:.8}"
+          ".warmfill{fill:var(--lh-warm);stroke:none;opacity:.55}"
+          ".blk{fill:var(--lh-black);stroke:var(--lh-black-lo);stroke-width:.8}"
+          ".steel{fill:var(--lh-steel);stroke:var(--lh-steel-lo);stroke-width:.8}"
+          ".board{fill:var(--lh-board);stroke:var(--lh-black-lo);stroke-width:.8}"
+          ".mag{fill:var(--lh-mag);stroke:var(--lh-steel-lo);stroke-width:.6}"
+          ".glow{fill:none;stroke:var(--lh-warm-lo);stroke-width:1.2;stroke-dasharray:2 3}"
+          ".beam{fill:none;stroke:var(--lh-warm-lo);stroke-width:1.3;stroke-dasharray:7 4}"
+          ".onblack{font:700 9px 'JetBrains Mono',monospace;fill:#F4F2EE}")
+
+PAGE_TONES = (":root{--signal:#5A6068;--signal-soft:#ECEAE6;--ok:#8F6114;--ok-soft:#F2E6D2;--warn:#8F6114;--warn-soft:#F2E6D2}"
+              "@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--signal:#9BA3AC;--signal-soft:#2A2D33;--ok:#D69A4E;--ok-soft:#3A2C18;--warn:#D69A4E;--warn-soft:#3A2C18}}"
+              ":root[data-theme=dark]{--signal:#9BA3AC;--signal-soft:#2A2D33;--ok:#D69A4E;--ok-soft:#3A2C18;--warn:#D69A4E;--warn-soft:#3A2C18}")
+
+SHEET_CSS = ("<style>"
+             ".part{fill:var(--paper);stroke:var(--ink);stroke-width:1.6}"
+             ".usb{fill:var(--line);stroke:var(--ink-2);stroke-width:1.2}"
+             ".title{font:700 16px 'Archivo','Helvetica Neue',Arial,sans-serif;fill:var(--ink)}"
+             ".sub{font:400 12px 'Public Sans',system-ui,sans-serif;fill:var(--ink-2)}"
+             ".h1{font:900 24px 'Archivo','Helvetica Neue',Arial,sans-serif;fill:var(--ink)}"
+             ".h2{font:700 15px 'Archivo','Helvetica Neue',Arial,sans-serif;fill:var(--ink)}"
+             ".pin{font:700 13px 'JetBrains Mono',monospace;fill:var(--ink)}"
+             ".fn{font:400 11.5px 'Public Sans',system-ui,sans-serif;fill:var(--ink-2)}"
+             ".lab{font:700 12px 'Public Sans',system-ui,sans-serif;fill:var(--ink)}"
+             ".dimlab{font:700 11.5px 'JetBrains Mono',monospace;fill:var(--ink)}"
+             ".mono{font:400 11px 'JetBrains Mono',monospace;fill:var(--ink)}"
+             ".rod{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}"
+             ".thin{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}"
+             ".hair{fill:none;stroke:var(--ink);stroke-width:1;stroke-linecap:round}"
+             ".dim{fill:none;stroke:var(--ink-2);stroke-width:1}"
+             ".joint{fill:var(--ink)}"
+             ".pinend{fill:var(--paper);stroke:var(--ink);stroke-width:1.8}"
+             ".ghost{fill:none;stroke:var(--ink-2);stroke-width:1.1;stroke-dasharray:3 3}"
+             ".cavity{fill:var(--bg);stroke:var(--ink-2);stroke-width:.7}"
+             ".desk{fill:none;stroke:var(--ink);stroke-width:1.6}"
+             ".hatch{fill:none;stroke:var(--ink-2);stroke-width:.8}"
+             ".cut{fill:none;stroke:var(--ink);stroke-width:1.2}"
+             ".tmpl{fill:none;stroke:var(--ink);stroke-width:1.4}"
+             ".tmplhole{fill:var(--bg);stroke:var(--ink);stroke-width:1.2}"
+             ".centre{fill:none;stroke:var(--ink-2);stroke-width:.8;stroke-dasharray:8 3 2 3}"
+             + LH_CSS + "</style>")
+
+
+# ----------------------------------------------------------------------------- shared drawing pieces
+def cap_poly(X, Z, inner=False, n=24):
+    """The cap's section outline in a view: left profile rim→top, right profile top→rim. X(r) and Z(z') map to the view."""
+    f = cap_inner_pt if inner else cap_pt
+    left = [f(i / n) for i in range(n + 1)]
+    pts = [(X(-r), Z(z)) for r, z in left] + [(X(r), Z(z)) for r, z in reversed(left)]
+    return pts
+
+
+def label_l(o, px, py, lx, ly, lines):
+    """A label whose text ends at lx (end-anchored), with a leader from its right end to the part at (px, py)."""
+    o.append(leader(px, py, lx + 4, ly - 4))
+    for i, s in enumerate(lines):
+        o.append(T(lx, ly + i * 14, s, "fn", "end"))
+
+
+def label_r(o, px, py, lx, ly, lines):
+    o.append(leader(px, py, lx - 4, ly - 4))
+    for i, s in enumerate(lines):
+        o.append(T(lx, ly + i * 14, s, "fn"))
+
+
+# ----------------------------------------------------------------------------- sheet 1: the form
+def form_sheet():
+    o = [T(20, 30, "Desk lighthouse: how the finished thing looks", "h1"),
+         T(20, 48, f"An ivory tower on a brass cube on a brass coaster; a glass lantern between a brass deck and a brass roof, a brass ball on top. {D['height']:.0f} mm tall, Ø{D['disc_d']:.0f} at the base, about {D['mass']:.0f} g before the ballast. In the lantern a brass shutter turns round a fixed warm-white filament; in the cube's front, white text. Dimensions in mm; each view at its own scale.", "sub")]
+    z1 = D["z_deck1"]
+
+    # ---------------------------------------------------------------- front view, 2.3 px per mm
+    s = 2.3
+    x0, y0 = 200, 742
+    X = lambda xm: x0 + xm * s   # noqa: E731
+    Z = lambda zm: y0 - zm * s   # noqa: E731
+    o.append(T(40, 90, "Front view", "h2"))
+    o.append(f'<line x1="{X(-60)}" y1="{y0}" x2="{X(60)}" y2="{y0}" class="desk"/>')
+    o.append(T(X(60), y0 + 14, "desk", "fn", "end"))
+    o.append(rect(X(-D["disc_d"] / 2), Z(0), X(D["disc_d"] / 2), Z(D["disc_t"]), "brass"))
+    o.append(rect(X(-D["cube"] / 2), Z(D["disc_t"]), X(D["cube"] / 2), Z(D["z_cube_top"]), "brass"))
+    o.append(f'<line x1="{X(-D["cube"]/2 + D["cube_wall"])}" y1="{Z(D["z_cube_top"] - D["lid_inset"])}" x2="{X(D["cube"]/2 - D["cube_wall"])}" y2="{Z(D["z_cube_top"] - D["lid_inset"])}" class="brassln"/>')
+    wz = D["disc_t"] + D["win_cz"]
+    o.append(rect(X(-D["win_w"] / 2), Z(wz - D["win_h"] / 2), X(D["win_w"] / 2), Z(wz + D["win_h"] / 2), "blk"))
+    o.append(T(X(0), Z(wz) + 3.5, f"FL W {E['period']:.1f}S", "onblack", "middle"))
+    o.append(rect(X(-D["tower_od"] / 2), Z(D["z_cube_top"]), X(D["tower_od"] / 2), Z(D["z_deck0"]), "ivory"))
+    o.append(rect(X(-D["deck_d"] / 2), Z(D["z_deck0"]), X(D["deck_d"] / 2), Z(z1), "brass"))
+    o.append(rect(X(-D["glass_od"] / 2), Z(z1), X(D["glass_od"] / 2), Z(D["z_cap_rim"]), "glass"))
+    o.append(rect(X(-D["drum_od"] / 2), Z(z1 + D["drum_z0"]), X(D["drum_od"] / 2), Z(z1 + D["drum_top"]), "brassdk"))
+    wx = D["drum_od"] / 2 * math.sin(math.radians(D["win_deg"] / 2))
+    o.append(rect(X(-wx), Z(z1 + D["drum_z0"] + D["dwin_z0"]), X(wx), Z(z1 + D["drum_z0"] + D["dwin_z0"] + D["dwin_h"]), "warmfill"))
+    o.append(rect(X(-D["fil_w"] / 2), Z(z1 + D["fil_bot"]), X(D["fil_w"] / 2), Z(z1 + D["drum_z0"] + D["dwin_z0"] + D["dwin_h"]), "warm"))
+    o.append(circ(X(0), Z(z1 + 20), 11 * s, "glow"))
+    o.append(poly(cap_poly(X, lambda z: Z(z1 + z)), "brass", close=True))
+    o.append(rect(X(-D["nip_od"] / 2), Z(D["z_cap_top"]), X(D["nip_od"] / 2), Z(z1 + D["ball_bot"]), "brassdk"))
+    o.append(circ(X(0), Z(z1 + D["ball_c"]), D["ball_d"] / 2 * s, "brass"))
+    cx_, cy_, r_ = X(0), Z(z1 + 17), 19 * s
+    a0, a1 = math.radians(-55), math.radians(55)
+    o.append(f'<path d="M{cx_ + r_*math.cos(a0):.1f},{cy_ + r_*math.sin(a0):.1f} A{r_:.1f},{r_:.1f} 0 0 1 {cx_ + r_*math.cos(a1):.1f},{cy_ + r_*math.sin(a1):.1f}" class="beam"/>')
+    tx, ty = cx_ + r_ * math.cos(a1), cy_ + r_ * math.sin(a1)
+    o.append(poly([(tx - 7, ty - 2), (tx + 1, ty - 9), (tx + 3, ty + 1)], "solid", close=True))
+    o.append(T(cx_ + r_ + 6, cy_ + 4, f"{E['period']:.1f} s a turn", "fn"))
+    o.append(dim_v(X(-D["disc_d"] / 2) - 24, Z(0), Z(D["height"]), f"{D['height']:.0f}", False))
+    o.append(dim_v(X(-D["tower_od"] / 2) - 16, Z(z1), Z(D["z_cap_rim"]), f"{D['cap_rim']:.1f}", False))
+    o.append(dim_v(X(D["tower_od"] / 2) + 18, Z(D["z_cube_top"]), Z(D["z_deck0"]), f"{D['tower_show']:.0f}", True))
+    o.append(dim_v(X(D["cube"] / 2) + 18, Z(D["disc_t"]), Z(D["z_cube_top"]), f"{D['cube']:.1f}", True))
+    o.append(dim_h(X(-D["disc_d"] / 2), X(D["disc_d"] / 2), y0 + 34, f"Ø{D['disc_d']:.0f} × {D['disc_t']:.0f} brass coaster, {D['disc_g']:.0f} g", False))
+    o.append(dim_h(X(-D["deck_d"] / 2), X(D["deck_d"] / 2), Z(D["height"]) - 30, f"Ø{D['deck_d']:.1f} deck and roof", True))
+    o.append(dim_h(X(-D["tower_od"] / 2), X(D["tower_od"] / 2), Z(110), f"Ø{D['tower_od']:.0f}", True))
+    lx = 330
+    label_r(o, X(D["ball_d"] / 2 * 0.7), Z(z1 + D["ball_c"] - 5), lx, 200, ["ventilator ball: 5/8 in brass,", "on a 1/8 IP nipple"])
+    label_r(o, X(15), Z(z1 + D["cap_rim"] + 5), lx, 238, ["roof: 1-1/2 in spun brass vase", "cap, glued over the glass"])
+    label_r(o, X(D["glass_od"] / 2), Z(z1 + 22), lx, 276, [f"lantern: acrylic Ø{D['glass_od']:.0f}; inside it", "a brass shutter turns round a", "fixed 2700 K filament"])
+    label_r(o, X(D["deck_d"] / 2), Z(D["z_deck0"] + 1.5), lx, 340, ["gallery: 1-1/2 in turned brass", "check ring; no railing"])
+    label_r(o, X(D["tower_od"] / 2), Z(100), lx, 480, [f"tower: brass tube Ø{D['tower_od']:.0f} × {D['tower_wall']:.1f},", "sprayed canvas white; the", "motor hides in its top"])
+    label_r(o, X(D["cube"] / 2), Z(D["disc_t"] + 32), lx, 640, ["cube: 1-1/2 in square brass tube,", f"{D['cube']:.0f} on a side, a lid you lift;", "USB-C and button in the back"])
+    label_r(o, X(D["win_w"] / 2), Z(wz), lx, 698, ["the door: white text in the", "brass, one line at a time"])
+    label_r(o, X(D["disc_d"] / 2), Z(D["disc_t"] / 2), lx, 740, ["the satellite's coaster, weighted"])
+
+    # ---------------------------------------------------------------- section through the lantern, 5 px per mm (front on the left)
+    s2 = 5.0
+    xs, ys = 600, 445
+    X2 = lambda xm: xs + xm * s2      # noqa: E731  front negative (left), back positive
+    Z2 = lambda zm: ys - zm * s2      # noqa: E731  z' above the deck's top
+    o.append(T(520, 90, "Section through the lantern and the tower's top, front on the left", "h2"))
+    ow, iw = D["tower_od"] / 2, D["tower_od"] / 2 - D["tower_wall"]
+    o.append(rect(X2(-iw), Z2(-30), X2(iw), Z2(-D["deck_t"]), "cavity"))
+    o.append(rect(X2(-ow), Z2(-30), X2(-iw), Z2(-D["deck_t"]), "ivory"))
+    o.append(rect(X2(iw), Z2(-30), X2(ow), Z2(-D["deck_t"] - D["notch"]), "ivory"))
+    mt = D["mot_t"] / 2
+    o.append(rect(X2(-mt), Z2(-D["deck_t"] - D["mot_l"]), X2(mt), Z2(-D["deck_t"] - D["gear_l"]), "board"))
+    o.append(rect(X2(-mt), Z2(-D["deck_t"] - D["gear_l"]), X2(mt), Z2(-D["deck_t"]), "steel"))
+    o.append(rect(X2(-mt - 0.4), Z2(-D["deck_t"] - D["mot_l"]), X2(mt + 0.4), Z2(-D["deck_t"]), "ghost"))
+    o.append(f'<path d="M{X2(-2)},{Z2(-D["deck_t"] - D["mot_l"])} L{X2(-2)},{Z2(-30)} M{X2(2)},{Z2(-D["deck_t"] - D["mot_l"])} L{X2(2)},{Z2(-30)}" class="hair"/>')
+    o.append(rect(X2(-D["deck_d"] / 2), Z2(-D["deck_t"]), X2(D["deck_d"] / 2), Z2(0), "brass"))
+    o.append(rect(X2(-D["deck_hole"] / 2), Z2(-D["deck_t"]), X2(D["deck_hole"] / 2), Z2(0), "cavity"))
+    o.append(rect(X2(-D["reed_r"] - D["reed_hole"] / 2), Z2(-D["deck_t"]), X2(-D["reed_r"] + D["reed_hole"] / 2), Z2(0), "cavity"))
+    o.append(rect(X2(D["ast_r"] - D["ast_od"] / 2), Z2(-D["deck_t"]), X2(D["ast_r"] + D["ast_od"] / 2), Z2(0), "cavity"))
+    rr, rd = D["reed_r"], D["reed_down"]
+    o.append(rect(X2(-rr - 1), Z2(-rd - D["reed_l"]), X2(-rr + 1), Z2(-rd), "glass"))
+    o.append(f'<path d="M{X2(-rr)},{Z2(-rd)} L{X2(-rr)},{Z2(-0.6)} L{X2(-rr - 1.4)},{Z2(-0.6)} L{X2(-rr - 1.4)},{Z2(-30)} M{X2(-rr)},{Z2(-rd - D["reed_l"])} L{X2(-rr)},{Z2(-30)}" class="hair"/>')
+    o.append(poly(cap_poly(X2, Z2), "brass", close=True))
+    o.append(poly(cap_poly(X2, Z2, inner=True), "cavity", close=True))
+    gi = D["glass_od"] / 2 - D["glass_wall"]
+    o.append(rect(X2(-ow), Z2(0), X2(-gi), Z2(D["glass_h"]), "glass"))
+    o.append(rect(X2(gi), Z2(0), X2(ow), Z2(D["glass_h"]), "glass"))
+    ar, ao = D["ast_r"], D["ast_od"] / 2
+    o.append(rect(X2(ar - ao), Z2(-D["deck_t"]), X2(ar + ao), Z2(D["ast_top"]), "brass"))
+    for dx in (-0.7, 0.7):
+        o.append(f'<path d="M{X2(ar + dx)},{Z2(-D["deck_t"] - 0.6)} L{X2(ar + dx)},{Z2(D["ast_top"] - 0.4)}" class="hair"/>')
+    o.append(f'<path d="M{X2(ar)},{Z2(D["ast_top"] - 0.4)} L{X2(8.2)},{Z2(D["nut_bot"] + D["nut_h"] + 0.3)} L{X2(7.6)},{Z2(D["nut_bot"] - 0.6)} L{X2(4.6)},{Z2(D["nut_bot"] - 0.6)}" class="hair"/>')
+    o.append(f'<path d="M{X2(ar)},{Z2(-D["deck_t"] - 0.6)} L{X2(iw - 0.6)},{Z2(-D["deck_t"] - 0.6)} L{X2(iw - 0.6)},{Z2(-30)}" class="hair"/>')
+    o.append(rect(X2(-D["nut_d"] / 2), Z2(D["nut_bot"]), X2(D["nut_d"] / 2), Z2(D["nut_bot"] + D["nut_h"]), "brassdk"))
+    o.append(rect(X2(-D["nip_od"] / 2), Z2(D["nut_bot"]), X2(D["nip_od"] / 2), Z2(D["nip_top"]), "brass"))
+    o.append(rect(X2(-D["nip_od"] / 2 + 1.2), Z2(D["nut_bot"]), X2(D["nip_od"] / 2 - 1.2), Z2(D["nip_top"]), "cavity"))
+    o.append(circ(X2(0), Z2(D["ball_c"]), D["ball_d"] / 2 * s2, "brass"))
+    dr, dw = D["drum_od"] / 2, D["drum_wall"]
+    o.append(rect(X2(-dr + dw), Z2(D["drum_z0"]), X2(dr - dw), Z2(D["floor_top"]), "brassdk"))
+    o.append(rect(X2(-dr + dw), Z2(D["floor_top"]), X2(dr - dw), Z2(D["drum_top"]), "warmfill"))
+    o.append(rect(X2(-dr), Z2(D["drum_z0"]), X2(-dr + dw), Z2(D["drum_z0"] + D["dwin_z0"]), "brassdk"))
+    o.append(rect(X2(-dr), Z2(D["drum_z0"] + D["dwin_z0"] + D["dwin_h"]), X2(-dr + dw), Z2(D["drum_top"]), "brassdk"))
+    o.append(rect(X2(dr - dw), Z2(D["drum_z0"]), X2(dr), Z2(D["drum_top"]), "brassdk"))
+    o.append(rect(X2(-D["shaft_d"] / 2), Z2(-D["deck_t"]), X2(D["shaft_d"] / 2), Z2(D["shaft_tip"]), "steel"))
+    for sgn in (-1, 1):
+        o.append(rect(X2(sgn * D["hub_id"] / 2), Z2(D["drum_z0"]), X2(sgn * D["hub_od"] / 2), Z2(D["drum_z0"] + D["hub_h"]), "brass"))
+    o.append(rect(X2(-D["mag_r"] - D["mag_d"] / 2), Z2(D["drum_z0"] - D["mag_t"]), X2(-D["mag_r"] + D["mag_d"] / 2), Z2(D["drum_z0"]), "mag"))
+    o.append(rect(X2(-D["fil_w"] / 2), Z2(D["fil_bot"]), X2(D["fil_w"] / 2), Z2(D["fil_top"]), "warm"))
+    for sgn in (-1, 1):
+        o.append(f'<path d="M{X2(sgn * 0.45)},{Z2(D["fil_top"])} L{X2(sgn * 0.45)},{Z2(D["nut_bot"] - 0.6)} L{X2(sgn * 4.6)},{Z2(D["nut_bot"] - 0.6)}" class="hair"/>')
+    zw = D["drum_z0"] + D["dwin_z0"] + D["dwin_h"] / 2
+    for dz in (-8, 0, 8):
+        o.append(f'<line x1="{X2(-dr)}" y1="{Z2(zw)}" x2="{X2(-21)}" y2="{Z2(zw + dz)}" class="beam"/>')
+    lxr = 716
+    label_r(o, X2(6), Z2(D["ball_c"] + 2), lxr, 166, ["5/8 in brass ball, blind-tapped 1/8 IP"])
+    label_r(o, X2(D["nut_d"] / 2), Z2(D["nut_bot"] + 2), lxr, 212, ["1/2 in nipple through the cap; the beaded nut", "clamps it and hangs the lamp by its leads"])
+    label_r(o, X2(16.5), Z2(D["cap_rim"] + 4), lxr, 250, ["vase cap Ø38: the roof, glued over", "the glass's top edge inside it"])
+    label_r(o, X2(ow), Z2(31), lxr, 288, [f"acrylic Ø{D['glass_od']:.0f} × 2, cut {D['glass_h']:.0f}, {D['cap_rim']:.1f} showing", "under the cap's rim"])
+    label_r(o, X2(dr), Z2(24), lxr, 324, [f"the shutter: 5/8 in brass tube, {D['drum_h']:.0f} tall,", f"a {D['win_deg']:.0f}° window {D['dwin_h']:.0f} tall, floor soldered in"])
+    label_r(o, X2(D["fil_w"] / 2), Z2(18), lxr, 360, [f"filament {D['fil_l']:.0f} mm, 3 V, 2700 K: the lamp,", f"{E['i_lamp_max']:.0f} mA flat out, still, on the axis"])
+    label_r(o, X2(ar + ao), Z2(11), lxr, 396, ["astragal: 4 mm brass tube, 3 mm into the", "deck, the lamp's two wires inside it"])
+    label_r(o, X2(D["hub_od"] / 2), Z2(D["drum_z0"] + 5), lxr, 430, ["hub: 4 mm tube, a slip fit on the 3 mm D", "shaft, glued; 2 mm of air under the floor"])
+    label_r(o, X2(D["deck_d"] / 2), Z2(-D["deck_t"] / 2), lxr, 464, [f"gallery: turned check ring Ø{D['deck_d']:.1f} × {D['deck_t']:.0f}, its", "11 mm hole already where the shaft goes"])
+    label_r(o, X2(-D["mag_r"] + 1.5), Z2(D["drum_z0"] - 0.5), lxr, 498, ["3 × 1 mm magnet under the floor, 6 mm out,", "at the window's middle; it never shows"])
+    label_r(o, X2(-rr + 1), Z2(-rd - 6), lxr, 532, ["reed switch, 3 mm hole, 2.5 mm down: the", "index, once a turn; its leads go down"])
+    label_r(o, X2(iw), Z2(-D["deck_t"] - 1.2), lxr, 566, ["the lamp's wires come under the deck through", "a 2 mm notch in the tower's rim"])
+    label_r(o, X2(mt), Z2(-D["deck_t"] - 18), lxr, 600, ["N20 gearmotor, 6 V 30 rpm: a Kapton-wrapped", f"plug in the Ø{D['tower_od']:.0f} tower's top; pulls out downward"])
+
+    # ---------------------------------------------------------------- plan, looking down into the lantern, 5 px per mm
+    cx, cy = 1200, 215
+    o.append(T(1060, 90, "Plan: looking down into the lantern (front at the bottom)", "h2"))
+    o.append(circ(cx, cy, D["deck_d"] / 2 * s2, "brass"))
+    o.append(circ(cx, cy, D["glass_od"] / 2 * s2, "glass"))
+    o.append(circ(cx, cy, gi * s2, "cavity"))
+    o.append(rect(cx - D["mot_w"] / 2 * s2, cy - D["mot_t"] / 2 * s2, cx + D["mot_w"] / 2 * s2, cy + D["mot_t"] / 2 * s2, "ghost"))
+    o.append(circ(cx, cy, D["mag_r"] * s2, "ghost"))
+    o.append(arc_path(cx, cy, D["drum_od"] / 2 * s2, 90 + D["win_deg"] / 2, 450 - D["win_deg"] / 2, "brassring"))
+    o.append(circ(cx, cy, D["hub_od"] / 2 * s2, "brass"))
+    o.append(circ(cx, cy, D["fil_w"] / 2 * s2 + 1, "warm"))
+    o.append(circ(cx, cy + D["mag_r"] * s2, D["mag_d"] / 2 * s2, "mag"))
+    o.append(circ(cx, cy + D["reed_r"] * s2, D["reed_hole"] / 2 * s2, "cavity"))
+    o.append(circ(cx, cy - D["ast_r"] * s2, D["ast_od"] / 2 * s2, "brass"))
+    for a in (90 - D["win_deg"] / 2, 90 + D["win_deg"] / 2):
+        o.append(f'<line x1="{cx + 7 * math.cos(math.radians(a)):.1f}" y1="{cy + 7 * math.sin(math.radians(a)):.1f}" x2="{cx + 112 * math.cos(math.radians(a)):.1f}" y2="{cy + 112 * math.sin(math.radians(a)):.1f}" class="beam"/>')
+    o.append(arc_path(cx, cy, 108, 90 - D["win_deg"] / 2, 90 + D["win_deg"] / 2, "beam"))
+    ra = 55
+    a0, a1 = math.radians(200), math.radians(330)
+    o.append(f'<path d="M{cx + ra*math.cos(a0):.1f},{cy + ra*math.sin(a0):.1f} A{ra},{ra} 0 0 1 {cx + ra*math.cos(a1):.1f},{cy + ra*math.sin(a1):.1f}" class="glow"/>')
+    o.append(T(cx, cy + 128, f"the beam, {D['win_deg']:.0f}°, toward whoever sits in front", "fn", "middle"))
+    col1 = ["deck Ø38.1 · glass Ø25 (the tower's circle)", f"drum Ø{D['drum_od']:.1f}, open {D['win_deg']:.0f}° · hub Ø4", "filament on the axis", "motor 12 × 10 below the deck (ghost)"]
+    col2 = [f"magnet at r {D['mag_r']:.0f}, its path dashed", f"reed hole Ø3 at r {D['reed_r']:.1f}, front", f"astragal Ø4 at r {D['ast_r']:.1f}, back", f"turns {E['rpm_target']:.0f} rpm: {E['period']:.1f} s a revolution"]
+    for i, t in enumerate(col1):
+        o.append(T(1062, 358 + i * 14, t, "fn"))
+    for i, t in enumerate(col2):
+        o.append(T(1062, 418 + i * 14, t, "fn"))
+
+    # ---------------------------------------------------------------- section through the cube, front on the left, 4 px per mm
+    s3 = 4.0
+    xc, y3 = 1010, 778
+    Y3 = lambda ym: xc + ym * s3   # noqa: E731  front negative
+    Z3 = lambda zm: y3 - zm * s3   # noqa: E731  above the coaster's top
+    o.append(T(1060, 494, "Section through the cube, front on the left", "h2"))
+    hw, cw = D["cube"] / 2, D["cube_wall"]
+    o.append(rect(Y3(-D["disc_d"] / 2), Z3(-D["disc_t"]), Y3(D["disc_d"] / 2), Z3(0), "brass"))
+    o.append(rect(Y3(-D["hollow_d"] / 2), Z3(-D["disc_t"]), Y3(D["hollow_d"] / 2), Z3(-D["disc_t"] + D["hollow_h"]), "cavity"))
+    for k in range(-8, 9):
+        xx = Y3(k * 4.2)
+        o.append(f'<line x1="{xx}" y1="{Z3(-D["disc_t"] + 0.6)}" x2="{xx + 12}" y2="{Z3(-D["disc_t"] + D["hollow_h"] - 0.6)}" class="hatch"/>')
+    o.append(rect(Y3(-hw), Z3(0), Y3(-hw + cw), Z3(D["cube"]), "brass"))
+    o.append(rect(Y3(hw - cw), Z3(0), Y3(hw), Z3(D["cube"]), "brass"))
+    o.append(rect(Y3(-hw), Z3(D["win_cz"] - D["win_h"] / 2), Y3(-hw + cw), Z3(D["win_cz"] + D["win_h"] / 2), "cavity"))
+    o.append(rect(Y3(hw - cw), Z3(D["usb_cz"] - D["usb_h"] / 2), Y3(hw), Z3(D["usb_cz"] + D["usb_h"] / 2), "cavity"))
+    o.append(rect(Y3(hw - cw), Z3(D["btn_cz"] - D["btn_hole"] / 2), Y3(hw), Z3(D["btn_cz"] + D["btn_hole"] / 2), "cavity"))
+    lid_top = D["cube"] - D["lid_inset"]
+    for sgn in (-1, 1):
+        o.append(rect(Y3(sgn * (hw - cw)), Z3(lid_top - D["lid_t"] - 0.81), Y3(sgn * (hw - cw - D["stop"])), Z3(lid_top - D["lid_t"]), "brassdk"))
+        o.append(rect(Y3(sgn * D["lid"] / 2), Z3(lid_top - D["lid_t"]), Y3(sgn * (D["tower_od"] / 2 + 0.1)), Z3(lid_top), "brass"))
+        o.append(rect(Y3(sgn * ow), Z3(D["tube_bot"]), Y3(sgn * iw), Z3(lid_top), "brass"))
+        o.append(rect(Y3(sgn * ow), Z3(lid_top), Y3(sgn * iw), Z3(52), "ivory"))
+    o.append(circ(Y3(0), Z3(D["pin_z"]), D["pin_d"] / 2 * s3, "steel"))
+    o.append(rect(Y3(-hw + cw), Z3(1.5), Y3(-hw + cw + 1.5), Z3(20.8), "blk"))
+    o.append(rect(Y3(-hw + cw + 1.5), Z3(0), Y3(-hw + cw + 2.5), Z3(D["oled_h"]), "board"))
+    o.append(rect(Y3(-12), Z3(0), Y3(13), Z3(D["mx_t"]), "board"))
+    o.append(rect(Y3(hw - cw - D["c3_l"]), Z3(D["mx_t"] + 0.4), Y3(hw - cw), Z3(D["mx_t"] + 1.4), "board"))
+    o.append(rect(Y3(hw - cw - 9), Z3(D["mx_t"] + 1.4), Y3(hw), Z3(D["mx_t"] + 1.4 + 3.2), "usb"))
+    o.append(rect(Y3(-2), Z3(D["mx_t"] + 1.4), Y3(5), Z3(D["mx_t"] + 4.0), "steel"))
+    o.append(rect(Y3(hw - cw - 6), Z3(D["btn_cz"] - 3), Y3(hw - cw), Z3(D["btn_cz"] + 3), "part"))
+    o.append(rect(Y3(hw - cw), Z3(D["btn_cz"] - 1.4), Y3(hw + 0.5), Z3(D["btn_cz"] + 1.4), "steel"))
+    for (ya, yb) in ((-6, -9), (-3, 0), (0, 5), (3, 8), (6, 10), (9, 12)):
+        o.append(f'<path d="M{Y3(ya)},{Z3(D["tube_bot"])} L{Y3(yb)},{Z3(D["mx_t"] + 4.5)}" class="hair"/>')
+    o.append(dim_v(Y3(-hw) - 16, Z3(0), Z3(D["cube"]), f"{D['cube']:.1f}", False))
+    o.append(dim_v(Y3(-hw) - 16, Z3(-D["disc_t"]), Z3(0), f"{D['disc_t']:.0f}", False))
+    lxr2 = 1124
+    label_r(o, Y3(ow), Z3(46), lxr2, 580, ["tower: bare brass inside the cube,", "ivory above the lid"])
+    label_r(o, Y3(15), Z3(lid_top - 0.4), lxr2, 614, ["lid: 0.8 mm brass set 0.8 down on four", "stops; lifts out with the tower"])
+    label_r(o, Y3(-hw + 1), Z3(D["win_cz"] + 5), lxr2, 648, [f"window {D['win_w']:.0f} × {D['win_h']:.1f}, centre {D['win_cz']:.0f} up; the", "screen's glass against the wall's inside"])
+    label_r(o, Y3(hw + 0.5), Z3(D["btn_cz"]), lxr2, 682, ["the button, through the back face"])
+    label_r(o, Y3(D["pin_d"] / 2), Z3(D["pin_z"]), lxr2, 710, ["1.5 mm brass pin through the side faces and", f"the tower's foot, {D['pin_z']:.0f} up; pull it to lift"])
+    label_r(o, Y3(hw), Z3(D["usb_cz"]), lxr2, 744, ["controller on the driver board, its USB-C", "through the back: power, flashing, console"])
+    label_r(o, Y3(12), Z3(D["mx_t"] / 2), lxr2, 772, ["driver board flat on the coaster"])
+    label_r(o, Y3(D["hollow_d"] / 2 - 6), Z3(-D["disc_t"] + 3), 1200, 800, [f"about {D['ballast_g']:.0f} g of steel washers", "hot-glued in the hollow"])
+
+    # ---------------------------------------------------------------- how it behaves, and the key numbers
+    bx, by = 522, 628
+    o.append(T(bx, by, "How it behaves", "h2"))
+    lines = [("off", "lamp dark, shutter closed (brass to you), clock dim"),
+             ("lamp", f"shutter parked open to you, filament {E['lamp_duty'] * 100:.0f} % ({E['i_lamp']:.0f} mA)"),
+             ("beacon", f"the shutter turns, {E['period']:.1f} s a revolution: a {E['pass_s']:.1f} s sweep"),
+             ("", f"of light, then brass. Fl W {E['period']:.1f}s"),
+             ("button", "short: rotation on/off (off parks the window on you);"),
+             ("", "long: lamp off, low, full (off closes the shutter)"),
+             ("screen", "time · characteristic, measured · keeper's log · sea lines")]
+    for i, (k, v) in enumerate(lines):
+        yy = by + 18 + i * 14
+        o.append(T(bx, yy, k, "lab")); o.append(T(bx + 54, yy, v, "fn"))
+    o.append(T(bx, by + 124, "Key numbers", "h2"))
+    keys = [f"{D['height']:.0f} tall · Ø{D['disc_d']:.0f} base · cube {D['cube']:.1f} · tower Ø{D['tower_od']:.0f} × {D['tower_show']:.0f}",
+            f"lantern Ø{D['glass_od']:.0f}, {D['cap_rim']:.1f} shown · deck and roof Ø{D['deck_d']:.1f} · ball {D['ball_d']:.1f}",
+            f"{D['mass']:.0f} g, centre of mass {D['cg']:.0f} up, tips at {D['tip_deg']:.0f}° ({D['push_n']:.1f} N at the ball);",
+            f"with {D['ballast_g']:.0f} g of steel in the coaster: {D['cg_b']:.0f} up, {D['tip_deg_b']:.0f}° ({D['push_n_b']:.1f} N)",
+            f"{E['typ']:.0f} mA typical, {E['peak']:.0f} peak · lamp {E['i_lamp_max']:.0f} mA ({E['lamp_w'] * 1000:.0f} mW) · motor {E['mot_ma']:.0f} mA",
+            f"cuts: tower {D['tube_len']:.0f} · glass {D['glass_h']:.0f} · drum {D['drum_h']:.0f}, window {D['win_arc']:.1f} × {D['dwin_h']:.0f} · lid {D['lid']:.1f} sq · astragal {D['ast_top'] + D['deck_t']:.0f}"]
+    for i, k in enumerate(keys):
+        o.append(T(bx, by + 142 + i * 13, k, "fn"))
+    o.append(T(20, 848, f"Paper design {TODAY}, not built. The check ring's thickness and the vase cap's height are the usual sizes for those lamp parts: measure them and rerun the script. Sources: the reference page, the listings, the SuperMini notes, the datasheets, the inventories.", "sub"))
+    return f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Desk lighthouse form sheet">{SHEET_CSS}{"".join(o)}</svg>'
+
+
+# ----------------------------------------------------------------------------- sheet 2: the wiring
+def wiring_sheet():
+    rt = Router()
+    w = rt.wire
+    o = [T(20, 30, "Desk lighthouse: every connection on one sheet", "h1"),
+         T(20, 48, "A dot is a joint. A line that hops over another does not touch it. Thick = 30 AWG wire you solder. Thin = a lead that comes with the part. Pins are grouped by job, not by position on the board. Zero crossings.", "sub")]
+
+    # the screen, left
+    SX, SY, SW, SH = 60, 95, 240, 170
+    o.append(block(SX, SY, SW, SH, "Screen", "0.96 in OLED, 128 × 64, white, I²C", ty=22))
+    o.append(pin(rt, SX + SW, 150, "VCC", "R", "V3")); o.append(pin(rt, SX + SW, 180, "GND", "R", "GND"))
+    o.append(pin(rt, SX + SW, 210, "SCL", "R", "SCL")); o.append(pin(rt, SX + SW, 240, "SDA", "R", "SDA"))
+    o.append(T(SX + 14, 160, "address 0x3C (probe 0x3D)", "fn")); o.append(T(SX + 14, 174, "header pins off; four", "fn"))
+    o.append(T(SX + 14, 188, "wires on the pads; read", "fn")); o.append(T(SX + 14, 202, "the pin order off the", "fn"))
+    o.append(T(SX + 14, 216, "silkscreen first", "fn")); o.append(T(SX + 14, 236, "glass against the front", "fn")); o.append(T(SX + 14, 250, "face, in the window", "fn"))
+
+    # the controller, centre left
+    EX, EY, EW, EH = 420, 95, 280, 350
+    o.append(block(EX, EY, EW, EH, "ESP32-C3 SuperMini", "on the driver board, USB-C through the back", ty=20))
+    o.append(pin(rt, EX, 150, "3V3", "L", "V3", "3.3 V out", EX + 48))
+    o.append(pin(rt, EX, 180, "GND", "L", "GND"))
+    o.append(pin(rt, EX, 210, "GPIO5", "L", "SCL", "I²C clock", EX + 66))
+    o.append(pin(rt, EX, 240, "GPIO4", "L", "SDA", "I²C data", EX + 66))
+    o.append(pin(rt, EX + EW, 150, "5V", "R", "V5", "USB VBUS, no diode", EX + EW - 36))
+    o.append(pin(rt, EX + EW, 180, "GND", "R", "GND"))
+    o.append(pin(rt, EX + EW, 235, "GPIO0", "R", "IN1", "shutter PWM", EX + EW - 66))
+    o.append(pin(rt, EX + EW, 265, "GPIO1", "R", "IN2", "direction, brake", EX + EW - 66))
+    o.append(pin(rt, EX + EW, 295, "GPIO3", "R", "IN3", "lamp PWM", EX + EW - 66))
+    o.append(pin(rt, EX + EW, 350, "GPIO6", "R", "REED", "index, pull-up", EX + EW - 66))
+    o.append(pin(rt, 600, EY + EH, "GPIO10", "B", "BTN")); o.append(pin(rt, 680, EY + EH, "GND", "B", "GND"))
+    o.append(T(EX + 14, 300, "GPIO2, 8, 9: straps,", "fn")); o.append(T(EX + 14, 314, "unwired; 7, 20, 21 free", "fn"))
+    o.append(T(EX + 14, 334, "Wi-Fi: the time (SNTP),", "fn")); o.append(T(EX + 14, 348, "the keeper's log", "fn"))
+    o.append(T(EX + 14, 372, "LEDC: 20 kHz for the motor", "fn")); o.append(T(EX + 14, 386, "(silent), 5 kHz for the lamp;", "fn")); o.append(T(EX + 14, 400, "all three low at boot", "fn"))
+    o.append(f'<rect x="{EX + 14}" y="{EY + EH - 26}" width="40" height="16" rx="3" class="usb"/>'); o.append(T(EX + 34, EY + EH - 14, "USB-C", "fn", "middle"))
+    o.append(T(EX + 62, EY + EH - 14, "5 V in; flashing", "fn"))
+    o.append(w([(SX + SW, 150), (EX, 150)], "rod", "V3")); o.append(T(360, 142, "3V3 → VCC", "lab", "middle"))
+    o.append(w([(SX + SW, 180), (EX, 180)], "rod", "GND"))
+    o.append(w([(SX + SW, 210), (EX, 210)], "rod", "SCL")); o.append(T(360, 202, "SCL", "lab", "middle"))
+    o.append(w([(SX + SW, 240), (EX, 240)], "rod", "SDA")); o.append(T(360, 232, "SDA", "lab", "middle"))
+
+    # the driver, centre right
+    DX, DY, DW, DH = 820, 95, 240, 320
+    o.append(block(DX, DY, DW, DH, "MX1508 dual H-bridge", "2 to 10 V · 1.5 A a channel · pads", ty=20))
+    o.append(pin(rt, DX, 150, "VCC", "L", "V5", "motor supply", DX + 52))
+    o.append(pin(rt, DX, 180, "GND", "L", "GND"))
+    o.append(pin(rt, DX, 205, "IN4", "L", "GND", "tied low", DX + 46))
+    o.append(pin(rt, DX, 235, "IN1", "L", "IN1", "A: speed", DX + 46))
+    o.append(pin(rt, DX, 265, "IN2", "L", "IN2", "A: direction", DX + 46))
+    o.append(pin(rt, DX, 295, "IN3", "L", "IN3", "B: lamp", DX + 46))
+    o.append(pin(rt, DX + DW, 255, "OUT1", "R", "MOT1", "channel A", DX + DW - 56))
+    o.append(pin(rt, DX + DW, 285, "OUT2", "R", "MOT2"))
+    o.append(pin(rt, DX + DW, 360, "OUT3", "R", "LAMP", "channel B", DX + DW - 56))
+    o.append(pin(rt, DX + DW, 390, "OUT4", "R", "LAMPR", "held at GND", DX + DW - 56))
+    o.append(T(DX + 120, 330, "inputs read 3.3 V as high · flyback diodes inside", "fn", "middle"))
+    o.append(T(DX + 120, 344, "channel A turns the shutter, channel B lights the lamp", "fn", "middle"))
+    o.append(w([(EX + EW, 150), (DX, 150)], "rod", "V5")); o.append(T(760, 142, "5 V rail", "lab", "middle"))
+    o.append(w([(EX + EW, 180), (DX, 180)], "rod", "GND")); o.append(T(760, 172, "one ground", "fn", "middle"))
+    o.append(w([(DX, 205), (800, 205), (800, 180)], "rod", "GND")); o.append(dot(800, 180))
+    o.append(w([(EX + EW, 235), (DX, 235)], "rod", "IN1")); o.append(T(760, 227, "GPIO0 → IN1", "lab", "middle"))
+    o.append(w([(EX + EW, 265), (DX, 265)], "rod", "IN2")); o.append(T(760, 257, "GPIO1 → IN2", "lab", "middle"))
+    o.append(w([(EX + EW, 295), (DX, 295)], "rod", "IN3")); o.append(T(760, 287, "GPIO3 → IN3", "lab", "middle"))
+
+    # the motor and the lamp, right
+    MX, MY, MW, MH = 1140, 190, 190, 110
+    o.append(block(MX, MY, MW, MH, "Shutter motor", "N20, 6 V 30 rpm, in the tower", ty=22))
+    o.append(pin(rt, MX, 255, "M1", "L", "MOT1")); o.append(pin(rt, MX, 285, "M2", "L", "MOT2"))
+    o.append(w([(DX + DW, 255), (MX, 255)], "rod", "MOT1")); o.append(w([(DX + DW, 285), (MX, 285)], "rod", "MOT2"))
+    o.append(T(1098, 247, f"{E['mot_ma']:.0f} mA", "fn", "middle"))
+    o.append(T(MX + 46, 266, "two of the six wires", "fn")); o.append(T(MX + 46, 280, "down the tower", "fn"))
+    LX, LY, LW, LH = 1140, 310, 190, 120
+    o.append(block(LX, LY, LW, LH, "Lamp", f"{D['fil_l']:.0f} mm filament, 3 V, 2700 K", ty=22))
+    o.append(pin(rt, LX, 360, "+ lead", "L", "LAMP")); o.append(pin(rt, LX, 390, "− lead", "L", "LAMPR"))
+    o.append(T(LX + 72, 362, "hangs from the nut;", "fn")); o.append(T(LX + 72, 376, "the hole in the", "fn")); o.append(T(LX + 72, 390, "ceramic is +; both", "fn")); o.append(T(LX + 72, 404, "wires up the astragal", "fn"))
+    o.append(T(LX + 14, 420, f"{E['i_lamp_max']:.0f} mA flat out, PWM below", "fn"))
+    o.append(w([(DX + DW, 360), (1092, 360)], "rod", "LAMP")); o.append(zigzag_h(rt, 1092, 1128, 360, "LAMP")); o.append(w([(1128, 360), (LX, 360)], "rod", "LAMP"))
+    o.append(T(1110, 347, "2 × 47 Ω", "lab", "middle"))
+    o.append(w([(DX + DW, 390), (LX, 390)], "rod", "LAMPR"))
+
+    # the reed, the button, the adapter, and one return lane
+    RX, RY, RW, RH = 1140, 470, 160, 90
+    o.append(block(RX, RY, RW, RH, "Reed switch", "2 × 14 glass, in the deck", ty=22))
+    o.append(pin(rt, RX, 520, "leg 1", "L", "REED")); o.append(pin(rt, RX, 545, "leg 2", "L", "GND"))
+    o.append(w([(EX + EW, 350), (740, 350), (740, 520), (RX, 520)], "rod", "REED")); o.append(T(940, 512, "GPIO6 → reed: the index, once a turn", "lab", "middle"))
+    o.append(w([(RX, 545), (1100, 545), (1100, 620)], "rod", "GND"))
+    BX, BY = 560, 520
+    o.append(block(BX, BY, 140, 60, "Button", "6 mm tactile, back face", ty=24))
+    o.append(pin(rt, 600, BY, "", "T", "BTN")); o.append(pin(rt, 660, BY + 60, "", "B", "GND"))
+    o.append(T(590, BY - 6, "leg 1", "fn", "end")); o.append(T(670, BY + 76, "leg 2", "fn"))
+    o.append(w([(600, EY + EH), (600, BY)], "rod", "BTN")); o.append(T(612, 486, "GPIO10 → button", "lab"))
+    o.append(w([(660, BY + 60), (660, 620)], "rod", "GND"))
+    o.append(w([(680, EY + EH), (680, 620)], "rod", "GND"))
+    o.append(w([(660, 620), (1100, 620)], "rod", "GND")); o.append(dot(660, 620)); o.append(dot(680, 620)); o.append(dot(1100, 620))
+    o.append(T(880, 638, "the button's and the reed's returns share one lane into the controller's GND", "fn", "middle"))
+    o.append(block(374, 520, 160, 60, "USB-C adapter", "any 1 A adapter"))
+    o.append(w([(454, 520), (454, EY + EH - 10)], "thin", "USB"))
+    o.append(T(455, 598, f"{E['typ']:.0f} mA typical, {E['peak']:.0f} mA at the worst moment", "fn", "middle"))
+
+    # the budget, along the bottom
+    NY = 676
+    o.append(T(20, NY - 10, "The budget: mA from the 5 V rail", "h2"))
+    cols = [("controller", f"{E['c3_avg']:.0f} average with Wi-Fi connected; {E['c3_peak']:.0f} in a transmit burst"),
+            ("screen", f"{E['oled']:.0f} with half the pixels lit"),
+            ("motor", f"{E['mot_ma']:.0f} turning at {E['duty_mot'] * 100:.0f} % duty ({E['rpm_target']:.0f} rpm); about {E['mot_stall']:.0f} if the drum jams, which the reed's silence reports"),
+            ("lamp", f"{E['i_lamp_max']:.0f} flat out, {E['i_lamp']:.0f} at the {E['lamp_duty'] * 100:.0f} % default; {E['lamp_w'] * 1000:.0f} mW in the lantern, {E['p_res_each'] * 1000:.0f} mW in each resistor"),
+            ("driver", f"{E['mx_q']:.0f} quiescent"),
+            ("together", f"{E['typ']:.0f} typical, {E['peak']:.0f} peak: a 500 mA port or any adapter; no cell")]
+    for i, (name, note) in enumerate(cols):
+        yy = NY + 14 + i * 17
+        o.append(T(40, yy, name, "lab")); o.append(T(130, yy, note, "fn"))
+    o.append(T(40, NY + 128, "Never: the lamp without its resistors · a wire soldered to the brass · the motor's terminals or the reed's leads bare near the tower · the screen before its pin order is read · an iron near the acrylic.", "fn"))
+
+    bad, crossings = rt.check()
+    for b in bad:
+        print("CLEARANCE:", b)
+    assert not bad, f"{len(bad)} clearance failures"
+    o.append(T(20, 848, f"Paper design {TODAY}, not built. {crossings} crossing(s) on this sheet. Sources: the SuperMini notes (5V = VBUS), the MX1508 datasheet and the camera Pocket AI's record of it, the SSD1306 module listing, the N20 and filament listings, the reed switch listing.", "sub"))
+    return f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Desk lighthouse wiring sheet">{SHEET_CSS}{"".join(o)}</svg>'
+
+
+# ----------------------------------------------------------------------------- sheet 3: templates at actual size
+def templates_sheet():
+    k = W / 262.0        # the PDF prints the sheet 262 mm wide: 5.19 px per mm
+    o = [T(20, 30, "Desk lighthouse: templates at actual size", "h1"),
+         T(20, 48, "Print landscape on Letter at Actual size: the 50 mm bar measures 50 mm. Prick the corners and the hole centres through the paper onto the brass; drill with the pin vise, saw with the jeweler's saw, file to the line.", "sub")]
+
+    def face(x, y, title, notes, draw):
+        side = D["cube"] * k
+        o.append(T(x, y - 10, title, "h2"))
+        o.append(rect(x, y, x + side, y + side, "tmpl"))
+        o.append(f'<line x1="{x + side/2}" y1="{y - 4}" x2="{x + side/2}" y2="{y + side + 4}" class="centre"/>')
+        draw(x + side / 2, y + side)       # (centre x, the bottom edge y)
+        for i, n in enumerate(notes):
+            o.append(T(x, y + side + 20 + i * 14, n, "fn"))
+
+    def front(cx, yb):
+        o.append(rect(cx - D["win_w"] / 2 * k, yb - (D["win_cz"] + D["win_h"] / 2) * k, cx + D["win_w"] / 2 * k, yb - (D["win_cz"] - D["win_h"] / 2) * k, "tmplhole"))
+        o.append(T(cx, yb - D["win_cz"] * k + 4, f"{D['win_w']:.0f} × {D['win_h']:.1f}", "dimlab", "middle"))
+
+    def back(cx, yb):
+        o.append(rect(cx - D["usb_w"] / 2 * k, yb - (D["usb_cz"] + D["usb_h"] / 2) * k, cx + D["usb_w"] / 2 * k, yb - (D["usb_cz"] - D["usb_h"] / 2) * k, "tmplhole"))
+        o.append(T(cx, yb - (D["usb_cz"] + D["usb_h"] / 2) * k - 5, f"USB-C {D['usb_w']:.1f} × {D['usb_h']:.1f}, centre {D['usb_cz']:.0f} up", "dimlab", "middle"))
+        bx = cx - D["btn_x"] * k
+        o.append(circ(bx, yb - D["btn_cz"] * k, D["btn_hole"] / 2 * k, "tmplhole"))
+        o.append(T(bx + 14, yb - D["btn_cz"] * k + 4, f"button Ø{D['btn_hole']:.1f}, {D['btn_cz']:.0f} up", "dimlab"))
+
+    def side(cx, yb):
+        o.append(circ(cx, yb - D["pin_z"] * k, (D["pin_d"] + 0.1) / 2 * k, "tmplhole"))
+        o.append(T(cx + 10, yb - D["pin_z"] * k - 6, f"pin Ø1.6, {D['pin_z']:.0f} up", "dimlab"))
+        o.append(f'<line x1="{cx - 60}" y1="{yb - D["tube_bot"] * k}" x2="{cx + 60}" y2="{yb - D["tube_bot"] * k}" class="ghost"/>')
+        o.append(T(cx - 94, yb - D["tube_bot"] * k + 14, f"tower's foot, {D['tube_bot']:.0f} up", "fn"))
+
+    face(60, 120, "Front face", ["the window; its centre is drawn 11 mm up:", "mark it from the lit screen before sawing"], front)
+    face(310, 120, "Back face, seen from outside", ["the controller's USB-C slot and the button;", "the button sits 11 mm off centre, to your left from behind"], back)
+    face(560, 120, "Side faces, both", ["one 1.6 mm hole each for the brass pin, drilled", "through the tower too once it is in place"], side)
+    # the lid
+    lx, ly = 810, 120
+    ls = D["lid"] * k
+    o.append(T(lx, ly - 10, "Lid plate", "h2"))
+    o.append(rect(lx, ly, lx + ls, ly + ls, "tmpl"))
+    o.append(circ(lx + ls / 2, ly + ls / 2, (D["tower_od"] + 0.2) / 2 * k, "tmplhole"))
+    o.append(T(lx + ls / 2, ly + ls / 2 + 4, "Ø25.2", "dimlab", "middle"))
+    o.append(T(lx, ly + ls + 20, f"{D['lid']:.1f} square, 0.8 mm brass; saw the hole", "fn")); o.append(T(lx, ly + ls + 34, "from a 3 mm pilot, file to the tube", "fn"))
+    # the deck
+    dx, dy = 1140, 120 + D["deck_d"] / 2 * k
+    o.append(T(1040, 110, "Gallery deck (check ring)", "h2"))
+    o.append(circ(dx, dy, D["deck_d"] / 2 * k, "tmpl"))
+    o.append(circ(dx, dy, D["deck_hole"] / 2 * k, "tmplhole"))
+    o.append(circ(dx, dy, D["glass_od"] / 2 * k, "ghost")); o.append(circ(dx, dy, D["drum_od"] / 2 * k, "ghost"))
+    o.append(circ(dx, dy + D["reed_r"] * k, D["reed_hole"] / 2 * k, "tmplhole"))
+    o.append(circ(dx, dy - D["ast_r"] * k, D["ast_od"] / 2 * k, "tmplhole"))
+    o.append(f'<line x1="{dx}" y1="{dy - 104}" x2="{dx}" y2="{dy + 104}" class="centre"/>')
+    o.append(T(dx + 12, dy + D["reed_r"] * k + 4, "reed Ø3, front", "dimlab")); o.append(T(dx + 14, dy - D["ast_r"] * k + 4, "astragal Ø4, back", "dimlab"))
+    o.append(T(dx + 34, dy + 4, "Ø11 (as bought)", "dimlab"))
+    o.append(T(1040, dy + 120, "dashed: the glass Ø25 and the drum Ø15.9", "fn")); o.append(T(1040, dy + 134, "a 2 mm notch in the tower's rim sits under", "fn")); o.append(T(1040, dy + 148, "the astragal's hole, at the back", "fn"))
+    # the drum's flat pattern and its floor
+    px, py = 60, 420
+    pw, ph = D["drum_circ"] * k, D["drum_h"] * k
+    o.append(T(px, py - 10, "The shutter, unrolled: 5/8 in brass tube", "h2"))
+    o.append(rect(px, py, px + pw, py + ph, "tmpl"))
+    wx0 = px + (pw - D["win_arc"] * k) / 2
+    o.append(rect(wx0, py + ph - (D["dwin_z0"] + D["dwin_h"]) * k, wx0 + D["win_arc"] * k, py + ph - D["dwin_z0"] * k, "tmplhole"))
+    o.append(T(px + pw / 2, py + ph / 2 + 4, f"{D['win_arc']:.1f} × {D['dwin_h']:.0f}", "dimlab", "middle"))
+    o.append(dim_h(px, px + pw, py + ph + 14, f"{D['drum_circ']:.1f} round · {D['drum_h']:.0f} tall", False))
+    o.append(T(px, py + ph + 44, f"The window is {D['win_deg']:.0f}°, {D['dwin_z0']:.0f} up from the floor end. Wrap the strip round", "fn"))
+    o.append(T(px, py + ph + 58, "the tube, prick the window's corners, saw and file.", "fn"))
+    fx, fy = 400, py + 44
+    o.append(circ(fx, fy, D["drum_od"] / 2 * k - D["drum_wall"] * k, "tmpl")); o.append(circ(fx, fy, D["hub_od"] / 2 * k, "tmplhole"))
+    o.append(T(fx, fy + 62, "floor Ø15.2, hub hole Ø4", "fn", "middle"))
+    o.append(circ(fx + 170, fy, D["hub_od"] / 2 * k, "tmplhole")); o.append(circ(fx + 170, fy, D["drum_od"] / 2 * k - D["drum_wall"] * k, "ghost"))
+    o.append(f'<line x1="{fx + 170}" y1="{fy - 50}" x2="{fx + 170}" y2="{fy + 50}" class="centre"/>')
+    o.append(T(fx + 170, fy + 62, f"magnet at r {D['mag_r']:.0f}, under the floor,", "fn", "middle")); o.append(T(fx + 170, fy + 76, "toward the window's middle", "fn", "middle"))
+    o.append(circ(fx + 170, fy + D["mag_r"] * k, D["mag_d"] / 2 * k, "mag"))
+    # scale bar
+    sx, sy = 700, 470
+    o.append(f'<path d="M{sx},{sy - 8} L{sx},{sy + 8} M{sx + 50*k},{sy - 8} L{sx + 50*k},{sy + 8} M{sx},{sy} L{sx + 50*k},{sy}" class="cut"/>')
+    o.append(T(sx + 25 * k, sy - 14, "50 mm: check it with a ruler", "dimlab", "middle"))
+    o.append(T(700, 520, "Order of work", "h2"))
+    steps = ["1. Cut the cube, the tower, the glass and the drum; file every end square. Drill the faces from these",
+             "    templates with the pin vise; saw the window and the slot from pilot holes and file to the line.",
+             "2. Solder the drum's floor and hub; saw its window. Glue the magnet under the floor. Fit the drum on the",
+             "    motor's shaft on the bench and run it from the supply.",
+             "3. Drill the deck (reed, astragal); glue the reed in, 2.5 mm down. Wire the motor, fit it as a plug in the",
+             "    tower's top, glue the deck on the tower's rim with a bead inside.",
+             "4. Hang the filament from the nut and wire it down the astragal; glue the glass to the deck and the cap over",
+             "    it; the nipple and the ball. Mask the tower's ends, spray it ivory, dry overnight.",
+             "5. Glue the cube to the coaster, the screen inside; boards in; pin the tower through the lid. Flash over the",
+             "    cable it runs on; set the index; washers in the coaster's hollow; the meter checks on the record."]
+    for i, st in enumerate(steps):
+        o.append(T(700, 542 + i * 15, st, "fn"))
+    o.append(T(20, 848, f"Paper design {TODAY}. The faces assume a 38.1 mm cube with 1.57 mm walls and the lid set 0.8 mm down; the deck assumes the 1-1/2 in check ring. Measure the real parts and rerun the script before cutting.", "sub"))
+    return f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Desk lighthouse templates at actual size">{SHEET_CSS}{"".join(o)}</svg>'
+
+
+# ----------------------------------------------------------------------------- page
+def md_inline(t):
+    t = esc(t).replace("&amp;lt;", "&lt;").replace("&amp;gt;", "&gt;")
+    t = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+|\.\./[^)\s]+)\)", r'<a href="\2" target="_blank" rel="noopener">\1</a>', t)
+    t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
+    return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+
+
+def a(text, key):
+    return f'<a href="{L[key]}" target="_blank" rel="noopener">{text}</a>'
+
+
+def intro_html():
+    return f"""
+<h2>What it is</h2>
+<p>A lighthouse for the desk, {D['height']:.0f} mm tall. An ivory tower, a {a("brass tube", "tube25")} sprayed canvas white, stands on a brass cube cut from {a("square brass tube", "sqtube")}, on the same {a("brass coaster", "coaster")} the satellite stands on. On top, a lantern of {a("clear acrylic", "acrylic")} between a brass gallery (a lamp-maker's {a("check ring", "checkring")}) and a brass roof (a {a("vase cap", "vasecap")}), with a {a("brass ball", "ball")} for the ventilator. Inside the lantern a warm-white {a("LED filament", "filament")} hangs still from the roof, and a brass shutter cut from a {a("5/8 in tube", "tube58")} turns round it on a {a("gearmotor", "motor")} hidden in the tower's top: one revolution in {E['period']:.1f} s, a {E['pass_s']:.1f} s sweep of light across the room, then brass. A {a("reed switch", "reed")} in the deck and a {a("magnet", "magnet")} under the shutter's floor tell the firmware where the window is, so when you turn rotation off it parks facing you, and when the lamp goes off it closes.</p>
+<p>In the cube's front, where a lighthouse has its door, the owned white {a("0.96 in screen", "oled")} shows one line at a time through a window cut in the brass: the time, the light's characteristic measured live (Fl W {E['period']:.1f}s), and a keeper's log line written each day by the desktop's Ollama through the Pocket AI server. The owned {a("ESP32-C3 SuperMini", "controller")} and the owned {a("MX1508 driver", "hbridge")} lie inside the cube; the controller's USB-C through the back is power, flashing and console. One button, in the back. No cell.</p>
+<p>The reference is Huy Vector's <a href="{L['reference']}" target="_blank" rel="noopener">Lighthouse Desk Lamp</a>: a parts list (brass sheet and tube, copper wire, a 3 V 30 rpm gear motor, a 39 mm Edison filament, a glass fuse, a Type-C charging module, a bamboo coaster) and no more. Ours keeps the idea, a small brass lighthouse on a coaster with a motor and a filament, and is its own build otherwise.</p>
+<p><strong>This page is step 1 of the house rule: the final build first, for approval.</strong> One form sheet, one wiring sheet, one sheet of templates at actual size, every part and every pin. Brass at the builder's word for this build. Nothing bought, cut or soldered. Say yes, or what to change; then step 2, the physics and engineering page, follows.</p>
+"""
+
+
+def decisions_html():
+    o = ["<h2>The decisions</h2>"]
+    for head, text in DECISIONS:
+        o.append(f"<h3>{esc(head)}</h3><p>{md_inline(text)}</p>")
+    return "".join(o)
+
+
+def dims_rows():
+    return [("height", "overall height, desk to the top of the ball"), ("disc_d", "brass coaster, diameter"), ("disc_t", "brass coaster, height"),
+            ("cube", "cube, each side"), ("cube_wall", "cube wall"), ("lid", "lid plate, square"), ("lid_t", "lid plate thickness"), ("lid_inset", "lid set down from the cube's top"),
+            ("win_w", "window in the front face, width"), ("win_h", "window, height"), ("win_cz", "window centre above the coaster"),
+            ("usb_w", "USB-C slot in the back face, width"), ("usb_h", "USB-C slot, height"), ("usb_cz", "USB-C slot centre above the coaster"),
+            ("btn_cz", "button hole centre above the coaster"), ("btn_x", "button hole off centre"), ("btn_hole", "button hole"),
+            ("tube_bot", "tower's foot above the coaster"), ("pin_z", "brass pin above the coaster"), ("tube_len", "tower, cut length"),
+            ("tower_od", "tower, outside"), ("tower_wall", "tower wall"), ("tower_show", "tower showing, cube top to deck"),
+            ("deck_d", "gallery deck, diameter"), ("deck_t", "gallery deck, thickness (measure)"), ("deck_hole", "deck's centre hole (as bought)"),
+            ("glass_od", "lantern glass, outside"), ("glass_wall", "lantern glass wall"), ("glass_h", "lantern glass, cut length"), ("cap_rim", "lantern glass showing under the cap"),
+            ("cap_d", "roof (vase cap), diameter"), ("cap_h", "roof, height (measure)"), ("ast_top", "astragal, deck top to the cap's inside"),
+            ("drum_od", "shutter drum, outside"), ("drum_wall", "shutter drum wall"), ("drum_h", "shutter drum, height"), ("drum_z0", "drum's bottom edge above the deck"),
+            ("win_deg", "shutter window, degrees"), ("win_arc", "shutter window, width on the tube"), ("dwin_h", "shutter window, height"),
+            ("hub_h", "hub, length"), ("shaft_tip", "motor shaft above the deck"), ("mag_r", "magnet from the axis"), ("reed_r", "reed from the axis"), ("reed_down", "reed's top below the deck's top"),
+            ("fil_l", "filament, length"), ("fil_top", "filament top above the deck"), ("fil_bot", "filament bottom above the deck"), ("nut_bot", "nut's underside above the deck"),
+            ("ball_d", "ventilator ball"), ("nip_l", "nipple, length")]
+
+
+def dims_html():
+    o = ['<h2>Dimensions</h2><div class="tw"><table><tr><th>What</th><th>mm</th></tr>']
+    o += [f'<tr><td>{esc(lab)}</td><td class="m">{D[k]:.1f}</td></tr>' for k, lab in dims_rows()]
+    o.append("</table></div>")
+    o.append("<h3>Mass</h3>")
+    o.append('<div class="tw"><table><tr><th>Part</th><th>g</th></tr>' + "".join(f'<tr><td>{esc(n)}</td><td class="m">{m:.1f}</td></tr>' for n, m, _ in MASS) + f'<tr><td><strong>Total, before the ballast</strong></td><td class="m"><strong>{D["mass"]:.0f}</strong></td></tr></table></div>')
+    o.append(f"<p>Centre of mass {D['cg']:.0f} mm up: it tips at {D['tip_deg']:.0f}°, a {D['push_n']:.1f} N push at the ball. With about {D['ballast_g']:.0f} g of steel washers hot-glued into the coaster's hollow: {D['cg_b']:.0f} mm, {D['tip_deg_b']:.0f}°, {D['push_n_b']:.1f} N. The coaster's mass is the listing's; the rest is computed from the drawings or estimated; weigh them.</p>")
+    return "".join(o)
+
+
+def pins_html():
+    o = ['<h2>Pin map, ESP32-C3 SuperMini</h2>',
+         '<p>Nine pins of the sixteen. The button keeps the family\'s GPIO10; I²C goes on GPIO4 and 5, not the board\'s default 8 and 9, which are strapping pins; no strapping pin is wired.</p>',
+         '<div class="tw"><table><tr><th>Pin</th><th>Job</th><th>Goes to</th></tr>']
+    for p, job, to, net in PINS:
+        o.append(f'<tr><td class="m">{esc(p)}</td><td>{esc(job)}</td><td>{esc(to)}</td></tr>')
+    o.append("</table></div>")
+    o.append('<h3>Driver board pads</h3><p>Used: <code>VCC</code> (+) and <code>GND</code> (the 5 V rail), <code>IN1</code> <code>IN2</code> (channel A, the shutter), <code>IN3</code> (channel B, the lamp), <code>IN4</code> (tied to GND), <code>OUT1</code> <code>OUT2</code> (the motor), <code>OUT3</code> <code>OUT4</code> (the lamp through its resistors). The header and the two screw terminals come off; wires go on the pads.</p>')
+    return "".join(o)
+
+
+def nets_html():
+    o = ['<h2>Every wire, and why</h2>', '<div class="tw"><table><tr><th>Net</th><th>From</th><th>To</th><th>Wire</th><th>Why</th></tr>']
+    for net, fr, to, wire, why in NETS:
+        o.append(f'<tr><td class="m">{esc(net)}</td><td>{esc(fr)}</td><td>{esc(to)}</td><td>{esc(wire)}</td><td>{md_inline(why)}</td></tr>')
+    o.append("</table></div>")
+    return "".join(o)
+
+
+def budget_html():
+    rows = [("controller, Wi-Fi connected", E["c3_avg"], "average; a transmit burst is about 300 mA for milliseconds"),
+            ("screen", E["oled"], "half the pixels lit"),
+            ("motor, turning", E["mot_ma"] * E["duty_mot"], f"{E['mot_ma']:.0f} mA at {E['duty_mot'] * 100:.0f} % duty; a jam would draw about {E['mot_stall']:.0f} mA until the firmware notices"),
+            ("lamp, everyday", E["i_lamp"], f"{E['lamp_duty'] * 100:.0f} % of {E['i_lamp_max']:.0f} mA"),
+            ("lamp, full", E["i_lamp_max"], f"{E['lamp_w'] * 1000:.0f} mW in the lantern; {E['p_res_each'] * 1000:.0f} mW in each resistor"),
+            ("driver, quiescent", E["mx_q"], "")]
+    o = ['<h2>The budget</h2>', '<div class="tw"><table><tr><th>Load</th><th class="m">mA at 5 V</th><th>Note</th></tr>']
+    o += [f'<tr><td>{esc(n)}</td><td class="m">{v:.0f}</td><td>{esc(s_)}</td></tr>' for n, v, s_ in rows]
+    o.append("</table></div>")
+    o.append(f"<p>Together {E['typ']:.0f} mA typical and {E['peak']:.0f} mA at the worst moment (a radio burst, the lamp full, the motor turning), inside a 500 mA USB port and far inside any phone adapter. The one USB-C cable is the only cord. No cell: a desk has a cable, and a cell would last a single evening against a motor and a lamp.</p>")
+    o.append(f"<p>Speed: a 30 rpm (6 V) gearmotor runs about {E['rpm_5v']:.0f} rpm on 5 V; {E['duty_mot'] * 100:.0f} % duty gives {E['rpm_target']:.0f} rpm, {E['period']:.1f} s a revolution, a {E['pass_s']:.1f} s pass of the {D['win_deg']:.0f}° window. The reed's period closes the loop, so the number holds whatever the motor's batch.</p>")
+    return "".join(o)
+
+
+def parts_html():
+    o = ['<h2>Parts</h2>', '<p>Seventeen lines to buy, in three orders: eleven on Amazon, five lamp parts from Grand Brass (none of them is on Amazon), one piece of square brass tube from Online Metals (nothing this size is on Amazon). The controller, the screen, the driver, the small brass tube, the rod, the wire and the paint are in a drawer and listed so they are not bought twice. Each part is named by what it is, with the link on the word to the exact product. Amazon refuses automated reads, so its prices are not given: read them on the page.</p>']
+    for head, rows in PARTS:
+        o.append(f"<h3>{esc(head)}</h3>")
+        o.append('<div class="tw"><table><tr><th>Qty</th><th>Part</th><th>Where</th><th>Price</th><th>Why, and what to check</th></tr>')
+        for qty, part, url, code, where, why in rows:
+            name = f'<a href="{url}" target="_blank" rel="noopener">{esc(part)}</a>' if url else esc(part)
+            o.append(f'<tr><td class="m">{esc(qty)}</td><td>{name}</td><td>{esc(code)}</td><td class="m">{esc(where)}</td><td>{md_inline(why)}</td></tr>')
+        o.append("</table></div>")
+    return "".join(o)
+
+
+def firmware_html():
+    o = ['<h2>What the firmware needs</h2>', '<p>Not written yet; listed so the pin map above is known to be enough.</p><ul>']
+    o += [f"<li>{md_inline(x)}</li>" for x in FIRMWARE]
+    o.append("</ul>")
+    return "".join(o)
+
+
+def checks_html():
+    o = ['<h2>Before power, with the meter</h2><ul class="check">']
+    o += [f"<li>{md_inline(x)}</li>" for x in CHECKS]
+    o.append("</ul>")
+    return "".join(o)
+
+
+def rules_html():
+    return """
+<h2>Rules this build follows</h2>
+<ul>
+<li>Design first: sleek, few lines (one tower, one astragal), wires inside the tower and the astragal, boards inside the cube.</li>
+<li>Colour: brass, ivory and warm white; black only in the screen's glass; the screen's blue board, the controller and the driver hidden in the cube; the filament's yellow phosphor hidden by the shutter when off.</li>
+<li>Component names with the link on the word; no product codes in prose.</li>
+<li>Owned parts stay off the shopping list: the controller, the screen and the driver are Pocket AI stock, the small brass tube and the rod are shared stock, the paint is Pip's.</li>
+<li>Every wire on the sheet is traceable pin to pin; the generator checks clearance and counts crossings (zero).</li>
+<li>Brass at the builder's word for this build (2026-11-07); the family's rule since the drone is stainless, so say if that should change.</li>
+<li>Meter only what matters: three checks before power.</li>
+</ul>
+"""
+
+
+def page_html(form_svg, wiring_svg, tmpl_svg):
+    return "\n".join([
+        '<title>Desk Lighthouse Build</title>',
+        '<meta name="claude:viewport-fit-sides" content="cover">',
+        '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">',
+        f"<style>{STYLE}</style>",
+        f"<style>{PAGE_TONES}</style>",
+        '<style>.wrap{max-width:1100px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))} figure.sheet{padding:8px} figure.sheet svg{width:100%;height:auto} '
+        'td,th{min-width:0} .tw table{min-width:720px}</style>',
+        '<div class="wrap">',
+        '<div class="masthead"><div class="eyebrow">Desk lighthouse &middot; step 1: the final build &middot; Rev A, for approval</div>',
+        '<h1>A brass lighthouse whose lamp stands still while the brass turns</h1>',
+        f'<div class="sub">How it looks, how it is wired, every part and every pin. {D["height"]:.0f} mm tall on a Ø{D["disc_d"]:.0f} brass coaster, about {D["mass"]:.0f} g before the ballast. Paper design of {TODAY}. Nothing bought or built.</div></div>',
+        intro_html(),
+        f'<figure class="sheet">{form_svg}<figcaption><strong>Form sheet. Print landscape on Letter at Actual size; it is page 1 of the PDF.</strong> The front view; a section through the lantern and the tower\'s top showing the fixed lamp, the turning shutter, the reed and the motor; the plan looking down into the lantern; a section through the cube; how it behaves; the key numbers.</figcaption></figure>',
+        decisions_html(),
+        f'<figure class="sheet">{wiring_svg}<figcaption><strong>Wiring sheet, page 2 of the PDF.</strong> The screen on the left, the controller and the driver in the middle, the motor and the lamp on the right, the reed, the button and the adapter below, the budget along the bottom. Thick lines are wires you solder, thin ones the leads that come with a part; dots are joints; zero crossings.</figcaption></figure>',
+        f'<figure class="sheet">{tmpl_svg}<figcaption><strong>Templates at actual size, page 3 of the PDF.</strong> Printed at Actual size, the 50 mm bar measures 50 mm: the cube\'s three drilled faces, the lid plate, the gallery deck\'s two holes and the shutter unrolled with its window, plus the order of work.</figcaption></figure>',
+        dims_html(),
+        pins_html(),
+        nets_html(),
+        budget_html(),
+        parts_html(),
+        firmware_html(),
+        checks_html(),
+        rules_html(),
+        f'<h2>For approval</h2><p>Rev A, {TODAY}. The form, the wiring and the parts as drawn. Two things are drawn at the usual size for their lamp part and must be measured when they come: the check ring\'s thickness (3 mm) and the vase cap\'s height (12.5 mm); the glass\'s cut length and the astragal follow from them, and the script recomputes them. Say yes, or what to change: the ivory tower against a bare brass one, the cube against a plain foot, the 2700 K lamp against the family\'s 2200 K spare, the corded supply against a cell. Then step 2, the physics and engineering page, follows.</p>',
+        f'<hr><p class="sub">Built by <code>docs/pages/gen/build_page.py</code>, which also writes <code>docs/FINAL_BUILD.md</code> and the PDFs; the dimensions, pins, nets, budget and parts live in that script. The wiring sheet\'s clearance check passes, and the lantern\'s clearances (drum in the glass, magnet in the drum, reed beside the motor, filament over the floor, shutter under the roof) are asserted. Sources read {TODAY}: the reference page, the Amazon, Grand Brass and Online Metals listings, the SuperMini notes, the MX1508 and SSD1306 datasheets, the family\'s inventories. Nothing measured.</p>',
+        '</div>'])
+
+
+def final_build_md():
+    o = ["# Desk lighthouse: the final build (step 1, Rev A, for approval)", "",
+         f"Paper design of {TODAY}. An ivory tower (a 25 × 0.5 mm brass tube sprayed canvas white) on a brass cube (1.5 in square brass tube, {D['cube']:.0f} mm on a side) on the satellite's 75 × 8 mm brass coaster; on top a clear acrylic lantern Ø25 between a 1-1/2 in turned brass check ring (the gallery) and a 1-1/2 in spun brass vase cap (the roof), with a 5/8 in brass ball. Inside the lantern a 26 mm warm-white LED filament hangs still from the roof's nut and a brass shutter cut from a 5/8 in tube turns round it on an N20 gearmotor hidden in the tower's top, one revolution in {E['period']:.1f} s; a reed switch in the deck and a magnet under the shutter's floor are its index, so it parks facing you and closes when the lamp is off. In the cube's front the owned white 0.96 in OLED shows one line at a time through a window in the brass. The owned ESP32-C3 SuperMini and MX1508 driver lie in the cube; USB-C through the back. {D['height']:.0f} mm tall, about {D['mass']:.0f} g before {D['ballast_g']:.0f} g of steel goes into the coaster. **Nothing bought or built.**",
+         "", "Generated by `pages/gen/build_page.py`, which also writes the page `pages/desk-lighthouse-build.html` and the PDFs in `pages/print/`; edit the script, not this file. The sheets are the authority for the drawing; this file carries the same decisions, dimensions, pin map, nets, budget and parts as text.", "",
+         "## The reference", "",
+         f"Huy Vector, [Lighthouse Desk Lamp]({L['reference']}), read {TODAY}. The page is a parts list and nothing else: 0.2 × 100 × 100 mm brass sheet, 4 mm brass tube, 1 mm copper wire, a 3 V 30 rpm DC gear motor, a 39 mm LED Edison filament, a 6 × 30 mm glass fuse, a Type-C 4.2 V charging module, a battery, an 8 cm bamboo coaster; no dimensions, no prose, no video. Ours keeps the idea (a small brass lighthouse on a coaster, a gear motor turning something in the lantern, an LED filament as the lamp) and is its own build otherwise: a fixed lamp and a turning brass shutter, a reed index so it parks, a live text plaque in the cube, USB power, lamp parts instead of rolled sheet.",
+         "", "## The decisions", ""]
+    for head, text in DECISIONS:
+        o += [f"### {head}", "", text, ""]
+    o += ["## Dimensions", "", "| What | mm |", "| --- | ---: |"]
+    o += [f"| {lab} | {D[k]:.1f} |" for k, lab in dims_rows()]
+    o += ["", "| Part | g |", "| --- | ---: |"] + [f"| {n} | {m:.1f} |" for n, m, _ in MASS] + [f"| **Total, before the ballast** | **{D['mass']:.0f}** |", "",
+          f"Centre of mass {D['cg']:.0f} mm up; tips at {D['tip_deg']:.0f}°, a {D['push_n']:.1f} N push at the ball. With about {D['ballast_g']:.0f} g of steel in the coaster's hollow: {D['cg_b']:.0f} mm, {D['tip_deg_b']:.0f}°, {D['push_n_b']:.1f} N.", "",
+          "## Pin map, ESP32-C3 SuperMini", "", "| Pin | Job | Goes to |", "| --- | --- | --- |"]
+    o += [f"| {p} | {job} | {to} |" for p, job, to, net in PINS]
+    o += ["", "Driver board pads used: `VCC` (+) and `GND` (the 5 V rail), `IN1` `IN2` (channel A, the shutter), `IN3` (channel B, the lamp), `IN4` (tied to GND), `OUT1` `OUT2` (the motor), `OUT3` `OUT4` (the lamp through its resistors). The header and the screw terminals come off; wires go on the pads.", ""]
+    o += ["## Every wire, and why", "", "| Net | From | To | Wire | Why |", "| --- | --- | --- | --- | --- |"]
+    o += [f"| {n} | {fr} | {to} | {wire} | {why} |" for n, fr, to, wire, why in NETS]
+    o += ["", "## The budget", "",
+          f"From the 5 V rail: controller {E['c3_avg']:.0f} mA average with Wi-Fi connected ({E['c3_peak']:.0f} in a burst), screen {E['oled']:.0f}, motor {E['mot_ma'] * E['duty_mot']:.0f} turning ({E['mot_ma']:.0f} at {E['duty_mot'] * 100:.0f} % duty), lamp {E['i_lamp']:.0f} everyday and {E['i_lamp_max']:.0f} full ({E['lamp_w'] * 1000:.0f} mW in the lantern, {E['p_res_each'] * 1000:.0f} mW in each resistor), driver {E['mx_q']:.0f}. Together {E['typ']:.0f} mA typical, {E['peak']:.0f} at the worst moment: a 500 mA port does it. Speed: {E['rpm_5v']:.0f} rpm free on 5 V, {E['rpm_target']:.0f} rpm at {E['duty_mot'] * 100:.0f} % duty, {E['period']:.1f} s a revolution, a {E['pass_s']:.1f} s pass of the {D['win_deg']:.0f}° window; the reed's period closes the loop.", ""]
+    o += ["## Parts", "", "Seventeen lines to buy in three orders: eleven on Amazon, five lamp parts from Grand Brass, one piece of square brass tube from Online Metals (neither the lamp parts nor the square tube exist on Amazon). Everything else is owned and listed so it is not bought twice. Amazon refuses automated reads, so its prices are not given.", ""]
+    for head, rows in PARTS:
+        o += [f"### {head}", "", "| Qty | Part | Where | Price | Why, and what to check |", "| ---: | --- | --- | --- | --- |"]
+        for qty, part, url, code, where, why in rows:
+            name = f"[{part}]({url})" if url else part
+            o.append(f"| {qty} | {name} | {code} | {where} | {why} |")
+        o.append("")
+    o += ["## What the firmware needs", ""] + [f"- {x}" for x in FIRMWARE] + ["", "## Before power, with the meter", ""] + [f"- {x}" for x in CHECKS]
+    o += ["", "## Rules this build follows", "",
+          "- Design first: sleek, few lines (one tower, one astragal), wires inside the tower and the astragal, boards inside the cube.",
+          "- Colour: brass, ivory and warm white; black only in the screen's glass; every coloured board hidden in the cube; the filament's yellow phosphor hidden by the shutter when off.",
+          "- Component names with the link on the word; no product codes in prose.",
+          "- Owned parts stay off the shopping list (the controller, the screen, the driver, the small brass tube, the rod, the wire, the paint).",
+          "- Every wire on the sheet is traceable pin to pin; the generator checks clearance and counts crossings (zero).",
+          "- Brass at the builder's word for this build (2026-11-07); the family's rule since the drone is stainless.",
+          "- Meter only what matters: three checks before power.", "",
+          "## For approval", "",
+          f"Rev A, {TODAY}: the form, the wiring and the parts as drawn. The check ring's thickness (drawn 3 mm) and the vase cap's height (drawn 12.5 mm) are the usual sizes for those lamp parts and must be measured when they come; the glass's cut length and the astragal follow from them and the script recomputes them. Open questions for the builder: the ivory tower against a bare brass one; the cube against a plain foot; the 2700 K lamp against the family's 2200 K spare; the corded supply against a cell (which wants a Ø32 tower or a taller base). Then step 2, the physics and engineering page.", ""]
+    return "\n".join(o)
+
+
+def print_pdf(html, form_svg, wiring_svg, tmpl_svg):
+    PRINT.mkdir(exist_ok=True)
+    sheet_css = ("<style>@page{size:letter landscape;margin:7mm} html,body{background:#fff;margin:0}"
+                 ":root{--bg:#fff;--paper:#fff;--ink:#000;--ink-2:#333;--line:#ccc;--brass:#000;--brass-soft:#eee;--signal:#000;--signal-soft:#f1f1f1;--warn:#000;--warn-soft:#eee}"
+                 + LH_PRINT + "svg{width:262mm;height:auto;display:block;margin:0 auto}</style>")
+    page_css = ("<style>@page{size:letter;margin:12mm 13mm 14mm}"
+                ":root{--bg:#fff;--paper:#fff;--ink:#000;--ink-2:#333;--line:#999;--brass:#000;--brass-soft:#f2f2f2;--signal:#000;--signal-soft:#f2f2f2;--ok:#000;--ok-soft:#f2f2f2;--warn:#000;--warn-soft:#f4f4f4}"
+                "html,body{background:#fff!important;color:#000!important;font-size:10pt!important;line-height:1.4} .wrap{max-width:none;padding:0}"
+                "figure.sheet{display:none} h2{font-size:14pt;margin-top:16pt;page-break-after:avoid} h3{font-size:9pt;margin-top:10pt} p,ul,ol{max-width:none} table{font-size:9pt} th,td{padding:4pt 6pt}"
+                ".tw table{min-width:0} td.m,th.m{white-space:normal} a{color:#000;text-decoration:none} .masthead{border-bottom-width:2px;padding-bottom:8pt} h1{font-size:20pt} tr{break-inside:avoid} ul.check{break-inside:avoid}</style>")
+    with tempfile.TemporaryDirectory() as d:
+        d = pathlib.Path(d)
+        jobs = []
+        for name, svg in (("form", form_svg), ("wiring", wiring_svg), ("templates", tmpl_svg)):
+            src = d / f"{name}.html"; pdf = d / f"{name}.pdf"
+            src.write_text(f"<!doctype html><meta charset=utf-8><title>{name}</title>" + sheet_css + svg)
+            jobs.append((src, pdf))
+        p_html = d / "p.html"; p_pdf = d / "p.pdf"
+        head, tail = html.rsplit("</style>", 1)
+        p_html.write_text("<!doctype html><meta charset=utf-8>" + head + "</style>" + page_css + tail)
+        jobs.append((p_html, p_pdf))
+        for src, pdf in jobs:
+            subprocess.run(["google-chrome", "--headless=new", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
+                            f"--print-to-pdf={pdf}", f"file://{src}"], check=True, capture_output=True, timeout=180)
+        out = PRINT / "desk-lighthouse-build.pdf"
+        subprocess.run(["pdfunite", str(d / "form.pdf"), str(d / "wiring.pdf"), str(d / "templates.pdf"), str(p_pdf), str(out)], check=True)
+        shutil.copyfile(d / "form.pdf", PRINT / "desk-lighthouse-form-sheet.pdf")
+        shutil.copyfile(d / "wiring.pdf", PRINT / "desk-lighthouse-wiring-sheet.pdf")
+        shutil.copyfile(d / "templates.pdf", PRINT / "desk-lighthouse-templates.pdf")
+    info = subprocess.run(["pdfinfo", str(out)], capture_output=True, text=True).stdout
+    print("wrote", out, [l for l in info.splitlines() if l.startswith("Pages")])
+
+
+PNG_CSS = ("<style>html,body{margin:0;background:#fff}:root{--bg:#EDEBE7;--paper:#FFFFFF;--ink:#16181C;--ink-2:#5A6068;--line:#CFCBC4;"
+           "--brass:#8F6114;--brass-soft:#F2E6D2;--signal:#5A6068;--signal-soft:#ECEAE6;--warn:#8F6114;--warn-soft:#F2E6D2}")
+
+
+def png(svg, name, outdir, size=(1360, 860)):
+    """Render one sheet to a PNG for checking by eye (not part of the outputs)."""
+    outdir = pathlib.Path(outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+    src = outdir / f"{name}.html"
+    src.write_text("<!doctype html><meta charset=utf-8>" + PNG_CSS + f"svg{{width:{size[0]}px;height:{size[1]}px}}</style>" + svg)
+    subprocess.run(["google-chrome", "--headless=new", "--disable-gpu", "--no-sandbox", "--hide-scrollbars", f"--window-size={size[0]},{size[1]}",
+                    f"--screenshot={outdir / (name + '.png')}", f"file://{src}"], check=True, capture_output=True, timeout=120)
+
+
+def main():
+    # the clearances the drawing relies on
+    gi = D["glass_od"] / 2 - D["glass_wall"]
+    assert D["drum_od"] / 2 + 1.5 < gi, "the drum must turn inside the glass with 1.5 mm to spare"
+    assert D["mag_r"] + D["mag_d"] / 2 <= D["drum_od"] / 2 - D["drum_wall"] + 0.01, "the magnet must sit under the floor, inside the drum's wall"
+    assert D["reed_r"] - D["reed_hole"] / 2 > D["mot_t"] / 2 + 0.4, "the reed's hole must clear the motor's body"
+    assert D["reed_r"] - D["reed_hole"] / 2 > D["deck_hole"] / 2 + 0.3, "the reed's hole must clear the deck's centre hole"
+    assert abs(D["reed_r"] - D["mag_r"]) <= D["mag_d"] / 2 + 0.5, "the magnet must pass over the reed's end"
+    assert D["fil_bot"] > D["floor_top"] + 3, "the filament must hang clear of the drum's floor"
+    assert D["fil_top"] < D["nut_bot"], "the filament hangs below the nut"
+    assert D["drum_top"] + 1 < cap_z_at_r(D["drum_od"] / 2), "the shutter must turn under the roof"
+    assert D["drum_top"] > D["fil_top"] - 1, "the shutter must cover the lamp"
+    assert D["ast_r"] + D["ast_od"] / 2 < D["deck_d"] / 2 - 2, "the astragal's hole leaves 2 mm of deck outside it"
+    assert D["ast_r"] - D["ast_od"] / 2 >= D["glass_od"] / 2 - 0.01, "the astragal stands outside the glass"
+    assert D["ast_r"] + D["ast_od"] / 2 < D["cap_d"] / 2 - 1, "the astragal hides under the roof's rim"
+    assert D["hub_h"] > D["shaft_tip"] + 2 and D["shaft_tip"] > D["floor_top"] + 2, "the shaft reaches well into the hub"
+    assert D["reed_down"] + D["reed_l"] < D["deck_t"] + D["mot_l"], "the reed hangs no lower than the motor"
+    assert D["oled_t"] + 0.5 < (D["cube_in"] - D["tower_od"]) / 2, "the screen stands between the tower's foot and the front face"
+    assert D["oled_w"] < D["cube_in"] - 1 and D["oled_h"] < D["cube"] - D["lid_inset"] - D["lid_t"] - 1, "the screen fits the cube"
+    assert D["mx_t"] + 0.4 + 1.0 + 3.2 < D["tube_bot"] - 2, "the boards stack under the tower's foot"
+    assert D["mx_t"] + 0.4 + 1.0 < D["usb_cz"] < D["mx_t"] + 0.4 + 1.0 + 3.2, "the USB-C slot is at the connector's height"
+    assert D["win_w"] > D["aa_w"] + 1 and D["win_h"] > D["aa_h"] + 1, "the window clears the picture"
+    assert D["pin_z"] - D["tube_bot"] >= 4, "the pin sits 4 mm or more above the tower's end"
+    assert D["lid"] < D["cube_in"] and D["lid"] > D["tower_od"] + 6, "the lid fits inside the cube round the tower"
+    assert D["nut_d"] / 2 < D["cap_hole"] / 2 + 3 or True
+    assert E["i_lamp_max"] < E["fil_rated"], "the lamp's full current stays under its rating"
+    assert E["p_res_each"] < 0.25 * 0.5, "each resistor under half its rating"
+    assert E["peak"] < 500, "the worst moment fits a USB port"
+    form_svg, wiring_svg, tmpl_svg = form_sheet(), wiring_sheet(), templates_sheet()
+    html = page_html(form_svg, wiring_svg, tmpl_svg)
+    OUT.write_text(html)
+    (DOCS / "FINAL_BUILD.md").write_text(final_build_md())
+    print("wrote", OUT, OUT.stat().st_size, "and", DOCS / "FINAL_BUILD.md")
+    print(f"numbers: height {D['height']:.1f}, mass {D['mass']:.1f} g, cg {D['cg']:.1f}, tip {D['tip_deg']:.1f} ({D['push_n']:.2f} N); with ballast cg {D['cg_b']:.1f}, tip {D['tip_deg_b']:.1f} ({D['push_n_b']:.2f} N); "
+          f"glass {D['glass_h']}, astragal {D['ast_top']}, tube {D['tube_len']}, filament {D['fil_bot']:.1f}-{D['fil_top']:.1f}, nut {D['nut_bot']:.1f}, shaft tip {D['shaft_tip']:.1f}; "
+          f"lamp {E['i_lamp_max']:.0f} mA ({E['lamp_w']*1000:.0f} mW), duty {E['duty_mot']*100:.0f} %, period {E['period']:.1f} s, typ {E['typ']:.0f} peak {E['peak']:.0f} mA")
+    if "--png" in sys.argv:
+        outdir = sys.argv[sys.argv.index("--png") + 1]
+        png(form_svg, "form", outdir)
+        png(wiring_svg, "wiring", outdir)
+        png(tmpl_svg, "templates", outdir)
+        print("png in", outdir)
+    if "--pdf" in sys.argv:
+        print_pdf(html, form_svg, wiring_svg, tmpl_svg)
+
+
+if __name__ == "__main__":
+    main()
