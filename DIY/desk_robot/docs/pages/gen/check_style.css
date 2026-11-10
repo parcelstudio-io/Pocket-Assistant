@@ -1,0 +1,10 @@
+:root{--bg:#f3efe6;--fg:#23211c;--muted:#6b665a;--line:#cfc7b5;--panel:#faf8f2;--hid:#efe9dc;
+--brass:#b4904f;--brass-dk:#7d6132;--steel:#8f949b;--ivory:#f1ead9;--ivory-2:#ece4d1;--skin-edge:#c8bc9e;
+--black:#1a1b1e;--black-2:#2a2c31;--window:#6f7f92;--tyre:#2b2d31;--tyre-2:#3a3d43;--glass:#111317;--eye:#e8f4ff;--lens:#3a6ea5;
+--beam:#c2552a;--scan:#0e5f7a;--desk:#d9cfb8;--ink:#23211c}
+body{background:var(--panel);margin:10px;font-family:system-ui,sans-serif}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:ui-monospace,Menlo,monospace;font-size:7.5px;fill:var(--muted)}
+svg text.tag{fill:var(--brass-dk);font-weight:600;font-size:7.5px}
+svg text.hid{font-size:6.5px}
+svg text.dimlab{font-size:7px;fill:var(--muted)}

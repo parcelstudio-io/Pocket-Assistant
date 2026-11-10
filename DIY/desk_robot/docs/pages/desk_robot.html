@@ -1,0 +1,245 @@
+<title>Desk Robot Crumb</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* layout: brief, three orthographic views (stacking on phones), the key, what changed, what sets the size, the Mo-chan comparison */
+:root{
+  --bg:#f3efe6; --fg:#23211c; --muted:#6b665a; --line:#cfc7b5; --panel:#faf8f2;
+  --brass:#b4904f; --brass-dk:#7d6132; --steel:#8f949b; --steel-dk:#4f545b; --gear:#5a5e63;
+  --pcb:#2a4b3f; --glass:#111317; --eye:#e8f4ff; --beam:#c2552a; --desk:#d9cfb8;
+  --display:"Chakra Petch",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1b1a17; --fg:#ece7da; --muted:#a39c8c; --line:#3b382f; --panel:#23221d;
+  --brass:#c9a35f; --brass-dk:#8a6c3a; --steel:#9aa0a8; --steel-dk:#5b6168; --gear:#7c8187;
+  --pcb:#2f5a4b; --glass:#0a0b0d; --eye:#e8f4ff; --beam:#e0693a; --desk:#2e2b24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b1a17; --fg:#ece7da; --muted:#a39c8c; --line:#3b382f; --panel:#23221d;
+  --brass:#c9a35f; --brass-dk:#8a6c3a; --steel:#9aa0a8; --steel-dk:#5b6168; --gear:#7c8187;
+  --pcb:#2f5a4b; --glass:#0a0b0d; --eye:#e8f4ff; --beam:#e0693a; --desk:#2e2b24; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+main{max-width:1080px;margin:0 auto;display:grid;gap:28px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(1.6rem,3.5vw,2.2rem);margin:0;text-wrap:balance;letter-spacing:.01em}
+h2{font-family:var(--display);font-weight:500;font-size:1.05rem;margin:0 0 6px;letter-spacing:.02em}
+p{margin:0;max-width:66ch}
+.eyebrow{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.views{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);padding:14px 14px 10px;min-width:0}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:8px}
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 28px;font-size:.92rem}
+.key div{display:grid;grid-template-columns:2.2em 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);min-width:0}
+.key b{font-family:var(--mono);font-weight:400;color:var(--brass-dk)}
+.dims{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+.note{background:var(--panel);border-left:3px solid var(--brass);padding:10px 14px;font-size:.92rem}
+table{border-collapse:collapse;font-size:.9rem;width:100%}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-weight:400;color:var(--muted);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+.wrap{overflow-x:auto}
+svg text{font-family:var(--mono);font-size:7.5px;fill:var(--muted)}
+.tag{fill:var(--brass-dk);font-weight:500}
+</style>
+
+<main>
+  <header style="display:grid;gap:8px">
+    <span class="eyebrow">Concept sketch · checked · gear wheels · Ø40 corrected · 2026-10-31 · nothing bought or built · name is a placeholder</span>
+    <h1>Desk Robot Crumb, the final build as proposed</h1>
+    <p>A square brass-rod case with a flat vertical face, riding on two Ø40 mm steel 64-tooth spur gears as wheels, the way Mo-chan does, on one shared axle. One 1.54" colour IPS screen (240 × 240) fills the lower face; a brow above it carries the camera lens and the 8×8 ranger, and the edge ranger lies flat under the top rail looking down past the nose. A brass dome skid carries the nose. The cell lies across the floor just ahead of the motors, which sit low on the side walls at axle height; the speaker fills the tail wall, and the amp, fuel gauge and I²C motor driver stand on the walls above the motors. All three drawings are to one scale.</p>
+    <p class="dims">Envelope 72 W × 56 D × 60 H mm (cage 52 wide; gears add 10 each side) · wheels Ø40, axle 20, inline · ground clearance 6 · edge ranger reads the desk 59 mm away, 21 mm ahead of the skid</p>
+  </header>
+
+  <section class="views" id="views"></section>
+
+  <section>
+    <h2>Key</h2>
+    <div class="key" id="key"></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>What the real gear changed, later the same night</h2>
+    <div class="wrap"><table>
+      <tr><th>Found</th><th>Fixed</th></tr>
+      <tr><td>The Globact listing's own drawing gives the 64T gear as Ø40, 9 mm over its boss, 5 mm bore: a 0.6 module gear. The design had assumed 0.8 module, Ø52.8, 5 mm thick. All three listings are the same part.</td><td>Axle 26.4 → 20. Motors down the side walls to y 15–25. Speed 13 cm/s unloaded, about 10 under load.</td></tr>
+      <tr><td>At y 15–25 the motors ran through the cell holder lying front-to-back on the floor.</td><td>Holder turned across the body on the floor just ahead of the motors (z 0–18, x ±21.5). IMU moved from the nose floor to the tail floor.</td></tr>
+      <tr><td>9 mm of gear against a 10 mm N20 shaft.</td><td>Boss inboard, 1 mm off the cage; hub 9 mm long; the shaft reaches 8 mm into it. 72 over the gears instead of 66.</td></tr>
+      <tr><td>Gears lighter than assumed: the pack of one gear and four pinions ships at 50 g.</td><td>About 32 g per gear with hub; total mass about 210 g.</td></tr>
+    </table></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>What the gear wheels changed</h2>
+    <div class="wrap"><table>
+      <tr><th>Before</th><th>Now</th></tr>
+      <tr><td>Ø31 spoked brass wheels with O-ring tyres, axle 15.5, motors on the floor rail, staggered 13 mm so the cage could be 42 wide.</td><td>Ø40 steel 64T spur gears (HSP 11184, 0.6 module, 5 mm bore, 9 mm over the boss), axle 20, motors end to end on one axis low on the side walls. Cage 52 wide, 72 over the gears. Bare teeth, no tyres.</td></tr>
+      <tr><td>Cell holder on a deck above the motors.</td><td>Cell holder on the floor, across the body just ahead of the motors. Lower centre of mass.</td></tr>
+      <tr><td>Driver, amp and gauge on the walls from the deck up.</td><td>Driver and amp moved up above the motors; the gauge moved forward of them. IMU to the tail floor.</td></tr>
+      <tr><td>Face leaned back 20°.</td><td>Face vertical, by request.</td></tr>
+      <tr><td>Hub: 4 mm brass tube over the 3 mm shaft.</td><td>Hub: 5 mm and 4 mm brass tubes telescoped, 9 mm long, soldered, to fill the gear's 5 mm bore down to the 3 mm D-shaft.</td></tr>
+    </table></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>What the check changed, earlier the same evening</h2>
+    <div class="wrap"><table>
+      <tr><th>Found</th><th>Fixed</th></tr>
+      <tr><td>Both rangers sat in the chin, 4 to 15 mm off the desk. ST's time-of-flight sensors do not range below about 20 to 40 mm.</td><td>Both moved up: the 8×8 to the brow, the edge ranger under the top rail.</td></tr>
+      <tr><td>The amp's I²S clock was on the pin the ROM bootloader prints serial on.</td><td>I²S moved to the three SD-slot pins freed by cutting J3; the ranger enable and the button take the serial pins.</td></tr>
+      <tr><td>The PDM mic and the amp cannot share I²S0 on the ESP32-S3.</td><td>Mic on I²S0, amp on I²S1.</td></tr>
+      <tr><td>Five boards' I²C pull-ups in parallel came to about 1 kΩ.</td><td>Remove the 2.2 kΩ sets on the GY-521 and the motor driver; 400 kHz.</td></tr>
+    </table></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>What sets the size</h2>
+    <div class="wrap"><table>
+      <tr><th>Dimension</th><th>Set by</th></tr>
+      <tr><td>Width 52 cage, 72 over wheels</td><td>Two N20 motors end to end on one axle (24 each plus a 2 mm gap), then the 9 mm gears outboard, boss inboard</td></tr>
+      <tr><td>Depth 56</td><td>The 25 mm motor driver on the wall behind the motors, the 18 mm cell holder across the floor ahead of them, and the screen and XIAO stack ahead of that</td></tr>
+      <tr><td>Height 60</td><td>6 mm clearance, the 36 mm screen, a 17 mm brow for the lens and both rangers. The gears reach 40, two thirds of the way up</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>What makes it ours, next to Mo-chan</h2>
+    <div class="wrap"><table>
+      <tr><th>Element</th><th>Mo-chan</th><th>Crumb</th></tr>
+      <tr><td>Shape</td><td>Rounded capsule, copper wire</td><td>Square case, flat face, a sensor brow; 1.0 mm brass rod</td></tr>
+      <tr><td>Face</td><td>One 0.96" monochrome OLED</td><td>One 1.54" 240 × 240 colour IPS, 220 ppi, running Pip's procedural eyes at higher resolution</td></tr>
+      <tr><td>Wheels</td><td>Two 64T steel gears on N20 shafts</td><td>The same gears, chosen on purpose, on brass-tube hubs; brass dome skid</td></tr>
+      <tr><td>Brain</td><td>ESP32-C3 SuperMini</td><td>XIAO ESP32-S3 Sense: camera, microphone and cell charger on the board</td></tr>
+      <tr><td>Driver</td><td>Mini L298N, four PWM pins</td><td>SparkFun Qwiic I²C motor driver, no motor pins at all</td></tr>
+      <tr><td>Senses</td><td>None</td><td>8×8 laser ranger on the brow, single-point edge ranger under the top rail, MPU6050 for heading and wheel-drop</td></tr>
+      <tr><td>Sound</td><td>None</td><td>MAX98357A I²S amp and a sealed speaker as the tail wall</td></tr>
+      <tr><td>Power</td><td>Pouch cell, TP4056 module</td><td>Swappable protected 16340 in a holder, toggle in the + lead, charged by the XIAO over USB-C, fuel gauge on I²C</td></tr>
+    </table></div>
+  </section>
+
+  <p class="note">Open on the hardware, not on paper: which end of the Sense board carries the camera (decides whether the USB-C port faces up), Wi-Fi strength inside the brass cage, the gear's real diameter, plate thickness and boss length (Ø40, 9 mm overall and a 5 mm bore per the listing's drawing), and the stall current of the actual motors, which sets the firmware's drive cap. Steel teeth can slip on glass or laminate; a desk mat fixes that.</p>
+</main>
+
+<script>
+(function(){
+  // Millimetres. x = 0 on the centre line, y = 0 on the desk, z = 0 at the body's mid-depth plane (z = F and B are the face and back); +z is forward.
+  const W=52, TOP=60, BOT=6, R=3;                   // cage outer width, top and floor rail heights, corner radius
+  const F=27, B=-29;                                // face and back planes (vertical face)
+  const WR=20, AY=20, WT=9, WX=31.5, AZ=-7;         // gear radius, axle height, gear height over its boss, gear centre x (27..36), the single axle z
+  const PT=5, BS=4, BR=6;                            // toothed plate thickness (outboard), boss length (inboard) and boss radius; measure on arrival
+  const S=3; const items=[], views=[]; const K=(n,t)=>items.push([n,t]);
+
+  function mk(frame){
+    const {w,h,ox,oy}=frame; const X=u=>(u+ox)*S, Y=v=>(h-(v+oy))*S; const pt=(u,v)=>X(u)+','+Y(v);
+    return {X,Y,
+      rect:(u,v,du,dv,fill,extra='')=>`<rect x="${X(u)}" y="${Y(v+dv)}" width="${du*S}" height="${dv*S}" fill="${fill}" ${extra}/>`,
+      rrect:(u,v,du,dv,r,fill,extra='')=>`<rect x="${X(u)}" y="${Y(v+dv)}" width="${du*S}" height="${dv*S}" rx="${r*S}" fill="${fill}" ${extra}/>`,
+      circ:(u,v,r,fill,extra='')=>`<circle cx="${X(u)}" cy="${Y(v)}" r="${r*S}" fill="${fill}" ${extra}/>`,
+      line:(u1,v1,u2,v2,stroke,sw=1,extra='')=>`<line x1="${X(u1)}" y1="${Y(v1)}" x2="${X(u2)}" y2="${Y(v2)}" stroke="${stroke}" stroke-width="${sw}" ${extra}/>`,
+      poly:(pts,fill,extra='')=>`<polygon points="${pts.map(p=>pt(...p)).join(' ')}" fill="${fill}" ${extra}/>`,
+      text:(u,v,s,cls='',anchor='middle')=>`<text x="${X(u)}" y="${Y(v)}" class="${cls}" text-anchor="${anchor}">${s}</text>`,
+      label:(u,v,n)=>`<circle cx="${X(u)}" cy="${Y(v)}" r="${2.6*S}" fill="var(--panel)" stroke="var(--brass-dk)" stroke-width=".8"/><text x="${X(u)}" y="${Y(v)+2.7}" class="tag" text-anchor="middle">${n}</text>`,
+      rot:(u,v,deg,inner)=>`<g transform="rotate(${deg} ${X(u)} ${Y(v)})">${inner}</g>`,
+      gear:(u,v,r,t,op=1)=>{ // 64T spur gear face-on: teeth, web, four lightening holes, hub
+        let d='';for(let i=0;i<t;i++){const a0=i/t*2*Math.PI,a1=(i+.5)/t*2*Math.PI;const ro=r,ri=r-1.8;const p=(a,rr)=>`${X(u+rr*Math.cos(a))},${Y(v+rr*Math.sin(a))}`;
+          d+=(i?' ':'')+p(a0,ri)+' '+p(a0+0.2/t*2*Math.PI,ro)+' '+p(a1,ro)+' '+p(a1+0.2/t*2*Math.PI,ri);}
+        let s=`<g opacity="${op}"><polygon points="${d}" fill="var(--gear)" stroke="var(--steel-dk)" stroke-width=".6"/>`;
+        s+=`<circle cx="${X(u)}" cy="${Y(v)}" r="${(r-5)*S}" fill="none" stroke="var(--steel-dk)" stroke-width=".8"/>`;
+        for(let i=0;i<8;i++){const a=i/8*2*Math.PI+Math.PI/8;s+=`<circle cx="${X(u+(r-7.5)*Math.cos(a))}" cy="${Y(v+(r-7.5)*Math.sin(a))}" r="${2.3*S}" fill="var(--panel)" stroke="var(--steel-dk)" stroke-width=".6"/>`;}
+        s+=`<circle cx="${X(u)}" cy="${Y(v)}" r="${6*S}" fill="var(--steel-dk)"/><circle cx="${X(u)}" cy="${Y(v)}" r="${2.5*S}" fill="var(--brass)"/><circle cx="${X(u)}" cy="${Y(v)}" r="${1.5*S}" fill="var(--steel-dk)"/></g>`; return s;}
+    };
+  }
+  const rod='stroke="var(--brass)" stroke-width="2.2" fill="none" stroke-linejoin="round"';
+  const hidden='stroke="var(--muted)" stroke-width=".7" stroke-dasharray="2 2" fill="none"';
+  const beam='stroke="var(--beam)" stroke-width=".8" stroke-dasharray="3 2"';
+  const D2R=Math.PI/180;
+
+  // ---------- FRONT (u = x, v = y) ----------
+  (function(){
+    const fr={w:90,h:80,ox:45,oy:6}; const g=mk(fr); let s=`<svg viewBox="0 0 ${fr.w*S} ${fr.h*S}" role="img" aria-label="Front view">`;
+    s+=g.rect(-45,-6,90,6,'var(--desk)'); s+=g.line(-45,0,45,0,'var(--line)',1);
+    for(const sx of [-1,1]){ const px=sx>0?WX-WT/2+BS:-(WX+WT/2), bx=sx>0?WX-WT/2:-(WX-WT/2+BS); s+=g.rrect(px,AY-WR,PT,2*WR,1,'var(--gear)','stroke="var(--steel-dk)" stroke-width=".6"'); for(let y=2;y<2*WR;y+=4) s+=g.line(px,y,px+PT,y,'var(--steel-dk)',.4); s+=g.rect(bx,AY-BR,BS,2*BR,'var(--steel-dk)'); } // gears edge-on: toothed plate outboard, boss inboard
+    s+=g.line(-W/2,AY,-WX,AY,'var(--steel-dk)',2.5); s+=g.line(W/2,AY,WX,AY,'var(--steel-dk)',2.5);                    // shafts with hubs
+    s+=g.rect(-25,AY-5,24,10,'none',hidden); s+=g.rect(1,AY-5,24,10,'none',hidden);                                     // inline motors, hidden
+    s+=g.rect(-21.5,6.5,43,14,'none',hidden);                                                                           // holder across the floor, hidden
+    s+=g.rect(-24,33,10,25,'none',hidden); s+=g.rect(22,23,2,35,'var(--pcb)');                                          // driver (left) hidden; amp/gauge edge right
+    s+=g.rect(-10.5,36,21,21,'none',hidden);                                                                            // XIAO stack hidden
+    s+=g.rrect(-W/2,BOT,W,TOP-BOT,R,'none',rod); s+=g.line(-W/2,45,W/2,45,'var(--brass)',1.4);                          // cage, brow sill
+    s+=g.rrect(-16.5,7,33,36,1,'var(--glass)'); s+=g.rect(-13.85,11,27.7,27.7,'#0b1a2a');                               // 1.54" IPS
+    for(const ex of [-7,7]) s+=g.rrect(ex-4.5,19,9,11,3,'var(--eye)');
+    s+=g.circ(-4,50,2.6,'var(--glass)'); s+=g.circ(-4,50,1.2,'#3a6ea5');                                                 // lens
+    s+=g.rrect(1,46,18,10.4,1,'var(--pcb)'); s+=g.rect(7,49,6,3.5,'var(--glass)');                                       // 8x8 ranger on the brow
+    s+=g.rect(-19,57.5,12.7,1.5,'var(--pcb)');                                                                           // edge ranger under the top rail
+    s+=g.circ(0,TOP,1.8,'var(--steel-dk)');                                                                              // button
+    s+=g.circ(0,2.5,2.5,'var(--brass)'); s+=g.line(0,BOT,0,5,'var(--brass)',1.4);                                        // skid
+    s+=g.label(-36,50,1); s+=g.label(-41,33,2); s+=g.label(36,51,3); s+=g.label(-36,62,4); s+=g.label(-41,22,5); s+=g.label(-41,11,6); s+=g.label(41,40,8); s+=g.label(41,3,9); s+=g.label(36,62,11);
+    s+=g.text(0,-4.2,'desk');
+    s+='</svg>'; views.push([s,'Front. Flat face, brow above it. The two gears stand edge-on either side, reaching 40 mm up the 60 mm body, toothed plate outboard and boss inboard, on one shaft line.']);
+  })();
+
+  // ---------- SIDE (u = z forward →, v = y) ----------
+  (function(){
+    const fr={w:104,h:80,ox:40,oy:6}; const g=mk(fr); let s=`<svg viewBox="0 0 ${fr.w*S} ${fr.h*S}" role="img" aria-label="Side view, face to the right">`;
+    s+=g.rect(-40,-6,104,6,'var(--desk)'); s+=g.line(-40,0,64,0,'var(--line)',1);
+    s+=g.rect(B+1,40,5,13,'var(--steel-dk)');                                                                           // speaker, tail wall
+    s+=g.rect(0,6.5,18,14,'var(--steel)','stroke="var(--steel-dk)" stroke-width=".8"'); s+=g.text(9,12.5,'16340');              // holder across the floor, end-on
+    s+=g.rect(AZ-6,AY-5,12,10,'var(--steel-dk)','opacity=".9"');                                                        // motor, end-on behind the gear
+    s+=g.rect(-26,6,10,2,'var(--pcb)');                                                                                  // MPU6050 on the tail floor
+    s+=g.rect(-28,33,25,25,'var(--pcb)','opacity=".45"');                                                               // motor driver, near wall, above the motor
+    s+=g.rect(-26,33,19,16,'none',hidden); s+=g.rect(0,23,18,25,'none',hidden);                                         // amp (tail) and gauge (forward) on the far wall
+    s+=g.rect(17,36,8,21,'var(--pcb)'); s+=g.rect(F-1,47.5,1.6,5,'var(--glass)');                                       // XIAO stack and lens
+    s+=g.rect(F-2,7,2,36,'var(--glass)');                                                                               // screen edge
+    s+=g.rot(F-3,51,35,g.rect(F-4.5,45,3,12.7,'var(--pcb)'));                                                           // 8x8 ranger tilted 35°
+    s+=g.rect(12,57.5,17.8,1.5,'var(--pcb)');                                                                            // edge ranger under the top rail
+    const L1=[29,57]; for(const a of [1.5,15,28.5]){ const L=57/Math.cos(a*D2R); s+=g.line(L1[0],L1[1],L1[0]+L*Math.sin(a*D2R),0,'var(--beam)',a===15?1:.6,beam); }
+    const L7=[F-1,51]; for(const a of [5,35,65]){ const L=Math.min(51/Math.sin(a*D2R),70); s+=g.line(L7[0],L7[1],L7[0]+L*Math.cos(a*D2R),L7[1]-L*Math.sin(a*D2R),'var(--beam)',.6,beam); }
+    s+=g.text(F+18,-4.2,'edge seen 32–61 mm ahead of the face');
+    s+=g.circ(F-3,2.5,2.5,'var(--brass)'); s+=g.line(F-3,BOT,F-3,5,'var(--brass)',1.4);                                  // skid
+    s+=g.gear(AZ,AY,WR,64);                                                                                              // the near gear, face-on
+    s+=g.rrect(B,BOT,F-B,TOP-BOT,R,'none',rod); s+=g.line(B,45,F,45,'var(--brass)',1.4);                                  // cage, brow sill
+    s+=g.line(B-1,46,B-6,48,'var(--steel-dk)',2); s+=g.rect(B,44,3,4,'var(--steel-dk)');                                 // toggle
+    s+=g.circ(-20,TOP,1.8,'var(--steel-dk)');                                                                            // button
+    s+=g.label(F+9,50,1); s+=g.label(F+9,25,2); s+=g.label(F+9,38,3); s+=g.label(6,63,4); s+=g.label(-36,20,5); s+=g.label(F+9,13,6); s+=g.label(-36,46,7); s+=g.label(-16,52,8); s+=g.label(F+12,0,9); s+=g.label(-36,60,10); s+=g.label(-20,65,11); s+=g.label(-36,10,12);
+    s+='</svg>'; views.push([s,'Side, face to the right. The Ø40 gear covers the lower two thirds of the side; behind it the motor sits at axle height, the cell lies across the floor ahead of it, the IMU on the tail floor. Dashed lines are the rangers’ fields.']);
+  })();
+
+  // ---------- TOP (u = x, v = z forward ↑) ----------
+  (function(){
+    const fr={w:90,h:72,ox:45,oy:34}; const g=mk(fr); let s=`<svg viewBox="0 0 ${fr.w*S} ${fr.h*S}" role="img" aria-label="Top view, face at the top">`;
+    for(const sx of [-1,1]){ const px=sx>0?WX-WT/2+BS:-(WX+WT/2), bx=sx>0?WX-WT/2:-(WX-WT/2+BS); s+=g.rrect(px,AZ-WR,PT,2*WR,1,'var(--gear)','stroke="var(--steel-dk)" stroke-width=".6"'); s+=g.rect(bx,AZ-BR,BS,2*BR,'var(--steel-dk)'); } // toothed plate outboard, boss inboard
+    s+=g.rect(-25,AZ-6,24,12,'var(--steel-dk)'); s+=g.rect(1,AZ-6,24,12,'var(--steel-dk)');                              // inline motors
+    s+=g.line(-W/2,AZ,-WX,AZ,'var(--steel-dk)',2.5); s+=g.line(W/2,AZ,WX,AZ,'var(--steel-dk)',2.5);
+    s+=g.rect(-24,-28,10,25,'var(--pcb)','opacity=".6"'); s+=g.text(-19,-16,'drv');                                      // driver, left wall (above the motor)
+    s+=g.rect(22,-26,2,19,'var(--pcb)'); s+=g.rect(22,0,2,18,'var(--pcb)');                                              // amp (tail), gauge (forward), right wall
+    s+=g.rect(-21.5,0,43,18,'var(--steel)','stroke="var(--steel-dk)" stroke-width=".8" opacity=".9"'); s+=g.text(0,8,'16340 (floor, across)');
+    s+=g.rect(-23,-26,16,10,'var(--pcb)','opacity=".7"'); s+=g.text(-15,-22,'MPU');                                      // IMU on the tail floor
+    s+=g.rect(-10,B+1,20,5,'var(--steel-dk)'); s+=g.rect(17.5,B,3,4,'var(--steel-dk)');                                  // speaker, toggle beside it
+    s+=g.rect(-10.5,17,21,8,'var(--pcb)'); s+=g.circ(-4,F-2,2,'var(--glass)');                                             // XIAO stack, lens
+    s+=g.rect(-16.5,F-2,33,2,'var(--glass)');                                                                            // screen
+    s+=g.rect(1,F-4,18,3,'var(--pcb)','opacity=".8"');                                                                   // 8x8 ranger on the brow
+    s+=g.rect(-19,12,12.7,17.8,'var(--pcb)','opacity=".6"');                                                             // edge ranger under the top rail
+    s+=g.circ(0,F-3,2.5,'var(--brass)');
+    s+=g.rrect(-W/2,B,W,F-B,R,'none',rod); s+=g.line(-W/2,AZ,W/2,AZ,'var(--brass)',1.4);
+    s+=g.circ(0,-20,1.8,'var(--steel-dk)');
+    s+=g.label(-36,21,1); s+=g.label(36,24,3); s+=g.label(-36,30,4); s+=g.label(-41,AZ,5); s+=g.label(41,9,6); s+=g.label(41,-27,7); s+=g.label(41,-13,8); s+=g.label(41,-20.5,10); s+=g.label(-41,-16,11); s+=g.label(-41,-24,12);
+    s+=g.text(0,F+4,'face');
+    s+='</svg>'; views.push([s,'Top, face at the top. Motors end to end on one axle; the cell across the floor ahead of them; the IMU on the tail floor; the gears outboard, bosses inboard.']);
+  })();
+
+  K(1,'XIAO ESP32-S3 Sense standing behind the screen, shifted 4 mm left; its lens sits on the brow 7 mm above the screen. Camera, PDM microphone, Wi-Fi and the cell charger.');
+  K(2,'1.54" 240 × 240 colour IPS (ST7789, SPI), the lower face, vertical: module about 33 × 36, picture 27.7 mm square, 220 ppi. Backlight on PWM; header pins bent back into the empty chin.');
+  K(3,'VL53L7CX 8×8 laser ranger on the brow, right of the lens, tilted 35° down: lower rows see the desk from 27 mm ahead of the face; upper rows see obstacles.');
+  K(4,'VL53L1X single-point ranger lying flat under the top rail, sensor at its front end, aimed 15° forward of straight down: reads the desk 59 mm away, 21 mm ahead of the skid. The hard stop for the edge.');
+  K(5,'Two N20 gear motors end to end on one axle, low on the side walls at axle height (20 mm), driven over I²C. Wheels: HSP 11184 steel 64T spur gears, Ø40, 9 mm over the boss, 5 mm bore, boss inboard, on 9 mm hubs of telescoped 5 mm and 4 mm brass tube over the 3 mm D-shaft. Bare teeth.');
+  K(6,'Nitecore 16340 in its holder, lying across the floor just ahead of the motors.');
+  K(7,'Same Sky 20 × 13 mm sealed speaker as the tail wall, firing backward.');
+  K(8,'SparkFun Qwiic I²C motor driver (25 × 25 mm, terminals toward the rods) on the left wall above the motor; MAX98357A amp above the right motor at the tail, MAX17048 fuel gauge forward of it.');
+  K(9,'Brass dome skid at the nose, the third contact.');
+  K(10,'MTS-102 toggle in the cell’s + lead, right of the speaker on the tail wall, lever out the back.');
+  K(11,'Action button on the top rail.');
+  K(12,'MPU6050 flat on the tail floor: heading hold, bump detection, wheel-drop fallback.');
+
+  document.getElementById('views').innerHTML=views.map(([svg,cap])=>`<figure>${svg}<figcaption>${cap}</figcaption></figure>`).join('');
+  document.getElementById('key').innerHTML=items.map(([n,t])=>`<div><b>${n}</b><span>${t}</span></div>`).join('');
+})();
+</script>

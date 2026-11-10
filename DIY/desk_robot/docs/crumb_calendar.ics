@@ -1,0 +1,53 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Crumb desk robot//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:crumb-01@crumb.desk-robot
+DTSTAMP:20261031T223000Z
+DTSTART;VALUE=DATE:20261101
+DTEND;VALUE=DATE:20261102
+SUMMARY:Crumb: safety glasses + magnifying lamp arrive
+DESCRIPTION:Amazon orders 114-8031860-5409814 and 114-0252936-2851446.
+END:VEVENT
+BEGIN:VEVENT
+UID:crumb-02@crumb.desk-robot
+DTSTAMP:20261031T223000Z
+DTSTART;VALUE=DATE:20261103
+DTEND;VALUE=DATE:20261104
+SUMMARY:Crumb: main parts arrive (motors, amp, driver, gears, screen)
+DESCRIPTION:Amazon order 114-6045175-2593056, $86.25. Caliper the gears first: OD 40?, bore 5.0, boss 9. Then DESIGN.md tests 2-5 and make the hubs.
+END:VEVENT
+BEGIN:VEVENT
+UID:crumb-03@crumb.desk-robot
+DTSTAMP:20261031T223000Z
+DTSTART;VALUE=DATE:20261104
+DTEND;VALUE=DATE:20261106
+SUMMARY:Crumb: bench tests 2-5 + hubs (parts in hand, no brass)
+DESCRIPTION:I2C chain, rangers, motors with gears + stall current, amp. Hubs: 9 mm of 5 mm tube over 9 mm of 4 mm tube.
+END:VEVENT
+BEGIN:VEVENT
+UID:crumb-04@crumb.desk-robot
+DTSTAMP:20261031T223000Z
+DTSTART;VALUE=DATE:20261110
+DTEND;VALUE=DATE:20261116
+SUMMARY:Crumb: XIAO ESP32-S3 Sense delivery window
+DESCRIPTION:Amazon order 114-5249290-9043412, $26.12, arriving Nov 10-15. Cut J3 first.
+END:VEVENT
+BEGIN:VEVENT
+UID:crumb-05@crumb.desk-robot
+DTSTAMP:20261031T223000Z
+DTSTART;VALUE=DATE:20261113
+DTEND;VALUE=DATE:20261120
+SUMMARY:Crumb: brass tube sets arrive (4x METERXITY, not critical)
+DESCRIPTION:Amazon order 114-2645785-1488244 from Oct 30. One set is already owned.
+END:VEVENT
+BEGIN:VEVENT
+UID:crumb-06@crumb.desk-robot
+DTSTAMP:20261031T223000Z
+DTSTART;VALUE=DATE:20261116
+DTEND;VALUE=DATE:20261118
+SUMMARY:Crumb: tests 1, 6, 7, 8 on the XIAO, then build the cage
+DESCRIPTION:Camera/mic, eyes on the IPS, cell current log, bench edge test. After test 8: bend the cage, mount, wire, first roll on a towel.
+END:VEVENT
+END:VCALENDAR
