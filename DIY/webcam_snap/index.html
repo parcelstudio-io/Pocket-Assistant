@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Webcam Snap</title>
+<style>
+  :root {
+    --bg: #0b0b0c;
+    --panel: #141416;
+    --line: #26272b;
+    --line-2: #3a3c41;
+    --text: #ebe8e2;
+    --steel: #9ba1a8;
+    --dim: #62666d;
+    --brass: #c9a063;
+    --brass-hi: #dcb67c;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px 16px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { width: 100%; max-width: 960px; }
+  header, .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  header { margin-bottom: 14px; }
+  .mark { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; color: var(--steel); }
+  .mark b { color: var(--text); font-weight: 600; }
+  .link { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--dim); }
+  .link i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .link.on { color: var(--brass); }
+  .link.on i { animation: pulse 2.4s ease-in-out infinite; }
+
+  .frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #050506;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .frame video, .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .frame img { display: none; }
+  .reviewing .frame img { display: block; }
+  .reviewing .frame video { visibility: hidden; }
+  video.mirror { transform: scaleX(-1); }
+  .ticks {
+    position: absolute;
+    inset: 14px;
+    pointer-events: none;
+    opacity: .5;
+    background:
+      linear-gradient(var(--brass) 0 0) top left / 16px 1px,
+      linear-gradient(var(--brass) 0 0) top left / 1px 16px,
+      linear-gradient(var(--brass) 0 0) top right / 16px 1px,
+      linear-gradient(var(--brass) 0 0) top right / 1px 16px,
+      linear-gradient(var(--brass) 0 0) bottom left / 16px 1px,
+      linear-gradient(var(--brass) 0 0) bottom left / 1px 16px,
+      linear-gradient(var(--brass) 0 0) bottom right / 16px 1px,
+      linear-gradient(var(--brass) 0 0) bottom right / 1px 16px;
+    background-repeat: no-repeat;
+  }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .flash.go { animation: flash .4s ease-out; }
+  .msg { position: absolute; inset: 0; display: none; place-items: center; padding: 24px; text-align: center; color: var(--steel); }
+  .error .msg { display: grid; }
+  .msg p { margin: 0 0 14px; max-width: 420px; }
+
+  .meta { margin-top: 10px; font: 12px ui-monospace, "SF Mono", Menlo, monospace; color: var(--dim); }
+  .tools { display: flex; gap: 8px; }
+  select, .icon {
+    height: 28px;
+    padding: 0 8px;
+    background: transparent;
+    color: var(--steel);
+    border: 1px solid var(--line-2);
+    border-radius: 8px;
+    font: inherit;
+    cursor: pointer;
+  }
+  select { max-width: 220px; }
+  select option { background: var(--panel); }
+  .icon { display: grid; place-items: center; width: 34px; padding: 0; }
+  .icon[aria-pressed="true"] { color: var(--brass); border-color: var(--brass); }
+
+  .controls { margin-top: 22px; min-height: 124px; display: flex; flex-direction: column; align-items: center; }
+  .live { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .shutter {
+    width: 68px;
+    height: 68px;
+    padding: 5px;
+    border-radius: 50%;
+    border: 2px solid var(--brass);
+    background: none;
+    cursor: pointer;
+  }
+  .shutter::after {
+    content: "";
+    display: block;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--text);
+    transition: transform .12s, background .12s;
+  }
+  .shutter:hover::after { background: #fff; }
+  .shutter:active::after { transform: scale(.9); }
+  .shutter:disabled { opacity: .3; cursor: default; }
+  .hint { font-size: 12px; color: var(--dim); }
+  kbd { font: 11px ui-monospace, Menlo, monospace; padding: 1px 5px; border: 1px solid var(--line-2); border-radius: 4px; color: var(--steel); }
+
+  .review { display: none; width: 100%; max-width: 560px; flex-direction: column; gap: 12px; }
+  .reviewing .review { display: flex; }
+  .reviewing .live { display: none; }
+  .note {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    font: inherit;
+    outline: none;
+  }
+  .note:focus { border-color: var(--brass); }
+  .row { display: flex; justify-content: center; gap: 10px; }
+  .btn {
+    height: 40px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    color: var(--steel);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .btn:hover { color: var(--text); border-color: var(--steel); }
+  .btn.primary { background: var(--brass); border-color: var(--brass); color: #18130b; }
+  .btn.primary:hover { background: var(--brass-hi); border-color: var(--brass-hi); }
+  .btn.primary kbd { color: inherit; border-color: rgba(24, 19, 11, .3); }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  .strip { margin-top: 28px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .strip a { flex: none; width: 104px; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .strip a:hover { border-color: var(--brass); }
+  .strip img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    max-width: calc(100% - 32px);
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    font-size: 13px;
+    opacity: 0;
+    transform: translate(-50%, 12px);
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.bad { border-color: #8a4a40; }
+
+  @keyframes flash { from { opacity: .8; } to { opacity: 0; } }
+  @keyframes pulse { 50% { opacity: .35; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark"><b>Webcam</b> Snap</div>
+    <div class="link" id="link"><i></i><span id="link-text">Connecting</span></div>
+  </header>
+  <div class="frame" id="frame">
+    <video id="video" autoplay playsinline muted></video>
+    <img id="still" alt="Photo to send">
+    <div class="ticks"></div>
+    <div class="flash" id="flash"></div>
+    <div class="msg"><div><p id="msg"></p><button class="btn" id="retry">Retry</button></div></div>
+  </div>
+  <div class="meta">
+    <span id="device">Starting camera…</span>
+    <span class="tools">
+      <select id="camera" hidden aria-label="Camera"></select>
+      <button class="icon" id="power" aria-pressed="true" title="Turn the camera off (T)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <path d="M8 1.75v5.5"/><path d="M4.6 3.9a5.25 5.25 0 1 0 6.8 0"/>
+        </svg>
+      </button>
+      <button class="icon" id="mirror" aria-pressed="false" title="Mirror the preview">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round">
+          <path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/><path d="M6 4 1.5 12H6z"/><path d="M10 4l4.5 8H10z"/>
+        </svg>
+      </button>
+    </span>
+  </div>
+</div>
+
+<section class="controls">
+  <div class="live">
+    <button class="shutter" id="shutter" title="Snap (Space)" aria-label="Snap" disabled></button>
+    <div class="hint"><kbd>T</kbd> camera on/off · <kbd>Space</kbd> snap · <kbd>↵</kbd> send</div>
+  </div>
+  <div class="review">
+    <input class="note" id="note" maxlength="2000" autocomplete="off"
+           placeholder="Ask Claude something about it (optional)">
+    <div class="row">
+      <button class="btn" id="retake">Retake <kbd>Esc</kbd></button>
+      <button class="btn primary" id="send">Send to Claude <kbd>↵</kbd></button>
+    </div>
+  </div>
+</section>
+
+<div class="wrap strip" id="strip"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const video = $('video');
+  const still = $('still');
+  let stream = null;
+  let photo = null;
+  let busy = false;
+  let off = false;
+  let shown = null;
+  let toastTimer;
+
+  const saved = (key, value) => {
+    try {
+      if (value === undefined) return localStorage.getItem(key);
+      localStorage.setItem(key, value);
+    } catch {
+      return null;
+    }
+  };
+  const reviewing = () => document.body.classList.contains('reviewing');
+
+  async function startCamera() {
+    stopCamera();
+    if (off) return showOff();
+    $('frame').classList.remove('error');
+    if (!navigator.mediaDevices?.getUserMedia) {
+      return fail('This browser gives no camera here. Open http://127.0.0.1:8765 in Chrome.');
+    }
+    const deviceId = saved('camera');
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          deviceId: deviceId ? { ideal: deviceId } : undefined,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+      });
+    } catch (e) {
+      return fail({
+        NotAllowedError: 'Camera access is blocked here. Allow it from the address bar, or open http://127.0.0.1:8765 in Chrome.',
+        NotFoundError: 'No camera found. Check the USB cable, then retry.',
+        NotReadableError: 'The camera is busy in another app. Close it, then retry.',
+      }[e.name] || `Camera failed: ${e.message}`);
+    }
+    if (off) return stopCamera();  // turned off while the camera was opening
+    video.srcObject = stream;
+    await video.play().catch(() => {});
+    const track = stream.getVideoTracks()[0];
+    const s = track.getSettings();
+    const name = track.label.replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)$/i, '').split(':')[0] || 'Camera';
+    $('device').textContent = `${name} · ${s.width}×${s.height}` + (s.frameRate ? ` · ${Math.round(s.frameRate)} fps` : '');
+    $('shutter').disabled = false;
+    listCameras(s.deviceId).catch(() => {});
+  }
+
+  function stopCamera() {
+    stream?.getTracks().forEach((t) => t.stop());
+    stream = null;
+    video.srcObject = null;
+    $('shutter').disabled = true;
+  }
+
+  function showOff() {
+    $('msg').textContent = 'Camera off. Its light is out and nothing is recording.';
+    $('retry').textContent = 'Turn on (T)';
+    $('frame').classList.add('error');
+    $('device').textContent = 'Camera off';
+  }
+
+  function setOff(on) {
+    off = on;
+    saved('off', on ? '1' : '0');
+    const power = $('power');
+    power.setAttribute('aria-pressed', !on);
+    power.title = on ? 'Turn the camera on (T)' : 'Turn the camera off (T)';
+    if (on) {
+      stopCamera();
+      if (!reviewing()) showOff();
+    } else if (!reviewing()) {
+      startCamera();
+    }
+  }
+
+  function fail(text) {
+    stopCamera();
+    $('msg').textContent = text;
+    $('retry').textContent = 'Retry';
+    $('frame').classList.add('error');
+    $('device').textContent = 'No camera';
+  }
+
+  async function listCameras(current) {
+    const cams = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
+    const pick = $('camera');
+    pick.hidden = cams.length < 2;
+    pick.replaceChildren(...cams.map((d, i) =>
+      new Option(d.label.split(':')[0] || `Camera ${i + 1}`, d.deviceId, false, d.deviceId === current)));
+  }
+
+  function snap() {
+    if (!stream || reviewing() || !video.videoWidth) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);  // never mirrored: Claude sees the true image
+    const flash = $('flash');
+    flash.classList.remove('go');
+    void flash.offsetWidth;
+    flash.classList.add('go');
+    canvas.toBlob((blob) => {
+      photo = blob;
+      still.src = URL.createObjectURL(blob);
+      document.body.classList.add('reviewing');
+      $('note').value = '';
+      $('note').focus();
+    }, 'image/jpeg', 0.92);
+  }
+
+  function retake() {
+    if (busy) return;
+    document.body.classList.remove('reviewing');
+    if (still.src) URL.revokeObjectURL(still.src);
+    still.removeAttribute('src');
+    photo = null;
+    if (!stream && !document.hidden) startCamera();
+  }
+
+  async function send() {
+    if (!photo || busy) return;
+    busy = true;
+    $('send').disabled = true;
+    let sent = false;
+    try {
+      const res = await fetch('/api/photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'image/jpeg', 'X-Note': encodeURIComponent($('note').value.trim()) },
+        body: photo,
+      });
+      const info = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(info.error || res.statusText);
+      const copy = info.copy.split('/').pop();
+      toast(info.ready ? `Sent to Claude · images/${copy}` : `Saved images/${copy} · ask Claude to look`);
+      sent = true;
+    } catch (e) {
+      toast(`Not sent: ${e.message}`, true);
+    } finally {
+      busy = false;
+      $('send').disabled = false;
+    }
+    if (sent) {
+      retake();
+      refresh();
+    }
+  }
+
+  function toast(text, bad = false) {
+    const t = $('toast');
+    t.textContent = text;
+    t.classList.toggle('bad', bad);
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  async function refresh() {
+    if (document.hidden) return;
+    let state = null;
+    try {
+      state = await (await fetch('/api/state', { cache: 'no-store' })).json();
+    } catch {}
+    $('link').classList.toggle('on', !!state?.ready);
+    $('link-text').textContent = !state ? 'Server offline' : state.ready ? 'Claude ready' : 'Claude away';
+    if (!state) return;
+    const key = state.photos.map((p) => p.name).join();
+    if (key === shown) return;
+    shown = key;
+    $('strip').replaceChildren(...state.photos.map((p) => {
+      const a = document.createElement('a');
+      a.href = `/captures/${encodeURIComponent(p.name)}`;
+      a.target = '_blank';
+      a.title = p.note ? `${p.name}\n${p.note}` : p.name;
+      const img = new Image();
+      img.loading = 'lazy';
+      img.alt = p.note || p.name;
+      img.src = a.href;
+      a.append(img);
+      return a;
+    }));
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (reviewing()) {
+      if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); send(); }
+      else if (e.key === 'Escape') { e.preventDefault(); retake(); }
+    } else if (e.target.closest?.('input, select') || e.ctrlKey || e.metaKey || e.altKey) {
+      return;
+    } else if (e.code === 'Space' && !e.target.closest?.('button')) {  // Space on a button presses it
+      e.preventDefault();
+      snap();
+    } else if (e.code === 'KeyT' && !e.repeat) {
+      setOff(!off);
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopCamera();  // light off, and the camera is free for snap.py
+    } else {
+      if (!stream && !reviewing()) startCamera();
+      refresh();
+    }
+  });
+
+  const mirror = $('mirror');
+  const setMirror = (on) => {
+    video.classList.toggle('mirror', on);
+    mirror.setAttribute('aria-pressed', on);
+    saved('mirror', on ? '1' : '0');
+  };
+  mirror.onclick = () => setMirror(!video.classList.contains('mirror'));
+  setMirror(saved('mirror') === '1');
+
+  $('shutter').onclick = snap;
+  $('send').onclick = send;
+  $('retake').onclick = retake;
+  $('power').onclick = () => setOff(!off);
+  $('retry').onclick = () => (off ? setOff(false) : startCamera());
+  $('camera').onchange = (e) => {
+    saved('camera', e.target.value);
+    startCamera();
+  };
+
+  off = saved('off') === '1';  // stays off across reloads
+  setOff(off);
+  refresh();
+  setInterval(refresh, 2000);
+</script>
+</body>
+</html>
