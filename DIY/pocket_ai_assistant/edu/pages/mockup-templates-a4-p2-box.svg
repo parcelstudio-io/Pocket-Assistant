@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 210 297">
+<rect x="0" y="0" width="210" height="297" fill="#fff"/>
+<text x="10" y="14" font-size="4" text-anchor="start" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">Pocket AI paper mock-up · page 2 of 2 · boxes at 1:1 (A4)</text>
+<text x="10" y="19.5" font-size="2.4" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">Lay the parts out first. Only then cut the box for the arrangement you keep; if your layout is bigger, redraw the floor with 2–3 mm margin.</text>
+<line x1="10" y1="24" x2="22" y2="24" stroke="#000" stroke-width="0.3"/>
+<text x="24" y="24.8" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">cut</text>
+<line x1="34" y1="24" x2="46" y2="24" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<text x="48" y="24.8" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">fold up (score lightly with the back of the knife first)</text>
+<text x="10" y="32" font-size="2.6" text-anchor="start" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">BOX A · flat · ≈ 55 × 55 parts + margin, walls 21 = amplifier with pins + 3</text>
+<rect x="33" y="57" width="60" height="60" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line x1="33" y1="36" x2="93" y2="36" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="33" y1="36" x2="33" y2="57" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line x1="93" y1="36" x2="93" y2="57" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<polyline points="33,36.6 25,38.1 25,55.5 33,57" fill="none" stroke="#000" stroke-width="0.3"/>
+<polyline points="93,36.6 101,38.1 101,55.5 93,57" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="33" y1="138" x2="93" y2="138" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="33" y1="117" x2="33" y2="138" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line x1="93" y1="117" x2="93" y2="138" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<polyline points="33,117 25,118.5 25,135.9 33,137.4" fill="none" stroke="#000" stroke-width="0.3"/>
+<polyline points="93,117 101,118.5 101,135.9 93,137.4" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="12" y1="57" x2="12" y2="117" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="12" y1="57" x2="33" y2="57" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="12" y1="117" x2="33" y2="117" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="114" y1="57" x2="114" y2="117" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="93" y1="57" x2="114" y2="57" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="93" y1="117" x2="114" y2="117" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="63.0" y="85.5" font-size="2.8" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">FLOOR A</text>
+<text x="63.0" y="89.0" font-size="2.2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">60 × 60 mm inside</text>
+<text x="63.0" y="47.3" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">back wall · 21 high</text>
+<text x="63.0" y="128.3" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">front wall · 21 high</text>
+<text transform="translate(23.2,87.0) rotate(-90)" font-size="2" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="#000">side wall</text>
+<text transform="translate(104.2,87.0) rotate(90)" font-size="2" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="#000">side wall</text>
+<text x="29.0" y="47.2" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<text x="29.0" y="128.2" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<text x="97.0" y="47.2" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<text x="97.0" y="128.2" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<rect x="128" y="57" width="60" height="60" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="158.0" y="86.0" font-size="2.8" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">LID A</text>
+<text x="158.0" y="89.5" font-size="2.2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">60 × 60 mm</text>
+<text x="158" y="123" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tape on after the test fit</text>
+<text x="10" y="150" font-size="2.6" text-anchor="start" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">BOX B · stacked · ≈ 50 × 32 parts + margin, walls 30 (trim to 25 if it fits)</text>
+<rect x="42" y="184" width="55" height="37" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line x1="42" y1="154" x2="97" y2="154" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="42" y1="154" x2="42" y2="184" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line x1="97" y1="154" x2="97" y2="184" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<polyline points="42,154.6 34,156.1 34,182.5 42,184" fill="none" stroke="#000" stroke-width="0.3"/>
+<polyline points="97,154.6 105,156.1 105,182.5 97,184" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="42" y1="251" x2="97" y2="251" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="42" y1="221" x2="42" y2="251" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line x1="97" y1="221" x2="97" y2="251" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="3 1.2 0.6 1.2"/>
+<polyline points="42,221 34,222.5 34,248.9 42,250.4" fill="none" stroke="#000" stroke-width="0.3"/>
+<polyline points="97,221 105,222.5 105,248.9 97,250.4" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="12" y1="184" x2="12" y2="221" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="12" y1="184" x2="42" y2="184" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="12" y1="221" x2="42" y2="221" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="127" y1="184" x2="127" y2="221" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="97" y1="184" x2="127" y2="184" fill="none" stroke="#000" stroke-width="0.3"/>
+<line x1="97" y1="221" x2="127" y2="221" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="69.5" y="201.0" font-size="2.8" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">FLOOR B</text>
+<text x="69.5" y="204.5" font-size="2.2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">55 × 37 mm inside</text>
+<text x="69.5" y="169.8" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">back wall · 30 high</text>
+<text x="69.5" y="236.8" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">front wall · 30 high</text>
+<text transform="translate(27.7,202.5) rotate(-90)" font-size="2" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="#000">side wall</text>
+<text transform="translate(112.7,202.5) rotate(90)" font-size="2" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="#000">side wall</text>
+<text x="38.0" y="169.7" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<text x="38.0" y="236.7" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<text x="101.0" y="169.7" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<text x="101.0" y="236.7" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tab</text>
+<rect x="140" y="184" width="55" height="37" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="167.5" y="201.5" font-size="2.8" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">LID B</text>
+<text x="167.5" y="205.0" font-size="2.2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">55 × 37 mm</text>
+<text x="167.5" y="227" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">tape on after the test fit</text>
+<text x="10" y="262" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">Assembly: fold the four walls up, fold each tab inward and glue it behind its side wall. Then mark and cut the openings on the walls</text>
+<text x="10" y="266.5" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">and lid where your parts actually sit: USB (thin wall or plug hole), screen window = lit area, speaker grille, mic hole, button.</text>
+<text x="10" y="271" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">Sizes are first estimates from cardboard-mockup.html; the paper model checks space only, not radio range. MOCK-01: send the outside L × W × H.</text>
+<text x="10" y="287" font-size="1.9" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">Pocket AI Assistant · edu/pages/mockup-templates-a4.pdf</text>
+</svg>

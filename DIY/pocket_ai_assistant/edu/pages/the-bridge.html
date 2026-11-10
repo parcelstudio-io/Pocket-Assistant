@@ -1,0 +1,165 @@
+<title>The Bridge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; }
+  .sw { display: inline-block; width: 22px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+
+  /* The bridge, drawn four times: the circuit, the two legal states, and the one that burns. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 820px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 48px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .75em; margin-right: 8px; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; }
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--brass); background: var(--brass-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--accent-ink); }
+  .callout.warn .label { color: var(--warn); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; margin: 0 0 12px; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); margin: 0; }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li > * { min-width: 0; margin: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 18px 0 22px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; }
+  figure svg .s { font-size: 11.5px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .acc-ink { fill: var(--accent-ink); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .brass-ink { fill: var(--brass); }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .tube { stroke: var(--brass); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .brass-fill { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .brass-solid { fill: var(--brass); }
+  figure svg .acc { stroke: var(--accent); fill: none; }
+  figure svg .acc-fill { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.4; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .ink-fill { fill: currentColor; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 6px 10px; margin: 0 0 12px; max-width: 72ch; }
+  .stock strong { color: var(--brass); letter-spacing: .04em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  figure svg .solder { fill: var(--muted); }
+  .stage { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--brass); font-weight: 500; display: block; margin-bottom: 2px; }
+  .wrap { max-width: 900px; }
+  figure svg { min-width: 720px; }
+  figure svg .lane { stroke-width: 2.2; fill: none; }
+  figure svg .lane.power { stroke-width: 4; }
+  figure svg .stub { stroke: currentColor; stroke-width: 2; fill: none; }
+  figure svg .dot { fill: currentColor; }
+  figure svg .part { fill: var(--surface); stroke: currentColor; stroke-width: 1.6; }
+  figure svg .pin { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+  figure svg .lanelbl { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+  figure svg .r { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .c { stroke: var(--accent); stroke-width: 2.6; fill: none; }
+  figure svg .tap { fill: var(--warn); }
+  figure svg .never { stroke: var(--warn); stroke-dasharray: 5 4; fill: none; stroke-width: 1.4; }
+  figure svg .swt { fill: var(--surface); stroke: currentColor; stroke-width: 1.8; }
+  figure svg .swt.on { fill: var(--pass-tint); stroke: var(--pass); }
+  figure svg .swt.bad { fill: var(--warn-tint); stroke: var(--warn); }
+  figure svg .wire { stroke: currentColor; stroke-width: 2; fill: none; }
+  figure svg .flow { stroke: var(--accent); stroke-width: 5; fill: none; stroke-linecap: round; opacity: .85; }
+  figure svg .short { stroke: var(--warn); stroke-width: 6; fill: none; stroke-linecap: round; }
+  figure svg .spk { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.6; }
+  figure svg .lbl { font-size: 12px; font-family: var(--mono); font-weight: 500; }
+</style>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · inside the amplifier</div>
+    <h1>The bridge</h1>
+    <p class="lede">How the MAX98357A drives the speaker: four transistor switches in an H, the speaker as the crossbar, and only two legal ways to close them. Four drawings.</p>
+  </header>
+  <figure><div class="scroll"><svg viewBox="0 0 720 330" role="img" aria-label="The H-bridge: a 5 volt rail on top, a ground rail at the bottom, two vertical legs each with two transistor switches, A above B on the left and C above D on the right, and the speaker as the crossbar between the middles of the legs. The left middle is OUT plus, the right middle is OUT minus.">
+<text class="t b" x="160" y="16">The bridge: four switches and the speaker as the crossbar</text><line x1="170" y1="40" x2="470" y2="40" class="wire" stroke="var(--w-red)" stroke-width="3.5"/><text class="lbl" x="478" y="44" fill="var(--w-red)">5 V</text><line x1="170" y1="260" x2="470" y2="260" class="wire" stroke="var(--w-black)" stroke-width="3.5"/><text class="lbl" x="478" y="264" fill="var(--w-black)">GND</text><line x1="210" y1="40" x2="210" y2="260" class="wire"/><line x1="430" y1="40" x2="430" y2="260" class="wire"/><line x1="210" y1="150" x2="430" y2="150" class="wire"/><rect x="280.0" y="134" width="80" height="32" rx="6" class="spk"/><text class="s b brass-ink" x="320.0" y="155" text-anchor="middle">speaker 8 Ω</text><text class="lbl" x="204" y="128" text-anchor="end">OUT+</text><text class="lbl" x="436" y="128">OUT−</text><circle cx="210" cy="150" r="4" class="dot"/><circle cx="430" cy="150" r="4" class="dot"/><rect x="192" y="79.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="210" y="100.0" text-anchor="middle">A</text><rect x="192" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="210" y="210.0" text-anchor="middle">B</text><rect x="412" y="79.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="430" y="100.0" text-anchor="middle">C</text><rect x="412" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="430" y="210.0" text-anchor="middle">D</text><text class="s muted" x="160" y="300">A, B, C, D are transistors inside the MAX98357A. The chip closes them in diagonal pairs only.</text>
+</svg></div><figcaption><strong>It's an H.</strong> Two legs from 5 V down to ground, two switches per leg, the speaker across the middle. OUT+ and OUT− are the midpoints of the legs: each one is either pulled up to 5 V by its top switch or down to 0 V by its bottom switch, never left floating.</figcaption></figure>
+  <figure><div class="scroll"><svg viewBox="0 0 900 345" role="img" aria-label="Two panels. Left: A and D closed, current flows from 5 volts through A, left to right through the speaker, through D to ground; the cone pushes out. Right: C and B closed, current flows from 5 volts through C, right to left through the speaker, through B to ground; the cone pulls in."><g transform="translate(20,0)"><text class="t b" x="10" y="16">State 1: A + D closed</text><line x1="20" y1="40" x2="320" y2="40" class="wire" stroke="var(--w-red)" stroke-width="3.5"/><text class="lbl" x="328" y="44" fill="var(--w-red)">5 V</text><line x1="20" y1="260" x2="320" y2="260" class="wire" stroke="var(--w-black)" stroke-width="3.5"/><text class="lbl" x="328" y="264" fill="var(--w-black)">GND</text><line x1="60" y1="40" x2="60" y2="260" class="wire"/><line x1="280" y1="40" x2="280" y2="260" class="wire"/><line x1="60" y1="150" x2="280" y2="150" class="wire"/><rect x="130.0" y="134" width="80" height="32" rx="6" class="spk"/><text class="s b brass-ink" x="170.0" y="155" text-anchor="middle">speaker 8 Ω</text><text class="lbl" x="54" y="128" text-anchor="end">OUT+</text><text class="lbl" x="286" y="128">OUT−</text><circle cx="60" cy="150" r="4" class="dot"/><circle cx="280" cy="150" r="4" class="dot"/><path d="M30,40 H60 V150 H280 V260 H310" class="flow"/><text class="s acc-ink b" x="170.0" y="286" text-anchor="middle">current → : cone pushes out</text><rect x="42" y="79.0" width="36" height="32" rx="6" class="swt on"/><text class="lbl" x="60" y="100.0" text-anchor="middle">A</text><rect x="42" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="60" y="210.0" text-anchor="middle">B</text><rect x="262" y="79.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="280" y="100.0" text-anchor="middle">C</text><rect x="262" y="189.0" width="36" height="32" rx="6" class="swt on"/><text class="lbl" x="280" y="210.0" text-anchor="middle">D</text></g><g transform="translate(480,0)"><text class="t b" x="10" y="16">State 2: C + B closed</text><line x1="20" y1="40" x2="320" y2="40" class="wire" stroke="var(--w-red)" stroke-width="3.5"/><text class="lbl" x="328" y="44" fill="var(--w-red)">5 V</text><line x1="20" y1="260" x2="320" y2="260" class="wire" stroke="var(--w-black)" stroke-width="3.5"/><text class="lbl" x="328" y="264" fill="var(--w-black)">GND</text><line x1="60" y1="40" x2="60" y2="260" class="wire"/><line x1="280" y1="40" x2="280" y2="260" class="wire"/><line x1="60" y1="150" x2="280" y2="150" class="wire"/><rect x="130.0" y="134" width="80" height="32" rx="6" class="spk"/><text class="s b brass-ink" x="170.0" y="155" text-anchor="middle">speaker 8 Ω</text><text class="lbl" x="54" y="128" text-anchor="end">OUT+</text><text class="lbl" x="286" y="128">OUT−</text><circle cx="60" cy="150" r="4" class="dot"/><circle cx="280" cy="150" r="4" class="dot"/><path d="M310,40 H280 V150 H60 V260 H30" class="flow"/><text class="s acc-ink b" x="170.0" y="286" text-anchor="middle">current ← : cone pulls in</text><rect x="42" y="79.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="60" y="100.0" text-anchor="middle">A</text><rect x="42" y="189.0" width="36" height="32" rx="6" class="swt on"/><text class="lbl" x="60" y="210.0" text-anchor="middle">B</text><rect x="262" y="79.0" width="36" height="32" rx="6" class="swt on"/><text class="lbl" x="280" y="100.0" text-anchor="middle">C</text><rect x="262" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="280" y="210.0" text-anchor="middle">D</text></g><text class="s" x="450" y="334" text-anchor="middle">The chip flips between these two about 300 000 times a second. More time in state 1 = cone further out. More time in state 2 = further in. Equal = at rest.</text></svg></div><figcaption><strong>The same speaker, driven both ways from one supply.</strong> That is the whole point of a bridge: 5 V across the speaker one way, then 5 V the other way, so the swing is twice what a single output could give and the power four times.</figcaption></figure>
+  <figure><div class="scroll"><svg viewBox="0 0 900 345" role="img" aria-label="Two panels. Left: the forbidden state, A and B closed together, a thick path from 5 volts straight to ground through the left leg with the speaker bypassed; they burn. Right: the same thing caused from outside, OUT plus tied to ground by brass while A closes."><g transform="translate(20,0)"><text class="t b" x="10" y="16">Never: A + B together</text><line x1="20" y1="40" x2="320" y2="40" class="wire" stroke="var(--w-red)" stroke-width="3.5"/><text class="lbl" x="328" y="44" fill="var(--w-red)">5 V</text><line x1="20" y1="260" x2="320" y2="260" class="wire" stroke="var(--w-black)" stroke-width="3.5"/><text class="lbl" x="328" y="264" fill="var(--w-black)">GND</text><line x1="60" y1="40" x2="60" y2="260" class="wire"/><line x1="280" y1="40" x2="280" y2="260" class="wire"/><line x1="60" y1="150" x2="280" y2="150" class="wire"/><rect x="130.0" y="134" width="80" height="32" rx="6" class="spk"/><text class="s b brass-ink" x="170.0" y="155" text-anchor="middle">speaker 8 Ω</text><text class="lbl" x="54" y="128" text-anchor="end">OUT+</text><text class="lbl" x="286" y="128">OUT−</text><circle cx="60" cy="150" r="4" class="dot"/><circle cx="280" cy="150" r="4" class="dot"/><path d="M30,40 H60 V260 H30" class="short"/><text class="s warn-ink b" x="170.0" y="286" text-anchor="middle">5 V straight to GND through A and B</text><text class="s warn-ink" x="170.0" y="302" text-anchor="middle">nothing limits the current: they burn</text><rect x="42" y="79.0" width="36" height="32" rx="6" class="swt bad"/><text class="lbl" x="60" y="100.0" text-anchor="middle">A</text><rect x="42" y="189.0" width="36" height="32" rx="6" class="swt bad"/><text class="lbl" x="60" y="210.0" text-anchor="middle">B</text><rect x="262" y="79.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="280" y="100.0" text-anchor="middle">C</text><rect x="262" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="280" y="210.0" text-anchor="middle">D</text></g><g transform="translate(480,0)"><text class="t b" x="10" y="16">Same thing from outside: OUT+ on a grounded frame</text><line x1="20" y1="40" x2="320" y2="40" class="wire" stroke="var(--w-red)" stroke-width="3.5"/><text class="lbl" x="328" y="44" fill="var(--w-red)">5 V</text><line x1="20" y1="260" x2="320" y2="260" class="wire" stroke="var(--w-black)" stroke-width="3.5"/><text class="lbl" x="328" y="264" fill="var(--w-black)">GND</text><line x1="60" y1="40" x2="60" y2="260" class="wire"/><line x1="280" y1="40" x2="280" y2="260" class="wire"/><line x1="60" y1="150" x2="280" y2="150" class="wire"/><rect x="130.0" y="134" width="80" height="32" rx="6" class="spk"/><text class="s b brass-ink" x="170.0" y="155" text-anchor="middle">speaker (bypassed)</text><text class="lbl" x="54" y="128" text-anchor="end">OUT+</text><text class="lbl" x="286" y="128">OUT−</text><circle cx="60" cy="150" r="4" class="dot"/><circle cx="280" cy="150" r="4" class="dot"/><rect x="42" y="79.0" width="36" height="32" rx="6" class="swt bad"/><text class="lbl" x="60" y="100.0" text-anchor="middle">A</text><rect x="42" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="60" y="210.0" text-anchor="middle">B</text><rect x="262" y="79.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="280" y="100.0" text-anchor="middle">C</text><rect x="262" y="189.0" width="36" height="32" rx="6" class="swt"/><text class="lbl" x="280" y="210.0" text-anchor="middle">D</text>
+<path d="M30,150 H60" class="short"/><path d="M30,150 V260 H20" class="short"/>
+<text class="s warn-ink b" x="180" y="286" text-anchor="middle">brass holds OUT+ at 0 V;</text>
+<text class="s warn-ink b" x="180" y="302" text-anchor="middle">when A closes, 5 V meets 0 V through A alone</text>
+</g><text class="s" x="450" y="334" text-anchor="middle">The chip never closes A with B on its own. A short to GND, a rail or a grounded frame does it for it.</text></svg></div><figcaption><strong>The one state that burns.</strong> Both switches on one leg closed means 5 V to ground through nothing but a transistor. The chip's own logic forbids it; a wire from OUT+ or OUT− to any fixed voltage recreates it from outside. That is the whole reason those two pins go to the speaker and nowhere else.</figcaption></figure>
+  <figure><div class="scroll"><svg viewBox="0 0 720 300" role="img" aria-label="Timeline. OUT plus is a train of pulses whose width grows and shrinks; OUT minus is the complementary train. Below, the coil current is a smooth sine wave: the average of the pulses."><text class="t b" x="20" y="22">What the coil feels: chopping in, smooth current out</text><text class="lbl" x="52" y="76" text-anchor="end">OUT+</text><path d="M60,84 V60 H71.0 V84 H82 M82,84 V60 H95.1 V84 H104 M104,84 V60 H119.1 V84 H126 M126,84 V60 H142.9 V84 H148 M148,84 V60 H166.4 V84 H170 M170,84 V60 H189.5 V84 H192 M192,84 V60 H212.1 V84 H214 M214,84 V60 H234.2 V84 H236 M236,84 V60 H255.9 V84 H258 M258,84 V60 H277.0 V84 H280 M280,84 V60 H297.7 V84 H302 M302,84 V60 H318.1 V84 H324 M324,84 V60 H338.2 V84 H346 M346,84 V60 H358.1 V84 H368 M368,84 V60 H377.9 V84 H390 M390,84 V60 H397.8 V84 H412 M412,84 V60 H417.9 V84 H434 M434,84 V60 H438.3 V84 H456 M456,84 V60 H459.0 V84 H478 M478,84 V60 H480.1 V84 H500 M500,84 V60 H501.8 V84 H522 M522,84 V60 H523.9 V84 H544 M544,84 V60 H546.5 V84 H566 M566,84 V60 H569.6 V84 H588 M588,84 V60 H593.1 V84 H610 M610,84 V60 H616.9 V84 H632 M632,84 V60 H640.9 V84 H654" class="wave" stroke="var(--w-red)"/><text class="lbl" x="52" y="116" text-anchor="end">OUT−</text><path d="M60,124 V100 H71.0 V124 H82 M82,124 V100 H90.9 V124 H104 M104,124 V100 H110.9 V124 H126 M126,124 V100 H131.1 V124 H148 M148,124 V100 H151.6 V124 H170 M170,124 V100 H172.5 V124 H192 M192,124 V100 H193.9 V124 H214 M214,124 V100 H215.8 V124 H236 M236,124 V100 H238.1 V124 H258 M258,124 V100 H261.0 V124 H280 M280,124 V100 H284.3 V124 H302 M302,124 V100 H307.9 V124 H324 M324,124 V100 H331.8 V124 H346 M346,124 V100 H355.9 V124 H368 M368,124 V100 H380.1 V124 H390 M390,124 V100 H404.2 V124 H412 M412,124 V100 H428.1 V124 H434 M434,124 V100 H451.7 V124 H456 M456,124 V100 H475.0 V124 H478 M478,124 V100 H497.9 V124 H500 M500,124 V100 H520.2 V124 H522 M522,124 V100 H542.1 V124 H544 M544,124 V100 H563.5 V124 H566 M566,124 V100 H584.4 V124 H588 M588,124 V100 H604.9 V124 H610 M610,124 V100 H625.1 V124 H632 M632,124 V100 H645.1 V124 H654" class="wave" stroke="var(--w-blue)"/><text class="lbl" x="52" y="204" text-anchor="end">coil current</text><polyline points="60.0,200.0 62.2,199.1 64.4,198.1 66.6,197.2 68.8,196.3 71.0,195.4 73.2,194.4 75.4,193.5 77.6,192.6 79.8,191.7 82.0,190.8 84.2,189.9 86.4,189.0 88.6,188.1 90.8,187.2 93.0,186.3 95.2,185.4 97.4,184.6 99.6,183.7 101.8,182.9 104.0,182.0 106.2,181.2 108.4,180.4 110.6,179.6 112.8,178.8 115.0,178.0 117.2,177.2 119.4,176.5 121.6,175.7 123.8,175.0 126.0,174.3 128.2,173.6 130.4,172.9 132.6,172.2 134.8,171.6 137.0,170.9 139.2,170.3 141.4,169.7 143.6,169.1 145.8,168.5 148.0,167.9 150.2,167.4 152.4,166.8 154.6,166.3 156.8,165.8 159.0,165.4 161.2,164.9 163.4,164.5 165.6,164.0 167.8,163.6 170.0,163.3 172.2,162.9 174.4,162.6 176.6,162.3 178.8,162.0 181.0,161.7 183.2,161.4 185.4,161.2 187.6,161.0 189.8,160.8 192.0,160.6 194.2,160.5 196.4,160.3 198.6,160.2 200.8,160.1 203.0,160.1 205.2,160.0 207.4,160.0 209.6,160.0 211.8,160.0 214.0,160.1 216.2,160.1 218.4,160.2 220.6,160.3 222.8,160.5 225.0,160.6 227.2,160.8 229.4,161.0 231.6,161.2 233.8,161.4 236.0,161.7 238.2,162.0 240.4,162.3 242.6,162.6 244.8,162.9 247.0,163.3 249.2,163.6 251.4,164.0 253.6,164.5 255.8,164.9 258.0,165.4 260.2,165.8 262.4,166.3 264.6,166.8 266.8,167.4 269.0,167.9 271.2,168.5 273.4,169.1 275.6,169.7 277.8,170.3 280.0,170.9 282.2,171.6 284.4,172.2 286.6,172.9 288.8,173.6 291.0,174.3 293.2,175.0 295.4,175.7 297.6,176.5 299.8,177.2 302.0,178.0 304.2,178.8 306.4,179.6 308.6,180.4 310.8,181.2 313.0,182.0 315.2,182.9 317.4,183.7 319.6,184.6 321.8,185.4 324.0,186.3 326.2,187.2 328.4,188.1 330.6,189.0 332.8,189.9 335.0,190.8 337.2,191.7 339.4,192.6 341.6,193.5 343.8,194.4 346.0,195.4 348.2,196.3 350.4,197.2 352.6,198.1 354.8,199.1 357.0,200.0 359.2,200.9 361.4,201.9 363.6,202.8 365.8,203.7 368.0,204.6 370.2,205.6 372.4,206.5 374.6,207.4 376.8,208.3 379.0,209.2 381.2,210.1 383.4,211.0 385.6,211.9 387.8,212.8 390.0,213.7 392.2,214.6 394.4,215.4 396.6,216.3 398.8,217.1 401.0,218.0 403.2,218.8 405.4,219.6 407.6,220.4 409.8,221.2 412.0,222.0 414.2,222.8 416.4,223.5 418.6,224.3 420.8,225.0 423.0,225.7 425.2,226.4 427.4,227.1 429.6,227.8 431.8,228.4 434.0,229.1 436.2,229.7 438.4,230.3 440.6,230.9 442.8,231.5 445.0,232.1 447.2,232.6 449.4,233.2 451.6,233.7 453.8,234.2 456.0,234.6 458.2,235.1 460.4,235.5 462.6,236.0 464.8,236.4 467.0,236.7 469.2,237.1 471.4,237.4 473.6,237.7 475.8,238.0 478.0,238.3 480.2,238.6 482.4,238.8 484.6,239.0 486.8,239.2 489.0,239.4 491.2,239.5 493.4,239.7 495.6,239.8 497.8,239.9 500.0,239.9 502.2,240.0 504.4,240.0 506.6,240.0 508.8,240.0 511.0,239.9 513.2,239.9 515.4,239.8 517.6,239.7 519.8,239.5 522.0,239.4 524.2,239.2 526.4,239.0 528.6,238.8 530.8,238.6 533.0,238.3 535.2,238.0 537.4,237.7 539.6,237.4 541.8,237.1 544.0,236.7 546.2,236.4 548.4,236.0 550.6,235.5 552.8,235.1 555.0,234.6 557.2,234.2 559.4,233.7 561.6,233.2 563.8,232.6 566.0,232.1 568.2,231.5 570.4,230.9 572.6,230.3 574.8,229.7 577.0,229.1 579.2,228.4 581.4,227.8 583.6,227.1 585.8,226.4 588.0,225.7 590.2,225.0 592.4,224.3 594.6,223.5 596.8,222.8 599.0,222.0 601.2,221.2 603.4,220.4 605.6,219.6 607.8,218.8 610.0,218.0 612.2,217.1 614.4,216.3 616.6,215.4 618.8,214.6 621.0,213.7 623.2,212.8 625.4,211.9 627.6,211.0 629.8,210.1 632.0,209.2 634.2,208.3 636.4,207.4 638.6,206.5 640.8,205.6 643.0,204.6 645.2,203.7 647.4,202.8 649.6,201.9 651.8,200.9 654.0,200.0" class="wave" stroke="var(--accent)" stroke-width="2.5"/><line x1="60" y1="200" x2="654" y2="200" class="grid dashed"/><text class="s muted" x="60" y="260">Top two traces: the midpoints of the legs, each only ever at 5 V or 0 V, with the on-time varying. Bottom: the current through the coil,</text><text class="s muted" x="60" y="276">which cannot change fast enough to follow the chopping, so it follows the average: the audio wave. The cone follows the current.</text></svg></div><figcaption><strong>Pulse width in, sound out.</strong> This is where the speaker coil does the amplifier's last job for it: being an inductor, it averages the 300 kHz chopping into the smooth current the cone needs.</figcaption></figure>
+  <h2>In one breath</h2>
+  <p>Two legs, four switches, diagonal pairs only. State 1 pushes the cone out, state 2 pulls it in, and the share of time in each is the sound. Both OUT pins are driven midpoints, so tying either to a fixed voltage forces a leg into the forbidden state. The speaker is the only thing that may sit between them.</p>
+  <h2>Parts</h2>
+  <div class="scrollx"><table class="t">
+    <tr><th>Product you bought</th><th>Here</th><th>Link</th></tr>
+    <tr><td>HiLetgo MAX98357A amplifier</td><td>the four switches</td><td><a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">B0CDWXZZCH</a></td></tr>
+    <tr><td>Same Sky CES-20134-088PM speaker, 8 Ω</td><td>the crossbar</td><td><a href="https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309" target="_blank" rel="noopener">DigiKey</a></td></tr>
+  </table></div>
+  <div class="evidence">
+    <p><strong>Sources.</strong> The bridge-tied-load output and the diagonal switching are the MAX98357A datasheet's architecture; the 300 kHz figure is the chip's class-D switching rate order of magnitude; the burn argument is Ohm's law applied to a transistor's on-resistance. The speaker-and-frame rules are the project's safety invariants in <code>CLAUDE.md</code>.</p>
+    <p><strong>What is and is not verified.</strong> Conceptual drawings. The real chip adds dead time between switch states and current limiting that may save it from a brief short; do not count on it.</p>
+  </div>
+</div>

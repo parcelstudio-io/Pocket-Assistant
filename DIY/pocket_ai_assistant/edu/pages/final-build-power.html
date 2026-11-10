@@ -1,0 +1,144 @@
+<title>Final Build Power</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; --w-orange: #E0661C; --w-olive: #6B8E23; --w-purple: #7C3AED; --w-teal: #0B7285; --w-navy: #1B3F8B; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; }
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 840px; margin: 0 auto; padding-block: 28px 64px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(26px, 5vw, 34px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 66ch; margin: 0 0 18px; }
+  h2 { font-size: 22px; margin: 44px 0 8px; letter-spacing: -.01em; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .72em; margin-right: 8px; }
+  h3 { font-size: 17px; margin: 26px 0 6px; }
+  p { max-width: 70ch; margin: 0 0 10px; }
+  ul, ol { max-width: 70ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 4px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 8px 0 12px; }
+  a { color: var(--accent-ink); }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .step input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--pass); cursor: pointer; }
+  .step label { cursor: pointer; }
+  .step .do { font-weight: 600; }
+  .step .chk { display: block; color: var(--accent-ink); font-size: 14px; margin-top: 4px; }
+  .step .chk::before { content: "check · "; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 11.5px; }
+  .step .note { display: block; color: var(--muted); font-size: 14px; margin-top: 3px; }
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-tint); padding: 10px 14px; margin: 14px 0; max-width: 74ch; border-radius: 0 6px 6px 0; }
+  .callout.info { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout.pass { border-left-color: var(--pass); background: var(--pass-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .callout.info .label { color: var(--accent-ink); } .callout.pass .label { color: var(--pass); }
+  .callout ul, .callout p { margin: 0; } .callout ul { padding-left: 1.2em; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 5px 10px; margin: 0 0 10px; }
+  .stock strong { color: var(--brass); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.t th, table.t td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); white-space: nowrap; }
+  table.bends { max-width: 420px; margin-top: 4px; }
+  .scrollx { overflow-x: auto; }
+  .progress { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding: 8px 0; font-family: var(--mono); font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 8px; z-index: 1; }
+  .progress b { color: var(--pass); }
+  button.reset { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; margin-left: 10px; }
+  .evidence { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); max-width: 74ch; }
+  figure { margin: 12px 0 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 8px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); background: var(--figure-bg); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; } figure svg .s { font-size: 11.5px; } figure svg .b { font-weight: 600; } figure svg .m { font-family: var(--mono); }
+  figure svg .pin { font-size: 8.5px; font-family: var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--figure-bg); stroke-width: 3px; stroke-linejoin: round; }
+  figure svg .muted { fill: var(--muted); } figure svg .acc-ink { fill: var(--accent-ink); } figure svg .warn-ink { fill: var(--warn); } figure svg .pass-ink { fill: var(--pass); } figure svg .brass-ink { fill: var(--brass); }
+  figure svg .pcb { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; } figure svg .pcb.dim { opacity: .6; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .kapton { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1; }
+  figure svg .ant { fill: none; stroke: var(--warn); stroke-width: 1.2; stroke-dasharray: 3 2; }
+  figure svg .kap { fill: var(--warn); fill-opacity: .28; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .kap2 { fill: var(--warn); fill-opacity: .55; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .num { fill: var(--warn); stroke: var(--figure-bg); stroke-width: 1.5; } figure svg .numt { fill: #fff; }
+  figure svg .shim { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  figure svg .tube { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .card { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+  figure svg .glue { fill: var(--pass); stroke: var(--figure-bg); stroke-width: 1.5; }
+  figure svg .rodx { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 2; }
+  figure svg .tapeline { fill: none; stroke: var(--warn); stroke-width: 3; opacity: .7; }
+  figure svg .spk { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .port { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .stubp { fill: var(--brass); stroke: none; }
+  figure svg .screen-out { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 4; }
+  figure svg .screen-side { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .glass { fill: var(--accent); opacity: .35; }
+  figure svg .frame { fill: none; stroke: var(--brass); stroke-width: 5; } figure svg .post { fill: var(--brass); }
+  figure svg .joint { fill: var(--surface); stroke: var(--pass); stroke-width: 2.2; }
+  figure svg .floor { stroke: currentColor; stroke-width: 2; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; } figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; } figure svg .acc { stroke: var(--accent); fill: none; } figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .rod { stroke: var(--brass); stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .solder { fill: var(--muted); }
+  figure svg .sleeve { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; max-width: 74ch; }
+  figcaption strong { color: var(--ink); }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; font-size: 13.5px; margin: 8px 0 14px; }
+  .legend span.sw { display: inline-block; width: 22px; height: 5px; border-radius: 3px; vertical-align: middle; margin-right: 7px; }
+  details.more { margin: 2px 0 8px 38px; } details.more > summary { cursor: pointer; color: var(--accent-ink); font-size: 14px; }
+  details.more[open] > summary { margin-bottom: 6px; }
+  .short ol { counter-reset: s; padding-left: 0; list-style: none; max-width: 76ch; }
+  .short li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .short li::before { content: counter(s); font-family: var(--mono); font-weight: 600; color: var(--brass); }
+  .short li a { font-weight: 600; }
+  .short .c { display: block; color: var(--muted); font-size: 14px; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 12px 14px; margin: 16px 0; max-width: 74ch; }
+  .gate input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--pass); }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); }
+  .gate p { margin: 2px 0 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>figure svg .acc-fill { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.4; } figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }</style>
+<div class="wrap">
+<div class="eyebrow">Pocket AI Assistant · final build · battery, charging, the frame around it</div>
+<h1>Pip on a battery: the final wiring</h1>
+<p class="lede">The harness does not change. Battery power is one extra board that owns the 5 V, one cell, one switch and one charge port, feeding the same two points the USB socket fed: A1's 5V stub and, through the 5 V rod, the amp's VIN. Every other rod is the one on the <a href="https://claude.ai/artifact/FAsL4WPArRK6QW7yEg2Nix" target="_blank" rel="noopener">harness page</a> and the <a href="https://claude.ai/artifact/3vPVU2PCtftqR1CwzJJFiM" target="_blank" rel="noopener">net list</a>.</p>
+<div class="callout"><span class="label">Four rules that replace "USB only"</span><ul><li><strong>One source at a time.</strong> A1's own USB port is blocked in this build. To flash, switch the PowerBoost off first, then plug A1 in; unplug before switching back on.</li><li><strong>Only the PowerBoost touches the cell.</strong> Never a wire soldered to it, never the brass, never the iron within 10 cm of it. It plugs in by its JST and unplugs the same way.</li><li><strong>Only the 1200 mAh cell.</strong> The 500 mAh is rated 0.5 A and this device peaks above that; the PowerBoost also charges at 1 A, which is right for 1200 and too much for 500.</li><li><strong>Everything from the harness page still holds:</strong> OUT+/OUT− never to GND or the frame; the frame carries nothing; the amp's cap stays at 45.</li></ul></div>
+<h2>The wiring</h2>
+<figure><div class="scroll"><svg viewBox="0 0 760 320" role="img" aria-label="Power architecture of the final build"><text class="t b" x="20" y="24" text-anchor="start">Power, final build: one board owns it</text><rect x="20" y="70" width="110" height="44" rx="6" class="box"/><text class="s b" x="75" y="88" text-anchor="middle">USB charger</text><text class="s muted" x="75" y="104" text-anchor="middle">any 5 V USB</text><line x1="130" y1="92" x2="190" y2="92" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><text class="s" x="160" y="84" text-anchor="middle">5 V in</text><rect x="190" y="40" width="250" height="180" rx="8" class="acc-fill"/><text class="t b" x="315" y="62" text-anchor="middle">PowerBoost 1000C</text><text class="s muted" x="315" y="78" text-anchor="middle">charger + load sharing + 5 V boost</text><rect x="205" y="95" width="100" height="40" rx="4" class="box"/><text class="s b" x="255" y="113" text-anchor="middle">charger</text><text class="s muted" x="255" y="127" text-anchor="middle">1 A to the cell</text><rect x="325" y="95" width="100" height="40" rx="4" class="box"/><text class="s b" x="375" y="113" text-anchor="middle">boost</text><text class="s muted" x="375" y="127" text-anchor="middle">cell → 5.2 V</text><line x1="305" y1="115" x2="325" y2="115" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/><text class="s m" x="315" y="160" text-anchor="middle">EN</text><text class="s muted" x="315" y="176" text-anchor="middle">pull to GND = off</text><text class="s m" x="230" y="160" text-anchor="middle">BAT</text><text class="s m" x="400" y="160" text-anchor="middle">5V · GND</text><text class="s m" x="230" y="200" text-anchor="middle">LBO</text><text class="s muted" x="230" y="212" text-anchor="middle">low-battery flag</text><rect x="40" y="160" width="110" height="70" rx="8" class="cap"/><text class="s b" x="95" y="185" text-anchor="middle">1200 mAh cell</text><text class="s muted" x="95" y="201" text-anchor="middle">3.7 V, protected</text><text class="s muted" x="95" y="217" text-anchor="middle">JST-PH plug</text><line x1="150" y1="190" x2="230" y2="190" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/><line x1="150" y1="198" x2="230" y2="198" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><line x1="230" y1="165" x2="230" y2="190" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/><rect x="280" y="240" width="70" height="36" rx="4" class="box"/><text class="s b" x="315" y="255" text-anchor="middle">slide</text><text class="s b" x="315" y="269" text-anchor="middle">switch</text><line x1="315" y1="182" x2="315" y2="240" stroke="var(--w-purple)" stroke-width="3" stroke-linecap="round"/><line x1="350" y1="258" x2="400" y2="258" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><text class="s m" x="405" y="262" text-anchor="start">GND</text><line x1="440" y1="150" x2="520" y2="150" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><line x1="440" y1="168" x2="520" y2="168" stroke="var(--w-black)" stroke-width="4" stroke-linecap="round"/><text class="s b" x="480" y="142" text-anchor="middle">5 V</text><text class="s b" x="480" y="184" text-anchor="middle">GND</text><rect x="520" y="40" width="220" height="240" rx="8" class="pcb"/><text class="t b" x="630" y="64" text-anchor="middle">The harness, unchanged</text><text class="s muted" x="630" y="80" text-anchor="middle">every rod as on the harness page</text><rect x="540" y="110" width="80" height="50" rx="4" class="box"/><text class="s b" x="580" y="130" text-anchor="middle">A1</text><text class="s m" x="580" y="146" text-anchor="middle">5V stub</text><rect x="650" y="110" width="80" height="50" rx="4" class="box"/><text class="s b" x="690" y="130" text-anchor="middle">amp</text><text class="s m" x="690" y="146" text-anchor="middle">VIN stub</text><line x1="520" y1="150" x2="560" y2="150" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><circle cx="560" cy="150" r="4.5" class="joint"/><line x1="600" y1="150" x2="650" y2="150" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><text class="s" x="625" y="142" text-anchor="middle">5 V rod</text><line x1="520" y1="168" x2="580" y2="168" stroke="var(--w-black)" stroke-width="4" stroke-linecap="round"/><circle cx="580" cy="160" r="4.5" class="joint"/><line x1="580" y1="168" x2="580" y2="210" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><line x1="560" y1="210" x2="720" y2="210" stroke="var(--w-black)" stroke-width="5" stroke-linecap="round"/><text class="s b" x="640" y="226" text-anchor="middle">GND rail, fed from A1's GND stub</text><rect x="540" y="240" width="80" height="30" rx="4" class="warn-fill"/><text class="s b warn-ink" x="580" y="259" text-anchor="middle">A1 USB: blocked</text><line x1="230" y1="220" x2="230" y2="300" stroke="var(--w-teal)" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 4"/><line x1="230" y1="300" x2="650" y2="300" stroke="var(--w-teal)" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 4"/><line x1="650" y1="300" x2="650" y2="280" stroke="var(--w-teal)" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 4"/><text class="s muted" x="440" y="294" text-anchor="middle">LBO → A1 GPIO6 (later: a low-battery face)</text></svg></div><figcaption><strong>Two wires into the harness, two into the switch, one JST to the cell, one cable to charge.</strong> The PowerBoost charges the cell from its USB port and feeds the device at the same time (load sharing); with no cable it boosts the cell to 5.2 V. EN pulled to ground turns the output off: that is the on/off switch.</figcaption></figure>
+<div class="scrollx"><table class="t"><tr><th>From</th><th>To</th><th>With</th><th>Note</th></tr><tr><td>PowerBoost <code>5V</code></td><td>A1's 5V stub</td><td>26 AWG red, <a href="https://www.amazon.com/dp/B07G2LRX68" target="_blank" rel="noopener">TUOFENG</a>, 40–60 mm</td><td>the 5 V rod carries it on to amp VIN as before; the 220 µF stays where it is</td></tr><tr><td>PowerBoost <code>GND</code></td><td>A1's GND stub</td><td>26 AWG black</td><td>the star point: the supply's ground meets A1's and the amp's there, and the rail stays a dead end</td></tr><tr><td>PowerBoost <code>EN</code></td><td>one side of the <a href="https://www.amazon.com/dp/B09R434VJQ" target="_blank" rel="noopener">slide switch</a></td><td>30 AWG</td><td>other side of the switch to PowerBoost GND. Switch closed = EN at ground = off</td></tr><tr><td>PowerBoost JST</td><td><a href="https://www.adafruit.com/product/258" target="_blank" rel="noopener">1200 mAh cell</a> JST-PH plug</td><td>the cell's own lead</td><td>meter the polarity on the board's silkscreen before the first plug-in: red to +, black to −</td></tr><tr><td>PowerBoost USB port</td><td>the front or side opening</td><td>—</td><td>this is the only port the finished device shows</td></tr><tr><td>PowerBoost <code>LBO</code></td><td>A1 GPIO6 (optional)</td><td>30 AWG</td><td>goes low at 3.2 V; the firmware can show a low-battery face. Not needed to run</td></tr><tr><td>A1 USB-C</td><td>nothing</td><td>a square of Kapton over the opening</td><td>flashing only, with the switch off</td></tr></table></div>
+<h3>Why each pin</h3><ul><li><strong>5V to A1's 5V stub.</strong> That stub is where USB power used to enter, so every rod downstream sees the same 5 V it always did.</li><li><strong>GND to A1's GND stub, and nowhere else.</strong> One ground meeting point means no loop for the amp's current to run through the signal rods.</li><li><strong>EN through the switch to GND.</strong> EN is a logic input that draws microamps, so the small slide switch controls the whole load without carrying its current.</li><li><strong>JST, not wires, to the cell.</strong> The cell's lead is factory-terminated and keyed; the board's charger and protection are the only things that ever touch it.</li><li><strong>LBO to GPIO6.</strong> An open-drain flag that goes low at 3.2 V; a free GPIO reads it so the face can warn before the cell cuts out.</li><li><strong>A1 USB-C blocked.</strong> On A1 the 5V stub is the USB VBUS node with no diode, so a cable there would fight the PowerBoost's output.</li></ul>
+<h2>How it charges</h2>
+<ul><li><strong>Plug any USB charger into the PowerBoost's port.</strong> Yellow LED: charging. Green: full. About 1½ hours from empty at 1 A.</li><li><strong>The device may stay on while charging.</strong> Load sharing runs Pip from the cable and charges the cell with what is left. Switch off and it charges a little faster.</li><li><strong>Unplug and it runs on the cell:</strong> about 5 hours of talking, longer idle (A1 with Wi-Fi 100–300 mA at 5 V, the amp at cap 45 another 100 mA in bursts; 1200 mAh through the boost gives roughly 4 Wh usable).</li><li><strong>Red LED: low battery.</strong> Charge it; the cell's own protection cuts off at 3.0 V before any harm.</li><li><strong>The <a href="https://www.adafruit.com/product/4410" target="_blank" rel="noopener">#4410 charger</a> you own is not used</strong> in the device. It stays a bench charger for a cell on its own.</li></ul>
+<h2>Where it all goes</h2>
+<figure><div class="scroll"><svg viewBox="0 0 760 310" role="img" aria-label="Three storeys"><text class="t b" x="20" y="24" text-anchor="start">Side view from the front: three storeys in a frame 68 × 42 × 38 outside</text><rect x="52" y="40" width="536" height="260" class="frame" rx="4"/><rect x="60" y="52" width="520" height="120" rx="3" class="pcb"/><text class="s b" x="320.0" y="116.0" text-anchor="middle">the harness, 16 mm: A1, amp, mic, screen floating on its rods</text><text class="s muted" x="594" y="116.0" text-anchor="start">storey 3 · 16 mm</text><rect x="60" y="180" width="520" height="24" rx="3" class="box"/><text class="s b" x="320.0" y="196.0" text-anchor="middle">a card shelf with the PowerBoost lying on it, 45 × 23 × 10, USB port to the side</text><text class="s muted" x="594" y="196.0" text-anchor="start">storey 2 · 11 mm</text><rect x="60" y="212" width="520" height="50" rx="3" class="cap"/><text class="s b" x="320.0" y="241.0" text-anchor="middle">the 1200 mAh cell, 62 × 34 × 5, in a cardstock cradle, nothing pressing on it</text><text class="s muted" x="594" y="241.0" text-anchor="start">storey 1 · 6 mm</text><text class="s warn-ink" x="60" y="290" text-anchor="start">inside 65 × 39 × 35 · Kapton on every tube · the cell never touches brass, solder or the iron</text></svg></div><figcaption><strong>The cell is 62 mm long and the current frame is 57 inside, so the battery build gets the new frame</strong>: 68 × 42 × 38 outside, inside 65 × 39 × 35. The cell lies on the bottom in a cardstock cradle; a card shelf above it carries the PowerBoost flat, its USB port at the side opening; the harness sits on top exactly as built. The silver wire you bought is for this frame: two loops of 14 ga at 65 × 39 inside, four posts of 35.</figcaption></figure>
+<h2>What to buy</h2>
+<ul><li>Nothing, since 2026-10-14: the board on the bench is a third-party copy of the <a href="https://www.adafruit.com/product/2465" target="_blank" rel="noopener">Adafruit PowerBoost 1000C</a> sold as <a href="https://www.amazon.com/dp/B0G5PXGVG9" target="_blank" rel="noopener">"For Powerboost 1000 Charger … 2465 Module"</a> (Amazon #20). Same chips and pin names are claimed, not proven: the <a href="https://claude.ai/artifact/6kZ6h285bMka6wo8bbLfyp" target="_blank" rel="noopener">real test</a> is what turns the labels on its silkscreen into facts, and its listing warns the charger chip runs hot (~75 °C) while charging.</li><li>Owned already: the <a href="https://www.adafruit.com/product/258" target="_blank" rel="noopener">1200 mAh cell</a>, the <a href="https://www.amazon.com/dp/B09R434VJQ" target="_blank" rel="noopener">slide switch</a>, <a href="https://www.amazon.com/dp/B07G2LRX68" target="_blank" rel="noopener">26 AWG wire</a>, Kapton, cardstock, the silver wire for the frame.</li></ul>
+<h2>Order of work</h2>
+<ol><li>Finish the brass harness on USB and make it work (the harness page). Nothing here starts before that.</li><li>Bench-test the PowerBoost alone: cell in, switch, meter 5.2 V on its output, charge it once, watch the LEDs.</li><li>Bend and solder the silver frame to the new size.</li><li>Cradle, shelf, PowerBoost, two wires up into the harness, switch, Kapton over A1's port.</li><li>Meter sweep (frame to everything: silent), switch on, the same tests as move 11.</li></ol>
+<div class="evidence"><p><strong>Sources.</strong> PowerBoost 1000C functions and pins from Adafruit's product page (MCP73871 charger with load sharing, TPS61090 boost, EN, LBO, 1 A charge); cell sizes and ratings from <code>docs/INVENTORY.md</code> and the September materials review (500 mAh rejected for its 0.5 A rating); the harness from the generated model. Runtime is an estimate from typical ESP32-C3 and MAX98357A currents, not a measurement. Nothing on this page has been built.</p></div>
+</div>

@@ -1,0 +1,142 @@
+<title>PowerBoost Real Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; --w-orange: #E0661C; --w-olive: #6B8E23; --w-purple: #7C3AED; --w-teal: #0B7285; --w-navy: #1B3F8B; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; }
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 840px; margin: 0 auto; padding-block: 28px 64px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(26px, 5vw, 34px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 66ch; margin: 0 0 18px; }
+  h2 { font-size: 22px; margin: 44px 0 8px; letter-spacing: -.01em; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .72em; margin-right: 8px; }
+  h3 { font-size: 17px; margin: 26px 0 6px; }
+  p { max-width: 70ch; margin: 0 0 10px; }
+  ul, ol { max-width: 70ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 4px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 8px 0 12px; }
+  a { color: var(--accent-ink); }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .step input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--pass); cursor: pointer; }
+  .step label { cursor: pointer; }
+  .step .do { font-weight: 600; }
+  .step .chk { display: block; color: var(--accent-ink); font-size: 14px; margin-top: 4px; }
+  .step .chk::before { content: "check · "; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 11.5px; }
+  .step .note { display: block; color: var(--muted); font-size: 14px; margin-top: 3px; }
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-tint); padding: 10px 14px; margin: 14px 0; max-width: 74ch; border-radius: 0 6px 6px 0; }
+  .callout.info { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout.pass { border-left-color: var(--pass); background: var(--pass-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .callout.info .label { color: var(--accent-ink); } .callout.pass .label { color: var(--pass); }
+  .callout ul, .callout p { margin: 0; } .callout ul { padding-left: 1.2em; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 5px 10px; margin: 0 0 10px; }
+  .stock strong { color: var(--brass); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.t th, table.t td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); white-space: nowrap; }
+  table.bends { max-width: 420px; margin-top: 4px; }
+  .scrollx { overflow-x: auto; }
+  .progress { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding: 8px 0; font-family: var(--mono); font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 8px; z-index: 1; }
+  .progress b { color: var(--pass); }
+  button.reset { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; margin-left: 10px; }
+  .evidence { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); max-width: 74ch; }
+  figure { margin: 12px 0 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 8px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); background: var(--figure-bg); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; } figure svg .s { font-size: 11.5px; } figure svg .b { font-weight: 600; } figure svg .m { font-family: var(--mono); }
+  figure svg .pin { font-size: 8.5px; font-family: var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--figure-bg); stroke-width: 3px; stroke-linejoin: round; }
+  figure svg .muted { fill: var(--muted); } figure svg .acc-ink { fill: var(--accent-ink); } figure svg .warn-ink { fill: var(--warn); } figure svg .pass-ink { fill: var(--pass); } figure svg .brass-ink { fill: var(--brass); }
+  figure svg .pcb { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; } figure svg .pcb.dim { opacity: .6; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .kapton { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1; }
+  figure svg .ant { fill: none; stroke: var(--warn); stroke-width: 1.2; stroke-dasharray: 3 2; }
+  figure svg .kap { fill: var(--warn); fill-opacity: .28; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .kap2 { fill: var(--warn); fill-opacity: .55; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .num { fill: var(--warn); stroke: var(--figure-bg); stroke-width: 1.5; } figure svg .numt { fill: #fff; }
+  figure svg .shim { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  figure svg .tube { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .card { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+  figure svg .glue { fill: var(--pass); stroke: var(--figure-bg); stroke-width: 1.5; }
+  figure svg .rodx { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 2; }
+  figure svg .tapeline { fill: none; stroke: var(--warn); stroke-width: 3; opacity: .7; }
+  figure svg .spk { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .port { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .stubp { fill: var(--brass); stroke: none; }
+  figure svg .screen-out { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 4; }
+  figure svg .screen-side { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .glass { fill: var(--accent); opacity: .35; }
+  figure svg .frame { fill: none; stroke: var(--brass); stroke-width: 5; } figure svg .post { fill: var(--brass); }
+  figure svg .joint { fill: var(--surface); stroke: var(--pass); stroke-width: 2.2; }
+  figure svg .floor { stroke: currentColor; stroke-width: 2; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; } figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; } figure svg .acc { stroke: var(--accent); fill: none; } figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .rod { stroke: var(--brass); stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .solder { fill: var(--muted); }
+  figure svg .sleeve { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; max-width: 74ch; }
+  figcaption strong { color: var(--ink); }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; font-size: 13.5px; margin: 8px 0 14px; }
+  .legend span.sw { display: inline-block; width: 22px; height: 5px; border-radius: 3px; vertical-align: middle; margin-right: 7px; }
+  details.more { margin: 2px 0 8px 38px; } details.more > summary { cursor: pointer; color: var(--accent-ink); font-size: 14px; }
+  details.more[open] > summary { margin-bottom: 6px; }
+  .short ol { counter-reset: s; padding-left: 0; list-style: none; max-width: 76ch; }
+  .short li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .short li::before { content: counter(s); font-family: var(--mono); font-weight: 600; color: var(--brass); }
+  .short li a { font-weight: 600; }
+  .short .c { display: block; color: var(--muted); font-size: 14px; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 12px 14px; margin: 16px 0; max-width: 74ch; }
+  .gate input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--pass); }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); }
+  .gate p { margin: 2px 0 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style><style>figure svg .dim { fill: var(--line); } figure svg .pcb { fill: var(--code-bg); stroke: var(--line); } figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }</style>
+<div class="wrap">
+<div class="eyebrow">Pocket AI Assistant · battery · the real test</div>
+<h1>A1 on the PowerBoost: the real test</h1>
+<p class="lede">Eight steps, one rule. Needs the <a href="https://www.adafruit.com/product/2465" target="_blank" rel="noopener">Adafruit PowerBoost 1000C</a>, the <a href="https://www.adafruit.com/product/258" target="_blank" rel="noopener">1200 mAh cell</a>, two short wires, and the server running on the computer. The result shows up in the server log over Wi-Fi, so A1 needs no USB cable at all.</p>
+<div class="callout"><span class="label">The one rule</span><p>A1's USB cable and the PowerBoost output are never connected at the same time. Switch the PowerBoost off before plugging A1 in; unplug A1 before switching on.</p></div>
+<div class="progress"><span id="done">0</span> of <span id="total">0</span> steps done <button class="reset" id="reset">clear</button></div>
+<div class="step"><input type="checkbox" id="t1"><label for="t1"><span class="do">Plug the cell's JST into the PowerBoost's JST socket, red toward the + mark on the board.</span><span class="chk">Blue power LED comes on.</span></label></div><figure><div class="scroll"><svg viewBox="0 0 760 330" role="img" aria-label="Where the five connections go on the PowerBoost"><text class="t b" x="20" y="24" text-anchor="start" >The PowerBoost, top view: five places to connect, nothing else</text><rect x="150" y="60" width="440" height="200" rx="10" class="pcb"/><text class="t b" x="370" y="100" text-anchor="middle" >PowerBoost 1000C</text><text class="s muted" x="370" y="118" text-anchor="middle" >pin names are printed on the board; find them by name, not by position</text><rect x="120" y="130" width="40" height="60" rx="4" class="box"/><text class="pin" x="140" y="165" text-anchor="middle" >USB</text><text class="s b" x="140" y="210" text-anchor="middle" >charge port</text><text class="s" x="140" y="226" text-anchor="middle" >any USB charger (step 6)</text><rect x="580" y="140" width="40" height="40" rx="3" class="box"/><text class="pin" x="600" y="164" text-anchor="middle" >JST</text><rect x="650" y="120" width="90" height="80" rx="8" class="cap"/><text class="s b" x="695" y="150" text-anchor="middle" >1200 mAh</text><text class="s b" x="695" y="168" text-anchor="middle" >cell</text><text class="s muted" x="695" y="186" text-anchor="middle" >red to +</text><line x1="620" y1="155" x2="650" y2="155" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><line x1="620" y1="165" x2="650" y2="165" stroke="var(--w-black)" stroke-width="4" stroke-linecap="round"/><text class="s muted" x="600" y="210" text-anchor="middle" >step 1</text><circle cx="230" cy="260" r="5" class="stubp"/><text class="pin" x="230" y="250" text-anchor="middle" >5V</text><line x1="230" y1="265" x2="230" y2="300" stroke="var(--w-red)" stroke-width="3.5" stroke-linecap="round"/><text class="s b" x="230" y="316" text-anchor="middle" >A1 5V</text><circle cx="300" cy="260" r="5" class="stubp"/><text class="pin" x="300" y="250" text-anchor="middle" >GND</text><line x1="300" y1="265" x2="300" y2="300" stroke="var(--w-black)" stroke-width="3.5" stroke-linecap="round"/><text class="s b" x="300" y="316" text-anchor="middle" >A1 GND</text><circle cx="370" cy="260" r="5" class="stubp"/><text class="pin" x="370" y="250" text-anchor="middle" >EN</text><line x1="370" y1="265" x2="370" y2="300" stroke="var(--w-purple)" stroke-width="3.5" stroke-linecap="round"/><text class="s b" x="370" y="316" text-anchor="middle" >switch</text><circle cx="440" cy="260" r="5" class="stubp"/><text class="pin" x="440" y="250" text-anchor="middle" >LBO</text><line x1="440" y1="265" x2="440" y2="300" stroke="var(--muted)" stroke-width="3.5" stroke-linecap="round"/><text class="s b" x="440" y="316" text-anchor="middle" >later</text><circle cx="500" cy="260" r="5" class="dim"/><text class="pin" x="500" y="250" text-anchor="middle" >Bat</text><circle cx="545" cy="260" r="5" class="dim"/><text class="pin" x="545" y="250" text-anchor="middle" >USB</text><circle cx="590" cy="260" r="5" class="dim"/><text class="pin" x="590" y="250" text-anchor="middle" >GND</text><text class="s muted" x="545" y="316" text-anchor="middle" >leave empty</text><rect x="300" y="60" width="0" height="0"/></svg></div><figcaption><strong>Five places on the PowerBoost.</strong> The cell's JST, the charge port, and three pins: 5V, GND, EN. LBO is for later. Pin positions on your board may differ from this sketch; the names printed beside them do not.</figcaption></figure>
+<div class="step"><input type="checkbox" id="t2"><label for="t2"><span class="do">Wire the switch: one leg to <code>EN</code>, the other to <code>GND</code> on the PowerBoost (<a href="https://www.amazon.com/dp/B073RDGTPB" target="_blank" rel="noopener">30 AWG</a>). Slide it to the position where the blue LED goes <em>off</em>. That is OFF.</span><span class="chk">Blue LED off.</span></label></div><figure><div class="scroll"><svg viewBox="0 0 760 200" role="img" aria-label="The switch between EN and GND"><text class="t b" x="20" y="24" text-anchor="start" >The switch: two legs of the slide switch, one to EN, one to GND (step 2)</text><rect x="60" y="70" width="120" height="60" rx="6" class="box"/><text class="s b" x="120" y="96" text-anchor="middle" >slide switch</text><text class="pin" x="120" y="114" text-anchor="middle" >use the middle leg and one end leg</text><line x1="90" y1="130" x2="90" y2="160" stroke="var(--w-purple)" stroke-width="3.5" stroke-linecap="round"/><line x1="90" y1="160" x2="330" y2="160" stroke="var(--w-purple)" stroke-width="3.5" stroke-linecap="round"/><line x1="150" y1="130" x2="150" y2="175" stroke="var(--w-black)" stroke-width="3.5" stroke-linecap="round"/><line x1="150" y1="175" x2="380" y2="175" stroke="var(--w-black)" stroke-width="3.5" stroke-linecap="round"/><circle cx="330" cy="160" r="5" class="stubp"/><text class="pin" x="330" y="150" text-anchor="middle" >EN</text><circle cx="380" cy="175" r="5" class="stubp"/><text class="pin" x="380" y="190" text-anchor="middle" >GND</text><rect x="300" y="60" width="300" height="80" rx="8" class="pcb"/><text class="s b" x="450" y="92" text-anchor="middle" >PowerBoost</text><text class="s" x="450" y="156" text-anchor="middle" >closed = EN tied to GND = output OFF · open = output ON (blue LED)</text><text class="s muted" x="450" y="172" text-anchor="middle" >30 AWG, any colour; no current to speak of</text></svg></div><figcaption><strong>The switch is just a way to tie EN to GND.</strong> Closed: output off. Open: output on. Which slider position is which, the blue LED tells you.</figcaption></figure>
+<div class="step"><input type="checkbox" id="t3"><label for="t3"><span class="do">With the switch OFF: PowerBoost <code>5V</code> → A1's 5V stub (red <a href="https://www.amazon.com/dp/B07G2LRX68" target="_blank" rel="noopener">26 AWG</a>), PowerBoost <code>GND</code> → A1's GND stub (black). A1's own USB: nothing plugged in.</span><span class="chk">Two wires, two joints, A1's USB empty.</span></label></div><figure><div class="scroll"><svg viewBox="0 0 760 300" role="img" aria-label="The two wires at A1"><text class="t b" x="20" y="24" text-anchor="start" >A1 from above: the two wires land on the first two stubs of the right row (step 3)</text><rect x="220" y="50" width="200" height="220" rx="6" class="pcb"/><text class="t b" x="320" y="160" text-anchor="middle" >A1</text><text class="s muted" x="320" y="178" text-anchor="middle" >component side up</text><rect x="275" y="238" width="90" height="32" rx="3" class="box"/><text class="pin" x="320" y="258" text-anchor="middle" >USB socket</text><line x1="270" y1="245" x2="370" y2="265" stroke="var(--warn)" stroke-width="3"/><line x1="270" y1="265" x2="370" y2="245" stroke="var(--warn)" stroke-width="3"/><text class="s warn-ink" x="320" y="290" text-anchor="middle" >nothing plugged in here while the PowerBoost is on</text><circle cx="414" cy="250" r="4.5" class="stubp"/><text class="pin" x="405" y="254" text-anchor="end" >5V</text><circle cx="226" cy="250" r="4.5" class="dim"/><text class="pin" x="235" y="254" text-anchor="start" >5</text><circle cx="414" cy="226" r="4.5" class="stubp"/><text class="pin" x="405" y="230" text-anchor="end" >GND</text><circle cx="226" cy="226" r="4.5" class="dim"/><text class="pin" x="235" y="230" text-anchor="start" >6</text><circle cx="414" cy="202" r="4.5" class="dim"/><text class="pin" x="405" y="206" text-anchor="end" >3V3</text><circle cx="226" cy="202" r="4.5" class="dim"/><text class="pin" x="235" y="206" text-anchor="start" >7</text><circle cx="414" cy="178" r="4.5" class="dim"/><text class="pin" x="405" y="182" text-anchor="end" >4</text><circle cx="226" cy="178" r="4.5" class="dim"/><text class="pin" x="235" y="182" text-anchor="start" >8</text><circle cx="414" cy="154" r="4.5" class="dim"/><text class="pin" x="405" y="158" text-anchor="end" >3</text><circle cx="226" cy="154" r="4.5" class="dim"/><text class="pin" x="235" y="158" text-anchor="start" >9</text><circle cx="414" cy="130" r="4.5" class="dim"/><text class="pin" x="405" y="134" text-anchor="end" >2</text><circle cx="226" cy="130" r="4.5" class="dim"/><text class="pin" x="235" y="134" text-anchor="start" >10</text><circle cx="414" cy="106" r="4.5" class="dim"/><text class="pin" x="405" y="110" text-anchor="end" >1</text><circle cx="226" cy="106" r="4.5" class="dim"/><text class="pin" x="235" y="110" text-anchor="start" >20</text><circle cx="414" cy="82" r="4.5" class="dim"/><text class="pin" x="405" y="86" text-anchor="end" >0</text><circle cx="226" cy="82" r="4.5" class="dim"/><text class="pin" x="235" y="86" text-anchor="start" >21</text><line x1="414" y1="250" x2="560" y2="250" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><text class="s b" x="570" y="254" text-anchor="start" >red, from PowerBoost 5V</text><line x1="414" y1="226" x2="560" y2="226" stroke="var(--w-black)" stroke-width="4" stroke-linecap="round"/><text class="s b" x="570" y="230" text-anchor="start" >black, from PowerBoost GND</text><text class="s muted" x="570" y="280" text-anchor="start" >3 mm bare, beside the stub, one blob</text><text class="s muted" x="100" y="250" text-anchor="middle" >front (USB end)</text><text class="s muted" x="100" y="60" text-anchor="middle" >back (antenna)</text></svg></div><figcaption><strong>At A1: the two stubs nearest the USB end of the right row.</strong> 5V is the very first, GND the second. The red wire on 5V, the black on GND; the 5 V rod and the GND rod of the harness share those same stubs.</figcaption></figure>
+<div class="step"><input type="checkbox" id="t4"><label for="t4"><span class="do">Server running on the computer (<code>http://192.168.1.171:8790/health</code> says <code>ok</code>). Switch ON.</span><span class="chk">Blue LED on; eyes open on the screen; the server log prints <code>hello accepted</code> within ten seconds and <code>/health</code> lists <code>pocket-a1</code>.</span></label></div>
+<div class="step"><input type="checkbox" id="t5"><label for="t5"><span class="do">Hold the button, ask Pip its name, release.</span><span class="chk">Transcript in the log; the face reacts (and speaks, if the amp build is loaded).</span></label></div>
+<div class="step"><input type="checkbox" id="t6"><label for="t6"><span class="do">Plug a USB charger into the PowerBoost's own port while Pip is on.</span><span class="chk">Eyes stay on; yellow LED = charging while running. That is load sharing.</span></label></div>
+<div class="step"><input type="checkbox" id="t7"><label for="t7"><span class="do">Unplug the charger.</span><span class="chk">Eyes stay on; blue LED only. Pip is on the cell.</span></label></div>
+<div class="step"><input type="checkbox" id="t8"><label for="t8"><span class="do">Switch OFF.</span><span class="chk">Eyes off, blue LED off. Done: boost, switch, load sharing and cell power all proven.</span></label></div>
+<p>If step 4 gives no eyes: meter <code>5V</code> to <code>GND</code> on the PowerBoost with the switch on (5.1–5.3 V); then the two wires at A1's stubs. If the log shows <code>got ip</code> but no <code>hello</code>, it is the server, not the power.</p>
+<div class="evidence"><p>PowerBoost 1000C pins and LEDs from Adafruit's product page; the firmware log lines from <code>character/firmware</code> as proven on the board on 10 October. Not yet run on the PowerBoost.</p></div>
+</div>
+<script>(function(){var b=Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox]'));var k=function(x){return "pb-test-"+x.id};function c(){document.getElementById("done").textContent=b.filter(function(x){return x.checked}).length;document.getElementById("total").textContent=b.length}b.forEach(function(x){try{x.checked=localStorage.getItem(k(x))==="1"}catch(e){}x.addEventListener("change",function(){try{localStorage.setItem(k(x),x.checked?"1":"0")}catch(e){}c()})});document.getElementById("reset").addEventListener("click",function(){b.forEach(function(x){x.checked=false;try{localStorage.removeItem(k(x))}catch(e){}});c()});c()})();</script>

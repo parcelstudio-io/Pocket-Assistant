@@ -1,0 +1,2 @@
+[console_scripts]
+pocket-server = pocket_server.__main__:main

@@ -1,0 +1,298 @@
+<title>The Cardboard Mock-Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
+  .track > div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--pass); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps[start="3"] { counter-reset: step 2; }
+  ol.steps[start="4"] { counter-reset: step 3; }
+  ol.steps[start="5"] { counter-reset: step 4; }
+  ol.steps[start="6"] { counter-reset: step 5; }
+  ol.steps[start="9"] { counter-reset: step 8; }
+  ol.steps[start="10"] { counter-reset: step 9; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .thick { stroke-width: 2.2; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>
+  .stamp { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-tint); border-radius: 4px; padding: 2px 8px; margin-right: 6px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 72ch; }
+  figure svg .edge.accent-stroke { stroke: var(--accent); }
+  figure svg .edge.warn-stroke { stroke: var(--warn); }
+  figure svg .iron { stroke-width: 7; stroke-linecap: round; }
+  figure svg .stripe { fill: var(--muted); }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .8em; margin-right: 6px; }
+</style>
+<style>
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--accent); background: var(--accent-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  table.t input { width: 6em; font-family: var(--mono); font-size: 13px; padding: 3px 5px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · enclosure, first step</div>
+    <h1>The cardboard mock-up</h1>
+    <p class="lede">The electronics work. The device speaks at volume cap 45. What is left is giving it a body, and every enclosure starts the same way: the real parts, arranged at full size until everything fits, the plug reaches, and sound gets in and out. You own spares of every module, so you can lay them out unpowered and leave the working prototype wired. No soldering, no scope, no risk.</p>
+  </header>
+
+  <h2>Where you are</h2>
+  <div class="road">
+    <div class="done"><div class="n">1–2 · done</div><div class="h">Prototype + cloud</div><p>USB prototype, Wi-Fi, assistant replies</p></div>
+    <div class="done"><div class="n">3 · done</div><div class="h">It speaks</div><p>amplifier, cap 45, GAIN 15 dB</p></div>
+    <div class="now"><div class="n">4a · today</div><div class="h">Mock-up</div><p>spare parts, cardboard box, test fit</p></div>
+    <div><div class="n">4b–4e · next</div><div class="h">Case</div><p>paint test, frame design, brass, permanent wiring</p></div>
+  </div>
+
+  <h2><span class="when">0:00</span>Close out Step 11</h2>
+  <div class="gate">
+    <input type="checkbox" id="gate-11c">
+    <label for="gate-11c">
+      <div class="name">PASS 11C · speaks at cap 45</div>
+      <p>Five replies in a row are clearly audible, with no reset, no harsh buzz, and nothing warm. The firmware's peak monitor stays under 2.53 V. Tell Claude when this is true so it can write the record.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">0:05</span>Confirm the last measurements</h2>
+  <p>Six numbers are still open. Each has an estimate you can use as it is; confirm it against the real part and type a number only where yours differs. Plain millimetres; the page remembers them in this browser.</p>
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>Measurement</th><th>Estimate</th><th>Confirm with the real part</th><th>mm</th></tr>
+    <tr><td><strong>OLED lit area length</strong></td><td class="n">21.7</td><td>Working A1 on; measure only the part that glows, long side</td><td><input id="mk-lit-l" inputmode="decimal" aria-label="OLED lit area length mm"></td></tr>
+    <tr><td><strong>OLED lit area width</strong></td><td class="n">10.9</td><td>The glowing part, short side. Also mark <em>where</em> it sits on the board; it is usually not centred</td><td><input id="mk-lit-w" inputmode="decimal" aria-label="OLED lit area width mm"></td></tr>
+    <tr><td><strong>USB socket offset</strong></td><td class="n">1.7</td><td>Board edge to socket face; your caliper reading from 28 September</td><td><input id="mk-usb-off" inputmode="decimal" aria-label="USB socket offset mm"></td></tr>
+    <tr><td><strong>USB plug width</strong></td><td class="n">12.35</td><td>Your cable's plastic plug body, side to side. The estimate is the largest the USB-C standard allows</td><td><input id="mk-plug-w" inputmode="decimal" aria-label="USB plug width mm"></td></tr>
+    <tr><td><strong>USB plug height</strong></td><td class="n">6.5</td><td>The same plug body, top to bottom; also the standard's largest</td><td><input id="mk-plug-h" inputmode="decimal" aria-label="USB plug height mm"></td></tr>
+    <tr><td><strong>Bend room</strong></td><td class="n">≈ 35</td><td>Plug the cable into a spare board, bend it 90°, measure board edge to the outside of the cable (30–40 is typical)</td><td><input id="mk-bend" inputmode="decimal" aria-label="USB bend room mm"></td></tr>
+  </table>
+  </div>
+  <p class="note">The plug estimates are worst case on purpose: an opening sized for the largest plug fits any cable.</p>
+
+  <h2><span class="when">0:15</span>Gather the spare parts</h2>
+  <p>Use one spare of each module as the stand-in for the final device. The working prototype stays on the breadboard, untouched. Counts are from <code>docs/INVENTORY.md</code>.</p>
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>Part</th><th>Measured size</th><th>Owned</th><th>In the prototype</th><th>Spares</th></tr>
+    <tr><td><strong>ESP32-C3 SuperMini</strong></td><td class="n">22 × 18</td><td class="n">10</td><td class="n">1 (A1)</td><td class="n">9</td></tr>
+    <tr><td><strong>OLED screen</strong></td><td class="n">27 × 27</td><td class="n">5</td><td class="n">1</td><td class="n">4</td></tr>
+    <tr><td><strong>INMP441 microphone</strong></td><td class="n">Ø13</td><td class="n">5</td><td class="n">1</td><td class="n">4</td></tr>
+    <tr><td><strong>MAX98357 amplifier</strong></td><td class="n">17 × 17</td><td class="n">3</td><td class="n">1</td><td class="n">2</td></tr>
+    <tr><td><strong>Speaker</strong></td><td class="n">20 × 13</td><td class="n">6</td><td class="n">1</td><td class="n">5</td></tr>
+    <tr><td><strong>Button</strong></td><td class="n">5 × 5</td><td class="n">420</td><td class="n">1</td><td>plenty</td></tr>
+  </table>
+  </div>
+  <div class="callout warn">
+    <span class="label">Before you lay them out</span>
+    <ul>
+      <li><strong>Keep the spares unpowered.</strong> No USB, no battery; they sit on cardboard, so nothing can short.</li>
+      <li><strong>Check for header pins.</strong> A spare with pins soldered on sits taller than a final part wired with short leads; one without pins is close to final thickness. Note which you used.</li>
+      <li><strong>The screen window comes from the working A1.</strong> An unpowered spare shows no lit area, so switch on the working screen to see where the glow sits, and mark that position on the spare's footprint.</li>
+      <li><strong>Leave wire room.</strong> The spares are not wired, so keep 2–3 mm around each one for the wires that will join them.</li>
+    </ul>
+  </div>
+  <p class="note">The paper templates are still in <code>edu/pages/mockup-templates-letter.pdf</code> if a spare is missing. Page 2 of that file has the box nets you will use below. Print at <strong>Actual size</strong> and check that the ruler measures 100 mm.</p>
+
+  <h2><span class="when">0:30</span>Try two arrangements</h2>
+  <p>Lay the spare parts on a sheet of cardboard. There is no single right answer; try both of these and keep the one that is smaller and still obeys every rule in the next section.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 300" style="min-width: 640px; width: 100%;" role="img" aria-label="Two layouts. Flat: all parts side by side in one layer, the OLED and speaker on one side, A1 and the amplifier on the other, the microphone and button between; roughly 55 by 55 millimetres and about 20 millimetres thick with pins. Stacked: the OLED on top, A1 underneath it, the amplifier and speaker beside; a smaller footprint, about 50 by 32 millimetres, but thicker, about 25 to 30 millimetres.">
+        <text class="t b" x="20" y="22">A · Flat, one layer</text>
+        <rect class="box" x="30" y="40" width="220" height="220" rx="16"/>
+        <rect class="cap" x="44" y="54" width="108" height="108" rx="3"/><text class="s b cap-ink" x="98" y="112" text-anchor="middle">OLED</text>
+        <rect class="soft" x="166" y="54" width="72" height="88" rx="3"/><text class="s b" x="202" y="102" text-anchor="middle">A1</text>
+        <rect class="warn-fill" x="170" y="54" width="64" height="12"/><text class="s warn-ink" x="202" y="64" text-anchor="middle">antenna</text>
+        <rect class="soft" x="166" y="160" width="68" height="68" rx="3"/><text class="s b" x="200" y="198" text-anchor="middle">amp</text>
+        <rect class="soft" x="44" y="176" width="80" height="52" rx="5"/><text class="s b" x="84" y="206" text-anchor="middle">speaker</text>
+        <circle class="soft" cx="144" cy="196" r="14"/><text class="s" x="144" y="200" text-anchor="middle">mic</text>
+        <rect class="pass-fill" x="138" y="236" width="20" height="20" rx="3"/><text class="s" x="148" y="276" text-anchor="middle">button</text>
+        <text class="s muted" x="140" y="292" text-anchor="middle">≈ 55 × 55 mm, ≈ 20 mm thick with pins</text>
+        <line class="edge dashed" x1="380" y1="14" x2="380" y2="290" stroke-opacity="0.4"/>
+        <text class="t b" x="400" y="22">B · Stacked, two layers</text>
+        <rect class="box" x="410" y="60" width="200" height="128" rx="14"/>
+        <rect class="cap" x="420" y="70" width="108" height="108" rx="3"/><text class="s b cap-ink" x="474" y="118" text-anchor="middle">OLED on top</text>
+        <text class="s" x="474" y="134" text-anchor="middle">A1 underneath</text>
+        <rect class="soft" x="540" y="70" width="60" height="52" rx="5"/><text class="s b" x="570" y="100" text-anchor="middle">speaker</text>
+        <rect class="soft" x="540" y="130" width="60" height="48" rx="3"/><text class="s b" x="570" y="158" text-anchor="middle">amp</text>
+        <text class="s muted" x="510" y="208" text-anchor="middle">≈ 50 × 32 mm footprint</text>
+        <text class="t b" x="400" y="240">side view</text>
+        <rect class="cap" x="420" y="250" width="108" height="10" rx="2"/><text class="s" x="534" y="259">OLED + glass</text>
+        <rect class="soft" x="420" y="262" width="88" height="10" rx="2"/><text class="s" x="534" y="271">A1 + pins</text>
+        <text class="s muted" x="510" y="292" text-anchor="middle">≈ 25–30 mm thick</text>
+      </svg>
+    </div>
+    <figcaption><strong>Flat is thinner; stacked is smaller across.</strong> Sizes are rough first guesses from your measurements; the real parts tell the truth. In both, the antenna end of A1 sits against an outside edge.</figcaption>
+  </figure>
+
+  <h2><span class="when">0:45</span>The rules every layout must pass</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 320" style="min-width: 640px; width: 100%;" role="img" aria-label="Six rules marked on a case outline. Antenna end of A1 at an outside edge with a no-metal, no-wire keep-out zone. USB socket at an outside wall: the wall there thinner than about 1.5 millimetres, or a hole big enough for the plug's plastic body, plus room for the cable to bend. OLED behind a window the size of the lit area. Speaker mesh facing a grille of holes. Microphone hole facing a small hole in the wall, centred on the microphone. Button under a finger-sized opening with room for its 1 millimetre travel. Two to three millimetres around every part for wires.">
+        <rect class="box" x="40" y="40" width="420" height="250" rx="20"/>
+        <rect class="soft" x="300" y="60" width="140" height="110" rx="4"/><text class="s b" x="370" y="120" text-anchor="middle">A1</text>
+        <rect x="300" y="44" width="140" height="16" fill="var(--warn-tint)" stroke="var(--warn)" stroke-dasharray="4 3"/>
+        <text class="s b warn-ink" x="370" y="56" text-anchor="middle">antenna end → outside edge, keep clear</text>
+        <rect class="cap" x="452" y="104" width="16" height="30" rx="2"/>
+        <rect class="cap" x="60" y="60" width="200" height="110" rx="3"/><rect class="pass-fill" x="76" y="78" width="164" height="70" rx="2"/><text class="s b pass-ink" x="158" y="117" text-anchor="middle">window = lit area</text>
+        <rect class="soft" x="60" y="200" width="130" height="70" rx="6"/>
+        <circle class="edge" cx="95" cy="225" r="5"/><circle class="edge" cx="125" cy="225" r="5"/><circle class="edge" cx="155" cy="225" r="5"/><circle class="edge" cx="95" cy="250" r="5"/><circle class="edge" cx="125" cy="250" r="5"/><circle class="edge" cx="155" cy="250" r="5"/>
+        <circle class="soft" cx="240" cy="235" r="24"/><circle class="cap" cx="240" cy="235" r="5"/>
+        <rect class="pass-fill" x="330" y="215" width="40" height="40" rx="4"/><circle class="cap" cx="350" cy="235" r="10"/>
+        <text class="s b" x="480" y="70">1 · Antenna</text><text class="s" x="480" y="86">at an outside edge; no metal,</text><text class="s" x="480" y="100">wire or battery near it</text>
+        <text class="s b" x="480" y="126">2 · USB port</text><text class="s" x="480" y="142">wall under 1.5 mm there, or a hole</text><text class="s" x="480" y="156">for the plug body; room to bend</text>
+        <text class="s b" x="480" y="182">3 · Screen window</text><text class="s" x="480" y="198">the size of the lit area</text>
+        <text class="s b" x="480" y="222">4 · Speaker grille</text><text class="s" x="480" y="238">holes in front of the mesh</text>
+        <text class="s b" x="480" y="262">5 · Mic hole · 6 · Button</text><text class="s" x="480" y="278">small hole on the mic's centre;</text><text class="s" x="480" y="292">finger opening, 1 mm travel</text>
+        <text class="s muted" x="250" y="310" text-anchor="middle">Plus 2–3 mm around every part for wires.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Most first layouts fail on the USB port or the antenna.</strong> The socket sticks out 1.7 mm and the plug's plastic starts 2 mm further, so a thick wall there stops the cable reaching. The SuperMini already needed a transmit-power cap to be heard at all, so its antenna end needs open air.</figcaption>
+  </figure>
+
+  <h2><span class="when">1:00</span>Build the cardboard box</h2>
+  <ol class="steps">
+    <li><p><strong>Start from a box net.</strong> Page 2 of <code>edu/pages/mockup-templates-letter.pdf</code> has a fold-up box and lid for each arrangement. If your real layout is bigger, trace its outline with 2–3 mm margin instead and cut it twice: floor and lid.</p></li>
+    <li><p><strong>Set the wall height</strong> to the tallest spare as it lies, plus 3 mm: about 21 mm if the amplifier keeps its pins, about 12 mm if you plan to trim them. Measure the real stack; for the stacked layout that is the screen on top of A1.</p></li>
+    <li><p><strong>Fold or tape the walls</strong> up, set the spares inside, and mark the openings where the parts actually sit: USB, screen window, speaker grille, mic hole, button.</p></li>
+    <li><p><strong>Cut the openings</strong> with a craft knife on a cutting mat.</p></li>
+  </ol>
+
+  <h2><span class="when">1:20</span>Test fit with the real board</h2>
+  <ol class="steps">
+    <li><p><strong>Plug the USB cable into the spare board inside the box</strong> through the wall opening: does the plug reach the socket, and can the cable bend away? The spare has no power, so this is safe.</p></li>
+    <li><p><strong>Press a finger</strong> through the button opening: could it reach a button there?</p></li>
+    <li><p><strong>Check the window</strong> against the working A1's lit screen: hold it under the window and see whether the glow fills the opening.</p></li>
+    <li><p><strong>Photograph</strong> the box from above and from each side, with a ruler in the frame, and write down its outside size.</p></li>
+  </ol>
+  <div class="gate">
+    <input type="checkbox" id="gate-mock">
+    <label for="gate-mock">
+      <div class="name">MOCK-01 · the layout fits</div>
+      <p>Every part fits with margin, the antenna end is at an outside edge, the USB plug reaches, and all five openings line up. Send Claude the outside size (L × W × H in mm), which arrangement you chose, and whether the spares had header pins.</p>
+    </label>
+  </div>
+
+  <h2>After the mock-up</h2>
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>Next</th><th>What it involves</th><th>Needs</th></tr>
+    <tr><td><strong>Paint test coupons</strong></td><td>sand brass offcuts, wipe with 91 % alcohol, spray the two whites, test adhesion after curing</td><td>owned paint and sandpaper</td></tr>
+    <tr><td><strong>Frame design</strong></td><td>Claude turns your mock-up size and the measurements into a frame drawing, replacing the old CAD, which models a withdrawn design</td><td>MOCK-01</td></tr>
+    <tr><td><strong>Cut the brass</strong></td><td>only after the frame drawing is checked against the mock-up</td><td>frame design</td></tr>
+    <tr><td><strong>Permanent wiring</strong></td><td>replace breadboard jumpers with short soldered wires, one module at a time, testing after each</td><td>the final layout</td></tr>
+    <tr><td><strong>Sleep button (optional)</strong></td><td>a button on GPIO0 that puts A1 to sleep and wakes it; Claude writes the firmware</td><td>one owned button</td></tr>
+  </table>
+  </div>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> Part sizes are the builder's caliper measurements of 28 September; the speaker follows its datasheet; spare counts come from <code>docs/INVENTORY.md</code>. The OLED lit area is a typical value for a 0.96 inch 128 × 64 module, and the USB plug estimates are the USB-C standard's largest plug body; both stand until you measure. Fit guidance from <code>plan/concepts/14-fit-and-radio.md</code>; <code>cad/README.md</code> marks the old CAD as stale and asks for exactly this 1:1 model. If this page and the repository differ, the repository wins.</p>
+    <p><strong>What is and is not verified.</strong> The layout sizes are first estimates; spare parts and a cardboard box check space only, not radio range. A spare may differ slightly from the parts in the working prototype. The checkboxes and table values are remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+    document.querySelectorAll("table.t input").forEach(function (el) {
+      var key = "pocket-mock-" + el.id; var saved = store(key); if (saved) el.value = saved;
+      el.addEventListener("input", function () { store(key, el.value); });
+    });
+    ["gate-11c", "gate-mock"].forEach(function (id) {
+      var box = document.getElementById(id); if (!box) return;
+      box.checked = store("pocket-mock-" + id) === "1";
+      box.addEventListener("change", function () { store("pocket-mock-" + id, box.checked ? "1" : "0"); });
+    });
+  })();
+</script>

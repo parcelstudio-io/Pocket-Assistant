@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" role="img" aria-labelledby="title desc">
+  <title id="title">Heat flow and solder wetting</title>
+  <desc id="desc">Left: a broad iron tip transfers heat into both the component lead and copper pad. Right: a wetted joint spreads onto the pad and lead, while a bead on the pad alone is not evidence of a connection.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#9a5b00"/></marker></defs>
+  <rect width="800" height="400" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="18">
+    <rect x="20" y="18" width="370" height="360" rx="14" fill="#f4f8fc"/>
+    <rect x="410" y="18" width="370" height="360" rx="14" fill="#f4f8fc"/>
+    <text x="40" y="52" font-size="22" font-weight="bold">1. Heat both surfaces</text>
+    <rect x="65" y="244" width="280" height="20" fill="#dbe6ee" stroke="#172b4d"/>
+    <rect x="176" y="232" width="136" height="12" fill="#087f8c"/>
+    <rect x="233" y="108" width="17" height="124" fill="#b6c9d8" stroke="#172b4d" stroke-width="2"/>
+    <path d="M55 111L88 83L230 213L216 232Z" fill="#687f93" stroke="#172b4d" stroke-width="2"/>
+    <path d="M175 169L219 207" fill="none" stroke="#9a5b00" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M259 201L282 227" fill="none" stroke="#9a5b00" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M237 202L237 156" fill="none" stroke="#9a5b00" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="44" y="89">iron tip</text>
+    <text x="266" y="124">lead</text>
+    <text x="63" y="292">board</text>
+    <text x="249" y="292" fill="#087f8c">copper pad</text>
+    <text x="44" y="332" fill="#9a5b00">Heat spreads into nearby copper.</text>
+    <text x="44" y="357">Contact area affects transfer speed.</text>
+    <text x="430" y="52" font-size="22" font-weight="bold">2. Look for wetting</text>
+    <rect x="435" y="232" width="143" height="12" fill="#087f8c"/>
+    <rect x="621" y="232" width="138" height="12" fill="#087f8c"/>
+    <rect x="498" y="114" width="16" height="118" fill="#b6c9d8" stroke="#172b4d" stroke-width="2"/>
+    <path d="M447 232Q488 226 498 176L498 232Z M514 176Q524 226 566 232L514 232Z" fill="#8cabc1" stroke="#1463ad" stroke-width="2"/>
+    <path d="M661 232C617 163 754 159 714 232Z" fill="#8cabc1" stroke="#1463ad" stroke-width="2"/>
+    <text x="441" y="277" fill="#1463ad">spreads onto</text>
+    <text x="451" y="300" fill="#1463ad">pad + lead</text>
+    <text x="626" y="277" fill="#9a5b00">bead alone:</text>
+    <text x="619" y="300" fill="#9a5b00">not proof of bond</text>
+    <text x="430" y="346">Shine alone cannot judge quality.</text>
+  </g>
+</svg>

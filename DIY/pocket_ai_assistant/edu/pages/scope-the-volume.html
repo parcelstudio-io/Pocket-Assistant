@@ -1,0 +1,443 @@
+<title>Scope the Volume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
+  .track > div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--pass); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps[start="3"] { counter-reset: step 2; }
+  ol.steps[start="4"] { counter-reset: step 3; }
+  ol.steps[start="5"] { counter-reset: step 4; }
+  ol.steps[start="6"] { counter-reset: step 5; }
+  ol.steps[start="9"] { counter-reset: step 8; }
+  ol.steps[start="10"] { counter-reset: step 9; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .thick { stroke-width: 2.2; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>
+  .stamp { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-tint); border-radius: 4px; padding: 2px 8px; margin-right: 6px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 72ch; }
+  figure svg .edge.accent-stroke { stroke: var(--accent); }
+  figure svg .edge.warn-stroke { stroke: var(--warn); }
+  figure svg .iron { stroke-width: 7; stroke-linecap: round; }
+  figure svg .stripe { fill: var(--muted); }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .8em; margin-right: 6px; }
+</style>
+<style>
+  .calc { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 18px 0 24px; display: grid; gap: 14px; }
+  .calc .row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+  .calc label { font-weight: 600; font-size: 14px; }
+  .calc input { font-family: var(--mono); font-size: 16px; width: 7.5em; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+  .calc .hint { font-size: 13px; color: var(--muted); }
+  .verdict { border-radius: 6px; padding: 10px 14px; font-size: 15px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); }
+  .verdict.warn { background: var(--warn-tint); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+  .verdict b { font-family: var(--mono); }
+  table.t td.ok { color: var(--pass); font-weight: 600; }
+  table.t td.tight { color: var(--warn); font-weight: 600; }
+  table.t td.no { color: var(--warn); font-weight: 700; text-decoration: line-through; }
+  figure svg .chart-line { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+  figure svg .limit { stroke: var(--warn); stroke-width: 1.6; stroke-dasharray: 6 4; }
+  figure svg .margin { stroke: var(--pass); stroke-width: 1.2; stroke-dasharray: 3 4; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; }
+  figure svg .dot { fill: var(--accent); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · Step 11 · the scope has arrived</div>
+    <h1>Measure the speaker, then raise the volume</h1>
+    <p class="lede">A1 now plays at volume cap 30 with the amplifier's GAIN at 15 dB, its highest setting, and it is still quiet. Cap 30 was allowed without the scope; going past it needs a measurement. Measure what A1 really puts across the speaker at cap 30, calculate the cap that stays under the speaker's 2.53 V limit, and prove that cap on the dummy load before the speaker hears it.</p>
+  </header>
+
+  <div class="track">
+    <div><div class="name">Up to cap 30</div><p>Allowed now, no scope needed. The datasheet worst case is 0.98 V peak, under the 2.53 V limit.</p></div>
+    <div><div class="name">Above cap 30</div><p>Needs the dummy load and PASS 11B at that cap: the loudest filtered peak at or below 2.53 V.</p></div>
+    <div><div class="name">Why 2.53 V</div><p>√(0.8 W × 8 Ω) = 2.53 V. A peak at or below it keeps even a clipped, square-ish signal within the speaker's 0.8 W.</p></div>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Rules for the whole session</span>
+    <ul>
+      <li><strong>No ground clip ever goes on <code>OUT+</code> or <code>OUT−</code>.</strong> Both ground clips go on A1's GND. The outputs are not ground; a clip there shorts the amplifier through the scope.</li>
+      <li>Unplug USB before every probe or wiring change.</li>
+      <li>An image with a cap above 30 only ever runs into the dummy load until PASS 11B passes at that cap.</li>
+      <li>USB stays the only power. The scope's own adapter powers only the scope.</li>
+    </ul>
+  </div>
+
+  <h2><span class="when">0:00</span>Check the scope before it touches A1</h2>
+  <ol class="steps">
+    <li><p><strong>Unbox and inspect:</strong> the DHO802, its USB-C 15 V adapter, the banana ground cable, and two PVP3150 probes. Power it up on the bench, nothing connected.</p></li>
+    <li><p><strong>Run self-calibration</strong> from the Utility menu while it warms. It takes several minutes; leave the inputs empty.</p></li>
+    <li><p><strong>Compensate each probe.</strong> Set the probe switch and the channel to <strong>10X</strong>. Hook the tip to the scope's compensation output and the clip to its ground tab. Turn the probe's trimmer until the 1 kHz square wave has flat tops, not rounded or spiked corners.</p></li>
+    <li><p><strong>Find out whether the grounds are earthed.</strong> Meter on continuity, one probe on a BNC input's metal shell, the other on the adapter's earth pin. Write down beep or no beep.</p></li>
+  </ol>
+  <div class="gate">
+    <input type="checkbox" id="gate-scope-in">
+    <label for="gate-scope-in">
+      <div class="name">SCOPE-IN-01 · the instrument is ready</div>
+      <p>Self-calibration finished, both probes show a flat-topped square at 10X, and the earth continuity result is written down.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">0:15</span>Hook up, USB unplugged</h2>
+  <p>The speaker can stay on for this measurement, because A1 runs cap 30, which your decision of 22 September allows directly. You measure the voltage between the two outputs, so each probe goes to one output and both grounds go to A1's GND.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 320" style="min-width: 640px; width: 100%;" role="img" aria-label="Probe hookup. Channel 1's tip hooks onto the amplifier's OUT plus terminal screw, channel 2's tip onto OUT minus. Both ground clips go to a spare jumper in A1's GND strip. The speaker stays between OUT plus and OUT minus. A crossed-out ground clip on OUT minus shows the forbidden connection. The scope computes channel 1 minus channel 2.">
+        <defs><marker id="ma" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+        <!-- amplifier -->
+        <rect class="box" x="40" y="70" width="190" height="170" rx="6"/>
+        <text class="t b" x="120" y="150" text-anchor="middle">AMP-A1</text>
+        <text class="s muted" x="120" y="166" text-anchor="middle">header side wired to A1</text>
+        <rect class="pass-fill" x="216" y="100" width="46" height="110" rx="3"/>
+        <circle class="box" cx="239" cy="128" r="11"/><line class="edge thick" x1="232" y1="128" x2="246" y2="128"/>
+        <circle class="box" cx="239" cy="182" r="11"/><line class="edge thick" x1="232" y1="182" x2="246" y2="182"/>
+        <text class="s b m" x="206" y="132" text-anchor="end">OUT+</text><text class="s b m" x="206" y="186" text-anchor="end">OUT−</text>
+        <!-- speaker -->
+        <path class="edge thick" d="M262,128 C300,128 300,120 330,120"/><path class="edge thick" d="M262,182 C300,182 300,190 330,190"/>
+        <rect class="box" x="330" y="104" width="92" height="104" rx="8"/><circle class="soft" cx="376" cy="156" r="24"/>
+        <text class="s b" x="376" y="228" text-anchor="middle">SPK-A1</text>
+        <text class="s muted" x="376" y="242" text-anchor="middle">stays on at cap 30</text>
+        <!-- GND strip -->
+        <rect class="soft" x="40" y="276" width="220" height="16" rx="3"/>
+        <text class="s b m" x="150" y="288" text-anchor="middle">A1 GND strip · spare jumper</text>
+        <!-- scope -->
+        <rect class="box" x="560" y="40" width="200" height="210" rx="8"/>
+        <text class="t b" x="660" y="64" text-anchor="middle">DHO802</text>
+        <circle class="box" cx="590" cy="110" r="10"/><text class="s b" x="608" y="114">CH1</text>
+        <circle class="box" cx="590" cy="170" r="10"/><text class="s b" x="608" y="174">CH2</text>
+        <rect class="cap" x="580" y="206" width="160" height="30" rx="4"/>
+        <text class="s b cap-ink" x="660" y="225" text-anchor="middle">Math: CH1 − CH2</text>
+        <!-- probe tips -->
+        <path class="edge accent-stroke thick" d="M580,110 H470 V70 H239 V117" marker-end="url(#ma)"/>
+        <text class="s b cap-ink" x="470" y="62" text-anchor="middle">CH1 tip on the OUT+ screw</text>
+        <path class="edge accent-stroke thick" d="M580,170 H500 V256 H300 V200 H252" marker-end="url(#ma)"/>
+        <text class="s b cap-ink" x="520" y="272" text-anchor="middle">CH2 tip on the OUT− screw</text>
+        <!-- ground clips -->
+        <path class="edge dashed" d="M590,120 V148 H540 V300 H200 V292"/>
+        <path class="edge dashed" d="M590,180 V190 H552 V306 H110 V292"/>
+        <text class="s b" x="640" y="300">both ground clips</text><text class="s b" x="640" y="314">to A1 GND</text>
+        <!-- forbidden -->
+        <g transform="translate(120,212)">
+          <rect class="warn-fill" x="0" y="0" width="62" height="22" rx="3"/>
+          <text class="s b warn-ink" x="31" y="15" text-anchor="middle">✗ clip</text>
+        </g>
+        <line class="edge warn-stroke" x1="182" y1="222" x2="228" y2="190"/>
+        <text class="s b warn-ink" x="120" y="256" text-anchor="start">never a ground clip on OUT±</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two tips on the outputs, two clips on ground.</strong> Hook each tip onto a terminal screw head, which is bare metal. Clip both grounds to one spare jumper pushed into A1's GND strip. The scope subtracts channel 2 from channel 1 to get the voltage across the speaker.</figcaption>
+  </figure>
+
+  <h2><span class="when">0:20</span>Set the scope, then read three long replies</h2>
+  <p>The amplifier drives its outputs as fast on-off pulses, each swinging the full 5 V, and lets the speaker's coil smooth them into sound. The scope sees the raw pulses, so an unfiltered reading always says about 5 V, whatever the volume. A low-pass filter on the math trace removes the pulses and leaves the audio you want to measure.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 250" style="min-width: 620px; width: 100%;" role="img" aria-label="Two traces of the same moment. Top, the raw channel 1 minus channel 2: dense pulses swinging between plus and minus 5 volts whose width changes slowly. Bottom, the same trace after a 20 kilohertz low-pass filter: a small smooth wave, the actual audio, far below the 2.53 volt limit line.">
+        <text class="t b" x="20" y="22">Raw CH1 − CH2: switching pulses</text>
+        <line class="grid" x1="60" y1="75" x2="760" y2="75"/>
+        <text class="s m muted" x="52" y="42" text-anchor="end">+5 V</text><text class="s m muted" x="52" y="79" text-anchor="end">0</text><text class="s m muted" x="52" y="116" text-anchor="end">−5 V</text>
+        <g id="pulses"></g>
+        <text class="s b warn-ink" x="760" y="30" text-anchor="end">reads about 5 V at any volume</text>
+        <text class="t b" x="20" y="150">Math with a 20 kHz low-pass: the audio</text>
+        <line class="grid" x1="60" y1="205" x2="760" y2="205"/>
+        <line class="limit" x1="60" y1="165" x2="760" y2="165"/>
+        <text class="s b warn-ink" x="760" y="160" text-anchor="end">2.53 V limit</text>
+        <path id="audio" class="chart-line" d=""/>
+        <text class="s m muted" x="52" y="209" text-anchor="end">0</text>
+        <text class="s b cap-ink" x="760" y="238" text-anchor="end">read the Max of this trace</text>
+      </svg>
+    </div>
+    <figcaption><strong>Measure the filtered trace, never the raw one.</strong> Drawn to show the idea, not to scale in time. If your DHO802's Math menu has no low-pass filter, the reading is <code>INCONCLUSIVE</code>: record that and do not raise the cap above 30 on it.</figcaption>
+  </figure>
+
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>Setting</th><th>Value</th><th>Why</th></tr>
+    <tr><td>CH1 and CH2</td><td class="n">10X, DC, 1 V/div, 20 MHz bandwidth limit</td><td>Matches the probes; room for a few volts</td></tr>
+    <tr><td>Math</td><td class="n">CH1 − CH2</td><td>The voltage across the speaker</td></tr>
+    <tr><td>Math filter</td><td class="n">low-pass, about 20 kHz</td><td>Removes the switching pulses, keeps speech</td></tr>
+    <tr><td>Timebase</td><td class="n">200 ms/div, trigger Auto</td><td>A couple of seconds of a reply on screen</td></tr>
+    <tr><td>Measure</td><td class="n">Vmax of Math, statistics on</td><td>The statistics keep the largest value seen</td></tr>
+  </table>
+  </div>
+
+  <ol class="steps">
+    <li><p><strong>Plug USB in</strong> and wait for A1 to reach idle.</p></li>
+    <li><p><strong>Reset the measurement statistics,</strong> quick-press the button and ask for something long, such as "Tell me a story about a lighthouse".</p></li>
+    <li><p><strong>Do it three times</strong> without resetting the statistics. The <strong>Max</strong> of Vmax after the third reply is <strong>V₃₀</strong>. Write it down and photograph the screen.</p></li>
+  </ol>
+
+  <h2><span class="when">0:35</span>Turn V₃₀ into a cap</h2>
+  <p>The firmware squares the volume before it scales the audio, so the peak grows with the square of the cap: <code>V(cap) = V₃₀ × (cap ÷ 30)²</code>. Going from cap 30 to 45 makes the peak 2.25 times larger. The calculator keeps a 20 % margin under 2.53 V, because a louder reply than the three you measured is always possible.</p>
+
+  <div class="calc">
+    <div class="row">
+      <label for="v15">Your V₃₀, in volts</label>
+      <input id="v15" type="number" min="0.001" max="3" step="0.001" value="0.40" inputmode="decimal">
+      <span class="hint" id="v15-note">Example value shown. Type your reading.</span>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <figure style="margin:0">
+      <div class="scroll">
+        <svg id="curve" viewBox="0 0 700 292" style="min-width: 560px; width: 100%;" role="img" aria-label="Predicted peak voltage against volume cap from 15 to 100, with the 2.53 volt limit and the 2.02 volt margin line.">
+          <g id="axes"></g>
+          <line id="limit" class="limit" x1="60" x2="680"/>
+          <line id="marginline" class="margin" x1="60" x2="680"/>
+          <text id="limit-t" class="s b warn-ink" x="680" text-anchor="end">limit 2.53 V</text>
+          <text id="margin-t" class="s b pass-ink" x="680" text-anchor="end">with margin 2.02 V</text>
+          <path id="line" class="chart-line" d=""/>
+          <g id="dots"></g>
+        </svg>
+      </div>
+    </figure>
+    <div class="scrollx"><table class="t" id="captable"></table></div>
+  </div>
+
+  <h2><span class="when">0:40</span>Build the louder image</h2>
+  <p>Choose the cap from the calculator. If it says 30, stop after this section: cap 30 needs no dummy load, so put the speaker back and skip to the last section.</p>
+  <ol class="steps">
+    <li><p><strong>Change one line</strong> in <code>firmware/sdkconfig.defaults</code>, which now reads <code>…=30</code>, putting your cap in place of 45. Or ask Claude to do the rebuild.</p>
+<pre><code>CONFIG_POCKET_AI_MAX_VOLUME=45</code></pre></li>
+    <li><p><strong>Rebuild and verify.</strong> About five minutes. Continue only if the verifier prints <code>amplifier: ENABLED (Step 11, USB-powered)</code>.</p>
+<pre><code>. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh --assistant --amplifier
+python3 firmware/scripts/verify_source_build.py</code></pre></li>
+    <li><p><strong>Above 30: swap in the dummy load first.</strong> USB unplugged, speaker leads out of the terminal block, the dummy load's two wires in. The new image must never play into the speaker before PASS 11B.</p></li>
+    <li><p><strong>Flash, keeping Wi-Fi,</strong> and find <code>Prototype volume cap: 45</code> in the log.</p>
+<pre><code>firmware/scripts/flash.sh /dev/ttyACM0 --keep-wifi --monitor</code></pre></li>
+    <li><p><strong>No voice command needed.</strong> Since 28 September A1 starts every boot at its cap, so the log also shows <code>start volume: 45</code>.</p></li>
+  </ol>
+
+  <h2><span class="when">0:50</span>PASS 11B on the dummy load</h2>
+  <p>Same probes, same settings, same three long replies, now into the dummy load at the new cap.</p>
+  <div class="gate">
+    <input type="checkbox" id="gate-11b">
+    <label for="gate-11b">
+      <div class="name">PASS 11B · measured at the new cap</div>
+      <p>The Max of the filtered CH1 − CH2 stays at or below 2.53 V over three long replies into the dummy load, and A1 does not reset. Over 2.53 V: lower the cap by one step of 5, rebuild, and measure again.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">0:55</span>Speaker back on</h2>
+  <ol class="steps">
+    <li><p><strong>Unplug USB,</strong> take the scope probes off, swap the dummy load for the speaker, and tighten both screws until a gentle tug does not move the leads.</p></li>
+    <li><p><strong>Five long replies in a row.</strong> Stop and unplug if you hear harsh buzzing or smell anything, or if the speaker gets warm.</p></li>
+  </ol>
+  <div class="gate">
+    <input type="checkbox" id="gate-11c">
+    <label for="gate-11c">
+      <div class="name">PASS 11C · louder, at the measured cap</div>
+      <p>Five replies are clearly audible from the speaker at the cap that passed 11B, with no reset, no buzz and no warmth.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">after</span>Write it down</h2>
+<pre><code>test ID:          STEP11-02
+date:             ______
+scope:            SCOPE-IN-01 done · probe grounds earthed: yes / no
+V30 (cap 30, GAIN 15 dB): ______ V   filtered Max of CH1 − CH2, three replies
+new cap:          ______     predicted peak: ______ V
+PASS 11B:         Max ______ V into dummy load  (≤ 2.53 V)
+PASS 11C:         ___ of 5 replies, resets: ___
+photos:           scope screen at 15, scope screen at new cap</code></pre>
+
+  <div class="evidence">
+    <p><strong>Source and authority.</strong> Built from Step 11 of <code>plan/FAST_TRACK.md</code>, the firmware's squared volume curve in <code>no_audio_codec.cc</code>, the cap and saved-volume logic in <code>pocket_wall_e_c3.cc</code>, and the builder's decision of 22 September on caps up to 30. If this page and the repository differ, the repository wins.</p>
+    <p><strong>What is and is not verified.</strong> Nothing on this page has run yet. The scope settings are starting points from the DHO802's published features, not tested values; whether its Math menu offers the low-pass filter is unconfirmed. The calculator's predictions are <code>CALCULATED</code> from your V₃₀ and assume the reply content is similar; only PASS 11B at the new cap is evidence. The checkboxes and your V₃₀ are remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var LIMIT = 2.53, MARGIN = 0.8 * LIMIT, WORST30 = 0.98;
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function store(key, value) { try { if (value === undefined) return localStorage.getItem(key); localStorage.setItem(key, value); } catch (e) { return null; } }
+
+  // Illustration: raw pulses and filtered audio
+  (function () {
+    var g = document.getElementById("pulses"), x = 60, i = 0;
+    while (x < 760) {
+      var duty = 0.5 + 0.35 * Math.sin(i / 7);
+      var w = 10, hi = w * duty;
+      g.appendChild(el("rect", { x: x, y: 38, width: Math.max(1, hi - 1), height: 37, fill: "currentColor", opacity: "0.55" }));
+      g.appendChild(el("rect", { x: x + hi, y: 75, width: Math.max(1, w - hi - 1), height: 37, fill: "currentColor", opacity: "0.3" }));
+      x += w; i++;
+    }
+    var d = "";
+    for (var px = 60; px <= 760; px += 4) {
+      var y = 205 - 16 * Math.sin((px - 60) / 700 * Math.PI * 2 * (60 / 7 / Math.PI / 2 * 7) ) * (0.6 + 0.4 * Math.sin(px / 90));
+      d += (px === 60 ? "M" : "L") + px + "," + y.toFixed(1);
+    }
+    document.getElementById("audio").setAttribute("d", d);
+  })();
+
+  // Calculator
+  var X0 = 60, X1 = 680, Y0 = 250, Y1 = 20, CAPMIN = 15, CAPMAX = 100, VMAX = 3;
+  function sx(cap) { return X0 + (cap - CAPMIN) / (CAPMAX - CAPMIN) * (X1 - X0); }
+  function sy(v) { return Y0 - Math.min(v, VMAX) / VMAX * (Y0 - Y1); }
+  var axes = document.getElementById("axes");
+  [0, 0.5, 1, 1.5, 2, 2.5, 3].forEach(function (v) {
+    axes.appendChild(el("line", { class: "grid", x1: X0, x2: X1, y1: sy(v), y2: sy(v) }));
+    axes.appendChild(el("text", { class: "s m muted", x: X0 - 8, y: sy(v) + 4, "text-anchor": "end" }, v.toFixed(1) + " V"));
+  });
+  [15, 30, 45, 60, 75, 90, 100].forEach(function (c) {
+    axes.appendChild(el("text", { class: "s m muted", x: sx(c), y: Y0 + 18, "text-anchor": "middle" }, String(c)));
+  });
+  axes.appendChild(el("text", { class: "s muted", x: X1, y: Y0 + 30, "text-anchor": "end" }, "volume cap"));
+  ["limit", "marginline"].forEach(function (id) {
+    var v = id === "limit" ? LIMIT : MARGIN, line = document.getElementById(id);
+    line.setAttribute("y1", sy(v)); line.setAttribute("y2", sy(v));
+  });
+  document.getElementById("limit-t").setAttribute("y", sy(LIMIT) - 6);
+  document.getElementById("margin-t").setAttribute("y", sy(MARGIN) + 14);
+
+  var input = document.getElementById("v15");
+  var saved = store("pocket-scope-v30");
+  if (saved) { input.value = saved; document.getElementById("v15-note").textContent = "Your saved reading."; }
+
+  function render() {
+    var v15 = parseFloat(input.value);
+    var verdict = document.getElementById("verdict"), table = document.getElementById("captable");
+    var dots = document.getElementById("dots"); dots.innerHTML = "";
+    if (!(v15 > 0)) {
+      verdict.className = "verdict warn";
+      verdict.textContent = "Enter the Max you measured at cap 30, in volts, for example 0.35.";
+      document.getElementById("line").setAttribute("d", ""); table.innerHTML = ""; return;
+    }
+    function peak(c) { return v15 * Math.pow(c / 30, 2); }
+    var d = "";
+    for (var c = CAPMIN; c <= CAPMAX && peak(c) <= VMAX; c += 1) d += (c === CAPMIN ? "M" : "L") + sx(c).toFixed(1) + "," + sy(peak(c)).toFixed(1);
+    document.getElementById("line").setAttribute("d", d);
+    var capLimit = 30 * Math.sqrt(LIMIT / v15);
+    var rec = Math.min(CAPMAX, Math.floor(30 * Math.sqrt(MARGIN / v15) / 5) * 5);
+    if (v15 > WORST30) {
+      verdict.className = "verdict warn";
+      verdict.innerHTML = "<b>" + v15.toFixed(3) + " V</b> is above the datasheet's worst case of 0.98 V at cap 30 with GAIN at 15 dB. Check that the Math low-pass filter is on and both channels are set to 10X, then measure again. Do not raise the cap on this reading.";
+    } else if (rec <= 30) {
+      verdict.className = "verdict";
+      verdict.innerHTML = "Stay at <b>cap 30</b>. It predicts <b>" + peak(30).toFixed(2) + " V</b>, and it needs no dummy load.";
+    } else {
+      verdict.className = "verdict";
+      verdict.innerHTML = "Suggested cap: <b>" + rec + "</b>, predicting <b>" + peak(rec).toFixed(2) + " V</b>. The 2.53 V limit would be reached near cap " + Math.floor(capLimit) + ". Prove cap " + rec + " on the dummy load before the speaker hears it.";
+    }
+    var rows = "<tr><th>Cap</th><th>Share of full amplitude</th><th>Predicted peak</th><th>Status</th></tr>";
+    [30, 35, 40, 45, 50, 60, 70, 80, 100].forEach(function (c) {
+      var p = peak(c), status, cls;
+      if (p > LIMIT) { status = "over the limit"; cls = "no"; }
+      else if (p > MARGIN) { status = "under the limit, inside the margin"; cls = "tight"; }
+      else if (c <= 30) { status = c === 30 ? "measured, allowed" : "allowed, no dummy load"; cls = "ok"; }
+      else { status = "needs PASS 11B"; cls = "ok"; }
+      rows += "<tr><td class='n'>" + c + "</td><td class='n'>" + (Math.pow(c / 100, 2) * 100).toFixed(1) + " %</td><td class='n'>" + p.toFixed(2) + " V</td><td class='" + cls + "'>" + status + "</td></tr>";
+      if (c > 30) dots.appendChild(el("circle", { class: "dot", cx: sx(c), cy: sy(p), r: p > LIMIT ? 0 : 3.5 }));
+    });
+    table.innerHTML = rows;
+  }
+  input.addEventListener("input", function () {
+    store("pocket-scope-v30", input.value);
+    document.getElementById("v15-note").textContent = "Your reading.";
+    render();
+  });
+  render();
+
+  ["gate-scope-in", "gate-11b", "gate-11c"].forEach(function (id) {
+    var box = document.getElementById(id); if (!box) return;
+    box.checked = store("pocket-scope-" + id) === "1";
+    box.addEventListener("change", function () { store("pocket-scope-" + id, box.checked ? "1" : "0"); });
+  });
+})();
+</script>

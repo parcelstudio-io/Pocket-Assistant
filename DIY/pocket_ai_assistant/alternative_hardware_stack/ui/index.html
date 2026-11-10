@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6f5bdd">
+  <meta name="description" content="Pip, a friendly pocket interface for a locally hosted AI model.">
+  <title>Pip · Pocket AI</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="history-policy.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#composer-input">Skip to message box</a>
+
+  <div class="page-glow page-glow--one" aria-hidden="true"></div>
+  <div class="page-glow page-glow--two" aria-hidden="true"></div>
+
+  <main class="device" aria-label="Pip pocket assistant prototype">
+    <header class="topbar">
+      <div class="brand" aria-label="Pip, your pocket AI">
+        <span class="brand-mark" aria-hidden="true">
+          <span class="brand-mark__eye"></span>
+          <span class="brand-mark__eye"></span>
+        </span>
+        <span>
+          <strong>Pip</strong>
+          <small>your pocket pal</small>
+        </span>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-button" id="clear-button" type="button" aria-label="Start a new conversation" title="New conversation">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 12a8 8 0 1 0 2.34-5.66M4 4v5h5"/>
+          </svg>
+        </button>
+        <button class="connection-chip" id="settings-button" type="button" aria-haspopup="dialog" aria-controls="settings-dialog">
+          <span class="connection-dot" id="connection-dot" aria-hidden="true"></span>
+          <span id="connection-label">Demo</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 5 5-5 5"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="companion" aria-labelledby="assistant-state">
+      <span class="sparkle sparkle--one" aria-hidden="true">✦</span>
+      <span class="sparkle sparkle--two" aria-hidden="true">•</span>
+      <span class="sparkle sparkle--three" aria-hidden="true">✶</span>
+
+      <div class="bot" id="bot" aria-hidden="true">
+        <span class="bot__antenna"><span></span></span>
+        <div class="bot__ear bot__ear--left"></div>
+        <div class="bot__ear bot__ear--right"></div>
+        <div class="bot__head">
+          <div class="bot__shine"></div>
+          <div class="bot__screen">
+            <div class="bot__eyes">
+              <span class="bot__eye"><i></i></span>
+              <span class="bot__eye"><i></i></span>
+            </div>
+            <div class="bot__thinking-dots"><i></i><i></i><i></i></div>
+            <div class="bot__mouth">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state-pill" id="assistant-state" role="status" aria-live="polite">
+        <span class="state-pulse" aria-hidden="true"></span>
+        <span id="state-label">Ready when you are</span>
+      </div>
+    </section>
+
+    <section class="conversation" id="conversation" aria-label="Conversation" tabindex="0">
+      <article class="message message--assistant message--welcome">
+        <span class="message__avatar" aria-hidden="true">P</span>
+        <div>
+          <p>Hi! I’m Pip. Ask me something, or tap the mic and say it out loud. <span aria-hidden="true">🌱</span></p>
+          <small>Demo mode works without a server</small>
+        </div>
+      </article>
+
+      <div class="suggestions" id="suggestions" aria-label="Suggested messages">
+        <button type="button" data-prompt="Give me a cheerful one-minute plan for today">Plan my next minute</button>
+        <button type="button" data-prompt="Explain how a local AI model answers me in simple terms">How do you work?</button>
+        <button type="button" data-prompt="Tell me a tiny robot joke">Tiny robot joke</button>
+      </div>
+    </section>
+
+    <footer class="composer-wrap">
+      <form class="composer" id="composer-form">
+        <button class="round-button mic-button" id="mic-button" type="button" aria-label="Speak a message" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4Z"/>
+            <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/>
+          </svg>
+        </button>
+
+        <label class="sr-only" for="composer-input">Message Pip</label>
+        <textarea id="composer-input" rows="1" maxlength="2000" placeholder="Ask Pip anything…" autocomplete="off"></textarea>
+
+        <button class="round-button send-button" id="send-button" type="submit" aria-label="Send message">
+          <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m4 12 16-8-6 16-2.4-5.6L4 12Z"/><path d="m11.6 14.4 3.7-3.7"/>
+          </svg>
+          <svg class="stop-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="7" y="7" width="10" height="10" rx="2"/>
+          </svg>
+        </button>
+      </form>
+      <p class="composer-hint" id="composer-hint">Enter to send · Shift + Enter for a new line</p>
+    </footer>
+  </main>
+
+  <dialog class="settings" id="settings-dialog" aria-labelledby="settings-title">
+    <form method="dialog" id="settings-form">
+      <div class="settings__header">
+        <div>
+          <p class="eyebrow">Pip’s connection</p>
+          <h2 id="settings-title">Brain settings</h2>
+        </div>
+        <button class="icon-button settings-close" type="button" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <label class="field">
+        <span>Connection mode</span>
+        <select id="mode-select">
+          <option value="demo">Built-in demo (no server)</option>
+          <option value="server">Local model server</option>
+        </select>
+      </label>
+
+      <label class="field server-field">
+        <span>Chat endpoint</span>
+        <input id="endpoint-input" type="text" inputmode="url" spellcheck="false" value="/api/chat" placeholder="/api/chat">
+        <small>Use <code>/api/chat</code> when this UI is served by the included server.</small>
+      </label>
+
+      <label class="field server-field">
+        <span>Access token <em>optional</em></span>
+        <input id="token-input" type="password" autocomplete="off" spellcheck="false" placeholder="POCKET_AI_TOKEN">
+        <small>Kept in memory only; re-enter it after a reload.</small>
+      </label>
+
+      <label class="switch-row">
+        <span>
+          <strong>Read replies aloud</strong>
+          <small>Uses your browser’s built-in voice.</small>
+        </span>
+        <input id="speech-toggle" type="checkbox" role="switch" checked>
+      </label>
+
+      <div class="connection-test server-field">
+        <button class="secondary-button" id="test-button" type="button">Check gateway</button>
+        <output id="test-result" aria-live="polite"></output>
+      </div>
+
+      <p class="privacy-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.7 2.8 8.1 7 10 4.2-1.9 7-5.3 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg>
+        Demo messages stay in this tab. Server-mode messages go only to the endpoint you enter.
+      </p>
+
+      <div class="settings__actions">
+        <button class="secondary-button settings-close" type="button">Cancel</button>
+        <button class="primary-button" id="save-settings" type="submit">Save settings</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <div class="sr-only" id="announcement" aria-live="polite"></div>
+
+  <template id="message-template">
+    <article class="message">
+      <span class="message__avatar" aria-hidden="true"></span>
+      <div>
+        <p></p>
+        <small></small>
+      </div>
+    </article>
+  </template>
+
+  <noscript>This prototype needs JavaScript for chat, microphone, and streaming replies.</noscript>
+</body>
+</html>

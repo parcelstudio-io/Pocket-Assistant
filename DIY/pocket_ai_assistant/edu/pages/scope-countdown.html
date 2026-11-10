@@ -1,0 +1,318 @@
+<title>Scope Countdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h3 { font-size: 18px; margin: 30px 0 8px; font-weight: 700; }
+  h3 .date { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; margin-bottom: 3px; }
+  h4 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 16px 0 6px; font-weight: 600; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul, ol { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+  nav.toc a { font-size: 13px; text-decoration: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px; color: var(--ink); }
+  nav.toc a.today { border-color: var(--accent); background: var(--accent-tint); color: var(--accent-ink); font-weight: 600; }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout.radio { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+  .callout.warn .label { color: var(--warn); }
+  .callout.radio .label { color: var(--accent-ink); }
+  .day { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 6px; margin: 18px 0; }
+  .day.today { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+  .day h3 { margin-top: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .meta span b { color: var(--ink); font-weight: 600; }
+  .pages { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
+  .pages a { display: block; text-decoration: none; color: var(--ink); background: var(--accent-tint); border: 1px solid var(--accent); border-radius: 6px; padding: 10px 12px; }
+  .pages a .n { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+  .pages a .q { display: block; font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 560px) { .pages { grid-template-columns: 1fr; } }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  table.sched { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 14px; }
+  table.sched th, table.sched td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.sched th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.sched td.t { font-family: var(--mono); font-size: 13px; white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .gate { display: grid; grid-template-columns: 1fr; gap: 4px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 14px; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); }
+  .gate p { margin: 0; max-width: none; }
+  .opt { font-size: 14px; color: var(--muted); border-left: 3px solid var(--line); padding: 6px 14px; margin: 10px 0 12px; max-width: 72ch; }
+  .opt b { color: var(--ink); font-weight: 600; }
+  .block { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; margin: 18px 0 6px; }
+  .block.learn { color: var(--accent-ink); }
+  .block.build { color: var(--pass); }
+  .note { font-size: 14px; color: var(--muted); margin: 6px 0 10px; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · 22 to 30 September 2026</div>
+    <h1>Nine days to the scope: learn two hours, build one</h1>
+    <p class="lede">Every day has the same shape: two illustrated lessons in two hours, then one hour at the bench moving the device forward. The build hours finish Step 11 early: A1 speaks through its speaker on Wednesday 23, and the scope, arriving Wednesday 30 September, then measures what already works.</p>
+  </header>
+
+  <nav class="toc" aria-label="Days">
+    <a class="today" href="#d22">Tue 22 · today</a><a href="#d23">Wed 23</a><a href="#d24">Thu 24</a><a href="#d25">Fri 25</a><a href="#d26">Sat 26</a><a href="#d27">Sun 27</a><a href="#d28">Mon 28</a><a href="#d29">Tue 29</a><a href="#d30">Wed 30 · scope</a><a href="#after">After</a>
+  </nav>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 980 170" style="min-width: 780px; width: 100%;" role="img" aria-label="Nine day cells from Tuesday 22 to Wednesday 30 September. Each cell has the day, the two lessons for the two-hour block, and the one-hour build task below a dashed line. The build tasks run: speaker lab, first sound from the speaker, radio survey, an open hour, dummy load, an open hour, measuring parts, scope prep, and the first scope captures on the 30th.">
+        <rect class="pass-fill" x="14" y="40" width="98" height="92" rx="5"/><text class="s b pass-ink" x="63" y="60" text-anchor="middle">Tue 22 · now</text><text class="s" x="63" y="82" text-anchor="middle">01 ✓ · 02</text><line class="edge dashed" x1="24" y1="94" x2="102" y2="94"/><text class="s b cap-ink" x="63" y="116" text-anchor="middle">speaker lab</text>
+        <rect class="box" x="120" y="40" width="98" height="92" rx="5"/><text class="s b" x="169" y="60" text-anchor="middle">Wed 23</text><text class="s" x="169" y="82" text-anchor="middle">03 · 00</text><line class="edge dashed" x1="130" y1="94" x2="208" y2="94"/><text class="s b cap-ink" x="169" y="116" text-anchor="middle">first sound</text>
+        <rect class="box" x="226" y="40" width="98" height="92" rx="5"/><text class="s b" x="275" y="60" text-anchor="middle">Thu 24</text><text class="s" x="275" y="82" text-anchor="middle">04 · 05</text><line class="edge dashed" x1="236" y1="94" x2="314" y2="94"/><text class="s b cap-ink" x="275" y="116" text-anchor="middle">radio survey</text>
+        <rect class="box" x="332" y="40" width="98" height="92" rx="5"/><text class="s b" x="381" y="60" text-anchor="middle">Fri 25</text><text class="s" x="381" y="82" text-anchor="middle">06 · 07</text><line class="edge dashed" x1="342" y1="94" x2="420" y2="94"/><text class="s b cap-ink" x="381" y="116" text-anchor="middle">open hour</text>
+        <rect class="box" x="438" y="40" width="98" height="92" rx="5"/><text class="s b" x="487" y="60" text-anchor="middle">Sat 26</text><text class="s" x="487" y="82" text-anchor="middle">08 · 09</text><line class="edge dashed" x1="448" y1="94" x2="526" y2="94"/><text class="s b cap-ink" x="487" y="116" text-anchor="middle">dummy load</text>
+        <rect class="box" x="544" y="40" width="98" height="92" rx="5"/><text class="s b" x="593" y="60" text-anchor="middle">Sun 27</text><text class="s" x="593" y="82" text-anchor="middle">10 · 11</text><line class="edge dashed" x1="554" y1="94" x2="632" y2="94"/><text class="s b cap-ink" x="593" y="116" text-anchor="middle">open hour</text>
+        <rect class="box" x="650" y="40" width="98" height="92" rx="5"/><text class="s b" x="699" y="60" text-anchor="middle">Mon 28</text><text class="s" x="699" y="82" text-anchor="middle">12 · 13</text><line class="edge dashed" x1="660" y1="94" x2="738" y2="94"/><text class="s b cap-ink" x="699" y="116" text-anchor="middle">measure parts</text>
+        <rect class="box" x="756" y="40" width="98" height="92" rx="5"/><text class="s b" x="805" y="60" text-anchor="middle">Tue 29</text><text class="s" x="805" y="82" text-anchor="middle">review</text><line class="edge dashed" x1="766" y1="94" x2="844" y2="94"/><text class="s b cap-ink" x="805" y="116" text-anchor="middle">scope prep</text>
+        <rect class="cap" x="862" y="40" width="98" height="92" rx="5"/><text class="s b cap-ink" x="911" y="60" text-anchor="middle">Wed 30</text><text class="s" x="911" y="82" text-anchor="middle">the scope</text><line class="edge dashed" x1="872" y1="94" x2="950" y2="94"/><text class="s b cap-ink" x="911" y="116" text-anchor="middle">first captures</text>
+        <text class="s muted" x="14" y="158">above the line: two lessons, 2 hours</text>
+        <text class="s cap-ink b" x="966" y="158" text-anchor="end">below the line: the build hour</text>
+      </svg>
+    </div>
+    <figcaption><strong>Learn two hours, build one, every day.</strong> The lessons keep the course's order, with Lesson 01 already done. Wednesday's build hour takes Step 11 all the way to a spoken reply without the scope, by your decision of 22 September. That leaves two open build hours for whatever comes next.</figcaption>
+  </figure>
+
+  <div class="callout warn">
+    <span class="label">Rules for every day</span>
+    <ul>
+      <li>The cells and charger stay terminal-protected in another room. This is a USB-powered device; they are not part of it.</li>
+      <li>Unplug USB before every wiring change. The amplifier connects only as Step 11 describes, powered from the controller's 5V pin.</li>
+      <li>Neither speaker lead is ground, and no probe ground ever goes on one.</li>
+      <li>If you open the bench supply, it is 3.3 V with a written current limit and the six-move sequence at the bottom of this page.</li>
+      <li>Stop at three hours. One study log per day; one lab record per build hour.</li>
+    </ul>
+  </div>
+
+  <h2>How each day runs</h2>
+  <table class="sched">
+    <tr><th>Time</th><th>Block</th><th>What you do</th></tr>
+    <tr><td class="t">0:00</td><td>Lesson A</td><td>Read about 35 minutes, covering each caption and saying what the figure claims before reading it. Then close the page, write five sentences, and redraw one figure from memory.</td></tr>
+    <tr><td class="t">0:50</td><td>Break</td><td>Ten minutes away from the desk.</td></tr>
+    <tr><td class="t">1:00</td><td>Lesson B</td><td>The same, for the second page.</td></tr>
+    <tr><td class="t">1:45</td><td>Check yourself</td><td>Both pages' questions, answers hidden until you commit. A miss goes on the list for Tuesday 29.</td></tr>
+    <tr><td class="t">2:00</td><td>Build</td><td>Five minutes to restore the bench and confirm the cells are away, 45 minutes of the day's task, ten minutes to log it, clean up, and write the next first action.</td></tr>
+  </table>
+
+  <h2>Today in full</h2>
+
+  <div class="day today" id="d22">
+    <h3><span class="date">Tuesday 22 September · today</span>Series and parallel, then the speaker on paper</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/CTvQuhYJQLMfG3u7VoegtJ"><span class="n">Lesson 01 · Units and Energy</span>Charge to power, done this morning<span class="q">✓ done</span></a><a href="https://claude.ai/artifact/BJj6Wamepwqsj2nyqHcnmR"><span class="n">Lesson 02 · DC Circuits</span>Ohm, KVL and KCL, series and parallel, the divider that sags, the breadboard's hidden strips<span class="q">Your second lesson hour</span></a></div>
+    <ol class="steps"><li><p><strong>Before reading Lesson 02,</strong> predict on paper: two 10 kΩ in series across 3.3 V give 1.65 V at the middle. What happens when a third 10 kΩ hangs from that middle to ground, and why?</p></li><li><p><strong>Read, then explain back.</strong> Cover each caption and say what the figure claims. Close the page, write five sentences, and redraw the series-versus-parallel figure from memory.</p></li><li><p><strong>Connect it to A1:</strong> the 10 kΩ pull-up on GPIO2 and the 100 kΩ pull-down on GPIO4 are resistor networks like the ones on the page. Say what each holds the pin at, and why. Then the three check-yourself questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · the amplifier and speaker, unpowered</div>
+    <ol class="steps"><li><p>Nothing is powered: bench supply unplugged, no USB in any module, cells and charger in another room.</p></li><li><p>Meter check: red lead in V/Ω, short the probes, and write down the lead resistance. At 8 Ω a 0.2 Ω offset matters.</p></li><li><p>Label one HiLetgo board <code>AMP-A1</code> and leave the other two bagged. Label the speaker <code>SPK-A1</code>. Photograph both sides at phone macro zoom.</p></li><li><p><strong>Trace the amplifier's silkscreen:</strong> VIN, GND, BCLK, LRC, DIN, GAIN, SD and the two speaker terminals. Draw every resistor you can see around SD and note any value code printed on it. Step 11 picks its pull-down from this drawing.</p></li><li><p>Continuity, unpowered: each speaker terminal against the amplifier's GND pad. Then the speaker's DC resistance across its leads, minus the lead offset, labelled resistance, not impedance.</p></li><li><p>Draw the rule sheet: the floating bridge-tied connection and three forbidden ones, OUT+ to GND, OUT− to GND, and a scope ground on either lead. Tape it above the bench.</p></li></ol>
+    <div class="note">If you already did this lab on Monday, use the hour for Wednesday's build instead. The <a href="https://claude.ai/artifact/HWwymfV6dR7jdmsvZ28Lye">Lesson 10 page</a> explains every step; its reading comes on Sunday.</div>
+    <div class="gate"><div class="name">End of the day</div><p>Lesson 02's divider prediction is checked against the page, the SD network is drawn with any values you could read, and the speaker's DC resistance is recorded.</p></div>
+  </div>
+
+  <h2>The rest of the week</h2>
+
+  <div class="day" id="d23">
+    <h3><span class="date">Wednesday 23 September</span>Components and RC, then safety and evidence</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/XfZKVLd7k5YSGNHXJFmYjr"><span class="n">Lesson 03 · Components and RC</span>The RC curve and τ, decoupling as a local loop, diodes and MOSFETs, converters</a><a href="https://claude.ai/artifact/HxYY9VNYw9Qve4PG2PFhMt"><span class="n">Lesson 00 · Safety and Evidence</span>The safe order of evidence, the five evidence labels, what software cannot prove</a></div>
+    <ol class="steps"><li><p><strong>Lesson 03:</strong> work τ = RC = 10 s for 100 kΩ and 100 µF, and the decoupling arithmetic: 0.4 A for 100 µs into 100 µF is a 0.4 V dip. That is why the amplifier gets its own 220 µF in Step 11.</p></li><li><p><strong>Lesson 00:</strong> for each of the five evidence labels, write one example from your own build. The 1.024 MHz bit clock is <code>CALCULATED</code>; your two cold starts are <code>MEASURED</code>.</p></li><li><p>Explain both back in five sentences each, then the six check-yourself questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · first sound from the speaker</div>
+    <div class="note">Illustrated plan for this hour: <a href="https://claude.ai/artifact/SeJ5R6L42yetQFQMsAXTWR">One hour: make A1 speak</a>. The two checks planned here earlier are finished: A1's saved Wi-Fi and the 5V pin were both recorded on 22 September (<a href="https://claude.ai/artifact/Skc4nBjeVXUN9yRnUL4WXg">how they were done</a>), and the Step 10 record is skipped.</div>
+    <ol class="steps"><li><p><strong>Solder and wire <code>AMP-A1</code>:</strong> the header strip and terminal block, then the Step 11 wiring with the GPIO5 jumper left out for now.</p></li><li><p><strong>PASS 11A on the image A1 already runs:</strong> <code>VIN</code> close to 5 V, <code>SD</code> below 0.08 V on the pull-down alone, and one question still answered.</p></li><li><p><strong>Flash the speaking image,</strong> already built on 22 September with the volume cap at 15. Provision Wi-Fi again, put <code>SPK-A1</code> on the terminals, and ask five questions. By your decision of 22 September the dummy load and PASS 11B are skipped at cap 15.</p></li></ol>
+    <div class="gate"><div class="name">End of the day</div><p>Lessons 03 and 00 are explained back, and A1 answers out loud through <code>SPK-A1</code> at cap 15, or you stopped at one of the page's marked safe points.</p></div>
+  </div>
+  <div class="day" id="d24">
+    <h3><span class="date">Thursday 24 September</span>Boards and instruments, then a radio survey of the batch</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/LeRUxVn4GvZPWC7irTYbxi"><span class="n">Lesson 04 · Boards and Datasheets</span>The SuperMini's power path, schematic versus breadboard, datasheet ranges, connector pin order</a><a href="https://claude.ai/artifact/BBriZFBYeEjVMvMKAbGT94"><span class="n">Lesson 05 · Measurement Instruments</span>Where each meter connects, the supply's CV/CC corner, what a scope sees, probe grounds<span class="q">Read the scope section twice</span></a></div>
+    <ol class="steps"><li><p><strong>Lesson 04 with A1 in front of you:</strong> find the regulator, the antenna end, and the 5V pin you metered yesterday.</p></li><li><p><strong>Lesson 05</strong> is the one the scope will test. Redraw the probe-ground figure from memory: two probes, both grounds on circuit GND, never on a speaker lead.</p></li><li><p>Explain both back, then the six questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · does the 8.5 dBm fix work beyond A1?</div>
+    <ol class="steps"><li><p>Start the capped assistant build in the background while you set up; it takes about five minutes.</p><pre><code>. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh --assistant</code></pre></li><li><p>For three or four bare spares, starting with the two whose hotspot was invisible at 20 dBm: run <code>python -m esptool --chip esp32c3 --port &lt;port&gt; flash-id</code> and record the flash size, then flash the image with <code>firmware/scripts/flash.sh &lt;port&gt; --monitor</code>.</p></li><li><p>In each log, confirm the <code>(provisioning AP)</code> cap line, then look for the board's <code>Xiaozhi-XXXX</code> hotspot on your phone at 30 cm and at 1 m. Do not join it or provision anything.</p></li><li><p>Record one row per board: MAC suffix, flash size, visible at 30 cm, visible at 1 m. Leave A1 untouched.</p></li></ol>
+    
+    <div class="gate"><div class="name">End of the day</div><p>You can say where each meter and probe connects, and you know whether the cap fixes the batch or only A1.</p></div>
+  </div>
+  <div class="day" id="d25">
+    <h3><span class="date">Friday 25 September</span>Power integrity and GPIO, then the amplifier's headers</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/DPYa7BeFJFKsAB95SkEc5y"><span class="n">Lesson 06 · Power Integrity</span>Discharge curve versus cut-off, current pulses and local capacitors, six protection jobs, heat</a><a href="https://claude.ai/artifact/KoGirsk44qHRXGY8Tt4ELq"><span class="n">Lesson 07 · GPIO and Boot Straps</span>Input thresholds, open-drain lines, the GPIO10 button, strap pins at reset</a></div>
+    <ol class="steps"><li><p><strong>Lesson 06</strong> is theory only for this USB device; concentrate on the current-pulse figure, which is exactly what the amplifier's 220 µF is for.</p></li><li><p><strong>Lesson 07</strong> is your button and, from Step 11, the SD pin: explain why a floating input needs a pull resistor, then apply it to GPIO5.</p></li><li><p>Explain both back, then the six questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · open: the headers moved to Wednesday</div>
+    <ol class="steps"><li><p><strong>If Wednesday's hour ran out,</strong> finish it from the last safe point on the <a href="https://claude.ai/artifact/SeJ5R6L42yetQFQMsAXTWR">first-sound page</a>.</p></li><li><p><strong>Otherwise the hour is open.</strong> Ask Claude for the next build page; raising the volume cap to 30 is the natural candidate.</p></li></ol>
+    <div class="gate"><div class="name">End of the day</div><p>You can explain why the amplifier gets a local reservoir capacitor and why SD needs a pull-down.</p></div>
+  </div>
+  <div class="day" id="d26">
+    <h3><span class="date">Saturday 26 September</span>I2C and I2S, then the dummy load</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/PgocR9PtYSz85o2iBAMxii"><span class="n">Lesson 08 · I2C and the OLED</span>Open-drain with pull-ups, one transaction from START to STOP, the two addresses</a><a href="https://claude.ai/artifact/Gg5EHQxWAtStGZBY9zGV8V"><span class="n">Lesson 09 · I2S Audio</span>Sound to numbers at 16 kHz, one frame, 1.024 MHz, the slot-mismatch signature</a></div>
+    <ol class="steps"><li><p><strong>Lesson 08:</strong> walk one transaction on paper: START, 0x3C, write bit, ACK. Then explain why the firmware tries 0x3D as well.</p></li><li><p><strong>Lesson 09:</strong> derive 16,000 × 2 × 32 = 1.024 MHz before the page shows it. The amplifier will share exactly these two clocks with the microphone.</p></li><li><p>Explain both back, then the six questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · build the dummy load, for louder settings on the 30th</div>
+    <ol class="steps"><li><p>Measure a few of the kit's 100 Ω resistors to confirm the value. If the kit has none, any value from 68 Ω to 120 Ω works: use the value divided by eight of them.</p></li><li><p>Lay two short 26 AWG wires side by side and solder twelve resistors across them like the rungs of a ladder, each leg to both wires.</p></li><li><p>Measure the ladder, subtract the lead offset, and label it with the reading, about 8.3 Ω.</p></li></ol>
+    
+    <div class="gate"><div class="name">End of the day</div><p>You can derive the bit clock and explain an ACK, and the dummy load reads about 8 Ω.</p></div>
+  </div>
+  <div class="day" id="d27">
+    <h3><span class="date">Sunday 27 September</span>Speakers and antennas, then an open build hour</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/HWwymfV6dR7jdmsvZ28Lye"><span class="n">Lesson 10 · Speakers and Class-D</span>Class-D switching, the bridge-tied load, peak versus RMS, the 2.53 V ceiling</a><a href="https://claude.ai/artifact/LV7WFT17RGKGsNrMiDF18V"><span class="n">Lesson 11 · Antennas and the Frame</span>Why the chip antenna needs clearance, the keep-out zone, 34 = 8.5 dBm</a></div>
+    <ol class="steps"><li><p><strong>Lesson 10:</strong> compute √(0.8 × 8) = 2.53 V yourself and compare with Tuesday's rule sheet. If you read it on Monday, use this hour for Lesson 12 early.</p></li><li><p><strong>Lesson 11:</strong> read it next to Thursday's survey table. Be able to say why a brass cage threatens an antenna that already needs a power cap.</p></li><li><p>Explain both back, then the six questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · open: the wiring moved to Wednesday</div>
+    <ol class="steps"><li><p><strong>Do not reflash the diagnostics build.</strong> It would silence the speaker and clear the saved Wi-Fi.</p></li><li><p><strong>If Wednesday's hour ran out,</strong> finish it from the last safe point on the <a href="https://claude.ai/artifact/SeJ5R6L42yetQFQMsAXTWR">first-sound page</a>. Otherwise the hour is open for the next build page.</p></li></ol>
+    <div class="gate"><div class="name">End of the day</div><p>You can compute the 2.53 V ceiling yourself and say why a brass cage threatens the chip antenna.</p></div>
+  </div>
+  <div class="day" id="d28">
+    <h3><span class="date">Monday 28 September</span>Soldering and debugging, then measure every part</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/Mb8pEt8VdRsBwbxzAWFSyP"><span class="n">Lesson 12 · Soldering and Mechanics</span>Heat into pad and pin, strain relief, the insulation stack, tolerance stacks</a><a href="https://claude.ai/artifact/AZjbnm8acNvaEogGHRiczm"><span class="n">Lesson 13 · Debugging and Integration</span>The bring-up ladder, a decision tree, an elimination matrix</a></div>
+    <ol class="steps"><li><p><strong>Lesson 12:</strong> look at Friday's joints while you read and name what went right.</p></li><li><p><strong>Lesson 13:</strong> you have lived its method through Steps 6 to 11A. Redraw the layer stack with your own dates on it.</p></li><li><p>Explain both back, then the six questions.</p></li></ol>
+    <div class="block build">Build · 1 hour · calipers, and the start of the mock-up</div>
+    <ol class="steps"><li><p>Zero the caliper closed. Three readings per dimension, in mm: a spare SuperMini, the OLED, the microphone, the amplifier with headers, the speaker body and flange, a button with its cap, and the USB-C plug with its cable bend.</p></li><li><p>Photograph every module's markings, both sides.</p></li><li><p>Start a 1:1 layout on graph paper or packaging cardboard: outline each part, leave room for wire bends and the USB plug, and mark the antenna end with a removable keep-out.</p></li></ol>
+    
+    <div class="gate"><div class="name">End of the day</div><p>The dimension table exists and the first 1:1 layout shows where the antenna end sits.</p></div>
+  </div>
+  <div class="day" id="d29">
+    <h3><span class="date">Tuesday 29 September</span>Review the course, then set up for the scope</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/AaUwqREAJCm2Yj5crymbVs"><span class="n">Project overview · How It Fits Together</span>The system with the USB-only boundary drawn, the signal path, the lesson map</a><a href="https://claude.ai/artifact/8fmiKrS74xgLZqA3zFEXDC"><span class="n">Fast Track Theory</span>Why each build step worked, now through Step 11</a></div>
+    <ol class="steps"><li><p><strong>Cold retest:</strong> every check-yourself question you missed this week, answered again without the pages.</p></li><li><p><strong>One sketch per lesson, from memory,</strong> on one sheet: the loop, the divider, the RC curve, the datasheet ranges, the probe grounds, the protection jobs, the pull-up, one I2C transaction, one I2S frame, the bridge-tied load, the antenna keep-out, the joint, the layer stack. Mark the ones you could not do.</p></li><li><p>Read the overview and the theory companion last; anything that does not feel familiar goes on the list for after the 30th.</p></li></ol>
+    <div class="block build">Build · 1 hour · scope test plans and probe points</div>
+    <ol class="steps"><li><p>Write three lab records with question, prediction and acceptance rule: <code>SCOPE-IN-01</code> incoming check; <code>I2S-01</code>, WS at 16.00 kHz and BCLK at 1.024 MHz within 0.5 %; <code>SD-RESET-01</code>, SD never rises above 0.08 V during five USB replugs with BOOT held, so only the pull-down holds it.</p></li><li><p>USB unplugged: one spare jumper each on GPIO1, GPIO2, the amplifier's SD pin and GND, with a free end a probe hook can grab. Photograph A1.</p></li><li><p>Clear a space for the scope beside the bench, away from the soldering station.</p></li></ol>
+    
+    <div class="gate"><div class="name">End of the day</div><p>The sketches sheet exists, three test plans are written, and A1 has probe landing points.</p></div>
+  </div>
+
+  <h2 id="d30-h">Wednesday 30 September: the scope arrives</h2>
+
+  <div class="day" id="d30">
+    <h3><span class="date">Wednesday 30 September · the scope arrives</span>Learn the instrument, then the two captures that were waiting</h3>
+    <div class="block learn">Lessons · 2 hours</div>
+    <div class="pages"><a href="https://claude.ai/artifact/BBriZFBYeEjVMvMKAbGT94"><span class="n">Keep open · Lesson 05</span>Probe compensation, triggering, single-shot, where the grounds go</a><a href="https://claude.ai/artifact/6bXhKLGEztiB1Z9zWkGJ4U"><span class="n">Keep open · Step 11 guide</span>The wiring you will be probing, and PASS 11B for the next session</a></div>
+    <ol class="steps"><li><p><strong>SCOPE-IN-01.</strong> Check the box: scope, USB-C adapter, banana ground cable, two probes. Power it up and let it warm for 30 minutes while you reread Lesson 05's scope section. Run self-calibration, set each probe to 10X and adjust it on the 1 kHz compensation signal until the square wave has flat tops.</p></li><li><p>With the scope on, meter continuity from a probe input's metal shell to the adapter's earth pin and to the rear GND terminal, and write down whether the probe grounds are tied to earth.</p></li><li><p>Learn the controls on the compensation signal: volts per division, timebase, trigger level, the Single button, the frequency measurement, and a channel 1 minus channel 2 math trace.</p></li></ol>
+    <div class="block build">Build · 1 hour · I2S-01 and SD-RESET-01 on A1</div>
+    <ol class="steps"><li><p>A1 runs the speaking image from Wednesday 23, amplifier enabled at cap 15. Channel 1 on GPIO1, channel 2 on GPIO2, both ground clips on GND. Read both frequencies: 16.000 kHz and 1.024 MHz within 0.5 % closes gate 4 on evidence. Save screenshots.</p></li><li><p>Move channel 1 to the amplifier's SD pin. Single trigger, rising edge at 0.08 V. Unplug USB, then plug it back in while holding A1's BOOT button, five times. BOOT keeps the firmware from starting, so only the pull-down holds SD. If the trigger never fires, SD stayed in shutdown through every power-up. Save the result either way.</p></li></ol>
+    
+    <div class="gate"><div class="name">End of the day</div><p>The scope's grounding is known, both clocks are measured, and SD-RESET-01 has a result. The first speaker-side captures belong to the next session.</p></div>
+  </div>
+
+  <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 680 240" style="min-width: 540px; width: 100%;" role="img" aria-label="Board A1 with pins GPIO1 word select, GPIO2 bit clock and GND. Probe channel 1 goes to GPIO1 and channel 2 to GPIO2 on the DHO802, and both probe ground clips go to the GND pin. Expected readings: 16.00 kilohertz on channel 1 and 1.024 megahertz on channel 2. Never clip a ground to a speaker lead.">
+          <rect class="box" x="60" y="60" width="240" height="110" rx="5"/>
+          <text class="t b" x="180" y="84" text-anchor="middle">ESP32-C3 · A1 on the breadboard</text>
+          <text class="s muted" x="180" y="100" text-anchor="middle">USB powered, speaking image</text>
+          <rect class="soft" x="296" y="112" width="10" height="8"/><text class="s m" x="290" y="119" text-anchor="end">GPIO1 · WS</text>
+          <rect class="soft" x="296" y="130" width="10" height="8"/><text class="s m" x="290" y="137" text-anchor="end">GPIO2 · BCLK</text>
+          <rect class="soft" x="296" y="148" width="10" height="8"/><text class="s m" x="290" y="155" text-anchor="end">GND</text>
+          <rect class="box" x="450" y="40" width="200" height="150" rx="6"/>
+          <text class="t b" x="550" y="64" text-anchor="middle">DHO802</text>
+          <circle class="box" cx="472" cy="116" r="9"/><text class="s b" x="490" y="112">CH1</text><text class="s m cap-ink b" x="490" y="126">16.00 kHz</text>
+          <circle class="box" cx="472" cy="160" r="9"/><text class="s b" x="490" y="156">CH2</text><text class="s m cap-ink b" x="490" y="170">1.024 MHz</text>
+          <line class="edge" x1="306" y1="116" x2="462" y2="116"/>
+          <path class="edge" d="M306 134 H360 V160 H462"/>
+          <path class="edge dashed" d="M306 152 H330 V200 H400"/>
+          <rect class="cap" x="400" y="186" width="160" height="28" rx="5"/>
+          <text class="s b cap-ink" x="480" y="204" text-anchor="middle">both ground clips here</text>
+          <text class="s warn-ink b" x="340" y="232" text-anchor="middle">never a ground clip on a speaker lead, ever</text>
+        </svg>
+      </div>
+      <figcaption><strong>The first capture that closes a gate.</strong> Two probes, one shared ground on the circuit. The same rule carries into the amplifier work, where neither speaker lead is ground and a clipped ground would short the output through the scope.</figcaption>
+    </figure>
+
+  <h2 id="after">After 30 September</h2>
+  <p>The same split carries on. The lesson hours move to the full Markdown lessons for the sketches you could not draw on Tuesday. The build hours measure Step 11 and start the enclosure, one hour at a time:</p>
+  <ol class="steps">
+    <li><p><strong>Measure what you already hear.</strong> A1 runs the speaking image from Wednesday 23. With USB unplugged, move the speaker leads to the dummy load, then capture the filtered channel 1 minus channel 2 peak over three long replies: PASS 11B at the cap you run, at or below 2.53 V. While a reply plays, also capture the 3.3 V rail: the old <code>RAIL-01</code> question, now with Wi-Fi and audio together.</p></li>
+    <li><p><strong>Louder.</strong> Cap 30 stays under 1 V at any gain setting by the datasheet arithmetic, so it can go on before the scope. Above 30, raise one value per session and repeat 11B on the dummy load each time.</p></li>
+    <li><p><strong>Finish the cardstock mock-up,</strong> with the antenna keep-out and the USB plug's reach.</p></li>
+    <li><p><strong>Paint coupons.</strong> Sand brass offcuts, wipe with the 91 % alcohol, spray satin white and gloss canvas white side by side, let them cure, and test that neither lifts.</p></li>
+    <li><p><strong>Frame design</strong> from the mock-up, before any brass is cut.</p></li>
+  </ol>
+
+  <h2>Every time the bench supply comes out</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 940 130" style="min-width: 760px; width: 100%;" role="img" aria-label="The bench supply's first-power sequence in six steps: output off; set 3.3 volts; set the current limit; meter the polarity at the cable end; connect ground first then positive; switch the output on while watching both displays. A warning: if the current-limit light comes on, that is a wiring fault; switch off and never raise the limit.">
+        <defs><marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+        <rect class="box" x="20" y="20" width="130" height="52" rx="5"/><text class="t b" x="85" y="42" text-anchor="middle">Output OFF</text><text class="s muted" x="85" y="58" text-anchor="middle">leads open</text>
+        <rect class="box" x="170" y="20" width="130" height="52" rx="5"/><text class="t b" x="235" y="42" text-anchor="middle">Set 3.3 V</text><text class="s muted" x="235" y="58" text-anchor="middle">never higher this week</text>
+        <rect class="box" x="320" y="20" width="130" height="52" rx="5"/><text class="t b" x="385" y="42" text-anchor="middle">Set the limit</text><text class="s muted" x="385" y="58" text-anchor="middle">10 or 20 mA, written down</text>
+        <rect class="box" x="470" y="20" width="130" height="52" rx="5"/><text class="t b" x="535" y="42" text-anchor="middle">Meter polarity</text><text class="s muted" x="535" y="58" text-anchor="middle">at the cable end</text>
+        <rect class="box" x="620" y="20" width="130" height="52" rx="5"/><text class="t b" x="685" y="42" text-anchor="middle">GND first, then +</text><text class="s muted" x="685" y="58" text-anchor="middle">to the rail jumpers</text>
+        <rect class="cap" x="770" y="20" width="150" height="52" rx="5"/><text class="t b cap-ink" x="845" y="42" text-anchor="middle">Output ON</text><text class="s cap-ink" x="845" y="58" text-anchor="middle">watch V and A together</text>
+        <line class="edge" x1="150" y1="46" x2="170" y2="46" marker-end="url(#arC)"/><line class="edge" x1="300" y1="46" x2="320" y2="46" marker-end="url(#arC)"/><line class="edge" x1="450" y1="46" x2="470" y2="46" marker-end="url(#arC)"/><line class="edge" x1="600" y1="46" x2="620" y2="46" marker-end="url(#arC)"/><line class="edge" x1="750" y1="46" x2="770" y2="46" marker-end="url(#arC)"/>
+        <text class="s warn-ink b" x="470" y="108" text-anchor="middle">Current-limit light on? That is a wiring fault. Output OFF. Never raise the limit to make a reading behave.</text>
+      </svg>
+    </div>
+    <figcaption><strong>The same six moves every time.</strong> Optional this week, mandatory the moment a probe goes onto a live board.</figcaption>
+  </figure>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> The lesson order is the course's own. The build hours follow Step 11 in <code>plan/FAST_TRACK.md</code> and its <a href="https://claude.ai/artifact/6bXhKLGEztiB1Z9zWkGJ4U">illustrated guide</a>. The scope settings are starting points from the DHO802 datasheet, not tested values; adjust them on the bench and record what you used.</p>
+    <p><strong>What is not verified.</strong> No build hour on this page has run yet. The credential-check command was tested against synthetic flash images, not A1. Steps 0 to 10 of the fast track are passed; Step 11 has not run on hardware.</p>
+  </div>
+</div>
+

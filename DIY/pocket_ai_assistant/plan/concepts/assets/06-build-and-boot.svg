@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 430" role="img" aria-labelledby="title desc">
+  <title id="title">Build, flash, and boot are separate stages</title>
+  <desc id="desc">On the computer, source and pinned tools produce an image whose checksum is verified. USB copies it into flash. On reset, chip ROM selects either download mode or a flash bootloader followed by the diagnostic application. USB also provides power and carries logs.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#087f8c"/></marker></defs>
+  <rect width="800" height="430" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="19">
+    <text x="30" y="34" font-size="22" font-weight="bold">1. Build on the computer</text>
+    <g fill="#eaf4f7" stroke="#087f8c" stroke-width="2">
+      <rect x="30" y="55" width="195" height="72" rx="9"/>
+      <rect x="289" y="55" width="205" height="72" rx="9"/>
+      <rect x="555" y="55" width="215" height="72" rx="9"/>
+    </g>
+    <text x="127" y="84" text-anchor="middle">C++ source</text>
+    <text x="127" y="110" text-anchor="middle">+ configuration</text>
+    <text x="391" y="84" text-anchor="middle">Compiler + linker</text>
+    <text x="391" y="110" text-anchor="middle">pinned versions</text>
+    <text x="662" y="84" text-anchor="middle">Firmware image</text>
+    <text x="662" y="110" text-anchor="middle">verify its bytes</text>
+    <g fill="none" stroke="#087f8c" stroke-width="3" marker-end="url(#arrow)"><path d="M225 92H277"/><path d="M494 92H543"/></g>
+    <text x="30" y="171" font-size="22" font-weight="bold">2. Flash: copy the image into board memory over USB</text>
+    <text x="30" y="198" fill="#9a5b00">Stored bytes remain when power is off; execution needs power.</text>
+    <text x="30" y="246" font-size="22" font-weight="bold">3. Reset: the controller starts here</text>
+    <g fill="#eaf4f7" stroke="#087f8c" stroke-width="2">
+      <rect x="30" y="270" width="160" height="65" rx="9"/>
+      <rect x="295" y="270" width="185" height="65" rx="9"/>
+      <rect x="567" y="270" width="203" height="65" rx="9"/>
+    </g>
+    <text x="110" y="297" text-anchor="middle">Built-in ROM</text>
+    <text x="110" y="322" text-anchor="middle">boot selection</text>
+    <text x="388" y="297" text-anchor="middle">Flash bootloader</text>
+    <text x="388" y="322" text-anchor="middle">loads application</text>
+    <text x="668" y="297" text-anchor="middle">Diagnostics</text>
+    <text x="668" y="322" text-anchor="middle">USB log output</text>
+    <g fill="none" stroke="#087f8c" stroke-width="3" marker-end="url(#arrow)"><path d="M190 302H282"/><path d="M480 302H554"/><path d="M110 335V374H274"/></g>
+    <text x="287" y="381" fill="#9a5b00">Or download mode for flashing / recovery</text>
+    <text x="30" y="416" fill="#1463ad">USB provides board power too. A passing build does not test a wired peripheral.</text>
+  </g>
+</svg>

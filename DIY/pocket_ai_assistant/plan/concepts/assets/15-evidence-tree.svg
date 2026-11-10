@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" role="img" aria-labelledby="title desc">
+  <title id="title">A debugging tree for a blank OLED</title>
+  <desc id="desc">First look for the known diagnostic boot log. If absent, investigate controller boot and serial connection. If present, use the diagnostic OLED address probe. No response suggests a power, wiring, address, or device issue. A response allows the existing pixel diagnostic as the next test but does not prove the display is fully functional.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#1463ad"/></marker></defs>
+  <rect width="800" height="440" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="18">
+    <text x="30" y="32" font-size="22" font-weight="bold">Blank OLED: choose evidence before changing parts</text>
+    <rect x="237" y="52" width="326" height="53" rx="10" fill="#e9f2fb" stroke="#1463ad" stroke-width="2"/>
+    <text x="270" y="85">Expected diagnostic boot log?</text>
+    <path d="M269 105V142H183V163" fill="none" stroke="#1463ad" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <path d="M531 105V142H574V163" fill="none" stroke="#1463ad" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="197" y="135" fill="#9a5b00">absent</text>
+    <text x="565" y="131" fill="#087f8c">present</text>
+    <rect x="35" y="167" width="296" height="74" rx="10" fill="#fff5e7" stroke="#9a5b00" stroke-width="2"/>
+    <text x="57" y="195">Check controller boot, cable,</text>
+    <text x="66" y="221">serial port, and build identity.</text>
+    <rect x="411" y="167" width="326" height="74" rx="10" fill="#e9f2fb" stroke="#1463ad" stroke-width="2"/>
+    <text x="432" y="195">What does the diagnostic OLED</text>
+    <text x="459" y="221">address probe report?</text>
+    <path d="M479 241V278H362V302" fill="none" stroke="#1463ad" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <path d="M669 241V302" fill="none" stroke="#1463ad" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="349" y="270" fill="#9a5b00">no response</text>
+    <text x="679" y="280" fill="#087f8c">response</text>
+    <rect x="202" y="307" width="316" height="82" rx="10" fill="#fff5e7" stroke="#9a5b00" stroke-width="2"/>
+    <text x="221" y="333">Power, wiring, address, or part?</text>
+    <text x="224" y="358">Inspect safely; USB off before</text>
+    <text x="307" y="382">rewiring.</text>
+    <rect x="551" y="307" width="228" height="82" rx="10" fill="#e6f5f2" stroke="#087f8c" stroke-width="2"/>
+    <text x="568" y="338">Try the existing pixel</text>
+    <text x="592" y="365">toggle diagnostic.</text>
+    <text x="41" y="422">Every result narrows the next question. No single result proves the whole system.</text>
+  </g>
+</svg>

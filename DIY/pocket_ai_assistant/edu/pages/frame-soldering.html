@@ -1,0 +1,523 @@
+<title>Frame Soldering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Same column and tokens as Brass Frame Build: one reading column, a diagram leads every stage. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 820px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 48px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .75em; margin-right: 8px; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; }
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--brass); background: var(--brass-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--accent-ink); }
+  .callout.warn .label { color: var(--warn); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; margin: 0 0 12px; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); margin: 0; }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li > * { min-width: 0; margin: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 18px 0 22px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; }
+  figure svg .s { font-size: 11.5px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .acc-ink { fill: var(--accent-ink); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .brass-ink { fill: var(--brass); }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .tube { stroke: var(--brass); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .brass-fill { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .brass-solid { fill: var(--brass); }
+  figure svg .acc { stroke: var(--accent); fill: none; }
+  figure svg .acc-fill { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.4; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .ink-fill { fill: currentColor; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 6px 10px; margin: 0 0 12px; max-width: 72ch; }
+  .stock strong { color: var(--brass); letter-spacing: .04em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  figure svg .solder { fill: var(--muted); }
+  .stage { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--brass); font-weight: 500; display: block; margin-bottom: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · enclosure, step 4b · soldering</div>
+    <h1>Frame soldering</h1>
+    <p class="lede">Ten joints turn two loops and four posts into one frame. About an hour and a half, then a wash. Everything here happens on bare brass, with no electronics anywhere near the bench.</p>
+  </header>
+
+  <h2>Where you are</h2>
+  <div class="road">
+    <div class="done"><div class="n">done</div><div class="h">Cut</div><p>tube and rod pieces sawn and deburred</p></div>
+    <div class="done"><div class="n">done</div><div class="h">Bent</div><p>two loops, two 6 mm pins ready</p></div>
+    <div class="now"><div class="n">now</div><div class="h">Solder</div><p>2 seams, 4 post bottoms, 4 post tops</p></div>
+    <div><div class="n">next</div><div class="h">Wash and check</div><p>flux off, FRAME-01</p></div>
+  </div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 300" role="img" aria-label="The assembled frame with its ten joints numbered in soldering order. 1 and 2: the seam of each loop, soldered on its own first. 3 to 6: the four post bottoms on the bottom loop, front-left, back-right, front-right, back-left. 7 to 10: the four post tops on the top loop, in the same diagonal order.">
+        <polygon points="80,250 272,250 339.2,203.8 147.2,203.8" class="tube" stroke-width="4"/>
+        <polygon points="80,138 272,138 339.2,91.8 147.2,91.8" class="tube" stroke-width="4"/>
+        <line x1="147.2" y1="203.8" x2="147.2" y2="91.8" class="edge dashed"/>
+        <g stroke="currentColor" stroke-width="2.6"><line x1="80" y1="250" x2="80" y2="138"/><line x1="272" y1="250" x2="272" y2="138"/><line x1="339.2" y1="203.8" x2="339.2" y2="91.8"/></g>
+        <circle cx="176" cy="268" r="10" class="acc-fill"/><text class="s b m" x="176" y="272" text-anchor="middle">1</text><circle cx="176" cy="156" r="10" class="acc-fill"/><text class="s b m" x="176" y="160" text-anchor="middle">2</text>
+        <circle cx="62" cy="262" r="10" class="warn-fill"/><text class="s b m" x="62" y="266" text-anchor="middle">3</text><circle cx="356" cy="216" r="10" class="warn-fill"/><text class="s b m" x="356" y="220" text-anchor="middle">4</text><circle cx="290" cy="264" r="10" class="warn-fill"/><text class="s b m" x="290" y="268" text-anchor="middle">5</text><circle cx="130" cy="216" r="10" class="warn-fill"/><text class="s b m" x="130" y="220" text-anchor="middle">6</text>
+        <circle cx="62" cy="126" r="10" class="warn-fill"/><text class="s b m" x="62" y="130" text-anchor="middle">7</text><circle cx="356" cy="80" r="10" class="warn-fill"/><text class="s b m" x="356" y="84" text-anchor="middle">8</text><circle cx="290" cy="126" r="10" class="warn-fill"/><text class="s b m" x="290" y="130" text-anchor="middle">9</text><circle cx="130" cy="80" r="10" class="warn-fill"/><text class="s b m" x="130" y="84" text-anchor="middle">10</text>
+        <text class="t b" x="410" y="70">Stage 1 · joints 1–2</text>
+        <text class="s" x="410" y="87">the seam of each loop, on its own, before anything else</text>
+        <text class="t b" x="410" y="130">Stage 2 · joints 3–6</text>
+        <text class="s" x="410" y="147">post bottoms on the bottom loop, in diagonal order:</text>
+        <text class="s" x="410" y="162">front-left, back-right, front-right, back-left</text>
+        <text class="t b" x="410" y="205">Stage 3 · joints 7–10</text>
+        <text class="s" x="410" y="222">post tops on the top loop, same diagonal order</text>
+        <text class="s muted" x="410" y="262">Diagonal order spreads the pull of each</text>
+        <text class="s muted" x="410" y="277">joint, so the frame stays square.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Ten joints, three stages.</strong> Blue circles are the two loop seams; orange circles are the eight post joints, numbered in the order you solder them.</figcaption>
+  </figure>
+
+  <h2>Your kit</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Product you bought</th><th>Use</th><th>Link</th></tr>
+      <tr><td>Two closed loops · K&amp;S #9831 1.5 mm <strong>TUBE</strong></td><td>top and bottom of the frame</td><td><a href="https://www.amazon.com/dp/B005WPAW9M" target="_blank" rel="noopener">B005WPAW9M</a></td></tr>
+      <tr><td>Four posts, filed to 32 mm · K&amp;S #9861 1.0 mm <strong>ROD</strong></td><td>corners</td><td><a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">B005WPB7YG</a></td></tr>
+      <tr><td>X-Tronic 3020-XTS station, brass-only chisel tip, helping hands, silicone mat</td><td>heat, holding, heat-safe surface</td><td>owned · no link recorded</td></tr>
+      <tr><td>Harris SCLF4 Stay-Clean acid flux</td><td>brass joints only</td><td><a href="https://www.amazon.com/dp/B0015DWPV8" target="_blank" rel="noopener">B0015DWPV8</a></td></tr>
+      <tr><td>MAIYUM 63/37 rosin-core solder, 0.8 mm</td><td>every joint</td><td><a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">B076QF1Y85</a></td></tr>
+      <tr><td>BAISDY wet/dry sandpaper, 400 grit</td><td>cleaning each joint shiny</td><td><a href="https://www.amazon.com/dp/B07D2YYC11" target="_blank" rel="noopener">B07D2YYC11</a></td></tr>
+      <tr><td>3M Solus 1000 safety glasses</td><td>eyes, the whole session</td><td><a href="https://www.amazon.com/dp/B016KZ1ZPM" target="_blank" rel="noopener">B016KZ1ZPM</a></td></tr>
+      <tr><td>NEIKO digital caliper</td><td>height checks</td><td><a href="https://www.amazon.com/dp/B000GSLKIW" target="_blank" rel="noopener">B000GSLKIW</a></td></tr>
+      <tr><td>Amazon Basics cardstock, a scrap</td><td>folded into a 90° square</td><td><a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">B0DSH5V1TT</a></td></tr>
+      <tr><td>Epic Medical Supply 91 % isopropyl alcohol</td><td>drying after the wash</td><td><a href="https://www.amazon.com/dp/B0BSJ93RKB" target="_blank" rel="noopener">B0BSJ93RKB</a></td></tr>
+      <tr><td>Toothpicks, dish soap, two bowls, cotton swabs</td><td>applying flux, washing</td><td>household</td></tr>
+      <tr><td>Baking soda</td><td>neutralizing the flux</td><td>e.g. <a href="https://www.amazon.com/dp/B074J7X1DN" target="_blank" rel="noopener">365 Baking Soda</a> or any grocery store; skip for now if you have none</td></tr>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Safety, for the whole session</span>
+    <ul>
+      <li><strong>Glasses on</strong>, and air moving away from your face: a fan or an open window. Flux fumes sting.</li>
+      <li><strong>All electronics boxed and closed</strong>, away from the bench. Acid flux must never reach them.</li>
+      <li><strong>Brass stays hot</strong> for a minute after each joint, and heat travels along the whole loop. Move hot parts with pliers.</li>
+      <li><strong>Flux on skin:</strong> rinse with water. Keep the bottle closed between joints.</li>
+      <li><strong>Iron back in its stand</strong> every time you let go of it.</li>
+    </ul>
+  </div>
+
+  <h2><span class="when">0:00</span>Set up the iron</h2>
+  <ol class="steps">
+    <li><p><strong>Fit the brass-only tip</strong>, a 2–3 mm chisel, <em>with the iron cold</em>. Keep this tip for brass from now on: acid flux wears it out, and you want a clean tip for the electronics later.</p></li>
+    <li><p><strong>Set 370–400 °C (700–750 °F).</strong> Brass soaks up much more heat than a circuit board, so it needs more than electronics work.</p></li>
+    <li><p><strong>Tin the tip:</strong> once it is hot, melt a little solder onto it and wipe it on the damp sponge. It should look silver and shiny.</p></li>
+    <li><p><strong>Lay out the mat</strong>, toothpicks, solder, the flux bottle (closed), the sandpaper and the folded-card square within reach.</p></li>
+  </ol>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 250" role="img" aria-label="Cross-section of the round tube under the flat chisel tip. Without solder on the tip, the flat face touches the round tube at one point, so heat flows in slowly. With a small blob of fresh solder on the tip, the solder fills the gap around the contact, so heat flows in fast.">
+        <text class="t b" x="20" y="26">Dry tip: touches at one point</text>
+        <polygon points="60,70 180,70 180,118 60,118" class="box"/>
+        <text class="s muted" x="120" y="98" text-anchor="middle">flat chisel tip</text>
+        <circle cx="120" cy="148" r="30" class="brass-solid"/><circle cx="120" cy="148" r="21" fill="var(--figure-bg)"/>
+        <text class="s muted" x="120" y="152" text-anchor="middle">tube</text>
+        <circle cx="120" cy="118" r="4" class="warn-fill"/>
+        <text class="s warn-ink b" x="190" y="122">one tiny contact:</text>
+        <text class="s warn-ink" x="190" y="137">slow, the joint never</text>
+        <text class="s warn-ink" x="190" y="152">gets hot enough</text>
+        <line x1="360" y1="14" x2="360" y2="236" class="grid"/>
+        <text class="t b" x="380" y="26">Tip with a small solder blob</text>
+        <ellipse cx="480" cy="121" rx="34" ry="8" class="solder"/>
+        <polygon points="420,70 540,70 540,118 420,118" class="box"/>
+        <text class="s muted" x="480" y="98" text-anchor="middle">flat chisel tip</text>
+        <circle cx="480" cy="148" r="30" class="brass-solid"/><circle cx="480" cy="148" r="21" fill="var(--figure-bg)"/>
+        <text class="s pass-ink b" x="552" y="122">solder blob fills</text>
+        <text class="s pass-ink" x="552" y="137">the gap: wide contact,</text>
+        <text class="s pass-ink" x="552" y="152">fast, even heat</text>
+        <text class="s" x="380" y="218">Melt a fresh dab onto the tip right before every joint.</text>
+      </svg>
+    </div>
+    <figcaption><strong>The heat bridge.</strong> A flat tip on a round tube only touches along a thin line. A small blob of molten solder on the tip wraps around the tube and carries the heat in. This one habit fixes most "solder will not flow" problems on brass.</figcaption>
+  </figure>
+
+  <h2>How every joint is made</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 245" role="img" aria-label="One joint in five steps. Clean: sand the brass shiny and wipe. Flux: one small drop on the joint with a toothpick. Heat: the tip with a blob of solder on the brass for two to three seconds. Feed: touch the solder wire to the far side of the joint and it flows in. Hold still: take away the solder, then the iron, and do not move it for five seconds.">
+        <rect x="18" y="118" width="108" height="12" class="brass-fill"/><rect x="67" y="130" width="10" height="62" class="brass-solid"/><rect x="36" y="96" width="62" height="14" rx="2" class="soft"/><text class="s muted" x="67" y="92" text-anchor="middle">sandpaper</text><path d="M30,103 h-8 m4,-4 l-4,4 l4,4 M104,103 h8 m-4,-4 l4,4 l-4,4" class="acc" stroke-width="1.6"/><text class="t b" x="14" y="26">1 · Clean</text><text class="s" x="72" y="214" text-anchor="middle">sand shiny with</text><text class="s" x="72" y="229" text-anchor="middle">400 grit, wipe</text><line x1="144" y1="12" x2="144" y2="236" class="grid"/><rect x="162" y="118" width="108" height="12" class="brass-fill"/><rect x="211" y="130" width="10" height="62" class="brass-solid"/><line x1="252" y1="58" x2="222" y2="112" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/><circle cx="218" cy="122" r="5" class="warn-fill"/><text class="s muted" x="256" y="54" text-anchor="end">toothpick</text><text class="t b" x="158" y="26">2 · Flux</text><text class="s" x="216" y="214" text-anchor="middle">one small drop,</text><text class="s" x="216" y="229" text-anchor="middle">joint only</text><line x1="288" y1="12" x2="288" y2="236" class="grid"/><rect x="306" y="118" width="108" height="12" class="brass-fill"/><rect x="355" y="130" width="10" height="62" class="brass-solid"/><polygon points="302,58 316,50 358,108 344,116" class="box"/><ellipse cx="352" cy="116" rx="8" ry="3" class="solder"/><text class="s b acc-ink" x="388" y="84" text-anchor="middle">2–3 s</text><text class="t b" x="302" y="26">3 · Heat</text><text class="s" x="360" y="214" text-anchor="middle">tip + blob on</text><text class="s" x="360" y="229" text-anchor="middle">the brass, 2–3 s</text><line x1="432" y1="12" x2="432" y2="236" class="grid"/><rect x="450" y="118" width="108" height="12" class="brass-fill"/><rect x="499" y="130" width="10" height="62" class="brass-solid"/><path d="M489,130 Q499,131 499,142 V130 Z" class="solder"/><path d="M519,130 Q509,131 509,142 V130 Z" class="solder"/><polygon points="446,58 460,50 502,108 488,116" class="box"/><ellipse cx="496" cy="116" rx="8" ry="3" class="solder"/><line x1="566" y1="70" x2="516" y2="124" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/><text class="s muted" x="566" y="62" text-anchor="end">solder</text><text class="t b" x="446" y="26">4 · Feed</text><text class="s" x="504" y="214" text-anchor="middle">solder on the far</text><text class="s" x="504" y="229" text-anchor="middle">side: it flows in</text><line x1="576" y1="12" x2="576" y2="236" class="grid"/><rect x="594" y="118" width="108" height="12" class="brass-fill"/><rect x="643" y="130" width="10" height="62" class="brass-solid"/><path d="M633,130 Q643,131 643,142 V130 Z" class="solder"/><path d="M663,130 Q653,131 653,142 V130 Z" class="solder"/><circle cx="684" cy="78" r="16" class="box"/><path d="M684,78 V68 M684,78 L692,82" class="edge" stroke-width="1.6"/><text class="s b" x="684" y="110" text-anchor="middle">5 s</text><text class="t b" x="590" y="26">5 · Hold still</text><text class="s" x="648" y="214" text-anchor="middle">remove both,</text><text class="s" x="648" y="229" text-anchor="middle">don't move: 5 s</text>
+      </svg>
+    </div>
+    <figcaption><strong>Heat the brass, not the solder.</strong> The solder is fed onto the joint on the side away from the iron. If the brass is hot enough it melts the solder itself and pulls it into the gap. Remove the solder wire first, then the iron.</figcaption>
+  </figure>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 230" role="img" aria-label="Four joints in cross-section. Good: smooth, shiny, concave solder that wets both pieces. Balled up: a bead sitting on the joint, because the brass was not hot enough. Too much: a large blob, which works but must be filed flush later. Dull or cracked: the joint moved while setting; add flux, reheat and hold still.">
+        <rect x="30" y="80" width="120" height="16" class="brass-fill"/><rect x="84" y="96" width="12" height="70" class="brass-solid"/><path d="M68,96 Q84,98 84,116 V96 Z" class="solder"/><path d="M112,96 Q96,98 96,116 V96 Z" class="solder"/><text class="t b pass-ink" x="90" y="40" text-anchor="middle">Good</text><text class="s" x="90" y="196" text-anchor="middle">smooth, shiny, concave</text><text class="s" x="90" y="211" text-anchor="middle">wets both pieces</text><line x1="180" y1="12" x2="180" y2="226" class="grid"/><rect x="210" y="80" width="120" height="16" class="brass-fill"/><rect x="264" y="96" width="12" height="70" class="brass-solid"/><circle cx="286" cy="108" r="10" class="solder"/><text class="t b warn-ink" x="270" y="40" text-anchor="middle">Balled up</text><text class="s" x="270" y="196" text-anchor="middle">brass not hot enough:</text><text class="s" x="270" y="211" text-anchor="middle">flux + heat longer</text><line x1="360" y1="12" x2="360" y2="226" class="grid"/><rect x="390" y="80" width="120" height="16" class="brass-fill"/><rect x="444" y="96" width="12" height="70" class="brass-solid"/><ellipse cx="450" cy="104" rx="30" ry="18" class="solder"/><text class="t b warn-ink" x="450" y="40" text-anchor="middle">Too much</text><text class="s" x="450" y="196" text-anchor="middle">works, but file it</text><text class="s" x="450" y="211" text-anchor="middle">flush after washing</text><line x1="540" y1="12" x2="540" y2="226" class="grid"/><rect x="570" y="80" width="120" height="16" class="brass-fill"/><rect x="624" y="96" width="12" height="70" class="brass-solid"/><path d="M608,96 Q624,98 624,116 V96 Z" class="solder"/><path d="M652,96 Q636,98 636,116 V96 Z" class="solder"/><path d="M610,100 l6,4 l-4,5 l6,4" class="warn-line" stroke-width="1.6"/><text class="t b warn-ink" x="630" y="40" text-anchor="middle">Dull or cracked</text><text class="s" x="630" y="196" text-anchor="middle">it moved while setting:</text><text class="s" x="630" y="211" text-anchor="middle">flux, reheat, hold still</text>
+      </svg>
+    </div>
+    <figcaption><strong>Look at every joint as soon as it sets.</strong> Fixing it right away, while the area is still clean and fluxed, is much easier than later.</figcaption>
+  </figure>
+
+  <h2><span class="stage">Stage 1 · joints 1–2</span><span class="when">0:10</span>The two loop seams</h2>
+  <p class="stock">Use: the two <strong>TUBE</strong> loops and the two 6 mm <strong>ROD</strong> pins · K&amp;S #9831 · <a href="https://www.amazon.com/dp/B005WPAW9M" target="_blank" rel="noopener">B005WPAW9M</a></p>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 300" role="img" aria-label="Left: top view of a loop. The seam is the one spot, in the middle of a long side, where the two cut ends of the tube meet. Right: the seam cut open lengthwise, enlarged. The tube is hollow; the pin sits inside the hollow, half in end A and half in end B, bridging across the seam. When the ends touch, the pin is completely hidden.">
+        <text class="t b" x="20" y="26">Where: the seam</text>
+        <text class="s" x="20" y="44">the one spot where the two cut ends meet</text>
+        <rect x="40" y="70" width="250" height="150" rx="14" class="tube" stroke-width="7"/>
+        <rect x="160" y="212" width="10" height="16" fill="var(--figure-bg)"/>
+        <circle cx="165" cy="220" r="26" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="4 3"/>
+        <text class="s warn-ink b" x="165" y="266" text-anchor="middle">seam: middle of a long side</text>
+        <text class="s muted" x="165" y="150" text-anchor="middle">loop, top view</text>
+        <path d="M191,220 C240,220 280,170 330,150" class="warn-line" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text class="t b" x="350" y="26">Inside: the pin bridges the seam</text>
+        <text class="s" x="350" y="44">tube cut open lengthwise, enlarged</text>
+        <rect x="340" y="110" width="170" height="10" class="brass-solid"/>
+        <rect x="340" y="170" width="170" height="10" class="brass-solid"/>
+        <rect x="514" y="110" width="186" height="10" class="brass-solid"/>
+        <rect x="514" y="170" width="186" height="10" class="brass-solid"/>
+        <rect x="437" y="128" width="154" height="34" rx="3" fill="var(--brass)" opacity=".55" stroke="var(--brass)"/>
+        <line x1="512" y1="92" x2="512" y2="198" class="warn-line" stroke-width="2.4"/>
+        <text class="s warn-ink b" x="512" y="86" text-anchor="middle">seam</text>
+        <text class="s muted" x="420" y="104" text-anchor="middle">end A (wall)</text>
+        <text class="s muted" x="610" y="104" text-anchor="middle">end B (wall)</text>
+        <text class="s b" x="514" y="150" text-anchor="middle">PIN</text>
+        <path d="M437,206 V212 H510 V206 M514,206 V212 H591 V206" class="grid"/>
+        <text class="s m" x="474" y="228" text-anchor="middle">3 mm in A</text>
+        <text class="s m" x="552" y="228" text-anchor="middle">3 mm in B</text>
+        <text class="s" x="350" y="262">The tube is hollow. The pin lives in the hollow,</text>
+        <text class="s" x="350" y="277">half in each end. Once the ends touch, you cannot see it.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Yes: inside the tube, at the seam.</strong> Not in a gap between the ends, and not beside the tube. The two ends close up tight over the middle of the pin, like a peg joining two straws.</figcaption>
+  </figure>
+  <div class="callout">
+    <span class="label">Pins in first, before any heat</span>
+    <ol style="margin:0;padding-left:1.2em">
+      <li>Draw a marker line around the middle of each pin, 3 mm from each end.</li>
+      <li>Spring the loop open a few millimetres at its seam. The loop is springy; it closes again on its own.</li>
+      <li>Push a pin into one tube end up to the line, using the flat, pointed (chain-nose) pliers.</li>
+      <li>Aim the other end straight at the pin and let it slide on until the two ends touch.</li>
+      <li>Check: no gap, no kink at the seam, loop flat. Then solder that seam.</li>
+    </ol>
+    <p style="margin-top:8px">The step-by-step drawings are on the Brass Frame Build page, under “Fitting the pin, step by step”. If a pin will not go in, clear the tube's end with a twist of sandpaper; if it still will not, solder the ends without it.</p>
+  </div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 250" role="img" aria-label="Top view of one loop lying flat on the silicone mat. The seam is on the front long side, with a drop of flux on it and the iron tip on it. The helping hands clip the loop on the far long side, away from the seam, so the clip does not soak up the heat.">
+        <rect x="40" y="30" width="420" height="200" rx="10" class="acc-fill"/>
+        <text class="s acc-ink b" x="52" y="222">silicone mat</text>
+        <rect x="110" y="70" width="280" height="120" rx="14" class="tube" stroke-width="6"/>
+        <line x1="250" y1="180" x2="250" y2="200" class="warn-line" stroke-width="2.4"/>
+        <circle cx="250" cy="190" r="6" class="warn-fill"/>
+        <polygon points="300,250 318,244 262,196 250,204" class="box"/>
+        <text class="s b" x="330" y="236">iron on the seam</text>
+        <path d="M250,70 V46 H236" class="edge" stroke-width="2"/><rect x="226" y="62" width="20" height="10" rx="2" class="box"/>
+        <text class="s" x="262" y="50">helping-hands clip on the FAR side</text>
+        <text class="s warn-ink b" x="238" y="210" text-anchor="end">seam</text>
+        <text class="t b" x="490" y="80">Why the far side?</text>
+        <text class="s" x="490" y="100">A metal clip close to the joint</text>
+        <text class="s" x="490" y="115">pulls the heat away, and the</text>
+        <text class="s" x="490" y="130">solder will not flow. Clip at</text>
+        <text class="s" x="490" y="145">least 20 mm away, or let the</text>
+        <text class="s" x="490" y="160">loop lie free if it stays put.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Flat on the mat, seam toward you.</strong> The mat is heat-safe; the table is not. The pin keeps the ends lined up, so the loop needs no other holding.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><p><strong>Clean</strong> about 3 mm either side of the seam with 400 grit until shiny. Wipe off the dust.</p></li>
+    <li><p><strong>Lay the loop flat</strong> on the mat, seam toward you. Clip the far side only if it moves.</p></li>
+    <li><p><strong>Flux:</strong> one small drop on the seam with a toothpick. Close the bottle.</p></li>
+    <li><p><strong>Heat:</strong> fresh solder blob on the tip, then the tip's flat face onto the seam, touching both tube ends. Hold 2–3 seconds.</p></li>
+    <li><p><strong>Feed:</strong> touch the solder wire to the seam on the side away from the iron. About 1–2 mm of wire melts and runs into the seam.</p></li>
+    <li><p><strong>Solder away first, then the iron.</strong> Do not move the loop for 5 seconds.</p></li>
+    <li><p><strong>Check:</strong> a thin, shiny line fills the seam, and the loop is still flat and straight. Then do the second loop.</p></li>
+  </ol>
+
+
+  <h2>An easier way to hold the cube</h2>
+  <p>Holding a post upright between two loops with one hand while the other holds the iron is the hard part, and it is avoidable. Three habits turn the cube into a calm job.</p>
+  <figure><div class="scroll"><svg viewBox="0 0 720 262" role="img" aria-label="Oblique view of the bottom loop lying flat with a block of card or wood inside it the size of the frame interior, its corners cut back and wrapped in Kapton; four posts stand in the corners against the block and the top loop rests on top of the block, so the whole cage is held square before any joint is made."><text class="t b" x="20" y="24" text-anchor="start">1 · A block the frame's inside size holds everything square</text><polygon points="80,230 310,230 356,202 126,202" class="tube" stroke-width="5" fill="none"/><rect x="92" y="110" width="206" height="120" fill="var(--warn-tint)" stroke="var(--warn)" stroke-width="1.2"/><polygon points="304,107 338,85 338,205 304,227" fill="var(--warn-tint)" stroke="var(--warn)" stroke-width="1.2" opacity=".75"/><polygon points="98,107 304,107 338,85 132,85" class="soft"/><text class="s b" x="195" y="176" text-anchor="middle">block: 57 × 39 × inside height</text><text class="s warn-ink" x="195" y="192" text-anchor="middle">corners cut back 3 mm, wrapped in Kapton</text><line x1="80" y1="230" x2="80" y2="110" stroke="currentColor" stroke-width="3"/><line x1="310" y1="230" x2="310" y2="110" stroke="currentColor" stroke-width="3"/><line x1="126" y1="202" x2="126" y2="82" stroke="currentColor" stroke-width="3" opacity=".5"/><line x1="356" y1="202" x2="356" y2="82" stroke="currentColor" stroke-width="3" opacity=".5"/><polygon points="80,110 310,110 356,82 126,82" class="tube" stroke-width="5" fill="none"/><polyline points="126,202 80,230 310,230 356,202" class="tube" stroke-width="5"/><polyline points="126,82 80,110 310,110 356,82" class="tube" stroke-width="5"/><text class="s" x="370" y="110" text-anchor="start">top loop simply rests on the block</text><text class="s" x="370" y="128" text-anchor="start">posts lean into the corners,</text><text class="s" x="370" y="142" text-anchor="start">held by a loop of Kapton each</text><text class="s" x="370" y="170" text-anchor="start">bottom loop taped flat to the mat</text><text class="s muted" x="370" y="200" text-anchor="start">the iron reaches each corner</text><text class="s muted" x="370" y="214" text-anchor="start">without the block in the way</text><text class="s muted" x="20" y="250" text-anchor="start">A stack of cardstock glued together, or a scrap of wood, cut to 57 × 39 and the inside height. It never gets soldered, so it can be rough.</text></svg></div><figcaption><strong>The block is the jig.</strong> Nothing needs holding by hand: the posts lean into the chamfered corners, the top loop sits on the block, and every joint is in open air.</figcaption></figure>
+  <figure><div class="scroll"><svg viewBox="0 0 720 262" role="img" aria-label="Left: a post on a loop with a small tack joint, then the same joint as a full fillet; a tack is easy to break and redo. Right: the half-built frame turned over so the four posts stand on the top loop lying flat, held down by their own weight."><text class="t b" x="20" y="24" text-anchor="start">2 · Tack all eight, then go round again</text><rect x="30" y="150" width="130" height="10" class="brass-fill"/><rect x="91" y="80" width="8" height="70" class="brass-solid"/><circle cx="95" cy="152" r="4.5" class="solder"/><text class="s b" x="95" y="186" text-anchor="middle">first: a tack</text><text class="s" x="95" y="200" text-anchor="middle">one second, a dot,</text><text class="s" x="95" y="214" text-anchor="middle">enough to hold</text><rect x="200" y="150" width="130" height="10" class="brass-fill"/><rect x="261" y="80" width="8" height="70" class="brass-solid"/><path d="M249,150 Q261,151 261,164 V150 Z" class="solder"/><path d="M281,150 Q269,151 269,164 V150 Z" class="solder"/><text class="s b" x="265" y="186" text-anchor="middle">later: the fillet</text><text class="s" x="265" y="200" text-anchor="middle">2–3 s, solder flows</text><text class="s" x="265" y="214" text-anchor="middle">all the way round</text><text class="s muted" x="180" y="244" text-anchor="middle">a tack is easy to break and redo; a fillet is not</text><line x1="360" y1="12" x2="360" y2="250" class="grid"/><text class="t b" x="380" y="24" text-anchor="start">3 · Flip it: the posts press down by themselves</text><polyline points="446,192 400,220 640,220 686,192" class="tube" stroke-width="5"/><text class="s brass-ink" x="520" y="244" text-anchor="middle">top loop, flat on the mat</text><line x1="400" y1="220" x2="400" y2="110" stroke="currentColor" stroke-width="3"/><line x1="640" y1="220" x2="640" y2="110" stroke="currentColor" stroke-width="3"/><line x1="446" y1="192" x2="446" y2="82" stroke="currentColor" stroke-width="3" opacity=".5"/><line x1="686" y1="192" x2="686" y2="82" stroke="currentColor" stroke-width="3" opacity=".5"/><polyline points="446,82 400,110 640,110 686,82" class="tube" stroke-width="5"/><text class="s brass-ink" x="520" y="60" text-anchor="middle">bottom loop + its four posts, turned over</text><path d="M400,178 V206 M395,198 L400,206 L405,198" class="acc" stroke-width="2"/><path d="M640,178 V206 M635,198 L640,206 L645,198" class="acc" stroke-width="2"/><text class="s acc-ink b" x="520" y="165" text-anchor="middle">gravity holds every post end on the loop</text></svg></div><figcaption><strong>Tack, check, then finish; and let the frame's own weight do the holding for the top.</strong> Eight tacks take a few minutes; a crooked tack is fixed with a one-second touch of the iron.</figcaption></figure>
+  <ol class="steps">
+    <li><p><strong>Make the block.</strong> Cut cardstock to 57 × 39 mm and glue sheets until the stack is the inside height (or use a scrap of wood). Cut 3 mm off each corner and wrap the corners in Kapton.</p></li>
+    <li><p><strong>Tape the bottom loop flat</strong> to the mat, set the block inside it, stand the posts in the corners with a small loop of Kapton holding each one to the block, and rest the top loop on the block.</p></li>
+    <li><p><strong>Tack all four bottoms, then all four tops.</strong> One second each, a dot of solder. Check square with the folded card after every tack.</p></li>
+    <li><p><strong>Finish the bottoms</strong> (2–3 s, full fillet) with the block still in. Let it cool.</p></li>
+    <li><p><strong>Lift the block out, flip the frame</strong> so the top loop lies on the mat, and finish the four top joints with the posts pressing down under their own weight.</p></li>
+  </ol>
+  <h2><span class="stage">Stage 2 · joints 3–6</span><span class="when">0:25</span>Posts onto the bottom loop</h2>
+  <p class="stock">Use: the four <strong>ROD</strong> posts, 32 mm, solid 1.0 mm · K&amp;S #9861 · <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">B005WPB7YG</a> · plus one soldered loop as the bottom</p>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 240" role="img" aria-label="Left: top view of one rounded corner of the bottom loop, with the post standing on the middle of the curve. Right: side view: the post stands on top of the tube, its end resting on the tube's upper surface, not beside it.">
+        <text class="t b" x="20" y="26">Top view: middle of the curve</text>
+        <path d="M40,200 V110 A70,70 0 0 1 110,40 H300" class="tube" stroke-width="14"/>
+        <circle cx="60.5" cy="60.5" r="7" class="ink-fill"/>
+        <path d="M74,74 L130,130" class="edge"/>
+        <text class="s b" x="136" y="140">post stands here,</text>
+        <text class="s" x="136" y="156">halfway round the corner</text>
+        <text class="s muted" x="136" y="186">(drawn about 6 × real size)</text>
+        <line x1="360" y1="14" x2="360" y2="226" class="grid"/>
+        <text class="t b" x="380" y="26">Side view: ON TOP of the tube</text>
+        <rect x="390" y="170" width="300" height="16" class="brass-fill"/>
+        <rect x="470" y="60" width="9" height="110" class="brass-solid"/>
+        <path d="M460,170 Q470,169 470,160 V170 Z M489,170 Q479,169 479,160 V170 Z" class="solder"/>
+        <text class="s" x="490" y="100">post (filed to 32 mm)</text>
+        <text class="s" x="560" y="208" text-anchor="middle">bottom loop's tube</text>
+        <text class="s pass-ink b" x="490" y="150">end resting on the tube's top</text>
+      </svg>
+    </div>
+    <figcaption><strong>Posts stand on the tubes, not beside them.</strong> That way the 32 mm post sets the gap between the two loops exactly, and all four corners come out the same height.</figcaption>
+  </figure>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 260" role="img" aria-label="Left: the helping hands clip grips the post near its top and holds it upright on the corner of the bottom loop. Right: a scrap of cardstock folded into an L at 90 degrees, held against the post from the front and then from the side, shows whether the post is upright.">
+        <text class="t b" x="20" y="26">Hold it with the helping hands</text>
+        <rect x="40" y="200" width="290" height="14" class="brass-fill"/>
+        <rect x="150" y="70" width="8" height="130" class="brass-solid"/>
+        <rect x="138" y="70" width="32" height="14" rx="3" class="box"/>
+        <path d="M170,77 H260 V40" class="edge" stroke-width="3"/>
+        <circle cx="260" cy="36" r="6" class="box"/>
+        <text class="s" x="196" y="104">clip near the top,</text>
+        <text class="s" x="196" y="119">far from the joint</text>
+        <circle cx="154" cy="198" r="6" class="warn-fill"/>
+        <text class="s warn-ink b" x="170" y="236">joint at the base</text>
+        <line x1="360" y1="14" x2="360" y2="246" class="grid"/>
+        <text class="t b" x="380" y="26">Check it is upright</text>
+        <rect x="400" y="200" width="290" height="14" class="brass-fill"/>
+        <rect x="520" y="70" width="8" height="130" class="brass-solid"/>
+        <path d="M540,200 V80 M540,200 H640" class="acc" stroke-width="6"/>
+        <text class="s acc-ink b" x="560" y="110">folded card,</text>
+        <text class="s acc-ink b" x="560" y="125">90° L</text>
+        <text class="s" x="400" y="236">hold it against the post from the front, then from the side:</text>
+        <text class="s" x="400" y="251">no gap at the top means upright</text>
+      </svg>
+    </div>
+    <figcaption><strong>Fold a scrap of cardstock into an L</strong> to make a square. Any card corner is 90°. Check every post in two directions before moving on: a leaning post is easy to fix now and hard later.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><p><strong>Choose the bottom loop</strong> and lay it flat on the mat, seam toward you. The seam side is now the front.</p></li>
+    <li><p><strong>Clean</strong> the middle of each corner curve and both ends of every post with 400 grit.</p></li>
+    <li><p><strong>Post 1, front-left corner (joint 3):</strong> clip the post in the helping hands near its top and stand it on the middle of the corner curve, on top of the tube.</p></li>
+    <li><p><strong>Square it</strong> with the folded card from the front and the side. Adjust the helping hands until there is no gap.</p></li>
+    <li><p><strong>Solder:</strong> drop of flux at the base; tip with blob on the <em>tube</em> beside the post, since the tube is the bigger piece and needs most of the heat; solder on the far side of the post. Hold still 5 seconds.</p></li>
+    <li><p><strong>Re-check it is upright.</strong> If it leans: a touch of flux, heat the joint until it is shiny again, nudge the post straight with the clip, and hold still while it sets.</p></li>
+    <li><p><strong>Then the diagonal opposite</strong>: back-right (joint 4), then front-right (joint 5), then back-left (joint 6), squaring and checking each one.</p></li>
+    <li><p><strong>Check all four:</strong> each post top should be the same height, about 33.5 mm above the mat (1.5 mm tube plus the 32 mm post).</p></li>
+  </ol>
+
+  <h2><span class="stage">Stage 3 · joints 7–10</span><span class="when">0:50</span>The top loop</h2>
+  <p class="stock">Use: the second soldered <strong>TUBE</strong> loop · K&amp;S #9831 · <a href="https://www.amazon.com/dp/B005WPAW9M" target="_blank" rel="noopener">B005WPAW9M</a></p>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 250" role="img" aria-label="Side view of the frame with the top loop resting on the four post tops. Both loop seams are on the same long side. The calipers check 35 millimetres outside height at each corner before the top joints are soldered.">
+        <rect x="80" y="196" width="380" height="14" class="brass-fill"/>
+        <rect x="80" y="60" width="380" height="14" class="brass-fill"/>
+        <rect x="92" y="74" width="8" height="122" class="brass-solid"/>
+        <rect x="440" y="74" width="8" height="122" class="brass-solid"/>
+        <circle cx="96" cy="72" r="7" class="warn-fill"/><circle cx="444" cy="72" r="7" class="warn-fill"/>
+        <line x1="270" y1="52" x2="270" y2="82" class="acc" stroke-width="2"/>
+        <line x1="270" y1="188" x2="270" y2="218" class="acc" stroke-width="2"/>
+        <text class="s acc-ink b" x="270" y="44" text-anchor="middle">seams on the same side</text>
+        <path d="M40,60 V210 M30,60 H50 M30,210 H50" class="edge"/>
+        <text class="s m" x="26" y="140" text-anchor="end">35</text>
+        <text class="t b" x="490" y="80">Before soldering the top</text>
+        <text class="s" x="490" y="100">· all four post tops touch</text>
+        <text class="s" x="490" y="115">  the top loop</text>
+        <text class="s" x="490" y="135">· corners sit straight above</text>
+        <text class="s" x="490" y="150">  the bottom corners</text>
+        <text class="s" x="490" y="170">· 35 mm outside at each corner,</text>
+        <text class="s" x="490" y="185">  measured with the calipers</text>
+      </svg>
+    </div>
+    <figcaption><strong>Dry-fit the top loop first.</strong> Set it on the post tops, look from the front and from the side, and measure each corner. Only start soldering when all four corners are right.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><p><strong>Clean</strong> the middle of each corner curve on the top loop, and the four post tops.</p></li>
+    <li><p><strong>Set the top loop</strong> on the post tops with its seam on the same side as the bottom seam.</p></li>
+    <li><p><strong>Dry-fit check:</strong> every post top touches the loop at the middle of its corner; each corner sits straight above the one below; the calipers read 35 mm outside at each corner.</p></li>
+    <li><p><strong>Hold it:</strong> the loop usually stays put by its own weight. If it slides, clip it at the middle of a long side.</p></li>
+    <li><p><strong>Solder front-left (joint 7)</strong>: flux, tip with blob on the loop's tube beside the post, solder on the far side, hold still.</p></li>
+    <li><p><strong>Re-check the height and squareness</strong>, then back-right (8), front-right (9) and back-left (10).</p></li>
+    <li><p><strong>Work quickly.</strong> Heat runs down the post toward its bottom joint. Two or three seconds per joint is plenty; if a bottom joint goes shiny, stop and hold still until it sets.</p></li>
+  </ol>
+
+  <h2><span class="when">1:20</span>Wash straight away</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 190" role="img" aria-label="Four bowls in order: hot water with a swab scrub, baking soda solution soak, clean water rinse, 91 percent alcohol wipe, then dry.">
+        <g>
+          <path d="M30,70 H150 A60,46 0 0 1 30,70 Z" class="acc-fill"/>
+          <text class="t b" x="90" y="34" text-anchor="middle">1 · Hot water</text>
+          <text class="s" x="90" y="146" text-anchor="middle">scrub every joint</text><text class="s" x="90" y="161" text-anchor="middle">with a swab</text>
+          <path d="M162,92 H196 M188,85 L197,92 L188,99" class="edge" stroke-width="1.6"/>
+          <path d="M210,70 H330 A60,46 0 0 1 210,70 Z" class="pass-fill"/>
+          <text class="t b" x="270" y="34" text-anchor="middle">2 · Baking soda</text>
+          <text class="s" x="270" y="146" text-anchor="middle">1 tsp in a cup of warm</text><text class="s" x="270" y="161" text-anchor="middle">water; soak 2 minutes</text>
+          <path d="M342,92 H376 M368,85 L377,92 L368,99" class="edge" stroke-width="1.6"/>
+          <path d="M390,70 H510 A60,46 0 0 1 390,70 Z" class="acc-fill"/>
+          <text class="t b" x="450" y="34" text-anchor="middle">3 · Clean rinse</text>
+          <text class="s" x="450" y="146" text-anchor="middle">plain water,</text><text class="s" x="450" y="161" text-anchor="middle">swish well</text>
+          <path d="M522,92 H556 M548,85 L557,92 L548,99" class="edge" stroke-width="1.6"/>
+          <path d="M570,70 H690 A60,46 0 0 1 570,70 Z" class="soft"/>
+          <text class="t b" x="630" y="34" text-anchor="middle">4 · 91 % alcohol</text>
+          <text class="s" x="630" y="146" text-anchor="middle">wipe, then dry fully</text><text class="s" x="630" y="161" text-anchor="middle">on a paper towel</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption><strong>Wash straight after the last joint.</strong> Leftover zinc-chloride flux corrodes the joints and blisters paint later. If a joint still looks white or crusty after the wash, repeat steps 1 and 2.</figcaption>
+  </figure>
+  <p>No baking soda yet? Scrub every joint in hot water with a drop of dish soap, rinse two or three times, then dry with the alcohol. Do the baking-soda soak when you have it, before paint or any electronics. Never leave flux on overnight.</p>
+
+  <h2><span class="when">1:35</span>Check the frame</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 220" role="img" aria-label="Four checks. Calipers on the outside: 60 by 42 by 35 millimetres, within about half a millimetre. The frame sits flat without rocking. Each joint survives a gentle twist. A cotton swab dragged along every edge does not snag.">
+        <text class="t b" x="20" y="24">Size</text>
+        <rect x="40" y="60" width="120" height="80" rx="6" class="tube" stroke-width="4"/>
+        <rect x="26" y="40" width="148" height="10" class="soft"/>
+        <rect x="26" y="40" width="10" height="34" class="box"/><rect x="164" y="40" width="10" height="34" class="box"/>
+        <text class="s m" x="100" y="166" text-anchor="middle">60 × 42 × 35</text>
+        <text class="s muted" x="100" y="182" text-anchor="middle">outside, ±0.5 mm</text>
+        <line x1="200" y1="14" x2="200" y2="206" class="grid"/>
+        <text class="t b" x="220" y="24">Flat</text>
+        <line x1="220" y1="150" x2="350" y2="150" class="edge" stroke-width="2"/>
+        <polygon points="240,148 320,148 340,134 260,134" class="tube" stroke-width="3"/>
+        <g stroke="currentColor" stroke-width="2"><line x1="240" y1="148" x2="240" y2="90"/><line x1="320" y1="148" x2="320" y2="90"/><line x1="340" y1="134" x2="340" y2="76"/><line x1="260" y1="134" x2="260" y2="76"/></g>
+        <polygon points="240,90 320,90 340,76 260,76" class="tube" stroke-width="3"/>
+        <text class="s" x="285" y="182" text-anchor="middle">press each corner:</text>
+        <text class="s" x="285" y="197" text-anchor="middle">no rocking</text>
+        <line x1="370" y1="14" x2="370" y2="206" class="grid"/>
+        <text class="t b" x="390" y="24">Joints</text>
+        <path d="M420,110 A40,40 0 0 1 500,110" class="acc" stroke-width="2"/>
+        <path d="M494,100 L500,111 L508,102" class="acc" stroke-width="2"/>
+        <rect x="420" y="120" width="80" height="6" class="brass-fill"/><rect x="457" y="126" width="5" height="50" class="brass-solid"/>
+        <text class="s" x="460" y="197" text-anchor="middle">gentle twist: nothing moves</text>
+        <line x1="540" y1="14" x2="540" y2="206" class="grid"/>
+        <text class="t b" x="560" y="24">Edges</text>
+        <rect x="570" y="120" width="120" height="6" class="brass-fill"/>
+        <line x1="600" y1="60" x2="640" y2="116" stroke="var(--muted)" stroke-width="3"/>
+        <ellipse cx="642" cy="118" rx="9" ry="6" class="box"/>
+        <text class="s" x="630" y="182" text-anchor="middle">drag a swab along every</text>
+        <text class="s" x="630" y="197" text-anchor="middle">edge: no snags</text>
+      </svg>
+    </div>
+    <figcaption><strong>A snag on a swab is a burr that would later cut wire insulation.</strong> Sand it until the swab slides over it cleanly.</figcaption>
+  </figure>
+  <div class="gate">
+    <input type="checkbox" id="gate-frame">
+    <label for="gate-frame">
+      <div class="name">FRAME-01 · the empty frame is done</div>
+      <p>Outside 60 × 42 × 35 mm within about 0.5 mm, sits flat, all ten joints hold a gentle twist, no snags, washed and dry. Send Claude the three outside measurements.</p>
+    </label>
+  </div>
+
+  <h2>When something goes wrong</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>What you see</th><th>Why</th><th>Fix</th></tr>
+      <tr><td>Solder balls up and rolls off</td><td>brass not hot enough, or dirty</td><td>sand shiny, fresh flux, solder blob on the tip, hold the iron longer</td></tr>
+      <tr><td>Solder will not stick at all</td><td>oxide on the brass</td><td>sand again with 400 grit until shiny, then flux</td></tr>
+      <tr><td>Solder runs along the tube</td><td>too much flux or too long on the heat</td><td>less flux; small runs file off after washing</td></tr>
+      <tr><td>A finished joint lets go while soldering the next</td><td>heat travelled along the brass</td><td>work faster at the new joint; let the frame cool between joints</td></tr>
+      <tr><td>Post leans after soldering</td><td>it moved while the solder set</td><td>flux, reheat until shiny, straighten with the clip, hold still</td></tr>
+      <tr><td>A post does not reach the top loop</td><td>post a little short</td><td>a gap up to about 0.3 mm fills with solder; bigger: cut and file a new post</td></tr>
+      <tr><td>Tip turns black and will not take solder</td><td>acid flux burned off its coating</td><td>wipe on the damp sponge, re-tin straight away; this is why it is the brass-only tip</td></tr>
+      <tr><td>Flux spits and bubbles</td><td>normal: the water in it boiling</td><td>use less; keep your face back</td></tr>
+    </table>
+  </div>
+
+  <h2>After the last joint</h2>
+  <ul>
+    <li><strong>Tip care:</strong> wipe it, re-tin it, and switch the iron off.</li>
+    <li><strong>Leftover solder bumps</strong> get filed flush with fine sandpaper after the wash.</li>
+    <li><strong>Send Claude</strong> the three outside measurements and a photo of the frame from the front and the side. Next comes the insulation and mounting page.</li>
+  </ul>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> Joint order, the frame size and the 32 mm posts follow the Brass Frame Build page and <code>edu/pages/frame-template-letter.pdf</code>. Products and the acid-flux washing rule come from <code>docs/INVENTORY.md</code>; product links are the original order-sheet listings for the brands the inventory records as bought. The 370–400 °C setting and the order of hot work follow the earlier frame notes in <code>docs/BUILD_GUIDE.md</code>.</p>
+    <p><strong>What is and is not verified.</strong> These are standard brass-soldering practices, not measurements from your frame. The checkbox is remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var box = document.getElementById("gate-frame"); if (!box) return;
+    try { box.checked = localStorage.getItem("pocket-frame-gate") === "1"; } catch (e) {}
+    box.addEventListener("change", function () { try { localStorage.setItem("pocket-frame-gate", box.checked ? "1" : "0"); } catch (e) {} });
+  })();
+</script>

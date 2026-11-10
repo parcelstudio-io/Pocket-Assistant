@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+  <title id="title">A power rail, a local capacitor, and a load pulse</title>
+  <desc id="desc">A complete source and return loop contains wire resistance. A capacitor is connected across the load with a short local loop. An illustrative current pulse can cause the load voltage to dip and recover.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#9a5b00"/></marker></defs>
+  <rect width="800" height="420" fill="white"/>
+  <g font-family="sans-serif" fill="#172b4d" font-size="18">
+    <rect x="20" y="18" width="463" height="382" rx="14" fill="#f4f8fc"/>
+    <rect x="499" y="18" width="281" height="382" rx="14" fill="#f4f8fc"/>
+    <text x="40" y="52" font-size="22" font-weight="bold">Count outgoing AND return resistance</text>
+    <path d="M73 194V133H177M267 133H435V191M73 257V319H177M267 319H435V271" fill="none" stroke="#087f8c" stroke-width="3"/>
+    <rect x="177" y="121" width="90" height="24" fill="white" stroke="#172b4d" stroke-width="3"/>
+    <rect x="177" y="307" width="90" height="24" fill="white" stroke="#172b4d" stroke-width="3"/>
+    <text x="176" y="103">R outgoing</text>
+    <text x="185" y="358">R return</text>
+    <circle cx="73" cy="226" r="32" fill="white" stroke="#172b4d" stroke-width="3"/>
+    <text x="65" y="219">+</text><text x="66" y="246">−</text>
+    <text x="42" y="288">source</text>
+    <path d="M338 133V214M338 238V319" stroke="#087f8c" stroke-width="3"/>
+    <path d="M312 214H364M312 238H364" stroke="#172b4d" stroke-width="4"/>
+    <circle cx="338" cy="133" r="5" fill="#087f8c"/><circle cx="338" cy="319" r="5" fill="#087f8c"/>
+    <rect x="405" y="191" width="60" height="80" fill="white" stroke="#172b4d" stroke-width="3"/>
+    <text x="415" y="236">load</text>
+    <text x="291" y="191">C local</text>
+    <path d="M358 162H388V286H358" fill="none" stroke="#9a5b00" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+    <text x="287" y="379" fill="#9a5b00">short local loop</text>
+    <text x="518" y="52" font-size="22" font-weight="bold">When demand changes</text>
+    <text x="526" y="92">extra load current</text>
+    <path d="M535 155H591V118H681V155H756" fill="none" stroke="#1463ad" stroke-width="4"/>
+    <path d="M535 170H756" stroke="#172b4d" stroke-width="1.5"/>
+    <path d="M591 181V328M681 181V328" stroke="#b6c9d8" stroke-width="1.5" stroke-dasharray="4 5"/>
+    <text x="527" y="213">voltage across load</text>
+    <path d="M535 244H591L596 257L681 283Q700 245 725 244H756" fill="none" stroke="#087f8c" stroke-width="4"/>
+    <text x="594" y="316" fill="#9a5b00">dip</text>
+    <path d="M535 335H756" stroke="#172b4d" stroke-width="1.5"/>
+    <text x="683" y="359">time →</text>
+    <text x="517" y="385">Sketch only; no numeric scale.</text>
+  </g>
+</svg>

@@ -1,0 +1,397 @@
+<title>Brass Wiring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; }
+  .sw { display: inline-block; width: 22px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+
+  /* Pocket AI page system: one reading column; wire colours are tokens so diagrams read in both themes. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 820px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 48px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .75em; margin-right: 8px; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; }
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--brass); background: var(--brass-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--accent-ink); }
+  .callout.warn .label { color: var(--warn); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; margin: 0 0 12px; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); margin: 0; }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li > * { min-width: 0; margin: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 18px 0 22px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; }
+  figure svg .s { font-size: 11.5px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .acc-ink { fill: var(--accent-ink); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .brass-ink { fill: var(--brass); }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .tube { stroke: var(--brass); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .brass-fill { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .brass-solid { fill: var(--brass); }
+  figure svg .acc { stroke: var(--accent); fill: none; }
+  figure svg .acc-fill { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.4; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .ink-fill { fill: currentColor; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 6px 10px; margin: 0 0 12px; max-width: 72ch; }
+  .stock strong { color: var(--brass); letter-spacing: .04em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  figure svg .solder { fill: var(--muted); }
+  .stage { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--brass); font-weight: 500; display: block; margin-bottom: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · enclosure, step 4d · brass wiring</div>
+    <h1>Brass wiring</h1>
+    <p class="lede">No insulated wire. Every connection is a bare <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">1 mm brass rod</a>, soldered point to point like a circuit sculpture, and the device gets 40 % thinner because the header pins go. The electronics do not change: same pins, same <a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">resistors</a>, same tests.</p>
+  </header>
+
+  <div class="callout warn">
+    <span class="label">Superseded for the build, 10 October</span>
+    <p>This page is the design idea. The placement below was checked in 3D afterwards and three things changed: the mic lies flat with its pins up, the screen floats on its four rods, and the 220 µF moves to the right-hand strip. Build from <a href="https://claude.ai/artifact/FAsL4WPArRK6QW7yEg2Nix" target="_blank" rel="noopener">Brass Harness, Step by Step</a>, which has every rod with its own drawing.</p>
+  </div>
+  <div class="callout">
+    <span class="label">What you need to buy</span>
+    <p><strong>Nothing.</strong> The second pack of 1.0 mm rod you bought today (<a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">B005WPB7YG</a>) covers all the wiring with rod to spare: about 300 mm of rod in total, one and a half sticks. Everything else is on your bench already (assessed below).</p>
+  </div>
+
+  <h2>Where this fits</h2>
+  <div class="road">
+    <div class="done"><div class="n">done</div><div class="h">Breadboard prototype</div><p>the circuit works</p></div>
+    <div class="now"><div class="n">this week</div><div class="h">Brass harness</div><p>rails and rods on the card, tested per module</p></div>
+    <div><div class="n">Friday</div><div class="h">Solder the frame</div><p>posts now 18 mm, not 32</p></div>
+    <div><div class="n">after</div><div class="h">Into the frame</div><p><a href="https://www.amazon.com/dp/B072Z92QZ2" target="_blank" rel="noopener">Kapton</a>, place, glue, Wi-Fi check</p></div>
+  </div>
+
+  <h2>The design: two rails, eleven rods</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 470" role="img" aria-label="Schematic of the brass wiring. Two long rails of 1 millimetre rod run the length of the device: a ground rail and a 3.3 volt rail. A1 sits at the left and feeds both rails. The screen, microphone, amplifier and button hang off the rails with short rods. Signal rods run point to point: two I2C rods to the screen, two shared clock rods that touch both the microphone and the amplifier, one sound-in rod from the mic, one sound-out rod to the amp, one on-off rod to the amp, one rod to the button. A single 5 volt rod goes from A1 to the amplifier. Resistors and capacitors are soldered directly between the rods and the rails.">
+        <text class="s muted" x="40" y="22">Schematic: what connects to what. Not the physical layout.</text>
+        <line x1="40" y1="80" x2="690" y2="80" stroke="var(--w-red)" stroke-width="5" stroke-linecap="round"/><text class="s b" x="696" y="84" fill="var(--w-red)">3V3 rail</text>
+        <line x1="40" y1="420" x2="690" y2="420" stroke="var(--w-black)" stroke-width="5" stroke-linecap="round"/><text class="s b" x="696" y="424" fill="var(--w-black)">GND rail</text>
+        <rect x="40" y="200" width="120" height="110" rx="6" class="box"/>
+        <text class="t b" x="100" y="226" text-anchor="middle">A1</text>
+        <text class="s muted" x="100" y="244" text-anchor="middle">feeds both rails</text>
+        <line x1="100" y1="200" x2="100" y2="80" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/><text class="s m" x="106" y="140">3V3</text>
+        <line x1="100" y1="310" x2="100" y2="420" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><text class="s m" x="106" y="370">GND</text>
+        <line x1="160" y1="290" x2="560" y2="290" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/><text class="s b" x="300" y="284" fill="var(--w-red)">5 V rod, A1 → amp VIN only</text>
+        <!-- screen -->
+        <rect x="230" y="110" width="110" height="60" rx="6" class="acc-fill"/>
+        <text class="t b acc-ink" x="285" y="136" text-anchor="middle">Screen</text><text class="s acc-ink" x="285" y="154" text-anchor="middle">I²C</text>
+        <line x1="250" y1="110" x2="250" y2="80" stroke="var(--w-red)" stroke-width="2.4" stroke-linecap="round"/><line x1="320" y1="170" x2="320" y2="420" stroke="var(--w-black)" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="160" y1="230" x2="270" y2="230" stroke="var(--w-green)" stroke-width="2.4" stroke-linecap="round"/><line x1="270" y1="230" x2="270" y2="170" stroke="var(--w-green)" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="160" y1="250" x2="300" y2="250" stroke="var(--w-blue)" stroke-width="2.4" stroke-linecap="round"/><line x1="300" y1="250" x2="300" y2="170" stroke="var(--w-blue)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s" x="170" y="226">SCL · SDA (GPIO20, 21)</text>
+        <!-- mic -->
+        <rect x="400" y="110" width="110" height="60" rx="6" class="acc-fill"/>
+        <text class="t b acc-ink" x="455" y="136" text-anchor="middle">Mic</text><text class="s acc-ink" x="455" y="154" text-anchor="middle">I²S in</text>
+        <line x1="420" y1="110" x2="420" y2="80" stroke="var(--w-red)" stroke-width="2.4" stroke-linecap="round"/><line x1="500" y1="170" x2="500" y2="420" stroke="var(--w-black)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s muted" x="506" y="200">GND + L/R</text>
+        <rect x="415" y="85" width="10" height="20" rx="2" class="warn-fill"/><text class="s warn-ink" x="428" y="99"></text><text class="s warn-ink" x="366" y="100" text-anchor="end">10 kΩ</text>
+        <!-- amp -->
+        <rect x="560" y="230" width="110" height="110" rx="6" class="acc-fill"/>
+        <text class="t b acc-ink" x="615" y="256" text-anchor="middle">Amp</text><text class="s acc-ink" x="615" y="274" text-anchor="middle">I²S out · 5 V</text>
+        <line x1="640" y1="340" x2="640" y2="420" stroke="var(--w-black)" stroke-width="2.4" stroke-linecap="round"/>
+        <rect x="595" y="370" width="10" height="20" rx="2" class="warn-fill"/><text class="s warn-ink" x="608" y="384">SD pull-down</text><rect x="555" y="385" width="10" height="20" rx="2" class="warn-fill"/><text class="s warn-ink" x="568" y="399"></text><text class="s warn-ink" x="548" y="399" text-anchor="end">GAIN 100 kΩ</text>
+        <line x1="600" y1="340" x2="600" y2="370" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/><line x1="560" y1="340" x2="560" y2="385" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s muted" x="676" y="300">220 µF + 100 nF</text><text class="s muted" x="676" y="314">VIN to GND</text>
+        <!-- shared clocks: one rod each touching mic and amp -->
+        <line x1="160" y1="270" x2="440" y2="270" stroke="var(--w-yellow)" stroke-width="2.4" stroke-linecap="round"/><line x1="440" y1="270" x2="440" y2="170" stroke="var(--w-yellow)" stroke-width="2.4" stroke-linecap="round"/><line x1="440" y1="270" x2="580" y2="270" stroke="var(--w-yellow)" stroke-width="2.4" stroke-linecap="round"/><line x1="580" y1="270" x2="580" y2="230" stroke="var(--w-yellow)" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="160" y1="310" x2="460" y2="310" stroke="var(--w-white)" stroke-width="2.4" stroke-linecap="round"/><line x1="460" y1="310" x2="460" y2="170" stroke="var(--w-white)" stroke-width="2.4" stroke-linecap="round"/><line x1="460" y1="310" x2="600" y2="310" stroke="var(--w-white)" stroke-width="2.4" stroke-linecap="round"/><line x1="600" y1="310" x2="600" y2="230" stroke="var(--w-white)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s" x="170" y="266">WS (GPIO1): one rod, two taps</text>
+        <text class="s" x="170" y="330">BCLK (GPIO2): one rod, two taps</text>
+        <line x1="160" y1="210" x2="480" y2="210" stroke="var(--w-green)" stroke-width="2.4" stroke-linecap="round"/><line x1="480" y1="210" x2="480" y2="170" stroke="var(--w-green)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s" x="170" y="206">mic SD (GPIO4)</text>
+        <rect x="475" y="180" width="10" height="20" rx="2" class="warn-fill"/><text class="s warn-ink" x="488" y="194"></text><text class="s warn-ink" x="492" y="194">100 kΩ to GND</text><line x1="480" y1="200" x2="520" y2="200" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/><line x1="520" y1="200" x2="520" y2="420" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="100" y1="310" x2="100" y2="350" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/>
+        <!-- amp DIN and SD from A1 bottom -->
+        <line x1="130" y1="310" x2="130" y2="360" stroke="var(--w-blue)" stroke-width="2.4" stroke-linecap="round"/><line x1="130" y1="360" x2="620" y2="360" stroke="var(--w-blue)" stroke-width="2.4" stroke-linecap="round"/><line x1="620" y1="360" x2="620" y2="340" stroke="var(--w-blue)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s" x="140" y="356">DIN (GPIO3)</text>
+        <line x1="150" y1="310" x2="150" y2="345" stroke="var(--w-green)" stroke-width="2.4" stroke-linecap="round"/><line x1="150" y1="345" x2="600" y2="345" stroke="var(--w-green)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s" x="160" y="342">amp SD on / off (GPIO5)</text>
+        <!-- button -->
+        <rect x="200" y="440" width="90" height="22" rx="4" class="pass-fill"/>
+        <text class="s b pass-ink" x="245" y="455" text-anchor="middle">button</text>
+        <line x1="60" y1="310" x2="60" y2="451" stroke="var(--w-white)" stroke-width="2.4" stroke-linecap="round"/><line x1="60" y1="451" x2="200" y2="451" stroke="var(--w-white)" stroke-width="2.4" stroke-linecap="round"/><line x1="290" y1="451" x2="320" y2="451" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/><line x1="320" y1="451" x2="320" y2="420" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/>
+        <text class="s" x="68" y="400">GPIO10</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two rails do most of the work.</strong> Nine of the thirteen connections touch GND or 3V3, so those become taps off two long rods. The rest are single point-to-point rods; the two clock rods each touch both the mic and the amp. Colours only mark the signal; every <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rod</a> is bare brass.</figcaption>
+  </figure>
+
+  <h2>Where every rod goes</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 740 420" role="img" aria-label="Top view inside the frame, 57 by 39 millimetres, front at the bottom, to scale. A1 at the left, USB at the front, antenna at the back-left kept empty. Its right pin row, 5V, GND, 3V3, GPIO4, 3, 2, 1 from front to back, faces the channel. The amplifier on the right is turned so its row reads VIN, GND, SD, GAIN, DIN, BCLK, LRC from front to back, which lines up with A1's row: the 5 volt, ground, DIN, BCLK and LRC rods are straight horizontal lines across the channel. Two rails, ground and 3.3 volts, run front to back along the channel floor under those rods. The microphone stands at the right wall and takes the clock rods onward plus its own taps. The screen lies over the amplifier; its two I2C rods and the amp's on-off rod come from A1's left row, run along A1's left edge, and rise over A1's front half. The button sits over A1's front.">
+        <rect x="40" y="60" width="399" height="273" rx="10" fill="none" stroke="var(--brass)" stroke-width="5"/>
+        <text class="s brass-ink b" x="40" y="50">inside the frame, 57 × 39 mm · top view, front at the bottom · 7 px = 1 mm</text>
+        <rect x="43.5" y="64" width="150.5" height="98" class="warn-fill" opacity=".5" stroke-dasharray="5 4"/>
+        <text class="s b warn-ink" x="117" y="116" text-anchor="middle">antenna corner: no rods, nothing above</text>
+        <!-- rails on the floor -->
+        <line x1="201" y1="322" x2="201" y2="179" stroke="var(--w-black)" stroke-width="5" stroke-linecap="round"/><line x1="222" y1="322" x2="222" y2="179" stroke="var(--w-red)" stroke-width="5" stroke-linecap="round"/>
+        <text class="s b" x="201" y="170" text-anchor="middle" fill="var(--w-black)">GND</text>
+        <text class="s b" x="226" y="170" text-anchor="middle" fill="var(--w-red)">3V3</text>
+        <text class="s muted" x="212" y="334" text-anchor="middle">rails, on the floor</text>
+        <!-- A1 -->
+        <rect x="54" y="167.1" width="126" height="154" rx="3" class="soft"/>
+        <rect x="54" y="167.1" width="126" height="28" class="warn-fill"/>
+        <text class="t b" x="117" y="238.5" text-anchor="middle">A1</text>
+        <rect x="85.5" y="321.1" width="63" height="13.9" class="box"/>
+        <circle cx="175" cy="305" r="3" class="box"/><text class="s m" x="169" y="308" text-anchor="end">5V</text><circle cx="175" cy="287" r="3" class="box"/><text class="s m" x="169" y="290" text-anchor="end">GND</text><circle cx="175" cy="269" r="3" class="box"/><text class="s m" x="169" y="272" text-anchor="end">3V3</text><circle cx="175" cy="252" r="3" class="box"/><text class="s m" x="169" y="255" text-anchor="end">4</text><circle cx="175" cy="234" r="3" class="box"/><text class="s m" x="169" y="237" text-anchor="end">3</text><circle cx="175" cy="216" r="3" class="box"/><text class="s m" x="169" y="219" text-anchor="end">2</text><circle cx="175" cy="198" r="3" class="box"/><text class="s m" x="169" y="201" text-anchor="end">1</text>
+        <circle cx="59" cy="305" r="3" class="box"/><text class="s m" x="65" y="308">5</text><circle cx="59" cy="287" r="3" class="box"/><text class="s m" x="65" y="290">6</text><circle cx="59" cy="269" r="3" class="box"/><text class="s m" x="65" y="272">7</text><circle cx="59" cy="252" r="3" class="box"/><text class="s m" x="65" y="255">8</text><circle cx="59" cy="234" r="3" class="box"/><text class="s m" x="65" y="237">9</text><circle cx="59" cy="216" r="3" class="box"/><text class="s m" x="65" y="219">10</text><circle cx="59" cy="198" r="3" class="box"/><text class="s m" x="65" y="201">20</text><circle cx="59" cy="181" r="3" class="box"/><text class="s m" x="65" y="184">21</text>
+        <!-- amp, flipped so VIN is at the front -->
+        <rect x="250" y="186" width="119" height="119" rx="3" class="soft"/>
+        <text class="s b" x="313" y="249" text-anchor="middle">amp</text>
+        <text class="s muted" x="313" y="263" text-anchor="middle">turned: VIN at front</text>
+        <circle cx="255" cy="305" r="3" class="box"/><text class="s m" x="261" y="308">VIN</text><circle cx="255" cy="287" r="3" class="box"/><text class="s m" x="261" y="290">GND</text><circle cx="255" cy="269" r="3" class="box"/><text class="s m" x="261" y="272">SD</text><circle cx="255" cy="252" r="3" class="box"/><text class="s m" x="261" y="255">GAIN</text><circle cx="255" cy="234" r="3" class="box"/><text class="s m" x="261" y="237">DIN</text><circle cx="255" cy="216" r="3" class="box"/><text class="s m" x="261" y="219">BCLK</text><circle cx="255" cy="198" r="3" class="box"/><text class="s m" x="261" y="201">LRC</text>
+        <!-- straight rods across the channel: 5V, GND, DIN, BCLK, LRC -->
+        <line x1="175" y1="305" x2="255" y2="305" stroke="var(--w-red)" stroke-width="4" stroke-linecap="round"/>
+        <line x1="175" y1="287" x2="255" y2="287" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="175" y1="234" x2="255" y2="234" stroke="var(--w-blue)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="175" y1="216" x2="255" y2="216" stroke="var(--w-white)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="175" y1="198" x2="255" y2="198" stroke="var(--w-yellow)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="175" y1="269" x2="222" y2="269" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/>
+        <!-- clocks on to the mic, mic SD -->
+        <polyline points="255,198 366,198 366,256 422,256" fill="none" stroke="var(--w-yellow)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="255,216 372,216 372,270 422,270" fill="none" stroke="var(--w-white)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="175,252 240,252 240,176 380,176 380,284 422,284" fill="none" stroke="var(--w-green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="201,179 201,165 404,165 404,298 422,298" fill="none" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="222,179 222,172 390,172 390,242 422,242" fill="none" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- amp SD from GPIO5, round A1's front -->
+        <polyline points="59,305 59,327 187,327 187,269 255,269" fill="none" stroke="var(--w-green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- screen I2C from GPIO20/21 along A1's left edge, then up over the front -->
+        <polyline points="59,198 48,198 48,284 124,284 124,329 320,329" fill="none" stroke="var(--w-green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="59,181 46,181 46,291 131,291 131,332 327,332" fill="none" stroke="var(--w-blue)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- button from GPIO10 -->
+        <polyline points="59,216 51,216 51,298 68,298" fill="none" stroke="var(--w-white)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="64.5" y="284" width="35" height="35" rx="2" fill="none" stroke="var(--pass)" stroke-width="1.8" stroke-dasharray="4 3"/>
+        <text class="s pass-ink b" x="103" y="305">button, above A1</text>
+        <!-- speaker, mic, screen -->
+        <rect x="250" y="64" width="147" height="91" rx="4" class="warn-fill"/>
+        <text class="s b warn-ink" x="323.5" y="109" text-anchor="middle">speaker, mesh up</text>
+        <rect x="421.5" y="228" width="17.5" height="91" rx="2" class="pass-fill"/>
+        <text class="s b pass-ink" x="429.90000000000003" y="221" text-anchor="middle">mic</text>
+        <rect x="229" y="144" width="189" height="189" rx="3" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text class="s b acc-ink" x="323.5" y="154.5" text-anchor="middle">screen, on top of the amp</text>
+        <text class="t b" x="470" y="60">Why it is this tidy</text>
+        <text class="s" x="470" y="82">Turn the amp so VIN faces the front and</text>
+        <text class="s" x="470" y="97">its row lines up with A1's row: 5V–VIN,</text>
+        <text class="s" x="470" y="112">GND–GND, GPIO3–DIN, GPIO2–BCLK,</text>
+        <text class="s" x="470" y="127">GPIO1–LRC are five straight rods.</text>
+        <text class="s" x="470" y="155">The rails lie on the floor; the straight</text>
+        <text class="s" x="470" y="170">rods pass 3 mm above them at stub</text>
+        <text class="s" x="470" y="185">height, so they never touch.</text>
+        <text class="s" x="470" y="213">Rods from A1's left row (GPIO5, 10,</text>
+        <text class="s" x="470" y="228">20, 21) run along A1's left edge and</text>
+        <text class="s" x="470" y="243">over its front half, never the back.</text>
+        <text class="s" x="470" y="271">The two clock rods continue past the</text>
+        <text class="s" x="470" y="286">amp to the mic; the mic's taps come</text>
+        <text class="s" x="470" y="301">off the back ends of the rails.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Proposed placement, to scale.</strong> Rod colours only name the signal; every rod is bare brass. Lines are drawn flat; in the build the rods step up and down between the floor, the rails and the stub tops. Confirm the positions on the <a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">57 × 39 card</a> before bending a <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">single rod</a>.</figcaption>
+  </figure>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Rod</th><th>Count</th><th>Length</th><th>Route</th></tr>
+      <tr><td><strong>GND rail</strong></td><td class="n">1</td><td class="n">≈ 22 mm</td><td>front to back in the channel, 2 mm above the floor</td></tr>
+<tr><td><strong>3V3 rail</strong></td><td class="n">1</td><td class="n">≈ 22 mm</td><td>beside the GND rail, 3 mm apart</td></tr>
+<tr><td><strong>Rail taps</strong></td><td class="n">8</td><td class="n">4–8 each mm</td><td>A1 GND, A1 3V3, amp GND, mic GND, mic VDD, screen GND, screen VCC, button GND</td></tr>
+<tr><td><strong>5 V rod</strong></td><td class="n">1</td><td class="n">≈ 14 mm</td><td>A1 5V stub to amp VIN stub, straight</td></tr>
+<tr><td><strong>WS, BCLK</strong></td><td class="n">2</td><td class="n">≈ 40 each mm</td><td>A1 → mic, then on to the amp: one rod, two taps each</td></tr>
+<tr><td><strong>mic SD, amp DIN, amp SD</strong></td><td class="n">3</td><td class="n">12–38 mm</td><td>point to point</td></tr>
+<tr><td><strong>Screen SCL, SDA</strong></td><td class="n">2</td><td class="n">≈ 30 mm</td><td>from A1's left row, up and over to the screen</td></tr>
+<tr><td><strong>Button rod</strong></td><td class="n">1</td><td class="n">≈ 12 mm</td><td>GPIO10 stub up to the button</td></tr>
+    </table>
+  </div>
+  <p>About twenty pieces of <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rod</a>, 300 mm in all. Cut each one 10 mm long and trim after bending. The small parts stay the same as on the breadboard: the <a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">mic</a>'s <a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">10 kΩ</a> (SCK to 3V3 rail) and <a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">100 kΩ</a> (SD to GND rail), the <a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">amp</a>'s SD pull-down and 100 kΩ GAIN resistor to the GND rail, and the <a href="https://www.amazon.com/dp/B0C1VBXCQM" target="_blank" rel="noopener">220 µF</a> + <a href="https://www.amazon.com/dp/B07P7HRGT9" target="_blank" rel="noopener">100 nF</a> across VIN and GND at the amp. Their own leads are the "rods" for those.</p>
+
+  <h2>How compact it gets</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 740 300" role="img" aria-label="Front view inside the frame, to scale. With header pins trimmed to 2 millimetre stubs, A1 is about 5 millimetres tall, the amplifier with its terminal block about 9, the screen on top of the amp reaches about 14, and the microphone stands 13. The rails sit 2 millimetres above the floor. Inside height needed is about 18 millimetres instead of 32, so the frame becomes about 21 millimetres tall instead of 35.">
+        <rect x="40" y="124" width="399" height="126" fill="none" stroke="var(--brass)" stroke-width="5"/>
+        <text class="s brass-ink b" x="40" y="114">front view · inside 57 × 18 mm (was 32) · to scale</text>
+        <rect x="54" y="215" width="126" height="35" rx="2" class="soft"/>
+        <text class="s b" x="117" y="236" text-anchor="middle">A1 ≈ 5</text>
+        <rect x="250" y="187" width="119" height="63" rx="2" class="soft"/>
+        <text class="s b" x="309.5" y="222" text-anchor="middle">amp ≈ 9</text>
+        <rect x="229" y="152" width="189" height="28" rx="2" class="acc-fill"/>
+        <text class="s b acc-ink" x="323.5" y="169.5" text-anchor="middle">screen ≈ 10–14</text>
+        <rect x="421.5" y="159" width="17.5" height="91" class="pass-fill"/>
+        <circle cx="201" cy="236" r="3.5" fill="var(--w-black)"/><circle cx="222" cy="236" r="3.5" fill="var(--w-red)"/>
+        <text class="s" x="211.5" y="255.6" text-anchor="middle">rails</text>
+        <path d="M455,124 V152 M449,124 H461 M449,152 H461" class="edge"/>
+        <text class="s b" x="467" y="142">≈ 4 mm spare</text>
+        <text class="t b" x="467" y="187">Frame: 60 × 42 × 21</text>
+        <text class="s" x="467" y="204.5">same two loops,</text>
+        <text class="s" x="467" y="222">posts cut to ≈ 18 mm</text>
+        <text class="s muted" x="467" y="243">(was 32)</text>
+      </svg>
+    </div>
+    <figcaption><strong>40 % thinner.</strong> Trimming the header pins to 2 mm stubs removes 8–10 mm from every module. Heights are estimates from your measurements; stack the real parts on the <a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">card</a> and measure before cutting new posts.</figcaption>
+  </figure>
+  <div class="callout warn">
+    <span class="label">Change to Friday's frame</span>
+    <p>Keep the <a href="https://www.amazon.com/dp/B005WPAW9M" target="_blank" rel="noopener">two loops</a> you bent: the footprint stays 57 × 39 mm. Cut <strong>four new posts at about 18 mm</strong> instead of 32 (measure your real stack first). The frame becomes <strong>60 × 42 × 21 mm</strong>. The four 33 mm posts you already cut become <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">spare rod</a>.</p>
+  </div>
+
+  <h2>The four joints</h2>
+  <p class="stock">Use: <strong>ROD</strong> 1.0 mm · K&amp;S #9861 · <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">B005WPB7YG</a> · electronics tip · <a href="https://www.adafruit.com/product/3468" target="_blank" rel="noopener">Chip Quik flux pen</a> · <a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">63/37 solder</a> · USB unplugged</p>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 740 220" role="img" aria-label="Four joint details. Trim: pull the black plastic off the header and clip each pin to a 2 millimetre stub. Rod onto the stub: lay the rod beside the stub and make a small solder joint. Tap off a rail: bend the rod's end into a hook, hang it on the rail and solder. Crossing: slide heat-shrink onto the lower rod where another rod passes over it."><text class="t b" x="12" y="26">1 · Trim the pin</text><rect x="60" y="130" width="64" height="12" class="soft"/><rect x="88" y="112" width="7" height="18" class="ink-fill"/><rect x="88" y="60" width="7" height="50" class="ink-fill" opacity=".25"/><path d="M76,108 h30" class="warn-line" stroke-width="2" stroke-dasharray="4 3"/><text class="s" x="92" y="190" text-anchor="middle">pull the plastic off,</text><text class="s" x="92" y="205" text-anchor="middle">clip to a 2 mm stub</text><line x1="185" y1="12" x2="185" y2="216" class="grid"/><text class="t b" x="197" y="26">2 · Rod onto the stub</text><rect x="245" y="130" width="64" height="12" class="soft"/><rect x="273" y="112" width="7" height="18" class="ink-fill"/><line x1="283" y1="118" x2="355" y2="70" stroke="var(--brass)" stroke-width="4" stroke-linecap="round"/><path d="M271,118 q8,-8 16,0 v12 h-16 z" class="solder"/><text class="s" x="277" y="190" text-anchor="middle">rod beside the stub,</text><text class="s" x="277" y="205" text-anchor="middle">tiny solder joint</text><line x1="370" y1="12" x2="370" y2="216" class="grid"/><text class="t b" x="382" y="26">3 · Tap off a rail</text><line x1="400" y1="120" x2="530" y2="120" stroke="var(--w-black)" stroke-width="5" stroke-linecap="round"/><path d="M465,60 V110 a8,8 0 0 0 16,0 V104" fill="none" stroke="var(--brass)" stroke-width="4" stroke-linecap="round"/><ellipse cx="473" cy="120" rx="12" ry="6" class="solder"/><text class="s" x="462" y="190" text-anchor="middle">rod end bent into a hook,</text><text class="s" x="462" y="205" text-anchor="middle">hooked on the rail, soldered</text><line x1="555" y1="12" x2="555" y2="216" class="grid"/><text class="t b" x="567" y="26">4 · Crossing</text><line x1="585" y1="120" x2="715" y2="120" stroke="var(--brass)" stroke-width="4"/><rect x="633" y="112" width="34" height="16" rx="5" fill="var(--figure-bg)" stroke="currentColor" stroke-width="1.6"/><line x1="650" y1="60" x2="650" y2="180" stroke="var(--brass)" stroke-width="4"/><text class="s" x="647" y="190" text-anchor="middle">heat-shrink on the lower rod</text><text class="s" x="647" y="205" text-anchor="middle">where another passes over</text>
+      </svg>
+    </div>
+    <figcaption><strong>Four joints cover the whole build.</strong> <a href="https://www.amazon.com/dp/B07D2YYC11" target="_blank" rel="noopener">Sand</a> every <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rod</a> end shiny, flux it with the <a href="https://www.adafruit.com/product/3468" target="_blank" rel="noopener">Chip Quik pen</a>, and use the electronics tip. Each joint takes 1–2 seconds; the modules must not be heated longer.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><p><strong>Trim the headers on every module.</strong> Grip the black plastic strip with the <a href="https://www.amazon.com/dp/B0B8QBVXXR" target="_blank" rel="noopener">chain-nose pliers</a> and pull it off the pins, then clip each pin to a 2 mm stub with the <a href="https://www.amazon.com/dp/B07C5PM8L4" target="_blank" rel="noopener">flush cutters</a>. Do not desolder anything.</p></li>
+    <li><p><strong>Make the two rails.</strong> Cut two 24 mm <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rods</a>, <a href="https://www.amazon.com/dp/B07D2YYC11" target="_blank" rel="noopener">sand them shiny</a> along their whole length, and push them through a strip of <a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">cardstock</a> 3 mm apart: the card is the jig that holds them straight and 2 mm off the floor.</p></li>
+    <li><p><strong>Place the modules on the <a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">57 × 39 card</a></strong> in the drawn positions, stubs facing the channel. Tape them down with <a href="https://www.amazon.com/dp/B072Z92QZ2" target="_blank" rel="noopener">Kapton</a>.</p></li>
+    <li><p><strong><a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">Rod</a> by rod, in the build order on the drawing.</strong> Bend first, hold with the helping hands, <a href="https://www.adafruit.com/product/3468" target="_blank" rel="noopener">flux</a>, one small joint each end, 1–2 seconds of iron per joint.</p></li>
+    <li><p><strong>After every <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rod</a>, <a href="https://www.amazon.com/dp/B08BL288LW" target="_blank" rel="noopener">meter</a> check:</strong> the new rod beeps only to its own two ends; the GND rail never beeps to the 3V3 rail or to the 5 V rod.</p></li>
+    <li><p><strong><a href="https://www.amazon.com/dp/B08N4W4K9X" target="_blank" rel="noopener">Sleeve</a> every crossing</strong> as you go, on the <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">lower rod</a>, before the upper rod is soldered.</p></li>
+    <li><p><strong><a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">Resistors</a> and capacitors: trim their leads.</strong> They come 25–30 mm long; each lead is just the rod that reaches its two points. Measure the resistor with the <a href="https://www.amazon.com/dp/B08BL288LW" target="_blank" rel="noopener">meter</a> first, hold the lead with the <a href="https://www.amazon.com/dp/B0B8QBVXXR" target="_blank" rel="noopener">chain-nose pliers</a> next to the body and bend beyond the pliers (never at the body), shape each lead to its stub or rail with a small hook, cut 3 mm past the joint with the <a href="https://www.amazon.com/dp/B07C5PM8L4" target="_blank" rel="noopener">flush cutters</a>, <a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">solder</a>, and <a href="https://www.amazon.com/dp/B08N4W4K9X" target="_blank" rel="noopener">sleeve</a> any lead within 2 mm of another <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rod</a>. The 6 mm body cannot shrink, so a resistor needs about 10 mm between its two points.</p></li>
+    <li><p><strong>Test per module</strong>, in the same order and with the same tests as the <a href="https://claude.ai/artifact/FYUfi1jX8dWng2c5kXab6j" target="_blank" rel="noopener">wiring plan</a>: <a href="https://www.amazon.com/dp/B0FHW6HMG4" target="_blank" rel="noopener">button</a>, <a href="https://www.amazon.com/dp/B09T6SJBV5" target="_blank" rel="noopener">screen</a>, <a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">mic</a>, <a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">amp</a>, <a href="https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309" target="_blank" rel="noopener">speaker</a>, then two cold starts.</p></li>
+  </ol>
+  <div class="gate">
+    <input type="checkbox" id="gate-brass">
+    <label for="gate-brass">
+      <div class="name">WIRE-01 · the brass harness works off the frame</div>
+      <p>All five modules pass on the rods, two cold starts are clean, every crossing is sleeved, and no rail beeps to the other rail. Tell Claude, with a photo, and send the measured stack height for the new posts.</p>
+    </label>
+  </div>
+
+  <h2>Rules that do not change</h2>
+  <ul>
+    <li><strong>The frame carries nothing.</strong> The video solders its grounds to the cage; this build does not. Rails and <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">rods</a> stay at least 2 mm from the frame, with <a href="https://www.amazon.com/dp/B072Z92QZ2" target="_blank" rel="noopener">Kapton</a> on the frame wherever they come close. A rail touching the frame makes every accidental contact a short, and a grounded frame sits as a ground plane beside <a href="https://www.amazon.com/dp/B0F888JQ91" target="_blank" rel="noopener">A1</a>'s already-weak antenna.</li>
+    <li><strong>Neither <a href="https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309" target="_blank" rel="noopener">speaker</a> output touches GND</strong>, the GND rail or the frame.</li>
+    <li><strong>5 V goes only to the <a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">amp</a>.</strong> The <a href="https://www.amazon.com/dp/B09T6SJBV5" target="_blank" rel="noopener">screen</a> and <a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">mic</a> get 3.3 V from the 3V3 rail.</li>
+    <li><strong><a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">Mic</a> port:</strong> no flux, heat gun or sanding dust near it.</li>
+    <li><strong>USB unplugged</strong> for every joint; plug in only to test.</li>
+  </ul>
+
+  <h2>Soldering kit assessed</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Product you bought</th><th>Verdict</th><th>Note</th><th>Link</th></tr>
+      <tr><td>X-Tronic 3020-XTS station</td><td><strong>✔ right tool</strong></td><td>use a fine conical or small chisel tip for the stubs; keep the brass-frame tip separate</td><td>owned · no link recorded</td></tr>
+<tr><td>MAIYUM 63/37 solder, 0.8 mm</td><td><strong>✔ fine</strong></td><td>thinner would be nicer on the stubs but is not needed</td><td><a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">B076QF1Y85</a></td></tr>
+<tr><td><a href="https://www.adafruit.com/product/3468" target="_blank" rel="noopener">Chip Quik CQ4LF no-clean flux pen</a></td><td><strong>✔ works on brass</strong></td><td>only if the rod end is sanded shiny first; never the <a href="https://www.amazon.com/dp/B0015DWPV8" target="_blank" rel="noopener">Harris flux</a> near a module</td><td><a href="https://www.adafruit.com/product/3468" target="_blank" rel="noopener">owned (Adafruit order)</a></td></tr>
+<tr><td>Harris SCLF4 acid flux</td><td><strong>✘ frame only</strong></td><td>corrodes the modules; stays in the brass zone</td><td><a href="https://www.amazon.com/dp/B0015DWPV8" target="_blank" rel="noopener">B0015DWPV8</a></td></tr>
+<tr><td>JoTownCand solder wick + X-Tronic solder sucker</td><td><strong>✔ needed</strong></td><td>clearing bridges between 2.54 mm stubs</td><td><a href="https://www.amazon.com/dp/B0DRN688Q5" target="_blank" rel="noopener">B0DRN688Q5</a></td></tr>
+<tr><td>WORKPRO chain-nose and round-nose pliers</td><td><strong>✔ needed</strong></td><td>bending hooks and corners in the rod</td><td><a href="https://www.amazon.com/dp/B0B8QBVXXR" target="_blank" rel="noopener">B0B8QBVXXR</a></td></tr>
+<tr><td>BOENFU flush cutters</td><td><strong>✔ needed</strong></td><td>trimming header pins and rod ends (fine for <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">1 mm rod</a>; never the <a href="https://www.amazon.com/dp/B005WPAW9M" target="_blank" rel="noopener">tube</a>)</td><td><a href="https://www.amazon.com/dp/B07C5PM8L4" target="_blank" rel="noopener">owned · no link recorded</a></td></tr>
+<tr><td>SE jeweler's saw</td><td><strong>optional</strong></td><td>only if a cutter leaves a crushed end</td><td><a href="https://www.amazon.com/dp/B06XPSLS6N" target="_blank" rel="noopener">B06XPSLS6N</a></td></tr>
+<tr><td>BAISDY sandpaper, 400 grit</td><td><strong>✔ needed</strong></td><td>every rod end shiny before flux</td><td><a href="https://www.amazon.com/dp/B07D2YYC11" target="_blank" rel="noopener">B07D2YYC11</a></td></tr>
+<tr><td>Pointool heat-shrink, 1.5–2 mm sizes</td><td><strong>✔ needed</strong></td><td>sleeves at every crossing and near the frame</td><td><a href="https://www.amazon.com/dp/B08N4W4K9X" target="_blank" rel="noopener">B08N4W4K9X</a></td></tr>
+<tr><td>QWORK heat gun</td><td><strong>✔ needed</strong></td><td>shrinking sleeves; keep it off the mic port</td><td>owned · no link recorded</td></tr>
+<tr><td>ELEGOO Kapton tape</td><td><strong>✔ needed</strong></td><td>lining the frame where rails and parts come near it</td><td><a href="https://www.amazon.com/dp/B072Z92QZ2" target="_blank" rel="noopener">B072Z92QZ2</a></td></tr>
+<tr><td>Helping hands, tweezers, silicone mat</td><td><strong>✔ needed</strong></td><td>holding rods at the right angle while the joint sets</td><td>owned</td></tr>
+<tr><td>KAIWEETS multimeter</td><td><strong>✔ needed</strong></td><td>continuity after every rod: rail to frame must never beep</td><td><a href="https://www.amazon.com/dp/B08BL288LW" target="_blank" rel="noopener">B08BL288LW</a></td></tr>
+<tr><td>Amazon Basics cardstock</td><td><strong>✔ needed</strong></td><td>a jig: push rods through a card to hold them while soldering</td><td><a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">B0DSH5V1TT</a></td></tr>
+    </table>
+  </div>
+
+  <h2>Trade-offs, honestly</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th><a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">Brass rods</a></th><th>Insulated wire</th></tr>
+      <tr><td>thinner device, nothing to hide, looks like the reference build</td><td>bulkier, wires visible</td></tr>
+      <tr><td>every rod is bare: a bump can short two rods; sleeves and spacing matter</td><td>shorts almost impossible</td></tr>
+      <tr><td>stiff: the harness is its own structure, modules are held by their rods</td><td>floppy: needs hot glue to hold modules</td></tr>
+      <tr><td>rework means unsoldering a rod</td><td>rework is easy</td></tr>
+      <tr><td>about 2 sessions longer to build</td><td>faster</td></tr>
+    </table>
+  </div>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> Connections, resistors and capacitors from <code>plan/FAST_TRACK.md</code> Steps 6–11 and the <code>CLAUDE.md</code> hardware contract; A1's pin order from the SuperMini pinout used on the <a href="https://claude.ai/artifact/4oJmhiUG1jNPFo6VR7GhR5" target="_blank" rel="noopener">Pin Switchboard page</a>; part sizes from your <a href="https://www.amazon.com/dp/B000GSLKIW" target="_blank" rel="noopener">caliper</a> measurements of 28 September; the <a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">second rod pack</a> from <code>docs/INVENTORY.md</code> (Amazon #16, 8 October). Product links are the listings on your order sheets.</p>
+    <p><strong>What is and is not verified.</strong> This is a redesign on paper. Rod lengths, the placement and the 18 mm height are estimates to confirm on the card with the real parts before anything is cut or soldered. The frame-as-ground rule comes from the project's safety invariants. The checkbox is remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var box = document.getElementById("gate-brass"); if (!box) return;
+    try { box.checked = localStorage.getItem("pocket-brass-gate") === "1"; } catch (e) {}
+    box.addEventListener("change", function () { try { localStorage.setItem("pocket-brass-gate", box.checked ? "1" : "0"); } catch (e) {} });
+  })();
+</script>

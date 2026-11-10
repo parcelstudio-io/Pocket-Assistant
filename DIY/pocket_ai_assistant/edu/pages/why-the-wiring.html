@@ -1,0 +1,159 @@
+<title>Why the Wiring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; --w-orange: #E0661C; --w-olive: #6B8E23; --w-purple: #7C3AED; --w-teal: #0B7285; --w-navy: #1B3F8B; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; }
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 840px; margin: 0 auto; padding-block: 28px 64px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(26px, 5vw, 34px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 66ch; margin: 0 0 18px; }
+  h2 { font-size: 22px; margin: 44px 0 8px; letter-spacing: -.01em; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .72em; margin-right: 8px; }
+  h3 { font-size: 17px; margin: 26px 0 6px; }
+  p { max-width: 70ch; margin: 0 0 10px; }
+  ul, ol { max-width: 70ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 4px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 8px 0 12px; }
+  a { color: var(--accent-ink); }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .step input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--pass); cursor: pointer; }
+  .step label { cursor: pointer; }
+  .step .do { font-weight: 600; }
+  .step .chk { display: block; color: var(--accent-ink); font-size: 14px; margin-top: 4px; }
+  .step .chk::before { content: "check · "; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 11.5px; }
+  .step .note { display: block; color: var(--muted); font-size: 14px; margin-top: 3px; }
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-tint); padding: 10px 14px; margin: 14px 0; max-width: 74ch; border-radius: 0 6px 6px 0; }
+  .callout.info { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout.pass { border-left-color: var(--pass); background: var(--pass-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .callout.info .label { color: var(--accent-ink); } .callout.pass .label { color: var(--pass); }
+  .callout ul, .callout p { margin: 0; } .callout ul { padding-left: 1.2em; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 5px 10px; margin: 0 0 10px; }
+  .stock strong { color: var(--brass); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.t th, table.t td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); white-space: nowrap; }
+  table.bends { max-width: 420px; margin-top: 4px; }
+  .scrollx { overflow-x: auto; }
+  .progress { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding: 8px 0; font-family: var(--mono); font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 8px; z-index: 1; }
+  .progress b { color: var(--pass); }
+  button.reset { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; margin-left: 10px; }
+  .evidence { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); max-width: 74ch; }
+  figure { margin: 12px 0 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 8px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); background: var(--figure-bg); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; } figure svg .s { font-size: 11.5px; } figure svg .b { font-weight: 600; } figure svg .m { font-family: var(--mono); }
+  figure svg .pin { font-size: 8.5px; font-family: var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--figure-bg); stroke-width: 3px; stroke-linejoin: round; }
+  figure svg .muted { fill: var(--muted); } figure svg .acc-ink { fill: var(--accent-ink); } figure svg .warn-ink { fill: var(--warn); } figure svg .pass-ink { fill: var(--pass); } figure svg .brass-ink { fill: var(--brass); }
+  figure svg .pcb { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; } figure svg .pcb.dim { opacity: .6; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .kapton { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1; }
+  figure svg .ant { fill: none; stroke: var(--warn); stroke-width: 1.2; stroke-dasharray: 3 2; }
+  figure svg .kap { fill: var(--warn); fill-opacity: .28; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .kap2 { fill: var(--warn); fill-opacity: .55; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .num { fill: var(--warn); stroke: var(--figure-bg); stroke-width: 1.5; } figure svg .numt { fill: #fff; }
+  figure svg .shim { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  figure svg .tube { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .card { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+  figure svg .glue { fill: var(--pass); stroke: var(--figure-bg); stroke-width: 1.5; }
+  figure svg .rodx { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 2; }
+  figure svg .tapeline { fill: none; stroke: var(--warn); stroke-width: 3; opacity: .7; }
+  figure svg .spk { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .port { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .stubp { fill: var(--brass); stroke: none; }
+  figure svg .screen-out { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 4; }
+  figure svg .screen-side { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .glass { fill: var(--accent); opacity: .35; }
+  figure svg .frame { fill: none; stroke: var(--brass); stroke-width: 5; } figure svg .post { fill: var(--brass); }
+  figure svg .joint { fill: var(--surface); stroke: var(--pass); stroke-width: 2.2; }
+  figure svg .floor { stroke: currentColor; stroke-width: 2; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; } figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; } figure svg .acc { stroke: var(--accent); fill: none; } figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .rod { stroke: var(--brass); stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .solder { fill: var(--muted); }
+  figure svg .sleeve { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; max-width: 74ch; }
+  figcaption strong { color: var(--ink); }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; font-size: 13.5px; margin: 8px 0 14px; }
+  .legend span.sw { display: inline-block; width: 22px; height: 5px; border-radius: 3px; vertical-align: middle; margin-right: 7px; }
+  details.more { margin: 2px 0 8px 38px; } details.more > summary { cursor: pointer; color: var(--accent-ink); font-size: 14px; }
+  details.more[open] > summary { margin-bottom: 6px; }
+  .short ol { counter-reset: s; padding-left: 0; list-style: none; max-width: 76ch; }
+  .short li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .short li::before { content: counter(s); font-family: var(--mono); font-weight: 600; color: var(--brass); }
+  .short li a { font-weight: 600; }
+  .short .c { display: block; color: var(--muted); font-size: 14px; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 12px 14px; margin: 16px 0; max-width: 74ch; }
+  .gate input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--pass); }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); }
+  .gate p { margin: 2px 0 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<div class="wrap">
+<div class="eyebrow">Pocket AI Assistant · final build · the reasons</div>
+<h1>Why Pip is wired the way it is</h1>
+<p class="lede">Four pages on the reasons behind the <a href="https://claude.ai/artifact/CAzzassRghF9MTSHMUD3Qf" target="_blank" rel="noopener">rails-and-lanes diagram</a>: two voltages, one ground, three kinds of signal, five small parts, a frame that carries nothing, and a battery that gets its own board. Each rule on the build pages comes from one of these.</p>
+<h2>1 · Two voltages, one source</h2>
+<p>Everything in Pip runs on 5 V or 3.3 V, and only two pins ever see 5 V: A1's 5V input and the amplifier's VIN. The other parts are 3.3 V chips. The INMP441 microphone dies above 3.6 V; the screen's controller and A1's own ESP32-C3 are 3.3 V parts too. Feed them 5 V and you replace them.</p>
+<p>So 5 V comes in once, from USB today and from the PowerBoost in the final build, and goes to those two pins. A1 has a small regulator that turns 5 V into 3.3 V; its 3V3 pin is the <em>output</em> of that regulator, and that is what the 3V3 rail carries to the screen and the mic. The regulator can give about 500 mA, and the screen and mic together want under 30.</p>
+<figure><div class="scroll"><svg viewBox="0 0 760 230" role="img" aria-label="Two voltages from one source"><rect x="20" y="80" width="150" height="50" rx="6" class="box"/><text class="s b" x="95.0" y="100" text-anchor="middle">USB or PowerBoost</text><text class="s muted" x="95.0" y="116" text-anchor="middle">5 V, up to 1 A</text><line x1="170" y1="105" x2="250" y2="105" stroke="var(--w-red)" stroke-width="5" stroke-linecap="round"/><text class="s b" x="210" y="97" text-anchor="middle">5 V rail</text><rect x="250" y="30" width="130" height="50" rx="6" class="box"/><text class="s b" x="315.0" y="50" text-anchor="middle">amp VIN</text><text class="s muted" x="315.0" y="66" text-anchor="middle">wants 5 V for loudness</text><rect x="250" y="130" width="130" height="50" rx="6" class="box"/><text class="s b" x="315.0" y="150" text-anchor="middle">A1 5V pin</text><text class="s muted" x="315.0" y="166" text-anchor="middle">its regulator inside</text><line x1="250" y1="105" x2="250" y2="55" stroke="var(--w-red)" stroke-width="5" stroke-linecap="round"/><line x1="250" y1="105" x2="250" y2="155" stroke="var(--w-red)" stroke-width="5" stroke-linecap="round"/><line x1="380" y1="155" x2="460" y2="155" stroke="var(--w-orange)" stroke-width="5" stroke-linecap="round"/><text class="s b" x="420" y="147" text-anchor="middle">3V3 rail</text><rect x="460" y="100" width="120" height="44" rx="6" class="box"/><text class="s b" x="520.0" y="120" text-anchor="middle">screen VCC</text><text class="s muted" x="520.0" y="136" text-anchor="middle">3.3 V part</text><rect x="460" y="160" width="120" height="44" rx="6" class="box"/><text class="s b" x="520.0" y="180" text-anchor="middle">mic VDD</text><text class="s muted" x="520.0" y="196" text-anchor="middle">3.6 V maximum</text><rect x="600" y="130" width="140" height="50" rx="6" class="box"/><text class="s b" x="670.0" y="150" text-anchor="middle">A1's own chip</text><text class="s muted" x="670.0" y="166" text-anchor="middle">3.3 V too</text><line x1="460" y1="155" x2="460" y2="122" stroke="var(--w-orange)" stroke-width="5" stroke-linecap="round"/><line x1="460" y1="155" x2="460" y2="182" stroke="var(--w-orange)" stroke-width="5" stroke-linecap="round"/><line x1="580" y1="155" x2="600" y2="155" stroke="var(--w-orange)" stroke-width="5" stroke-linecap="round"/><text class="s warn-ink" x="20" y="215">5 V reaches two pins only. 3.3 V is made on A1 and shared on its own rail. Both return on the one GND rail.</text></svg></div><figcaption><strong>Why the amp is on 5 V and not 3.3.</strong> The amplifier works from 2.5 to 5.5 V, but loudness is voltage: at 5 V it can swing about twice what it could at 3.3 V, and power is voltage squared, so four times the sound. At cap 45 the harness runs the speaker at about 0.4 W peak; on 3.3 V that would be a whisper.</figcaption></figure>
+<h2>2 · Why rails, and why one ground</h2>
+<p>Thirteen of the device's connections are power or ground; nine of them are GND or 3V3. A rail is simply one shared conductor those nine can hook onto, instead of nine separate rods back to A1's two pins. That is the whole reason for the two long rods on the floor: fewer joints, shorter rods, and every ground in the device is the same piece of metal.</p>
+<p>The same piece of metal matters more than it sounds. Every signal in Pip is a voltage <em>measured against ground</em>: the screen decides whether SDA is a 1 or a 0 by comparing it with its own GND pin. If the screen's ground and A1's ground were different wires meeting somewhere far away, current flowing in one of them would make the two grounds differ by a few tenths of a volt, and a 1 could read as a 0. One rail, short taps, one truth.</p>
+<p>The amplifier is the exception that proves it. It is the one part that pulls real current in bursts, so its ground return is a straight rod to A1's GND stub, with the rail hanging off that rod by a pin. The noisy return does not run <em>through</em> the rail the mic and screen sit on; it runs beside it.</p>
+<h2>3 · The three kinds of signal</h2>
+<p><strong>I²C, two wires, the screen.</strong> SCL is a clock, SDA is data, and the same two wires could serve more devices. The screen only listens. Both lines idle at 3.3 V and get pulled low to talk; the pull-up resistors that make that work are already on the screen module, which is why the harness has none for I²C.</p>
+<p><strong>I²S, four wires, sound both ways.</strong> BCLK ticks 1,024,000 times a second; WS flips 16,000 times a second to say "left slot, right slot"; DIN carries the bits going out to the amp, SD the bits coming in from the mic. The two clocks go to <em>both</em> the amp and the mic because they are the metronome: everyone plays to the same beat. That is why the WS and BCLK rods each pass the amp with a tap and carry on to the mic, while DIN and SD are single rods. The <a href="https://claude.ai/artifact/2ihQAvK2zygttS25YtS58U" target="_blank" rel="noopener">physics page</a> has the bit-by-bit picture.</p>
+<p><strong>Plain pins, one wire each.</strong> The button grounds GPIO10; the amp's SD pin is a switch A1 pulls high to let the amp speak. Both are just "high or low", no timing.</p>
+<h2>4 · The five small parts, and why each is where it is</h2>
+<ul><li><strong>R3, 10 kΩ, BCLK to 3V3 (kept for now).</strong> GPIO2 is one of the pins the ESP32-C3 reads at the instant it powers on to decide how to boot: Espressif says it must be high then, and the chip gives it no pull of its own. The amp and the mic only listen on this line, so nothing else holds it high; 10 kΩ to 3.3 V does, and is far too weak to bother the clock afterwards. One meter check retires it: A1 unpowered, Ω between GPIO2 and 3V3 — about 10 kΩ means the SuperMini board already has the pull-up and R3 can go.</li><li><strong>Mic SD pull-down: in firmware, not brass (R4 dropped 2026-10-14).</strong> The mic drives SD only during its own slot and lets go the rest of the time; a line nobody drives picks up noise. The INMP441 datasheet asks for a 100 kΩ to ground, and A1 has one built in: Pip's firmware switches on GPIO4's internal pull-down at start-up, so the resistor would only repeat it.</li><li><strong>R1, 4.7 kΩ, amp SD to GND.</strong> From power-on until Pip's firmware is running, GPIO5 is undefined. This resistor holds the amplifier's shutdown pin low through that gap so the speaker cannot click, pop or sit at full gain on garbage. The firmware then drives it high only while speaking.</li><li><strong>GAIN: left open (R2 dropped 2026-10-14).</strong> The amp reads the resistance on its GAIN pin once and sets its volume range: open is 9 dB, 100 kΩ to ground would be 15 dB. Open is the quieter, safer setting and the one the board ships with; the resistor can be added later if Pip is too quiet.</li><li><strong>C1 220 µF and C2 100 nF, across VIN and GND at the amp.</strong> A bass note or a Wi-Fi burst asks for a few hundred milliamps for a few milliseconds. A long thin wire cannot deliver that fast, and the 5 V would sag and reset A1. The 220 µF is a local reservoir that answers the slow bursts; the 100 nF answers the fast spikes it is too slow for. They sit at the amp because that is where the demand is; a reservoir 50 mm away is a reservoir with a straw.</li></ul>
+<h2>5 · Why OUT+ and OUT− never touch ground</h2>
+<p>The amplifier drives the speaker with a bridge: four transistor switches, the speaker across the middle. To push the cone out it connects OUT+ to 5 V and OUT− to ground; to pull it in, the reverse. Neither output <em>is</em> ground, each is a switched node that spends half its time at 5 V. Tie OUT− to the GND rail and the moment the bridge flips, 5 V is shorted straight to ground through one transistor. It fails in milliseconds. The speaker gets its own two leads, twisted together, and nothing else. <a href="https://claude.ai/artifact/F5xmQ2TahCZxSLDdm6raMp" target="_blank" rel="noopener">The Bridge</a> draws it.</p>
+<h2>6 · Why the frame carries nothing</h2>
+<p>Brass is a conductor, and the cage touches everything that touches it. If one rail brushed a tube, the whole frame would become GND, and every other accidental touch anywhere on it would be a short to ground. Worse, a grounded metal box 10 mm from A1's ceramic antenna is a ground plane in the wrong place: it detunes the antenna and the Wi-Fi gets worse. So the rule is absolute: 2 mm of air between any conductor and the frame, Kapton on the tubes, and the meter proving silence between the frame and every rail before power. The silver frame obeys the same rule; silver conducts even better.</p>
+<h2>7 · The battery: why it needs its own board</h2>
+<p>A lithium cell gives 3.7 V, sagging toward 3.0 V as it empties. Wire it straight to A1's 5V pin and three things go wrong at once. The amp is quiet (see section 1). A1's regulator needs its input a few tenths of a volt above 3.3 V, so below about 3.6 V the whole device browns out with half the cell still full. And there is no way to charge it except by taking it out.</p>
+<p>The PowerBoost does three jobs the harness cannot. A <strong>boost converter</strong> turns 3.7 V into a steady 5.2 V, so the harness sees exactly what the USB socket used to give it and nothing downstream changes. A <strong>charger</strong> fills the cell correctly from any USB supply. And <strong>load sharing</strong> lets both happen at once.</p>
+<figure><div class="scroll"><svg viewBox="0 0 760 250" role="img" aria-label="How a lithium cell is charged"><line x1="60" y1="200" x2="720" y2="200" class="edge"/><line x1="60" y1="200" x2="60" y2="30" class="edge"/><text class="s muted" x="720" y="218" text-anchor="end">time → about 1½ hours</text><path d="M60,70 L380,70 C 460,70 560,150 700,190" fill="none" stroke="var(--w-red)" stroke-width="3.5"/><text class="s b" x="200" y="62" fill="var(--w-red)">current: 1 A, steady</text><text class="s b" x="560" y="150" fill="var(--w-red)">then tapers</text><path d="M60,160 C 200,120 320,95 380,88 L700,88" fill="none" stroke="var(--w-orange)" stroke-width="3.5"/><text class="s b" x="120" y="150" fill="var(--w-orange)">voltage: 3.7 V rising</text><text class="s b" x="520" y="80" fill="var(--w-orange)">held at 4.2 V</text><line x1="380" y1="30" x2="380" y2="200" class="grid dashed"/><text class="s muted" x="380" y="24" text-anchor="middle">constant current → constant voltage</text><line x1="700" y1="30" x2="700" y2="200" class="grid dashed"/><text class="s muted" x="700" y="24" text-anchor="middle">full: current under 0.1 A, LED green</text></svg></div><figcaption><strong>How a cell is charged: constant current, then constant voltage.</strong> The charger pushes 1 A until the cell reaches 4.2 V, then holds 4.2 V and lets the current fall; when it drops under about a tenth of the starting rate the cell is full and the LED turns green. Holding 4.2 V exactly is why this is a dedicated chip and not a resistor: 4.3 V shortens a cell's life, 4.5 V can set it on fire.</figcaption></figure>
+<p><strong>Why load sharing is not optional.</strong> The charger decides "full" by watching the current into the cell fall. If the device were drawing its power from the cell during charging, that current would never fall, the charger would never terminate, and the cell would sit at 4.2 V under charge indefinitely. A load-sharing charger routes the USB power to the device directly and sends only the leftover to the cell, so the cell's current is its own. The #4410 charger you own has no such path, which is why it stays on the bench.</p>
+<p><strong>Why the switch is on EN and not in the battery lead.</strong> EN is a logic pin: grounding it tells the boost to stop, and the current through the switch is microamps. A switch in the cell's own lead would carry the full 0.7 A, would need to be a bigger, better switch, and would drop a few tenths of a volt across its contacts exactly where volts are scarce. On EN, the cell stays connected to the charger even while the device is "off", so it charges either way.</p>
+<p><strong>Why one source at a time.</strong> A1's 5V pin is wired straight to its USB socket: on this board they are the same copper, no diode between them (you measured that in September). With the PowerBoost feeding 5.2 V to that pin, plugging a cable into A1 would tie two supplies together; the higher one pushes current back into the lower, into a laptop port or into the boost's output, and something gives. So the final build blocks A1's port, and flashing happens with the PowerBoost switched off.</p>
+<p><strong>Why the 1200 mAh cell and not the 500.</strong> The device peaks at about 0.5 A on the 5 V side, during a Wi-Fi burst with the amp playing. The boost converter trades volts for amps: 5 V × 0.5 A is 2.5 W, which at 3.7 V and 90 % efficiency is 0.75 A out of the cell. A pouch cell is rated in multiples of its capacity: 0.75 A is 1.5C for a 500 mAh cell, past its 1C rating, and 0.6C for the 1200, comfortably inside. The same arithmetic gives the runtime: 1200 mAh × 3.7 V is 4.4 Wh, about 4 Wh usable after the boost, and the device averages under 1 W while talking, so roughly five hours. Charging at 1 A is 0.8C for the 1200, normal; it would be 2C for the 500, abusive.</p>
+<p><strong>Why no solder ever touches the cell.</strong> A pouch cell is a foil envelope; heat the tab and the separator inside can melt, and a lithium cell with a shorted separator does not fail quietly. The cell has its own protection board that cuts off above 4.25 V, below 3.0 V and on over-current, and it arrives with a JST plug. The plug is the only connection it will ever have. It also goes into the frame last and comes out first, so it is never near the iron.</p>
+<h2>8 · Why the rods are where they are</h2>
+<p>Bare rods have no insulation, so air is the insulation: 1 mm of it holds off thousands of volts, and this device has five. The whole geometry on the harness page exists to keep 1 mm of air between any two conductors that are not meant to meet, and 2 mm to the frame. Where a sketch could not promise that, a sleeve of heat-shrink or a square of Kapton does the job instead, and that is all those two materials are for: insulation where bare metal would otherwise rest on bare metal.</p>
+<div class="evidence"><p><strong>Sources.</strong> The connections are fast-track Steps 6–11 and the CLAUDE.md contract; the strapping-pin behaviour is the ESP32-C3 datasheet; the amplifier facts (2.5–5.5 V, bridge output, GAIN and SD pins) are the MAX98357A datasheet; the PowerBoost functions are Adafruit's product page (MCP73871 charger with load sharing, TPS61090 boost); cell ratings are the project's September materials review. Runtime and current figures are estimates from typical values, not measurements.</p></div>
+</div>

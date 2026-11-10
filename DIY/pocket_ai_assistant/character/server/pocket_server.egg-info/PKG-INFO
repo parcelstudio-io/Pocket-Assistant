@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: pocket-server
+Version: 0.1.0
+Summary: Local server for the Pocket AI character: speech in, LLM, speech out, over one WebSocket.
+Requires-Python: >=3.11
+Requires-Dist: aiohttp<4,>=3.11
+Requires-Dist: openai<3,>=1.60
+Requires-Dist: numpy>=1.26

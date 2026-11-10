@@ -1,0 +1,664 @@
+<title>The Pin Switchboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EEF1F4; --paper:#FFFFFF; --ink:#14202B; --ink-2:#4A5A68; --line:#CBD3DB;
+  --brass:#B8622A; --brass-soft:#F4E3D6; --signal:#2A6FB8; --signal-soft:#DCE8F6;
+  --ok:#2E7D4F; --ok-soft:#DDF0E4; --warn:#A63D2F; --warn-soft:#F8E0DB;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Chivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+    --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+    --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+  --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+  --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900}
+h2{font-size:clamp(22px,3.5vw,28px);font-weight:700;margin-top:48px;padding-top:16px;border-top:3px solid var(--brass)}
+h3{font-size:19px;font-weight:700;margin-top:28px}
+p{margin:12px 0;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:24px}
+li{margin:6px 0}
+a{color:var(--signal)}
+code,kbd{font-family:var(--mono);font-size:0.9em;background:var(--signal-soft);padding:1px 5px;border-radius:3px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.5;background:var(--paper);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;border-radius:4px}
+pre code{background:none;padding:0;font-size:inherit}
+strong{font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.masthead{display:grid;grid-template-columns:auto 1fr;gap:16px 24px;align-items:end;padding-bottom:20px;border-bottom:3px solid var(--ink)}
+.chipmark{color:var(--brass);display:block}
+.masthead .meta{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:8px}
+.goal{background:var(--paper);border-left:4px solid var(--brass);padding:14px 18px;margin:24px 0}
+.goal p{margin:6px 0}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 16px;font-size:15px;margin:20px 0;border:1px solid var(--line);background:var(--paper)}
+.sched > div{padding:8px 12px;border-bottom:1px solid var(--line)}
+.sched > div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);color:var(--brass);white-space:nowrap}
+.box{padding:14px 18px;margin:20px 0;border-radius:4px;max-width:none}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.box .lbl{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.device{background:var(--brass-soft);border:1px solid var(--brass)}
+.device .lbl{color:var(--brass)}
+.analogy{background:var(--signal-soft);border:1px solid var(--signal)}
+.analogy .lbl{color:var(--signal)}
+.safety{background:var(--warn-soft);border:1px solid var(--warn)}
+.safety .lbl{color:var(--warn)}
+.try{background:var(--ok-soft);border:1px solid var(--ok)}
+.try .lbl{color:var(--ok)}
+figure{margin:24px 0;background:var(--paper);border:1px solid var(--line);padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:68ch}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:16px 0}
+.tablewrap{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:14px;background:var(--paper)}
+td.pin{font-family:var(--mono);white-space:nowrap}
+details{background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:10px 0;border-radius:4px}
+summary{cursor:pointer;font-weight:700}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border:2px solid var(--brass);border-radius:3px}
+.nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+@media (max-width:520px){.masthead{grid-template-columns:1fr}.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+<div class="masthead">
+  <svg class="chipmark" viewBox="0 0 60 78" width="54" height="70" role="img" aria-label="A chip seen from above with four pins down each side; two pins are highlighted." xmlns="http://www.w3.org/2000/svg">
+    <rect x="17" y="9" width="26" height="60" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="17" y1="19" x2="4" y2="19" stroke="currentColor" stroke-width="2"/>
+    <line x1="17" y1="33" x2="4" y2="33" stroke="currentColor" stroke-width="3.5"/>
+    <line x1="17" y1="47" x2="4" y2="47" stroke="currentColor" stroke-width="2"/>
+    <line x1="17" y1="61" x2="4" y2="61" stroke="currentColor" stroke-width="2"/>
+    <line x1="43" y1="19" x2="56" y2="19" stroke="currentColor" stroke-width="2"/>
+    <line x1="43" y1="33" x2="56" y2="33" stroke="currentColor" stroke-width="2"/>
+    <line x1="43" y1="47" x2="56" y2="47" stroke="currentColor" stroke-width="3.5"/>
+    <line x1="43" y1="61" x2="56" y2="61" stroke="currentColor" stroke-width="2"/>
+  </svg>
+  <div>
+    <div class="eyebrow">Pocket AI blitz week &middot; GPIO crash course</div>
+    <h1>The Pin Switchboard</h1>
+    <div class="meta">Companion to Day 2 &middot; ~50 minutes &middot; What a pin actually is, how the chip decides what each one does, and the code that claims one.</div>
+  </div>
+</div>
+
+<div class="goal">
+  <p><strong>By the end of this you can&hellip;</strong></p>
+  <p>1. Say what is physically inside a GPIO pin, and why a pin has no role until software gives it one.</p>
+  <p>2. Explain the switchboard: why GPIO2 carries the bit clock by choice, not by law.</p>
+  <p>3. Sort any pin into fixed, fixed-only-at-boot, or free &mdash; and say which of your board&rsquo;s pins are which.</p>
+  <p>4. Tell push-pull from open-drain, and say why I&sup2;C cannot work without pull-ups.</p>
+  <p>5. Claim a spare pin in firmware, four different ways, and know which way to reach for.</p>
+</div>
+
+<div class="sched">
+  <div class="t">&sect;1</div><div>What a pin actually is &mdash; the machinery behind one pad.</div>
+  <div class="t">&sect;2</div><div>The switchboard: appliances, and the crossbar that patches them to pins.</div>
+  <div class="t">&sect;3</div><div>Three tiers of pin: fixed, fixed-at-boot, free &mdash; with your board sorted.</div>
+  <div class="t">&sect;4</div><div>Push-pull versus open-drain, and where pull-ups become mandatory.</div>
+  <div class="t">&sect;5</div><div>Your two buses: I&sup2;C the conversation, I&sup2;S the marching band.</div>
+  <div class="t">&sect;6</div><div>Four layers of code that claim a pin, from your own firmware.</div>
+  <div class="t">&sect;7</div><div>Claiming a spare: an LED, a second button, and the zero-pin trick.</div>
+  <div class="t">&sect;8</div><div>Changing a pin, and five ways to get burned.</div>
+</div>
+
+<h2>Before you start</h2>
+
+<p>Day 2 was about resistors &mdash; the tug-of-war rope, and why a pull has to be weak enough to lose. This page is about the thing on the other end of that rope: the pin itself. Everything here is reading and paper. Nothing on this page is an instruction to wire or touch anything.</p>
+
+<div class="box safety"><span class="lbl">Safety</span><p>The prototype is USB-only. The battery, charger, amplifier, speaker, and brass frame stay held until a reviewed power design exists, and the 3V3 rail has exactly one source: the board&rsquo;s regulator.</p></div>
+
+<h2>1. What a pin actually is</h2>
+
+<p>Strip away the software and a GPIO pin is a small metal pad on the silicon, bonded by a hair-thin wire to a leg on the chip package, soldered to a pad on your board, with a number printed next to it. That is the whole of the physical story.</p>
+
+<p>The interesting part is what sits behind that pad <em>inside</em> the chip. Four pieces of machinery, all of them permanently wired to the same pad, each one switched on or off by software:</p>
+
+<ul>
+<li>An <strong>output driver</strong> that can shove the wire up to 3.3 V or down to 0 V.</li>
+<li>An <strong>input buffer</strong> that watches the wire and reports back HIGH or LOW.</li>
+<li>A <strong>pull-up resistor</strong> with a switch &mdash; your Day 2 child, pulling toward 3.3 V.</li>
+<li>A <strong>pull-down resistor</strong> with a switch &mdash; the same child, pulling toward ground.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 640 350" role="img" aria-label="A cutaway of one GPIO pin. Inside the chip, a multiplexer chooses between the software GPIO register and a peripheral such as I2S or I2C, and feeds an output driver that drives the pin net. An input buffer reads the same net back. A pull-up resistor connects the net to 3.3 volts through a software switch, and a pull-down resistor connects it to ground through another software switch. The net leaves the chip through a pad to the outside world." xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="p1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--brass)"/></marker>
+  </defs>
+  <rect x="10" y="18" width="516" height="314" rx="6" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4"/>
+  <text x="20" y="34" font-size="11" fill="currentColor">inside the ESP32-C3</text>
+  <!-- sources -->
+  <rect x="20" y="104" width="118" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="79" y="122" font-size="11" fill="currentColor" text-anchor="middle">GPIO register</text>
+  <rect x="20" y="146" width="118" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="79" y="164" font-size="11" fill="currentColor" text-anchor="middle">I&#178;S / I&#178;C / LEDC</text>
+  <line x1="138" y1="118" x2="156" y2="130" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <line x1="138" y1="160" x2="156" y2="150" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <!-- mux -->
+  <rect x="158" y="118" width="46" height="44" rx="3" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.5"/>
+  <text x="181" y="145" font-size="11" fill="currentColor" text-anchor="middle">MUX</text>
+  <text x="181" y="178" font-size="10" fill="currentColor" text-anchor="middle">software picks</text>
+  <line x1="204" y1="140" x2="242" y2="140" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <!-- output driver -->
+  <rect x="244" y="124" width="96" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="292" y="144" font-size="11" fill="currentColor" text-anchor="middle">output driver</text>
+  <line x1="340" y1="140" x2="424" y2="140" style="stroke:var(--brass)" stroke-width="2" fill="none" marker-end="url(#p1a)"/>
+  <!-- input buffer -->
+  <path d="M340,196 L340,232 L262,214 z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="292" y="252" font-size="11" fill="currentColor" text-anchor="middle">input buffer</text>
+  <line x1="424" y1="214" x2="346" y2="214" style="stroke:var(--brass)" stroke-width="2" fill="none" marker-end="url(#p1a)"/>
+  <line x1="260" y1="214" x2="208" y2="214" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="204" y="218" font-size="10" fill="currentColor" text-anchor="end">reads back</text>
+  <!-- the pin net -->
+  <line x1="430" y1="106" x2="430" y2="252" stroke="currentColor" stroke-width="2.5" fill="none"/>
+  <circle cx="430" cy="140" r="3.5" fill="currentColor" stroke="none"/>
+  <circle cx="430" cy="214" r="3.5" fill="currentColor" stroke="none"/>
+  <!-- pull-up branch -->
+  <text x="430" y="32" font-size="12" fill="currentColor" text-anchor="middle">3.3 V</text>
+  <line x1="408" y1="38" x2="452" y2="38" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="430" y1="38" x2="430" y2="50" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="430" cy="53" r="3" fill="none" style="stroke:var(--signal)" stroke-width="1.5"/>
+  <line x1="432" y1="51" x2="452" y2="63" style="stroke:var(--signal)" stroke-width="1.5" fill="none"/>
+  <circle cx="430" cy="69" r="3" fill="none" style="stroke:var(--signal)" stroke-width="1.5"/>
+  <line x1="430" y1="72" x2="430" y2="78" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <rect x="422" y="78" width="16" height="28" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="462" y="62" font-size="10" style="fill:var(--signal)">software switch</text>
+  <text x="462" y="96" font-size="10" fill="currentColor">pull-up</text>
+  <!-- pull-down branch -->
+  <rect x="422" y="252" width="16" height="28" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="462" y="270" font-size="10" fill="currentColor">pull-down</text>
+  <line x1="430" y1="280" x2="430" y2="286" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="430" cy="289" r="3" fill="none" style="stroke:var(--signal)" stroke-width="1.5"/>
+  <line x1="432" y1="287" x2="452" y2="299" style="stroke:var(--signal)" stroke-width="1.5" fill="none"/>
+  <circle cx="430" cy="305" r="3" fill="none" style="stroke:var(--signal)" stroke-width="1.5"/>
+  <line x1="430" y1="308" x2="430" y2="318" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="412" y1="318" x2="448" y2="318" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="430" y="334" font-size="11" fill="currentColor" text-anchor="middle">GND</text>
+  <text x="462" y="303" font-size="10" style="fill:var(--signal)">software switch</text>
+  <!-- pad and outside -->
+  <line x1="430" y1="177" x2="540" y2="177" stroke="currentColor" stroke-width="2.5" fill="none"/>
+  <circle cx="430" cy="177" r="3.5" fill="currentColor" stroke="none"/>
+  <rect x="540" y="163" width="34" height="28" rx="2" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+  <text x="557" y="181" font-size="10" fill="currentColor" text-anchor="middle">pad</text>
+  <line x1="574" y1="177" x2="616" y2="177" stroke="currentColor" stroke-width="2.5" fill="none"/>
+  <text x="595" y="167" font-size="10" fill="currentColor" text-anchor="middle">your wire</text>
+</svg>
+<figcaption>One pin, cut open. All four pieces of machinery are always physically present and always attached to the same net &mdash; the blue switches are the only thing that changes. &ldquo;Configuring a pin&rdquo; means flipping those switches and telling the MUX which source to listen to.</figcaption>
+</figure>
+
+<div class="box analogy"><span class="lbl">The idea to hold on to</span><p>A pin does not <em>become</em> an input or an output. Every pin is already all of these things at once, with the parts switched off. Setting a pin as an output just means &ldquo;switch the output driver on.&rdquo; That is why a pin can change its mind at runtime, and why forgetting to switch something off is a whole category of bug.</p></div>
+
+<h2>2. The switchboard</h2>
+
+<p>Here is the fact that surprises nearly everybody: <strong>on a modern chip, almost no pin has a fixed job.</strong> The roles in your <code>config.h</code> are choices somebody made, not facts about the silicon.</p>
+
+<p>Inside the ESP32-C3 there are a handful of small specialised machines. Think of them as <strong>appliances</strong>: an I&sup2;C controller, an I&sup2;S controller, a PWM generator, timers, UARTs. Each one handles fast, precisely timed signalling that software running in a loop could never keep up with. Then there is a <strong>crossbar</strong> &mdash; Espressif calls it the GPIO matrix &mdash; that can patch almost any appliance&rsquo;s signal onto almost any physical pin.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="A crossbar grid. Six peripheral signals run as rows: I2C SCL and SDA, and I2S BCLK, WS, DOUT and DIN. Seven pins run as columns: GPIO1, 2, 3, 4, 20, 21 and 6. A dot at an intersection means that signal is routed to that pin. SCL routes to GPIO20, SDA to GPIO21, BCLK to GPIO2, WS to GPIO1, DOUT to GPIO3, DIN to GPIO4. The GPIO6 column has no dot and is labelled free." xmlns="http://www.w3.org/2000/svg">
+  <!-- faint grid -->
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.18">
+    <line x1="180" y1="80" x2="500" y2="80"/><line x1="180" y1="110" x2="500" y2="110"/>
+    <line x1="180" y1="140" x2="500" y2="140"/><line x1="180" y1="170" x2="500" y2="170"/>
+    <line x1="180" y1="200" x2="500" y2="200"/><line x1="180" y1="230" x2="500" y2="230"/>
+    <line x1="190" y1="66" x2="190" y2="244"/><line x1="238" y1="66" x2="238" y2="244"/>
+    <line x1="286" y1="66" x2="286" y2="244"/><line x1="334" y1="66" x2="334" y2="244"/>
+    <line x1="382" y1="66" x2="382" y2="244"/><line x1="430" y1="66" x2="430" y2="244"/>
+    <line x1="478" y1="66" x2="478" y2="244"/>
+  </g>
+  <!-- row labels -->
+  <g font-size="11" fill="currentColor" text-anchor="end">
+    <text x="172" y="84">I&#178;C  SCL</text><text x="172" y="114">I&#178;C  SDA</text>
+    <text x="172" y="144">I&#178;S  BCLK</text><text x="172" y="174">I&#178;S  WS</text>
+    <text x="172" y="204">I&#178;S  DOUT</text><text x="172" y="234">I&#178;S  DIN</text>
+  </g>
+  <text x="96" y="46" font-size="11" fill="currentColor" font-weight="700">appliance signals</text>
+  <!-- column labels -->
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="190" y="262">GPIO1</text><text x="238" y="262">GPIO2</text><text x="286" y="262">GPIO3</text>
+    <text x="334" y="262">GPIO4</text><text x="382" y="262">GPIO20</text><text x="430" y="262">GPIO21</text>
+    <text x="478" y="262">GPIO6</text>
+  </g>
+  <text x="334" y="284" font-size="11" fill="currentColor" text-anchor="middle" font-weight="700">physical pins</text>
+  <!-- connection dots -->
+  <g stroke="none">
+    <circle cx="382" cy="80" r="6.5" style="fill:var(--brass)"/>
+    <circle cx="430" cy="110" r="6.5" style="fill:var(--brass)"/>
+    <circle cx="238" cy="140" r="6.5" style="fill:var(--brass)"/>
+    <circle cx="190" cy="170" r="6.5" style="fill:var(--brass)"/>
+    <circle cx="286" cy="200" r="6.5" style="fill:var(--brass)"/>
+    <circle cx="334" cy="230" r="6.5" style="fill:var(--brass)"/>
+  </g>
+  <!-- free column call-out -->
+  <line x1="478" y1="60" x2="478" y2="40" style="stroke:var(--ok)" stroke-width="1.5" fill="none"/>
+  <text x="512" y="38" font-size="11" style="fill:var(--ok)" font-weight="700">free</text>
+  <text x="512" y="54" font-size="10" fill="currentColor">no dot yet &mdash;</text>
+  <text x="512" y="68" font-size="10" fill="currentColor">any row could</text>
+  <text x="512" y="82" font-size="10" fill="currentColor">reach it</text>
+</svg>
+<figcaption>The crossbar as it stands on your board. Every dot is one assignment in firmware &mdash; literally one line, such as <code>bus_config.scl_io_num = GPIO_NUM_20</code>. Move the dot along its row and the signal comes out of a different pin.</figcaption>
+</figure>
+
+<p>This is why every pin in your config file is a <code>#define</code>. Somebody typed <code>GPIO_NUM_2</code> for the bit clock. They could have typed <code>GPIO_NUM_7</code>. The chip would not have cared.</p>
+
+<h3>A short history, because it explains the shape</h3>
+
+<p>Older chips did not work this way. The ATmega328 in a classic Arduino Uno had <em>hard-wired</em> pin roles: I&sup2;C lived on A4 and A5, and nowhere else, ever. If your board layout wanted them somewhere else, your layout lost. Modern chips &mdash; ESP32, STM32, RP2040 &mdash; added the crossbar, and pin assignment turned from a lookup into a design decision. That is why pinout arguments are a thing now and were not in 2010.</p>
+
+<h3>What the crossbar cannot do</h3>
+
+<p>It moves appliances around. It does not clone them. The ESP32-C3 has <strong>one</strong> I&sup2;C controller, <strong>one</strong> I&sup2;S, two SPI (one permanently busy running the flash chip your firmware lives in), and two UARTs. You may put I&sup2;C on any pin pair you like. You may not have three I&sup2;C buses.</p>
+
+<p>There is also a speed footnote. The chip has two routing paths: <strong>IO_MUX</strong> is a short direct path, fastest, but each peripheral gets exactly one IO_MUX pin; the <strong>GPIO matrix</strong> is the flexible crossbar, reaching any pin at a cost of a couple of clock cycles. Everything on your board uses the matrix, happily. The distinction only starts to bite at very high clock rates.</p>
+
+<h2>3. Three tiers of pin</h2>
+
+<p>Not every pin is equally free. Sort them into three tiers and the whole pinout stops looking arbitrary.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="Your board's pins sorted into three tiers. Tier 1, fixed by silicon: the 5V, 3V3 and GND rails and GPIO18 and GPIO19 for native USB. Tier 2, fixed only for the first 3 milliseconds: GPIO2, GPIO8 and GPIO9, the boot straps. Tier 3, free to assign: GPIO0, 1, 3, 4, 5, 6, 7, 10, 20 and 21, of which GPIO0, 6 and 7 are still unused." xmlns="http://www.w3.org/2000/svg">
+  <!-- TIER 1 -->
+  <text x="24" y="26" font-size="11" style="fill:var(--warn)" font-family="monospace" letter-spacing="1.2">TIER 1 &mdash; FIXED BY SILICON</text>
+  <text x="24" y="44" font-size="12" fill="currentColor">Power and native USB. Never reassign, never add a resistor.</text>
+  <g>
+    <rect x="174" y="56" width="52" height="26" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)" stroke-width="1.5"/>
+    <rect x="234" y="56" width="52" height="26" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)" stroke-width="1.5"/>
+    <rect x="294" y="56" width="52" height="26" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)" stroke-width="1.5"/>
+    <rect x="354" y="56" width="52" height="26" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)" stroke-width="1.5"/>
+    <rect x="414" y="56" width="52" height="26" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)" stroke-width="1.5"/>
+    <g font-size="10" fill="currentColor" text-anchor="middle">
+      <text x="200" y="73">5V</text><text x="260" y="73">3V3</text><text x="320" y="73">GND</text>
+      <text x="380" y="73">GPIO18</text><text x="440" y="73">GPIO19</text>
+    </g>
+  </g>
+  <!-- TIER 2 -->
+  <text x="24" y="114" font-size="11" style="fill:var(--brass)" font-family="monospace" letter-spacing="1.2">TIER 2 &mdash; FIXED FOR THE FIRST 3 ms</text>
+  <text x="24" y="132" font-size="12" fill="currentColor">Boot straps. The ROM reads them at reset; ordinary pins after that.</text>
+  <g>
+    <rect x="234" y="144" width="52" height="26" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <rect x="294" y="144" width="52" height="26" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <rect x="354" y="144" width="52" height="26" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <g font-size="10" fill="currentColor" text-anchor="middle">
+      <text x="260" y="161">GPIO2</text><text x="320" y="161">GPIO8</text><text x="380" y="161">GPIO9</text>
+    </g>
+  </g>
+  <!-- TIER 3 -->
+  <text x="24" y="202" font-size="11" style="fill:var(--ok)" font-family="monospace" letter-spacing="1.2">TIER 3 &mdash; YOURS TO ASSIGN</text>
+  <text x="24" y="220" font-size="12" fill="currentColor">Any appliance, any pin. This is where design decisions live.</text>
+  <g>
+    <rect x="24" y="232" width="52" height="26" rx="3" style="fill:none;stroke:var(--ok)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <rect x="84" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <rect x="144" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <rect x="204" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <rect x="264" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <rect x="324" y="232" width="52" height="26" rx="3" style="fill:none;stroke:var(--ok)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <rect x="384" y="232" width="52" height="26" rx="3" style="fill:none;stroke:var(--ok)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <rect x="444" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <rect x="504" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <rect x="564" y="232" width="52" height="26" rx="3" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+    <g font-size="10" fill="currentColor" text-anchor="middle">
+      <text x="50" y="249">GPIO0</text><text x="110" y="249">GPIO1</text><text x="170" y="249">GPIO3</text>
+      <text x="230" y="249">GPIO4</text><text x="290" y="249">GPIO5</text><text x="350" y="249">GPIO6</text>
+      <text x="410" y="249">GPIO7</text><text x="470" y="249">GPIO10</text><text x="530" y="249">GPIO20</text>
+      <text x="590" y="249">GPIO21</text>
+    </g>
+  </g>
+  <!-- legend -->
+  <rect x="180" y="276" width="20" height="14" rx="2" style="fill:var(--ok-soft);stroke:var(--ok)" stroke-width="1.5"/>
+  <text x="208" y="287" font-size="11" fill="currentColor">spoken for in your build</text>
+  <rect x="380" y="276" width="20" height="14" rx="2" style="fill:none;stroke:var(--ok)" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="408" y="287" font-size="11" fill="currentColor">still free</text>
+</svg>
+<figcaption>Every pin your board exposes, sorted by how much freedom you have with it. Tier 2 is the one that catches people: the constraint is about <em>timing</em>, not permanence &mdash; GPIO2 is an ordinary pin from millisecond four onward. Whether GPIO6 and GPIO7 are broken out varies by SuperMini variant; read your own board&rsquo;s silkscreen before you count on them.</figcaption>
+</figure>
+
+<h3>The ledger for your board</h3>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Pin</th><th>Role</th><th>Pull?</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td class="pin">GPIO1</td><td>I&sup2;S WS / LRC</td><td>none</td><td>chip drives push-pull, always</td></tr>
+<tr><td class="pin">GPIO2</td><td>I&sup2;S BCLK</td><td>10 k&Omega; up</td><td>not for the signal &mdash; for the strap window</td></tr>
+<tr><td class="pin">GPIO3</td><td>I&sup2;S data out</td><td>none</td><td>chip drives push-pull, always</td></tr>
+<tr><td class="pin">GPIO4</td><td>mic data in</td><td>100 k&Omega; down</td><td>mic releases the line between frames</td></tr>
+<tr><td class="pin">GPIO5</td><td>amp <code>SD_MODE</code></td><td>pull-down</td><td>must be LOW <em>through reset</em></td></tr>
+<tr><td class="pin">GPIO8</td><td>onboard LED, strap</td><td>none</td><td>the module owns it</td></tr>
+<tr><td class="pin">GPIO9</td><td>ROM BOOT strap</td><td>none</td><td>chip&rsquo;s reset-default pull-up handles it</td></tr>
+<tr><td class="pin">GPIO10</td><td>action button</td><td>pull-up</td><td>mechanical contact; internal on the breadboard, external 10 k&Omega; in Rev A</td></tr>
+<tr><td class="pin">GPIO18/19</td><td>native USB</td><td>none</td><td>termination fixed by the USB spec</td></tr>
+<tr><td class="pin">GPIO20/21</td><td>I&sup2;C to the OLED</td><td>pull-ups</td><td>open-drain bus &mdash; mandatory, enabled in firmware</td></tr>
+<tr><td class="pin">rails</td><td>3V3 / 5V / GND</td><td>none</td><td>the regulator drives them</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box device"><span class="lbl">Look at the gaps, not the steady state</span><p>GPIO2 and GPIO5 are both driven push-pull once firmware is up. By a &ldquo;what does it do normally&rdquo; test, neither would need a resistor. They need one <em>purely</em> for the window before firmware exists. <code>config.h</code> says it outright for GPIO5: &ldquo;An external pull-down keeps the amplifier in shutdown through reset.&rdquo; Without it the pin floats for a few milliseconds and the MAX98357A can wake up unmuted &mdash; a pop, or a speaker at full gain, before any code runs to stop it.</p></div>
+
+<h2>4. Push-pull, open-drain, and why I&sup2;C needs pull-ups</h2>
+
+<p>The output driver from &sect;1 comes in two flavours, and the difference decides whether a pull-up is optional or mandatory.</p>
+
+<figure>
+<svg viewBox="0 0 640 290" role="img" aria-label="Two output drivers compared. On the left, push-pull: a high-side switch to 3.3 volts and a low-side switch to ground, exactly one closed at a time, so the pin is always actively driven and needs no pull resistor. On the right, open-drain: only the low-side switch exists, so the chip can pull the pin down but never up, and an external pull-up resistor to 3.3 volts is required for the pin to ever read HIGH." xmlns="http://www.w3.org/2000/svg">
+  <!-- LEFT: push-pull -->
+  <text x="150" y="26" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">Push-pull</text>
+  <text x="150" y="44" font-size="11" fill="currentColor" text-anchor="middle">both switches present</text>
+  <text x="150" y="66" font-size="11" fill="currentColor" text-anchor="middle">3.3 V</text>
+  <line x1="122" y1="72" x2="178" y2="72" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="150" y1="72" x2="150" y2="86" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <!-- high-side closed -->
+  <circle cx="150" cy="90" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="150" y1="93" x2="150" y2="117" style="stroke:var(--ok)" stroke-width="2.5" fill="none"/>
+  <circle cx="150" cy="121" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="166" y="108" font-size="10" style="fill:var(--ok)">closed</text>
+  <line x1="150" y1="125" x2="150" y2="170" stroke="currentColor" stroke-width="2" fill="none"/>
+  <!-- pin net -->
+  <circle cx="150" cy="150" r="3.5" fill="currentColor" stroke="none"/>
+  <line x1="150" y1="150" x2="248" y2="150" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="248" y="137" width="34" height="26" rx="2" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+  <text x="265" y="155" font-size="10" fill="currentColor" text-anchor="middle">pin</text>
+  <text x="265" y="128" font-size="11" style="fill:var(--ok)" text-anchor="middle" font-weight="700">HIGH</text>
+  <!-- low-side open -->
+  <circle cx="150" cy="174" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="153" y1="172" x2="174" y2="188" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="150" cy="206" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="182" y="196" font-size="10" fill="currentColor">open</text>
+  <line x1="150" y1="210" x2="150" y2="226" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="132" y1="226" x2="168" y2="226" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="150" y="242" font-size="11" fill="currentColor" text-anchor="middle">GND</text>
+  <text x="150" y="268" font-size="11" fill="currentColor" text-anchor="middle">Pushes both ways.</text>
+  <text x="150" y="283" font-size="11" fill="currentColor" text-anchor="middle">Needs no pull resistor.</text>
+  <!-- divider -->
+  <line x1="320" y1="20" x2="320" y2="285" stroke="currentColor" stroke-width="1" stroke-dasharray="3 5" fill="none" opacity="0.5"/>
+  <!-- RIGHT: open-drain -->
+  <text x="470" y="26" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">Open-drain</text>
+  <text x="470" y="44" font-size="11" fill="currentColor" text-anchor="middle">the high-side switch does not exist</text>
+  <text x="400" y="80" font-size="11" style="fill:var(--warn)" text-anchor="middle" font-weight="700">no way up</text>
+  <text x="400" y="94" font-size="10" fill="currentColor" text-anchor="middle">from inside</text>
+  <line x1="400" y1="100" x2="400" y2="140" style="stroke:var(--warn)" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+  <!-- external pull-up -->
+  <text x="560" y="40" font-size="11" fill="currentColor" text-anchor="middle">3.3 V</text>
+  <line x1="534" y1="46" x2="586" y2="46" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="560" y1="46" x2="560" y2="60" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <rect x="552" y="60" width="16" height="34" rx="2" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+  <line x1="560" y1="94" x2="560" y2="150" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <text x="576" y="76" font-size="10" style="fill:var(--brass)" font-weight="700">external</text>
+  <text x="576" y="89" font-size="10" style="fill:var(--brass)" font-weight="700">pull-up</text>
+  <text x="576" y="103" font-size="10" fill="currentColor">required</text>
+  <!-- pin net right -->
+  <line x1="440" y1="150" x2="560" y2="150" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="560" cy="150" r="3.5" fill="currentColor" stroke="none"/>
+  <circle cx="440" cy="150" r="3.5" fill="currentColor" stroke="none"/>
+  <rect x="474" y="137" width="34" height="26" rx="2" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+  <text x="491" y="155" font-size="10" fill="currentColor" text-anchor="middle">pin</text>
+  <!-- low-side only -->
+  <line x1="440" y1="150" x2="440" y2="174" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="440" cy="174" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="443" y1="172" x2="464" y2="188" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="440" cy="206" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="404" y="196" font-size="10" fill="currentColor" text-anchor="end">only this one</text>
+  <line x1="440" y1="210" x2="440" y2="226" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="422" y1="226" x2="458" y2="226" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="440" y="242" font-size="11" fill="currentColor" text-anchor="middle">GND</text>
+  <text x="470" y="268" font-size="11" fill="currentColor" text-anchor="middle">Can only pull down.</text>
+  <text x="470" y="283" font-size="11" fill="currentColor" text-anchor="middle">Many can share one wire safely.</text>
+</svg>
+<figcaption>The whole difference is one missing switch. A push-pull pin is always actively driven, so it needs no help &mdash; but two of them tied together and disagreeing is a dead short. An open-drain pin can only ever pull down, so it needs a pull-up to reach HIGH &mdash; and that is exactly what lets a dozen of them share one wire without any of them being able to damage another.</figcaption>
+</figure>
+
+<p>That trade is the entire design of I&sup2;C. On your OLED bus, no device is <em>permitted</em> to drive the line high. If two devices could push in opposite directions at once they would short through each other and cook. So everybody is limited to pulling down, the pull-up resistors do the lifting, and &ldquo;talking&rdquo; means yanking the line down against them. <strong>No pull-ups, no bus</strong> &mdash; the line never returns to HIGH and nothing works at all.</p>
+
+<div class="box device"><span class="lbl">On your device</span><p>Your firmware turns the chip&rsquo;s internal pull-ups on for the display bus &mdash; <code>bus_config.flags.enable_internal_pullup = 1</code>. That is the single most common job a pull-up ever does, and it is load-bearing rather than defensive: on a button, a missing pull-up gives you a flaky read; on I&sup2;C, a missing pull-up gives you nothing at all.</p></div>
+
+<h3>The four modes, in one table</h3>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Mode</th><th>Drives HIGH?</th><th>Drives LOW?</th><th>Use it for</th></tr></thead>
+<tbody>
+<tr><td class="pin">INPUT</td><td>no</td><td>no</td><td>listening; pair it with a pull unless something always drives the line</td></tr>
+<tr><td class="pin">OUTPUT</td><td>yes</td><td>yes</td><td>push-pull &mdash; the normal case, one talker per wire</td></tr>
+<tr><td class="pin">OUTPUT_OD</td><td>no</td><td>yes</td><td>open-drain &mdash; shared buses, many talkers</td></tr>
+<tr><td class="pin">INPUT_OUTPUT</td><td>yes</td><td>yes</td><td>drive and read back, to check whether someone is fighting you</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>5. Your two buses</h2>
+
+<p>The names look almost identical and the jobs could not be more different.</p>
+
+<h3>I&sup2;C &mdash; a conversation with name-calling</h3>
+
+<p>Two wires, <code>SDA</code> for data and <code>SCL</code> for the clock, shared by every device on the bus. Before speaking, the controller says an address out loud. Every device hears it; only the one whose name was called answers. Your OLED answers to <code>0x3C</code> &mdash; and your firmware tries <code>0x3D</code> too, because Adafruit&rsquo;s breakouts default to the other address. It runs at 400 kHz, which is slow by chip standards and entirely adequate: a display needs &ldquo;put this picture up,&rdquo; not a continuous torrent.</p>
+
+<h3>I&sup2;S &mdash; a marching band</h3>
+
+<p>Audio cannot tolerate &ldquo;I&rsquo;ll get to it in a moment.&rdquo; Sixteen thousand samples every second, forever, each one on time. So I&sup2;S spends separate dedicated wires on timing: <strong>BCLK</strong> ticks once per bit, <strong>WS</strong> flips once per sample and its level says which channel, and the data lines carry the actual bits.</p>
+
+<figure>
+<svg viewBox="0 0 640 310" role="img" aria-label="One I2S frame drawn as three waveforms. BCLK is a fast square wave, ten of its sixty-four ticks shown. WS is low for the first half of the frame, the left slot, then high for the second half, the right slot. The data line carries real bits during the left slot, and during the right slot the microphone releases the line: a dashed line shows where it would float, and a solid line at the LOW level shows where the 100 kilohm pull-down rests it instead. A brace under the whole drawing marks one frame as 62.5 microseconds." xmlns="http://www.w3.org/2000/svg">
+  <text x="330" y="24" font-size="12" fill="currentColor" text-anchor="middle">BCLK = 16 000 frames/s &times; 64 ticks = 1.024 MHz</text>
+  <!-- lane labels -->
+  <g text-anchor="end" fill="currentColor">
+    <text x="100" y="66" font-size="12" font-weight="700">BCLK</text><text x="100" y="80" font-size="10">GPIO2</text>
+    <text x="100" y="136" font-size="12" font-weight="700">WS</text><text x="100" y="150" font-size="10">GPIO1</text>
+    <text x="100" y="206" font-size="12" font-weight="700">DIN</text><text x="100" y="220" font-size="10">GPIO4</text>
+  </g>
+  <!-- BCLK -->
+  <path d="M110,88 L110,52 L135,52 L135,88 L160,88 L160,52 L185,52 L185,88 L210,88 L210,52 L235,52 L235,88 L260,88 L260,52 L285,52 L285,88 L310,88 L310,52 L335,52 L335,88 L360,88 L360,52 L385,52 L385,88 L410,88 L410,52 L435,52 L435,88 L460,88 L460,52 L485,52 L485,88 L510,88 L510,52 L535,52 L535,88 L560,88 L560,52 L585,52 L585,88 L610,88" fill="none" style="stroke:var(--signal)" stroke-width="2"/>
+  <text x="616" y="70" font-size="10" fill="currentColor">10 of 64 shown</text>
+  <!-- WS -->
+  <path d="M110,158 L360,158 L360,122 L610,122" fill="none" style="stroke:var(--signal)" stroke-width="2"/>
+  <text x="235" y="176" font-size="11" fill="currentColor" text-anchor="middle">left slot &mdash; the mic&rsquo;s half</text>
+  <text x="485" y="112" font-size="11" fill="currentColor" text-anchor="middle">right slot</text>
+  <!-- DIN: real bits in the left slot -->
+  <path d="M110,192 L160,192 L160,228 L210,228 L210,192 L310,192 L310,228 L360,228" fill="none" style="stroke:var(--signal)" stroke-width="2"/>
+  <!-- DIN: right slot, released -->
+  <line x1="365" y1="206" x2="610" y2="206" style="stroke:var(--warn)" stroke-width="1.8" stroke-dasharray="6 5" fill="none"/>
+  <text x="488" y="199" font-size="10" style="fill:var(--warn)" text-anchor="middle">without a pull: floats here</text>
+  <line x1="365" y1="228" x2="610" y2="228" style="stroke:var(--brass)" stroke-width="2.5" fill="none"/>
+  <text x="488" y="246" font-size="10" style="fill:var(--brass)" text-anchor="middle" font-weight="700">100 k&Omega; pull-down rests it LOW</text>
+  <!-- frame brace -->
+  <line x1="110" y1="266" x2="610" y2="266" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="110" y1="260" x2="110" y2="272" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="360" y1="260" x2="360" y2="272" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <line x1="610" y1="260" x2="610" y2="272" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <text x="330" y="288" font-size="12" fill="currentColor" text-anchor="middle">one frame = 62.5 &micro;s = 1 / 16 000 s</text>
+</svg>
+<figcaption>One audio frame on your board, and the reason GPIO4 has a resistor. The INMP441 drives the data line only during its own half of the frame. For the other half it lets go entirely &mdash; and a released line is a floating input. The 100 k&Omega; pull-down parks it at silence instead of noise, and is weak enough that the microphone wins the moment it takes hold again.</figcaption>
+</figure>
+
+<p>Notice the numbers agree: 16 000 samples per second &times; 64 bit-ticks per frame = 1 024 000 ticks per second. The 1.024 MHz in your config is not a magic number; it falls out of the other two.</p>
+
+<div class="box device"><span class="lbl">The shape of the wiring</span><p>GPIO1 and GPIO2 each run to <em>two</em> destinations &mdash; the microphone and the amplifier both. The clocks are <strong>shared</strong>, because both devices must march to the same beat. The data lines are separate, because data flows in opposite directions: GPIO3 out to the amp, GPIO4 in from the mic. One conductor, two players.</p></div>
+
+<h2>6. Four layers of code</h2>
+
+<p>Your firmware claims pins in four different ways, from raw to convenient. Knowing which layer you are at tells you how much you are responsible for.</p>
+
+<div class="sched">
+  <div class="t">Layer 0</div><div>The <code>#define</code> in <code>config.h</code> &mdash; the single source of truth.</div>
+  <div class="t">Layer 1</div><div>Raw <code>gpio_*</code> calls &mdash; you flip every switch yourself.</div>
+  <div class="t">Layer 2</div><div>A pin number in a peripheral&rsquo;s config struct &mdash; the driver programs the crossbar.</div>
+  <div class="t">Layer 3</div><div>A helper object that hides all of it behind callbacks.</div>
+</div>
+
+<h3>Layer 0 &mdash; one place, and only one place</h3>
+
+<pre><code>#define AUDIO_I2S_GPIO_BCLK   GPIO_NUM_2
+#define ACTION_BUTTON_GPIO    GPIO_NUM_10
+#define DISPLAY_SDA_PIN       GPIO_NUM_21</code></pre>
+
+<p>Every layer below reads from here, and no bare pin number appears anywhere else. That discipline is what lets you re-pin the whole board by editing one file &mdash; and it is what makes it impossible to accidentally assign one pin to two owners.</p>
+
+<h3>Layer 1 &mdash; raw GPIO, one bit at a time</h3>
+
+<p>This is your amplifier mute. Read the <em>order</em> carefully, because it is load-bearing:</p>
+
+<pre><code>gpio_set_level(AMPLIFIER_ENABLE_GPIO, 0);    // 1. decide the value
+gpio_pullup_dis(AMPLIFIER_ENABLE_GPIO);      // 2. nobody pulls up
+gpio_pulldown_en(AMPLIFIER_ENABLE_GPIO);     // 3. internal pull-down holds LOW
+gpio_set_direction(AMPLIFIER_ENABLE_GPIO, GPIO_MODE_OUTPUT);   // 4. NOW drive it</code></pre>
+
+<p>It sets the value <em>before</em> switching the driver on. Swap steps 1 and 4 and the pin would briefly drive whatever stale bit was sitting in the output latch &mdash; and on this pin, that is an unmuted amplifier. Notice too that step 2 exists at all: the internal pull-up and the pull-down would otherwise both be on, forming a divider and landing the pin in the undefined band.</p>
+
+<p>Reading is the mirror image, and the <code>== 0</code> is the active-low convention from Day 2:</p>
+
+<pre><code>int  level   = gpio_get_level(ACTION_BUTTON_GPIO);
+bool pressed = (level == 0);   // pressed pulls the pin to ground</code></pre>
+
+<p>There is also a bundled form that sets every switch at once:</p>
+
+<pre><code>gpio_config_t io = {
+    .pin_bit_mask = 1ULL &lt;&lt; GPIO_NUM_6,   // which pins &mdash; a bitmask, so several at once
+    .mode         = GPIO_MODE_INPUT,
+    .pull_up_en   = GPIO_PULLUP_ENABLE,   // the Day 2 child, switched on
+    .pull_down_en = GPIO_PULLDOWN_DISABLE,
+    .intr_type    = GPIO_INTR_NEGEDGE,    // wake me on a falling edge
+};
+gpio_config(&amp;io);</code></pre>
+
+<h3>Layer 2 &mdash; hand the pin to an appliance</h3>
+
+<p>This is where the crossbar actually gets programmed, and it looks like nothing at all:</p>
+
+<pre><code>bus_config.sda_io_num = DISPLAY_SDA_PIN;          // GPIO21
+bus_config.scl_io_num = DISPLAY_SCL_PIN;          // GPIO20
+bus_config.flags.enable_internal_pullup = 1;
+i2c_new_master_bus(&amp;bus_config, &amp;display_i2c_bus_);</code></pre>
+
+<p><strong>Those two assignments <em>are</em> the dots in the crossbar diagram.</strong> You never call a &ldquo;route this signal&rdquo; function. You put a pin number in a struct field, the driver programs the matrix, and from that moment the I&sup2;C hardware owns GPIO20 and GPIO21. Change <code>21</code> to <code>7</code>, rebuild, and the bus comes out of GPIO7 instead.</p>
+
+<p>Audio works identically &mdash; four pins, four arguments:</p>
+
+<pre><code>NoAudioCodecDuplex(AUDIO_INPUT_SAMPLE_RATE, AUDIO_OUTPUT_SAMPLE_RATE,
+                   AUDIO_I2S_GPIO_BCLK, AUDIO_I2S_GPIO_WS,
+                   AUDIO_I2S_GPIO_DOUT, AUDIO_I2S_GPIO_DIN)</code></pre>
+
+<h3>Layer 3 &mdash; a helper object</h3>
+
+<pre><code>PocketWallEC3Board() : action_button_(ACTION_BUTTON_GPIO) { ... }
+
+action_button_.OnClick([this]() { Application::GetInstance().ToggleChatState(); });
+action_button_.OnLongPress([this]() { EnterWifiConfigMode(); });</code></pre>
+
+<p>The <code>Button</code> class takes the pin number, enables the pull-up, debounces the contact chatter, times long presses, and calls your function. You hand it a pin and get events back. Everything from &sect;1 still happens &mdash; somebody else just wrote it.</p>
+
+<h2>7. Claiming a spare pin</h2>
+
+<p>Three worked examples, in increasing order of cleverness.</p>
+
+<h3>A status LED, with brightness</h3>
+
+<pre><code>#define STATUS_LED_GPIO GPIO_NUM_6      // Layer 0: declare it once
+
+ledc_timer_config_t t = {
+    .speed_mode = LEDC_LOW_SPEED_MODE, .duty_resolution = LEDC_TIMER_10_BIT,
+    .timer_num  = LEDC_TIMER_0, .freq_hz = 5000, .clk_cfg = LEDC_AUTO_CLK,
+};
+ledc_timer_config(&amp;t);
+
+ledc_channel_config_t c = {
+    .gpio_num   = STATUS_LED_GPIO,      // &lt;-- the crossbar again, one field
+    .speed_mode = LEDC_LOW_SPEED_MODE, .channel = LEDC_CHANNEL_0,
+    .timer_sel  = LEDC_TIMER_0, .duty = 0, .hpoint = 0,
+};
+ledc_channel_config(&amp;c);
+
+ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 512);   // half brightness
+ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);</code></pre>
+
+<p>Plus the series resistor from Day 2 &mdash; 270 &Omega; for a red LED at about 5 mA. The chip will happily push enough current to destroy the LED if you let it.</p>
+
+<h3>A second button</h3>
+
+<pre><code>Button mute_button_{GPIO_NUM_7};
+mute_button_.OnClick([this]() { ToggleMute(); });</code></pre>
+
+<p>Two lines, because Layer 3 already exists. Pick a non-strap, non-USB pin and match the active-low convention so firmware treats both buttons the same way.</p>
+
+<div class="box try"><span class="lbl">The trick worth memorising</span><p>You have one I&sup2;C bus with one device on it. Want to add a temperature sensor, a real-time clock and an accelerometer? <strong>Zero new pins.</strong> They all hang on the same GPIO20 and GPIO21, each answering to its own address; you add one <code>i2c_master_bus_add_device()</code> call per chip and nothing else. Before you spend a pin, always ask whether the part comes in an I&sup2;C version. Pin scarcity is usually a design choice, not a wall.</p></div>
+
+<h2>8. Changing a pin, and five ways to get burned</h2>
+
+<div class="sched">
+  <div class="t">1</div><div>Edit <code>firmware/src/boards/pocket-wall-e-c3/config.h</code>.</div>
+  <div class="t">2</div><div>Rebuild: <code>./firmware/scripts/build.sh</code></div>
+  <div class="t">3</div><div>Reflash: <code>./firmware/scripts/flash.sh</code></div>
+  <div class="t">4</div><div><strong>Move the wire.</strong></div>
+</div>
+
+<p>Step 4 is the one people forget. <strong>Software cannot move a jumper.</strong> That <code>#define</code> is a <em>description</em> of how your board is physically wired, not a control over it. Change the number without moving the wire and you have simply told the chip to talk to an empty pin, which fails silently and looks like a broken peripheral.</p>
+
+<h3>Five ways to get burned</h3>
+
+<ol>
+<li><strong><code>gpio_reset_pin()</code> is not neutral.</strong> Your own code carries a warning about this: it restores a pin to its <em>factory default</em>, and for GPIO5 that default includes an internal pull-up &mdash; which would un-mute your amplifier. &ldquo;Reset to default&rdquo; sounds safe. It is not. Defaults are opinions somebody else had.</li>
+<li><strong>Don&rsquo;t reassign a strap casually.</strong> GPIO2, GPIO8, GPIO9. Fine for something undriven at boot, a trap otherwise. The vendor image put microphone data on GPIO8; if the mic drove it LOW at reset you could lose download mode, and with no OTA slots that is unrecoverable inside a sealed frame.</li>
+<li><strong>Not every pin can do everything.</strong> Analog input only works on ADC-capable pads. The crossbar routes digital signals; an analog voltage cannot travel through it.</li>
+<li><strong>Respect the current limit.</strong> A GPIO sources tens of milliamps at most. It drives a transistor, a logic input, a small LED. It does not drive a motor, a relay coil, or a speaker.</li>
+<li><strong>Two owners, one pin.</strong> Assign GPIO7 to both a button and a peripheral and whichever initialises last silently wins. No error, no warning. Keeping every pin number in <code>config.h</code> is what makes this impossible.</li>
+</ol>
+
+<h2>Self-check</h2>
+
+<details><summary>Q1. Your firmware sets a pin as an input. What happened to the output driver?</summary><p>Nothing &mdash; it is still physically there, just switched off. Every pin has all four pieces of machinery at all times; configuring a pin only decides which ones are enabled and what the MUX is listening to.</p></details>
+
+<details><summary>Q2. Could the I&sup2;S bit clock have been put on GPIO7 instead of GPIO2?</summary><p>Yes. BCLK is a Tier 3 assignment &mdash; change the <code>#define</code>, rebuild, move the wire. You would also delete the 10 k&Omega; pull-up, because that resistor exists only to satisfy the strap requirement on GPIO2, and GPIO7 is not a strap.</p></details>
+
+<details><summary>Q3. Why can a push-pull output skip the pull resistor when an open-drain output cannot?</summary><p>Push-pull actively drives both directions, so the line is never undriven &mdash; there is no gap to cover. Open-drain can only pull down; without a pull-up nothing on the wire is capable of producing a HIGH at all.</p></details>
+
+<details><summary>Q4. You add three I&sup2;C sensors to your board. How many GPIOs does that cost?</summary><p>Zero. They share SDA and SCL with the OLED and are told apart by address. The cost is bus bandwidth and one <code>add_device</code> call each.</p></details>
+
+<details><summary>Q5. You change <code>AUDIO_I2S_GPIO_DIN</code> from GPIO4 to GPIO6, rebuild and reflash. The microphone goes silent. Why?</summary><p>Almost certainly because the wire is still on GPIO4. Software cannot move a jumper. Second suspect: the 100 k&Omega; pull-down is also still on GPIO4, so the new pin has nothing resting it at silence.</p></details>
+
+<details><summary>Q6. Why does GPIO5 need an external pull-down when firmware drives it push-pull anyway?</summary><p>Because of the gap before firmware exists. For the first milliseconds after reset nothing drives the pin, and the amplifier is reading it. The resistor guarantees shutdown through that window.</p></details>
+
+<h2>You can now explain</h2>
+
+<ul class="check">
+<li>The four pieces of machinery behind every pin, and that software only flips switches.</li>
+<li>Why a pin&rsquo;s role is a choice in <code>config.h</code>, not a property of the silicon.</li>
+<li>What the crossbar can do (any appliance to any pin) and cannot (clone appliances).</li>
+<li>Tier 1, Tier 2 and Tier 3 &mdash; and that Tier 2 is a timing constraint, not a permanent one.</li>
+<li>Push-pull versus open-drain, and why I&sup2;C is unusable without pull-ups.</li>
+<li>Why I&sup2;S shares its clocks but splits its data, and where the 1.024 MHz comes from.</li>
+<li>The four layers of code that claim a pin, and which one you are working at.</li>
+<li>That changing a pin always has a fourth step, and it involves your hands.</li>
+</ul>
+
+<h2>Further reading in your repo</h2>
+
+<ul>
+<li><code>firmware/src/boards/pocket-wall-e-c3/config.h</code> &mdash; every pin decision on the board, with the reasoning in comments.</li>
+<li><code>firmware/src/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc</code> &mdash; all four code layers in one file.</li>
+<li><code>edu/fundamentals/07-digital-logic-gpio-pullups-boot-straps.md</code> &mdash; the strap table in full.</li>
+<li><code>edu/fundamentals/09-i2s-sampling-and-digital-audio.md</code> &mdash; frames, slots and sample rates.</li>
+<li><code>docs/WIRING_AND_ASSEMBLY.md</code> &mdash; the locked Rev A signal table.</li>
+</ul>
+
+<div class="nav">
+<span>&larr; Day 2: Resistors and Rules</span>
+<span>Day 3: Capacitors and Clean Power &rarr;</span>
+</div>
+
+</div>

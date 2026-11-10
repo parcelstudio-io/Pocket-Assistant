@@ -6,7 +6,7 @@ This fixture represents only the corrected ESP32-C3 display/action-button contra
 - OLED deliberately set to `0x3d` to exercise the alternate-address probe; and
 - active-low GPIO10 action button (`A` key in Wokwi).
 
-It uses Wokwi's ESP32-C3 DevKitM model, not the mechanically different SuperMini. Wokwi does not prove the battery/holder/PTC/switch/regulator path, real INMP441 acoustics, MAX98357A bridge output, speaker enclosure, Wi-Fi performance inside brass, solder quality, or temperature. Those require lesson 6's physical tests.
+It uses Wokwi's ESP32-C3 DevKitM model, not the mechanically different SuperMini. Wokwi does not prove the battery/charger/switch power path, real INMP441 acoustics, MAX98357A bridge output, speaker enclosure, Wi-Fi performance inside brass, solder quality, or temperature. Those require lesson 6's physical tests.
 
 In `diagram.json`, the DevKitM model names GPIO20/21 `RX`/`TX`; these are connected to SCL/SDA respectively. The corrected firmware still addresses the GPIO numbers.
 

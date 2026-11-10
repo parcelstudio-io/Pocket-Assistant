@@ -1,0 +1,191 @@
+<title>Full Build Parts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; --w-orange: #E0661C; --w-olive: #6B8E23; --w-purple: #7C3AED; --w-teal: #0B7285; --w-navy: #1B3F8B; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; }
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 840px; margin: 0 auto; padding-block: 28px 64px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(26px, 5vw, 34px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 66ch; margin: 0 0 18px; }
+  h2 { font-size: 22px; margin: 44px 0 8px; letter-spacing: -.01em; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .72em; margin-right: 8px; }
+  h3 { font-size: 17px; margin: 26px 0 6px; }
+  p { max-width: 70ch; margin: 0 0 10px; }
+  ul, ol { max-width: 70ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 4px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 8px 0 12px; }
+  a { color: var(--accent-ink); }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .step input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--pass); cursor: pointer; }
+  .step label { cursor: pointer; }
+  .step .do { font-weight: 600; }
+  .step .chk { display: block; color: var(--accent-ink); font-size: 14px; margin-top: 4px; }
+  .step .chk::before { content: "check · "; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 11.5px; }
+  .step .note { display: block; color: var(--muted); font-size: 14px; margin-top: 3px; }
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-tint); padding: 10px 14px; margin: 14px 0; max-width: 74ch; border-radius: 0 6px 6px 0; }
+  .callout.info { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout.pass { border-left-color: var(--pass); background: var(--pass-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .callout.info .label { color: var(--accent-ink); } .callout.pass .label { color: var(--pass); }
+  .callout ul, .callout p { margin: 0; } .callout ul { padding-left: 1.2em; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 5px 10px; margin: 0 0 10px; }
+  .stock strong { color: var(--brass); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.t th, table.t td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); white-space: nowrap; }
+  table.bends { max-width: 420px; margin-top: 4px; }
+  .scrollx { overflow-x: auto; }
+  .progress { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding: 8px 0; font-family: var(--mono); font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 8px; z-index: 1; }
+  .progress b { color: var(--pass); }
+  button.reset { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; margin-left: 10px; }
+  .evidence { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); max-width: 74ch; }
+  figure { margin: 12px 0 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 8px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); background: var(--figure-bg); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; } figure svg .s { font-size: 11.5px; } figure svg .b { font-weight: 600; } figure svg .m { font-family: var(--mono); }
+  figure svg .pin { font-size: 8.5px; font-family: var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--figure-bg); stroke-width: 3px; stroke-linejoin: round; }
+  figure svg .muted { fill: var(--muted); } figure svg .acc-ink { fill: var(--accent-ink); } figure svg .warn-ink { fill: var(--warn); } figure svg .pass-ink { fill: var(--pass); } figure svg .brass-ink { fill: var(--brass); }
+  figure svg .pcb { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; } figure svg .pcb.dim { opacity: .6; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .kapton { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1; }
+  figure svg .ant { fill: none; stroke: var(--warn); stroke-width: 1.2; stroke-dasharray: 3 2; }
+  figure svg .kap { fill: var(--warn); fill-opacity: .28; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .kap2 { fill: var(--warn); fill-opacity: .55; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .num { fill: var(--warn); stroke: var(--figure-bg); stroke-width: 1.5; } figure svg .numt { fill: #fff; }
+  figure svg .shim { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  figure svg .tube { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .card { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+  figure svg .glue { fill: var(--pass); stroke: var(--figure-bg); stroke-width: 1.5; }
+  figure svg .rodx { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 2; }
+  figure svg .tapeline { fill: none; stroke: var(--warn); stroke-width: 3; opacity: .7; }
+  figure svg .spk { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .port { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .stubp { fill: var(--brass); stroke: none; }
+  figure svg .screen-out { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 4; }
+  figure svg .screen-side { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .glass { fill: var(--accent); opacity: .35; }
+  figure svg .frame { fill: none; stroke: var(--brass); stroke-width: 5; } figure svg .post { fill: var(--brass); }
+  figure svg .joint { fill: var(--surface); stroke: var(--pass); stroke-width: 2.2; }
+  figure svg .floor { stroke: currentColor; stroke-width: 2; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; } figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; } figure svg .acc { stroke: var(--accent); fill: none; } figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .rod { stroke: var(--brass); stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .solder { fill: var(--muted); }
+  figure svg .sleeve { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; max-width: 74ch; }
+  figcaption strong { color: var(--ink); }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; font-size: 13.5px; margin: 8px 0 14px; }
+  .legend span.sw { display: inline-block; width: 22px; height: 5px; border-radius: 3px; vertical-align: middle; margin-right: 7px; }
+  details.more { margin: 2px 0 8px 38px; } details.more > summary { cursor: pointer; color: var(--accent-ink); font-size: 14px; }
+  details.more[open] > summary { margin-bottom: 6px; }
+  .short ol { counter-reset: s; padding-left: 0; list-style: none; max-width: 76ch; }
+  .short li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .short li::before { content: counter(s); font-family: var(--mono); font-weight: 600; color: var(--brass); }
+  .short li a { font-weight: 600; }
+  .short .c { display: block; color: var(--muted); font-size: 14px; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 12px 14px; margin: 16px 0; max-width: 74ch; }
+  .gate input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--pass); }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); }
+  .gate p { margin: 2px 0 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>.tag { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; } .own { background: var(--pass-tint); color: var(--pass); } .buy { background: var(--warn-tint); color: var(--warn); font-weight: 700; } .check { background: var(--accent-tint); color: var(--accent-ink); }</style>
+<div class="wrap">
+<div class="eyebrow">Pocket AI Assistant · final build · every part, with its listing</div>
+<h1>Everything the full build needs</h1>
+<p class="lede">Harness, battery, charging, frame and the tools to make them. Each row links to the listing you bought it from, or the one to buy. The whole device needs <strong>one purchase</strong>: the PowerBoost. One thing to check: a micro-USB cable for charging.</p>
+<div class="callout pass"><span class="label">Summary</span><p>38 items · 0 to buy · everything else is on the bench. The rechargeable battery is the 1200 mAh cell you own; it charges through the PowerBoost's USB port, in the device, with any 5 V USB charger.</p></div>
+<h2>The five modules</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>ESP32-C3 SuperMini (A1)</strong></td><td><a href="https://www.amazon.com/dp/B0F888JQ91" target="_blank" rel="noopener">Meshnology, 10-pack</a></td><td><span class="tag own">own</span></td><td>the brain; 1 used</td></tr>
+<tr><td><strong>0.96" OLED, SSD1306</strong></td><td><a href="https://www.amazon.com/dp/B09T6SJBV5" target="_blank" rel="noopener">Hosyond, 5-pack</a></td><td><span class="tag own">own</span></td><td>the eyes; reads SDA·SCL·VCC·GND pins-at-bottom</td></tr>
+<tr><td><strong>INMP441 microphone</strong></td><td><a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">AITRIP, 5-pack, round Ø13</a></td><td><span class="tag own">own</span></td><td>lies chip-side down, hole up</td></tr>
+<tr><td><strong>MAX98357A amplifier</strong></td><td><a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">3-pack, terminal block opposite the pins</a></td><td><span class="tag own">own</span></td><td>pins face the channel, VIN at the front</td></tr>
+<tr><td><strong>Speaker, 8 Ω 0.8 W, enclosed</strong></td><td><a href="https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309" target="_blank" rel="noopener">Same Sky CES-20134-088PM</a></td><td><span class="tag own">own</span></td><td>its own leads into the block, never cut</td></tr>
+<tr><td><strong>Tactile button</strong></td><td><a href="https://www.amazon.com/dp/B0FHW6HMG4" target="_blank" rel="noopener">QTEATAK kit</a></td><td><span class="tag own">own</span></td><td>on the USB socket's Kapton</td></tr>
+</table></div>
+<h2>Small parts</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>Resistors: 4.7 kΩ (or 1 kΩ), 10 kΩ</strong></td><td><a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">LuminologyPro kit</a></td><td><span class="tag own">own</span></td><td>R1, R3; measure each (R2 GAIN and R4 mic-SD dropped 2026-10-14)</td></tr>
+<tr><td><strong>220 µF electrolytic</strong></td><td><a href="https://www.amazon.com/dp/B0C1VBXCQM" target="_blank" rel="noopener">ALLECIN kit</a></td><td><span class="tag own">own</span></td><td>C1, stripe to GND</td></tr>
+<tr><td><strong>100 nF ceramic</strong></td><td><a href="https://www.amazon.com/dp/B07P7HRGT9" target="_blank" rel="noopener">BOJACK kit</a></td><td><span class="tag own">own</span></td><td>C2, at the amp's VIN/GND stubs</td></tr>
+</table></div>
+<h2>Power and battery</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>PowerBoost 1000C (third-party copy)</strong></td><td><a href="https://www.amazon.com/dp/B0G5PXGVG9" target="_blank" rel="noopener">sold as 'For Powerboost 1000 … 2465 Module'; charger + load sharing + 5 V boost, EN switch pin — verify on the bench</a></td><td><span class="tag own">own</span></td><td>the one board that owns the power; micro-USB charge port</td></tr>
+<tr><td><strong>1200 mAh LiPo, protected, JST-PH</strong></td><td><a href="https://www.adafruit.com/product/258" target="_blank" rel="noopener">Adafruit #258</a></td><td><span class="tag own">own</span></td><td>the only owned cell rated for the load; 62 × 34 × 5</td></tr>
+<tr><td><strong>Slide switch</strong></td><td><a href="https://www.amazon.com/dp/B09R434VJQ" target="_blank" rel="noopener">Chanzon SPDT mini, 25-pack</a></td><td><span class="tag own">own</span></td><td>on the EN pin; carries no current</td></tr>
+<tr><td><strong>26 AWG silicone wire</strong></td><td><a href="https://www.amazon.com/dp/B07G2LRX68" target="_blank" rel="noopener">TUOFENG</a></td><td><span class="tag own">own</span></td><td>5 V and GND from the PowerBoost</td></tr>
+<tr><td><strong>30 AWG silicone wire</strong></td><td><a href="https://www.amazon.com/dp/B073RDGTPB" target="_blank" rel="noopener">CBAZY</a></td><td><span class="tag own">own</span></td><td>EN, LBO</td></tr>
+<tr><td><strong>Micro-USB cable + any 5 V USB charger</strong></td><td>the PowerBoost's port is micro-USB</td><td><span class="tag check">check</span></td><td>if you want USB-C instead: Seeed LiPo Rider Plus in place of the PowerBoost, same wiring</td></tr>
+</table></div>
+<h2>Wiring and frame, brass build</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>1.0 mm brass rod</strong></td><td><a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">K&S #9861, 5 per pack (10 owned)</a></td><td><span class="tag own">own</span></td><td>rails and all 19 rods</td></tr>
+<tr><td><strong>1.5 mm brass tube</strong></td><td><a href="https://www.amazon.com/dp/B005WPAW9M" target="_blank" rel="noopener">K&S #9831, 4 per pack</a></td><td><span class="tag own">own</span></td><td>the frame loops; posts from the rod</td></tr>
+<tr><td><strong>Harris Stay-Clean acid flux</strong></td><td><a href="https://www.amazon.com/dp/B0015DWPV8" target="_blank" rel="noopener">SCLF4</a></td><td><span class="tag own">own</span></td><td>brass tube frame only, wash the same day</td></tr>
+<tr><td><strong>Jeweler's saw</strong></td><td><a href="https://www.amazon.com/dp/B06XPSLS6N" target="_blank" rel="noopener">SE 3-in-1</a></td><td><span class="tag own">own</span></td><td>the tube; never cutters</td></tr>
+</table></div>
+<h2>Wiring and frame, silver build (the one-frame battery version)</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>18 ga .925 sterling round wire, 5 ft</strong></td><td><a href="https://www.amazon.com/dp/B00ANA6JFC" target="_blank" rel="noopener">WireJewelry, dead-soft</a></td><td><span class="tag own">own</span></td><td>rails and rods; straighten each piece first</td></tr>
+<tr><td><strong>14 ga .925 sterling round wire, 5 ft</strong></td><td><a href="https://www.amazon.com/dp/B00BY9A9HU" target="_blank" rel="noopener">WireJewelry, dead-soft</a></td><td><span class="tag own">own</span></td><td>two loops at 65 × 39 inside, four posts of 35</td></tr>
+</table></div>
+<h2>Consumables</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>Cardstock, 65 lb</strong></td><td><a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">Amazon Basics</a></td><td><span class="tag own">own</span></td><td>jig card, shelf, cell cradle</td></tr>
+<tr><td><strong>Kapton tape</strong></td><td><a href="https://www.amazon.com/dp/B072Z92QZ2" target="_blank" rel="noopener">ELEGOO</a></td><td><span class="tag own">own</span></td><td>socket roof, amp strip, A1's port, every tube</td></tr>
+<tr><td><strong>Heat-shrink, 1.5–2 mm</strong></td><td><a href="https://www.amazon.com/dp/B08N4W4K9X" target="_blank" rel="noopener">Pointool kit, white</a></td><td><span class="tag own">own</span></td><td>5 V rod, GND rod, SCL, the 220 µF leads</td></tr>
+<tr><td><strong>63/37 solder, 0.8 mm</strong></td><td><a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">MAIYUM</a></td><td><span class="tag own">own</span></td><td></td></tr>
+<tr><td><strong>No-clean flux pen</strong></td><td><a href="https://www.adafruit.com/product/3468" target="_blank" rel="noopener">Chip Quik CQ4LF</a></td><td><span class="tag own">own</span></td><td>every electronics joint</td></tr>
+<tr><td><strong>Solder wick</strong></td><td><a href="https://www.amazon.com/dp/B0DRN688Q5" target="_blank" rel="noopener">JoTownCand</a></td><td><span class="tag own">own</span></td><td>bridges between stubs</td></tr>
+<tr><td><strong>400 grit wet/dry</strong></td><td><a href="https://www.amazon.com/dp/B07D2YYC11" target="_blank" rel="noopener">BAISDY</a></td><td><span class="tag own">own</span></td><td>stubs and joint spots bright</td></tr>
+<tr><td><strong>91 % isopropyl alcohol</strong></td><td><a href="https://www.amazon.com/dp/B0BSJ93RKB" target="_blank" rel="noopener">Epic Medical Supply</a></td><td><span class="tag own">own</span></td><td>wipe after sanding paint</td></tr>
+<tr><td><strong>Hot glue, low temperature</strong></td><td>SHJADE mini gun + sticks</td><td><span class="tag own">own</span></td><td>six dots at the very end; no link recorded</td></tr>
+</table></div>
+<h2>Tools</h2>
+<div class="scrollx"><table class="t"><tr><th>Part</th><th>Exactly which</th><th></th><th>Role</th></tr>
+<tr><td><strong>Soldering station + silicone mat + helping hands + tweezers</strong></td><td>X-Tronic 3020-XTS kit</td><td><span class="tag own">own</span></td><td>no link recorded; electronics tip for the harness</td></tr>
+<tr><td><strong>Soldering tips</strong></td><td>900M-T assortment + tinner</td><td><span class="tag own">own</span></td><td>no link recorded</td></tr>
+<tr><td><strong>Flush cutters</strong></td><td><a href="https://www.amazon.com/dp/B07C5PM8L4" target="_blank" rel="noopener">BOENFU 6"</a></td><td><span class="tag own">own</span></td><td>pins, rod, leads; never the tube</td></tr>
+<tr><td><strong>Chain-nose + round-nose pliers</strong></td><td><a href="https://www.amazon.com/dp/B0B8QBVXXR" target="_blank" rel="noopener">WORKPRO 3-pack</a></td><td><span class="tag own">own</span></td><td>the strip off the headers, every bend</td></tr>
+<tr><td><strong>Digital caliper</strong></td><td><a href="https://www.amazon.com/dp/B000GSLKIW" target="_blank" rel="noopener">NEIKO 01407A</a></td><td><span class="tag own">own</span></td><td>stubs 1.5–2.5, the 12.5 mm screen block</td></tr>
+<tr><td><strong>Multimeter</strong></td><td><a href="https://www.amazon.com/dp/B08BL288LW" target="_blank" rel="noopener">KAIWEETS TRMS</a></td><td><span class="tag own">own</span></td><td>continuity after every move</td></tr>
+<tr><td><strong>Heat gun</strong></td><td>QWORK mini</td><td><span class="tag own">own</span></td><td>no link recorded; shrinks the sleeves, never near the mic</td></tr>
+<tr><td><strong>Cutting mat</strong></td><td><a href="https://www.amazon.com/dp/B0027ROZ9G" target="_blank" rel="noopener">Dahle Vantage 10672</a></td><td><span class="tag own">own</span></td><td>cutting the cards; never solder on it</td></tr>
+</table></div>
+<div class="evidence"><p><strong>Sources.</strong> Ownership and listings from <code>docs/INVENTORY.md</code> (Amazon #1–#19, DigiKey, Adafruit), the two capacitor kits from <code>docs/MATERIALS.md</code>. "No link recorded" means the purchase is recorded without its listing. The PowerBoost is the only part not yet bought.</p></div>
+</div>

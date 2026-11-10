@@ -1,6 +1,11 @@
 # Select the reconstructed board adapter.
 CONFIG_BOARD_TYPE_POCKET_WALL_E_C3=y
 
+# Start with local USB diagnostics. build.sh --assistant selects the networked
+# application explicitly; neither supported build enables the amplifier.
+CONFIG_POCKET_AI_BENCH_DIAGNOSTICS=y
+# CONFIG_POCKET_AI_ENABLE_QUALIFIED_AMPLIFIER is not set
+
 # The ESP32-C3 SuperMini used by the project has 4 MB of flash. Upstream's
 # ESP32-C3 defaults assume 16 MB, so both settings below are required.
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
@@ -18,3 +23,11 @@ CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
 CONFIG_LANGUAGE_EN_US=y
 # CONFIG_SR_WN_WN9S_NIHAOXIAOZHI is not set
 CONFIG_SR_WN_WN9S_HIESP=y
+
+# Step 11 volume cap. Builder decision 2026-09-30: caps up to 45 go straight to
+# the speaker without the dummy load or PASS 11B (datasheet worst case at the
+# highest gain, 15.6 dB with GAIN 100 kOhm to GND, is 2.20 V peak at cap 45
+# against the speaker's 2.53 V limit). The builder chose 37 that day, then 45
+# after the firmware's peak monitor logged at most 1.36 V at cap 37 (about
+# 2.0 V expected at 45). Anything above 45 needs the dummy load and PASS 11B.
+CONFIG_POCKET_AI_MAX_VOLUME=45

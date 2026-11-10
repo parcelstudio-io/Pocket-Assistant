@@ -1,0 +1,6 @@
+# Wokwi simulation of the character firmware: ESP32-C3 DevKitM stand-in, SSD1306 at 0x3D, button on GPIO10.
+# Wi-Fi joins Wokwi's simulated "Wokwi-GUEST" network when the firmware is built with that SSID.
+[wokwi]
+version = 1
+firmware = "../build/pocket_character_merged.bin"
+elf = "../build/pocket_character.elf"

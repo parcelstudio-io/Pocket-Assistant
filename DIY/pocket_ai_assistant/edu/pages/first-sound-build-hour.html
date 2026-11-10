@@ -1,0 +1,653 @@
+<title>First Sound Build Hour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
+  .track > div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--pass); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps[start="3"] { counter-reset: step 2; }
+  ol.steps[start="4"] { counter-reset: step 3; }
+  ol.steps[start="5"] { counter-reset: step 4; }
+  ol.steps[start="6"] { counter-reset: step 5; }
+  ol.steps[start="9"] { counter-reset: step 8; }
+  ol.steps[start="10"] { counter-reset: step 9; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .thick { stroke-width: 2.2; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>
+  .stamp { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-tint); border-radius: 4px; padding: 2px 8px; margin-right: 6px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 72ch; }
+  figure svg .edge.accent-stroke { stroke: var(--accent); }
+  figure svg .edge.warn-stroke { stroke: var(--warn); }
+  figure svg .iron { stroke-width: 7; stroke-linecap: round; }
+  figure svg .stripe { fill: var(--muted); }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .8em; margin-right: 6px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · build hour · the next session</div>
+    <h1>One hour: make A1 speak</h1>
+    <p class="lede">Solder the amplifier, wire it to A1, and hear a reply come out of the speaker. On 22 September you chose to do this without the dummy load or the oscilloscope. The firmware's volume cap of 15 is what keeps the speaker safe, and the datasheet arithmetic below shows why it is enough.</p>
+  </header>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 380" style="min-width: 640px; width: 100%;" role="img" aria-label="Chart of the hour. With USB unplugged: set up from 0 to 5 minutes, solder the headers from 5 to 20 with a safe stop after, wire it with the GPIO5 jumper left out from 20 to 32, meter checks from 32 to 35. With USB plugged in: first power and PASS 11A from 35 to 40 with a safe stop after, flash the speaking image from 40 to 45, Wi-Fi again from 45 to 52 with a safe stop after. Unplugged: speaker on from 52 to 55. Plugged in: ask it something from 55 to 60, ending at PASS 11C.">
+        <rect class="cap" x="20" y="12" width="18" height="12" rx="2"/><text class="s" x="44" y="22">USB plugged in</text>
+        <rect class="soft" x="150" y="12" width="18" height="12" rx="2"/><text class="s" x="174" y="22">USB unplugged</text>
+        <polygon class="pass-fill" points="290,12 296,18 290,24 284,18"/><text class="s" x="302" y="22">safe place to stop</text>
+        <g stroke-opacity="0.25">
+          <line class="edge dashed" x1="250" y1="40" x2="250" y2="346"/><line class="edge dashed" x1="320" y1="40" x2="320" y2="346"/><line class="edge dashed" x1="390" y1="40" x2="390" y2="346"/><line class="edge dashed" x1="460" y1="40" x2="460" y2="346"/><line class="edge dashed" x1="530" y1="40" x2="530" y2="346"/><line class="edge dashed" x1="600" y1="40" x2="600" y2="346"/><line class="edge dashed" x1="670" y1="40" x2="670" y2="346"/>
+        </g>
+        <text class="s m muted" x="20" y="59">0:00</text><text class="s b" x="62" y="59">Set up the bench</text><rect class="soft" x="250" y="44" width="35" height="22" rx="3"/>
+        <text class="s m muted" x="20" y="93">0:05</text><text class="s b" x="62" y="93">Solder the headers</text><rect class="soft" x="285" y="78" width="105" height="22" rx="3"/><polygon class="pass-fill" points="400,83 406,89 400,95 394,89"/><text class="s b pass-ink" x="412" y="93">A · headers on</text>
+        <text class="s m muted" x="20" y="127">0:20</text><text class="s b" x="62" y="127">Wire it, GPIO5 jumper out</text><rect class="soft" x="390" y="112" width="84" height="22" rx="3"/>
+        <text class="s m muted" x="20" y="161">0:32</text><text class="s b" x="62" y="161">Meter checks</text><rect class="soft" x="474" y="146" width="21" height="22" rx="3"/>
+        <text class="s m muted" x="20" y="195">0:35</text><text class="s b" x="62" y="195">First power · PASS 11A</text><rect class="cap" x="495" y="180" width="35" height="22" rx="3"/><polygon class="pass-fill" points="540,185 546,191 540,197 534,191"/><text class="s b pass-ink" x="552" y="195">B · wired and silent</text>
+        <text class="s m muted" x="20" y="229">0:40</text><text class="s b" x="62" y="229">Flash the speaking image</text><rect class="cap" x="530" y="214" width="35" height="22" rx="3"/>
+        <text class="s m muted" x="20" y="263">0:45</text><text class="s b" x="62" y="263">Wi-Fi again</text><rect class="cap" x="565" y="248" width="49" height="22" rx="3"/><polygon class="pass-fill" points="624,253 630,259 624,265 618,259"/><text class="s b pass-ink" x="636" y="263">C · ready, no speaker</text>
+        <text class="s m muted" x="20" y="297">0:52</text><text class="s b" x="62" y="297">Speaker on</text><rect class="soft" x="614" y="282" width="21" height="22" rx="3"/>
+        <text class="s m muted" x="20" y="331">0:55</text><text class="s b" x="62" y="331">Ask it something</text><rect class="cap" x="635" y="316" width="35" height="22" rx="3"/><polygon class="pass-fill" points="680,321 686,327 680,333 674,327"/><text class="s b pass-ink" x="692" y="331">PASS 11C</text>
+        <line class="edge" x1="250" y1="352" x2="670" y2="352"/>
+        <line class="edge" x1="250" y1="352" x2="250" y2="357"/><line class="edge" x1="320" y1="352" x2="320" y2="357"/><line class="edge" x1="390" y1="352" x2="390" y2="357"/><line class="edge" x1="460" y1="352" x2="460" y2="357"/><line class="edge" x1="530" y1="352" x2="530" y2="357"/><line class="edge" x1="600" y1="352" x2="600" y2="357"/><line class="edge" x1="670" y1="352" x2="670" y2="357"/>
+        <text class="s m muted" x="250" y="371" text-anchor="middle">0</text><text class="s m muted" x="320" y="371" text-anchor="middle">10</text><text class="s m muted" x="390" y="371" text-anchor="middle">20</text><text class="s m muted" x="460" y="371" text-anchor="middle">30</text><text class="s m muted" x="530" y="371" text-anchor="middle">40</text><text class="s m muted" x="600" y="371" text-anchor="middle">50</text><text class="s m muted" x="670" y="371" text-anchor="middle">60 min</text>
+      </svg>
+    </div>
+    <figcaption><strong>Grey rows happen with USB unplugged, teal rows with it plugged in.</strong> Every wiring change sits in a grey row. Each diamond is a safe place to stop if the hour runs out; the next session starts from the last diamond you reached.</figcaption>
+  </figure>
+
+  <div class="callout" style="border-left-color: var(--pass); background: var(--pass-tint);"><span class="label" style="color: var(--pass);">Already done for you, 22 September</span><p>The speaking image is built and verified on your computer: amplifier enabled, volume cap 15, SHA-256 starting <code>c98ee78f</code>. The flash preview printed <code>amplifier: ENABLED (Step 11, USB-powered)</code>. No compiling is needed in this hour unless you build something else first.</p></div>
+
+  <h2>The shortcut you chose, and what protects the speaker</h2>
+  <p>Step 11 as written sends the first sound into a dummy load and measures it with the scope before the speaker goes on. You decided to skip both for this prototype. What stands between the amplifier and the speaker is now the firmware's volume cap. The firmware clamps every volume change to 15, including one the assistant makes when you ask it to be louder.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 290" style="min-width: 600px; width: 100%;" role="img" aria-label="Top: reply audio at up to full scale passes through the firmware cap of 15, which keeps 2.25 percent, then the amplifier gain, 9 dB with the GAIN pin open and 15.6 dB at most, then the 8 ohm speaker whose limit is 2.53 volts peak. Bottom: bars of the largest calculated peak across the speaker. Cap 15 at 9 dB, GAIN pin open, gives 0.11 volts; cap 15 at the highest gain gives 0.24 volts; cap 30 at the highest gain, for later, gives 0.98 volts. All three sit left of the 2.53 volt speaker limit line.">
+        <defs><marker id="m2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+        <rect class="box" x="20" y="16" width="150" height="50" rx="5"/><text class="t b" x="95" y="37" text-anchor="middle">reply audio</text><text class="s muted" x="95" y="54" text-anchor="middle">up to full scale</text>
+        <line class="edge" x1="170" y1="41" x2="206" y2="41" marker-end="url(#m2)"/>
+        <rect class="cap" x="210" y="16" width="150" height="50" rx="5"/><text class="t b cap-ink" x="285" y="37" text-anchor="middle">firmware cap 15</text><text class="s" x="285" y="54" text-anchor="middle">keeps 0.15 × 0.15 = 2.25 %</text>
+        <line class="edge" x1="360" y1="41" x2="396" y2="41" marker-end="url(#m2)"/>
+        <rect class="box" x="400" y="16" width="150" height="50" rx="5"/><text class="t b" x="475" y="37" text-anchor="middle">amplifier gain</text><text class="s muted" x="475" y="54" text-anchor="middle">9 dB to 15.6 dB</text>
+        <line class="edge" x1="550" y1="41" x2="586" y2="41" marker-end="url(#m2)"/>
+        <rect class="warn-fill" x="590" y="16" width="150" height="50" rx="5"/><text class="t b warn-ink" x="665" y="37" text-anchor="middle">speaker, 8 Ω</text><text class="s" x="665" y="54" text-anchor="middle">limit 2.53 V peak</text>
+        <text class="t b" x="20" y="100">Largest peak across the speaker, calculated from the datasheet</text>
+        <text class="s" x="20" y="131">cap 15 · GAIN pin open (9 dB)</text><rect class="pass-fill" x="250" y="116" width="17" height="22" rx="2"/><text class="s b pass-ink" x="274" y="131">0.11 V</text>
+        <text class="s" x="20" y="165">cap 15 · highest gain (15.6 dB)</text><rect class="pass-fill" x="250" y="150" width="37" height="22" rx="2"/><text class="s b pass-ink" x="294" y="165">0.24 V</text>
+        <text class="s muted" x="20" y="199">cap 30 · highest gain · a later step</text><rect class="soft" x="250" y="184" width="147" height="22" rx="2"/><text class="s b muted" x="404" y="199">0.98 V</text>
+        <line class="edge dashed warn-stroke thick" x1="630" y1="108" x2="630" y2="216"/>
+        <text class="s b warn-ink" x="636" y="124">speaker limit</text><text class="s warn-ink" x="636" y="139">2.53 V</text>
+        <line class="edge" x1="250" y1="222" x2="700" y2="222"/>
+        <line class="edge" x1="250" y1="222" x2="250" y2="227"/><line class="edge" x1="400" y1="222" x2="400" y2="227"/><line class="edge" x1="550" y1="222" x2="550" y2="227"/><line class="edge" x1="700" y1="222" x2="700" y2="227"/>
+        <text class="s m muted" x="250" y="240" text-anchor="middle">0 V</text><text class="s m muted" x="400" y="240" text-anchor="middle">1 V</text><text class="s m muted" x="550" y="240" text-anchor="middle">2 V</text><text class="s m muted" x="700" y="240" text-anchor="middle">3 V</text>
+        <text class="s b" x="20" y="272">At cap 15 the margin is at least 10 times in voltage and 100 times in power, at any gain setting.</text>
+      </svg>
+    </div>
+    <figcaption><strong>The cap does the protecting.</strong> The firmware squares the cap, so 15 keeps 2.25 % of full-scale amplitude on every sound it plays, the start-up chime included. The datasheet sets full scale at 2.1 dBV plus the gain, and the highest gain is 15 dB ± 0.6 dB, which is under 11 V peak. 2.25 % of that is 0.24 V. Labels: <code>DATASHEET</code> for the gain table, <code>CALCULATED</code> for the bars.</figcaption>
+  </figure>
+
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>What you are accepting</th><th>Why it is small</th><th>If it happens</th></tr>
+    <tr><td>The speaker is overdriven</td><td>The cap keeps its peak near a tenth of its limit, as above</td><td>One of six speakers is lost, about $4</td></tr>
+    <tr><td>A short on the 5V pin reaches the computer's USB port</td><td>The 5V pin is wired straight to USB, and the meter check at 0:32 finds a short before power</td><td>The port cuts out. Unplug and find the short</td></tr>
+    <tr><td>The 220 µF goes in backwards</td><td>The stripe marks its minus leg, and you check it twice</td><td>It warms, hisses or bulges. Unplug at once and replace it</td></tr>
+    <tr><td>A click at power-on</td><td>The SD pull-down is measured at 0:35</td><td>Harmless at this volume</td></tr>
+    <tr><td>The output level is never measured</td><td>PASS 11B is skipped by your decision</td><td>The scope can still measure it after 30 September</td></tr>
+  </table>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Before you start</span>
+    <ul>
+      <li><strong>On the bench:</strong> A1 on its breadboard with its USB cable, one HiLetgo amplifier labelled <code>AMP-A1</code> with its header strip and terminal block, and one speaker labelled <code>SPK-A1</code>.</li>
+      <li><strong>From the kits:</strong> one 220 µF electrolytic rated 10 V or more, one 100 nF ceramic marked <code>104</code>, one 4.7 kΩ resistor and one 1 kΩ in reserve. Confirm both resistors with the meter. You also need seven jumpers.</li>
+      <li><strong>Tools:</strong> iron, solder, flux, wick, the multimeter, and your phone camera.</li>
+      <li><strong>Rules:</strong> USB is the only power, and the cells and charger stay in another room. The amplifier's <code>VIN</code> comes only from A1's <code>5V</code> pin. Neither speaker terminal ever touches GND. Unplug USB before every wiring change.</li>
+    </ul>
+  </div>
+
+  <h2><span class="when">0:05</span>Solder the headers</h2>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 290" style="min-width: 640px; width: 100%;" role="img" aria-label="Left: side view of seven header pins pushed into a breadboard, the plastic strip resting on the breadboard, and the amplifier board sitting on the short ends with its labels facing up. Four joints are finished as small cones. The iron touches the pad and pin of the sixth pin while solder is fed into the joint. Right: three close-ups. A good joint is a shiny concave cone from pad to pin. A ball sitting above the pad needs flux and reheating. A bridge joining two pins is removed with flux and wick.">
+        <text class="t b" x="20" y="20">The breadboard is the jig</text>
+        <text class="s" x="30" y="140">AMP-A1, labels facing up</text>
+        <text class="s" x="190" y="88" text-anchor="end">then feed solder in</text>
+        <line class="edge accent-stroke" x1="196" y1="92" x2="266" y2="151"/>
+        <text class="s b" x="350" y="54" text-anchor="end">iron on pad and pin together, 2 s</text>
+        <line class="edge iron" x1="276" y1="150" x2="352" y2="64"/>
+        <rect class="cap" x="45" y="156" width="290" height="10"/>
+        <rect class="box" x="56" y="186" width="268" height="14"/>
+        <line class="edge thick" x1="70" y1="146" x2="70" y2="226"/><line class="edge thick" x1="110" y1="146" x2="110" y2="226"/><line class="edge thick" x1="150" y1="146" x2="150" y2="226"/><line class="edge thick" x1="190" y1="146" x2="190" y2="226"/><line class="edge thick" x1="230" y1="146" x2="230" y2="226"/><line class="edge thick" x1="270" y1="146" x2="270" y2="226"/><line class="edge thick" x1="310" y1="146" x2="310" y2="226"/>
+        <polygon class="pass-fill" points="62,156 68.5,146 71.5,146 78,156"/><polygon class="pass-fill" points="102,156 108.5,146 111.5,146 118,156"/><polygon class="pass-fill" points="142,156 148.5,146 151.5,146 158,156"/><polygon class="pass-fill" points="182,156 188.5,146 191.5,146 198,156"/>
+        <rect class="soft" x="30" y="200" width="330" height="56" rx="4"/>
+        <text class="s muted" x="195" y="232" text-anchor="middle">breadboard, holding the long ends straight</text>
+        <text class="s muted" x="195" y="276" text-anchor="middle">the plastic strip rests on the breadboard</text>
+        <line class="edge dashed" x1="405" y1="30" x2="405" y2="270" stroke-opacity="0.35"/>
+        <text class="t b" x="420" y="20">What each joint should look like</text>
+        <rect class="soft" x="425" y="170" width="90" height="12"/><rect class="cap" x="452" y="164" width="36" height="6"/><line class="edge thick" x1="470" y1="90" x2="470" y2="196"/>
+        <path class="pass-fill" d="M452,164 C462,160 466,140 468,112 L472,112 C474,140 478,160 488,164 Z"/>
+        <text class="s b pass-ink" x="470" y="214" text-anchor="middle">shiny concave cone</text><text class="s" x="470" y="230" text-anchor="middle">good</text>
+        <rect class="soft" x="545" y="170" width="90" height="12"/><rect class="cap" x="572" y="164" width="36" height="6"/><line class="edge thick" x1="590" y1="90" x2="590" y2="196"/>
+        <circle class="warn-fill" cx="590" cy="130" r="14"/>
+        <text class="s b warn-ink" x="590" y="214" text-anchor="middle">ball above the pad</text><text class="s" x="590" y="230" text-anchor="middle">add flux, reheat</text>
+        <rect class="soft" x="665" y="170" width="90" height="12"/><rect class="cap" x="685" y="164" width="20" height="6"/><rect class="cap" x="715" y="164" width="20" height="6"/><line class="edge thick" x1="695" y1="90" x2="695" y2="196"/><line class="edge thick" x1="725" y1="90" x2="725" y2="196"/>
+        <ellipse class="warn-fill" cx="710" cy="152" rx="26" ry="12"/>
+        <text class="s b warn-ink" x="710" y="214" text-anchor="middle">bridge between pins</text><text class="s" x="710" y="230" text-anchor="middle">flux, then wick</text>
+        <text class="s muted" x="590" y="258" text-anchor="middle">Wick: lay it on the bridge, press the iron on top, lift both together.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Let the breadboard hold the pins, and heat the pad and the pin together.</strong> Solder flows toward heat, so a hot pad and pin pull it into a cone. A ball means the pad never got hot. A bridge is too much solder, and the wick soaks it up.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Warm up.</strong> Set the iron to the temperature you used in Step 5 and make two practice joints on scrap header pins.</p></li>
+    <li><p><strong>Set up the jig.</strong> Push the header strip's long ends into the breadboard. Then set <code>AMP-A1</code> over the short ends with its printed labels facing up.</p></li>
+    <li><p><strong>Solder the two end pins first,</strong> and check that the board sits flat before doing the five between them. Give each joint about two seconds of heat, then feed the solder in.</p></li>
+    <li><p><strong>Add the terminal block.</strong> Lift the board out and push the green terminal block in from the labelled side, with its wire openings facing outward. Tape it in place, turn the board over, and solder its two pins from underneath. They are bigger, so give them three or four seconds.</p></li>
+    <li><p><strong>Inspect at phone macro zoom.</strong> Every joint should be a shiny cone. Clear any bridge with flux and the wick, and reheat any ball with a touch of flux.</p></li>
+  </ol>
+
+  <h2><span class="when">0:20</span>Wire it, with one jumper left out</h2>
+  <p>USB stays unplugged. Every connection except one goes in now. The jumper from GPIO5 to <code>SD</code> waits until 0:40, so that at first power the pull-down resistor alone is holding the amplifier off, and you can measure whether it manages.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 500" style="min-width: 660px; width: 100%;" role="img" aria-label="Wiring map drawn where the pins really are, seen from A1's component side with the USB-C socket at the top and the antenna at the bottom. A1's right edge, from the USB end: 5V, GND, 3.3V, GPIO4, GPIO3, GPIO2, GPIO1, GPIO0. Its left edge, from the USB end: GPIO5, 6, 7, 8, 9, 10, 20, 21. Five jumpers leave the right edge: 5V to the amplifier's VIN, GND to GND, GPIO3 to DIN, GPIO2 to BCLK, GPIO1 to LRC. The sixth, GPIO5 to SD, leaves the top of the left edge, loops over the USB end and is added at 0:40. The amplifier is drawn turned so VIN faces A1's USB end, which makes its header read VIN, GND, SD, GAIN, DIN, BCLK, LRC and lines each wire up with its A1 pin. A 220 microfarad and a 100 nanofarad capacitor sit across VIN and GND, and a 4.7 kilohm resistor runs from SD to GND. OUT plus and OUT minus stay open until 0:52 and never go to ground.">
+        <!-- A1, component side up -->
+        <rect class="box" x="120" y="60" width="210" height="365" rx="8"/>
+        <rect class="soft" x="187" y="40" width="76" height="46" rx="6"/>
+        <text class="s b" x="225" y="67" text-anchor="middle">USB-C</text>
+        <text class="t b" x="225" y="236" text-anchor="middle">A1</text>
+        <text class="s muted" x="225" y="272" text-anchor="middle">ESP32-C3 SuperMini</text>
+        <text class="s muted" x="225" y="310" text-anchor="middle">component side up</text>
+        <rect class="warn-fill" x="185" y="398" width="80" height="18" rx="2"/>
+        <text class="s b warn-ink" x="225" y="411" text-anchor="middle">antenna</text>
+        <text class="s warn-ink" x="225" y="444" text-anchor="middle">antenna end · keep the amplifier and wires away</text>
+        <!-- left edge pads: 5 6 7 8 9 10 20 21 -->
+        <circle class="cap" cx="138" cy="100" r="6"/><text class="s b m cap-ink" x="152" y="104">5</text>
+        <circle class="box" cx="138" cy="138" r="5"/><text class="s m muted" x="152" y="142">6</text>
+        <circle class="box" cx="138" cy="176" r="5"/><text class="s m muted" x="152" y="180">7</text>
+        <circle class="box" cx="138" cy="214" r="5"/><text class="s m muted" x="152" y="218">8</text>
+        <circle class="box" cx="138" cy="252" r="5"/><text class="s m muted" x="152" y="256">9</text>
+        <circle class="box" cx="138" cy="290" r="5"/><text class="s m" x="152" y="294">10</text>
+        <circle class="box" cx="138" cy="328" r="5"/><text class="s m" x="152" y="332">20</text>
+        <circle class="box" cx="138" cy="366" r="5"/><text class="s m" x="152" y="370">21</text>
+        <text class="s muted" x="100" y="294" text-anchor="end">button, wired</text>
+        <text class="s muted" x="100" y="332" text-anchor="end">OLED SCL, wired</text>
+        <text class="s muted" x="100" y="370" text-anchor="end">OLED SDA, wired</text>
+        <!-- right edge pads: 5V GND 3.3V 4 3 2 1 0 -->
+        <circle class="cap" cx="312" cy="100" r="6"/><text class="s b m warn-ink" x="298" y="104" text-anchor="end">5V</text>
+        <circle class="cap" cx="312" cy="138" r="6"/><text class="s b m" x="298" y="142" text-anchor="end">GND</text>
+        <circle class="box" cx="312" cy="176" r="5"/><text class="s m" x="298" y="180" text-anchor="end">3.3V</text>
+        <circle class="box" cx="312" cy="214" r="5"/><text class="s m" x="298" y="218" text-anchor="end">4</text>
+        <circle class="cap" cx="312" cy="252" r="6"/><text class="s b m" x="298" y="256" text-anchor="end">3</text>
+        <circle class="cap" cx="312" cy="290" r="6"/><text class="s b m" x="298" y="294" text-anchor="end">2</text>
+        <circle class="cap" cx="312" cy="328" r="6"/><text class="s b m" x="298" y="332" text-anchor="end">1</text>
+        <circle class="box" cx="312" cy="366" r="5"/><text class="s m muted" x="298" y="370" text-anchor="end">0</text>
+        <text class="s muted" x="264" y="180" text-anchor="end">OLED + mic power</text>
+        <text class="s muted" x="284" y="218" text-anchor="end">mic data</text>
+        <!-- amplifier, turned so VIN faces A1's USB end -->
+        <rect class="box" x="520" y="70" width="140" height="285" rx="6"/>
+        <text class="t b" x="600" y="222" text-anchor="middle">AMP-A1</text>
+        <text class="s muted" x="600" y="238" text-anchor="middle">MAX98357A</text>
+        <circle class="cap" cx="526" cy="100" r="5"/><text class="s b m warn-ink" x="538" y="104">VIN</text>
+        <circle class="cap" cx="526" cy="138" r="5"/><text class="s b m" x="538" y="142">GND</text>
+        <circle class="cap" cx="526" cy="176" r="5"/><text class="s b m" x="538" y="180">SD</text>
+        <circle class="box" cx="526" cy="214" r="4"/><text class="s m muted" x="538" y="218">GAIN</text>
+        <circle class="cap" cx="526" cy="252" r="5"/><text class="s b m" x="538" y="256">DIN</text>
+        <circle class="cap" cx="526" cy="290" r="5"/><text class="s b m" x="538" y="294">BCLK</text>
+        <circle class="cap" cx="526" cy="328" r="5"/><text class="s b m" x="538" y="332">LRC</text>
+        <!-- the five right-edge jumpers -->
+        <line class="edge thick warn-stroke" x1="318" y1="100" x2="521" y2="100"/>
+        <text class="s b warn-ink" x="370" y="93" text-anchor="middle">5 V from USB</text>
+        <line class="edge" x1="318" y1="138" x2="521" y2="138"/>
+        <line class="edge" x1="318" y1="252" x2="521" y2="252"/><text class="s" x="420" y="246" text-anchor="middle">speaker data</text>
+        <line class="edge" x1="318" y1="290" x2="521" y2="290"/><text class="s" x="420" y="284" text-anchor="middle">bit clock · the mic shares it</text>
+        <line class="edge" x1="318" y1="328" x2="521" y2="328"/><text class="s" x="420" y="322" text-anchor="middle">word select · the mic shares it</text>
+        <text class="s muted" x="512" y="218" text-anchor="end">GAIN: nothing</text>
+        <!-- reservoir caps across VIN and GND -->
+        <line class="edge" x1="400" y1="100" x2="400" y2="113"/><line class="edge" x1="390" y1="113" x2="410" y2="113"/><path class="edge" d="M390,122 Q400,117 410,122"/><line class="edge" x1="400" y1="119" x2="400" y2="138"/>
+        <text class="s b" x="386" y="113" text-anchor="end">+</text><text class="s b" x="386" y="129" text-anchor="end">−</text>
+        <line class="edge" x1="440" y1="100" x2="440" y2="114"/><line class="edge" x1="430" y1="114" x2="450" y2="114"/><line class="edge" x1="430" y1="120" x2="450" y2="120"/><line class="edge" x1="440" y1="120" x2="440" y2="138"/>
+        <circle cx="400" cy="100" r="2.6" fill="currentColor"/><circle cx="400" cy="138" r="2.6" fill="currentColor"/><circle cx="440" cy="100" r="2.6" fill="currentColor"/><circle cx="440" cy="138" r="2.6" fill="currentColor"/>
+        <text class="s b" x="400" y="156" text-anchor="middle">220 µF</text><text class="s b" x="446" y="156" text-anchor="middle">100 nF</text>
+        <!-- 4.7k from SD to GND at the amplifier -->
+        <line class="edge" x1="500" y1="138" x2="500" y2="143"/><polyline class="edge" points="500,143 505,146 495,151 505,156 495,161 505,166 500,169"/><line class="edge" x1="500" y1="169" x2="500" y2="176"/>
+        <circle cx="500" cy="138" r="2.6" fill="currentColor"/><circle cx="500" cy="176" r="2.6" fill="currentColor"/>
+        <text class="s b" x="494" y="194" text-anchor="end">4.7 kΩ</text>
+        <!-- GPIO5 jumper, other edge, added at 0:40 -->
+        <path class="edge dashed accent-stroke thick" d="M132,100 H104 V24 H480 V176 H521"/>
+        <text class="s b cap-ink" x="300" y="18" text-anchor="middle">GPIO5 to SD · from the other edge · add at 0:40</text>
+        <!-- speaker outputs -->
+        <circle class="box" cx="656" cy="180" r="5"/><text class="s b m" x="646" y="184" text-anchor="end">OUT+</text>
+        <circle class="box" cx="656" cy="250" r="5"/><text class="s b m" x="646" y="254" text-anchor="end">OUT−</text>
+        <line class="edge" x1="661" y1="180" x2="696" y2="180"/><circle class="box" cx="700" cy="180" r="4"/>
+        <line class="edge" x1="661" y1="250" x2="696" y2="250"/><circle class="box" cx="700" cy="250" r="4"/>
+        <text class="s b cap-ink" x="718" y="210">open until</text><text class="s b cap-ink" x="718" y="224">0:52</text>
+        <text class="s b warn-ink" x="700" y="280" text-anchor="middle">never to GND</text>
+        <!-- notes -->
+        <text class="s muted" x="20" y="470">Seen from the component side: chip and buttons up, USB-C at the top. Turned over, the two edges swap sides.</text>
+        <text class="s muted" x="20" y="488">Positions from the published SuperMini pinout. Read A1's and AMP-A1's silkscreen before each jumper; the board in front of you wins.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Six wires, a resistor and two capacitors, drawn where the pins are.</strong> Five jumpers leave A1's <code>5V</code> edge; the GPIO5 jumper starts at the USB end of the other edge and crosses over. Turning the amplifier so <code>VIN</code> faces A1's USB end lines its pins up with theirs. The amplifier listens to the same two clocks as the microphone, takes its own data line, and gets power straight from USB. The 4.7 kΩ holds <code>SD</code> low whenever GPIO5 is not driving it. The two capacitors are a local reservoir for the current bursts of loud sounds.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 800 260" style="min-width: 660px; width: 100%;" role="img" aria-label="Left: a 220 microfarad electrolytic capacitor. The stripe down one side marks the minus leg, which is also the shorter leg and goes to GND. The longer leg is plus and goes to VIN. Right: three breadboard strips under the amplifier's SD, GND and VIN pins, five holes each. Row 1 holds the amplifier pins. Row 2 holds the jumpers from A1: GPIO5 later, GND and 5V. Row 3 holds the 4.7 kilohm resistor standing up between the SD and GND strips. Row 4 holds the 220 microfarad capacitor between the GND and VIN strips with its stripe on GND. Row 5 holds the 100 nanofarad capacitor between the GND and VIN strips.">
+        <text class="t b" x="20" y="22">The 220 µF has a minus side</text>
+        <rect class="box" x="60" y="40" width="64" height="110" rx="8"/>
+        <rect class="soft" x="104" y="44" width="16" height="102"/>
+        <text class="s b" x="112" y="72" text-anchor="middle">−</text><text class="s b" x="112" y="100" text-anchor="middle">−</text><text class="s b" x="112" y="128" text-anchor="middle">−</text>
+        <line class="edge thick" x1="112" y1="150" x2="112" y2="185"/><line class="edge thick" x1="72" y1="150" x2="72" y2="215"/>
+        <text class="s" x="134" y="72">stripe marks the minus leg</text>
+        <text class="s" x="124" y="185">short leg: minus, to GND</text>
+        <text class="s" x="84" y="232">long leg: plus, to VIN</text>
+        <text class="t b" x="450" y="22" text-anchor="middle">At the amplifier's last three pins</text>
+        <text class="s b m" x="380" y="40" text-anchor="middle">SD</text><text class="s b m" x="450" y="40" text-anchor="middle">GND</text><text class="s b m warn-ink" x="520" y="40" text-anchor="middle">VIN</text>
+        <rect class="soft" x="364" y="46" width="32" height="184" rx="6"/><rect class="soft" x="434" y="46" width="32" height="184" rx="6"/><rect class="soft" x="504" y="46" width="32" height="184" rx="6"/>
+        <circle class="box" cx="380" cy="102" r="5"/><circle class="box" cx="380" cy="138" r="5"/><circle class="box" cx="380" cy="174" r="5"/><circle class="box" cx="380" cy="210" r="5"/>
+        <circle class="box" cx="450" cy="102" r="5"/><circle class="box" cx="450" cy="138" r="5"/><circle class="box" cx="450" cy="174" r="5"/><circle class="box" cx="450" cy="210" r="5"/>
+        <circle class="box" cx="520" cy="102" r="5"/><circle class="box" cx="520" cy="138" r="5"/><circle class="box" cx="520" cy="174" r="5"/><circle class="box" cx="520" cy="210" r="5"/>
+        <rect x="375" y="61" width="10" height="10" fill="currentColor"/><rect x="445" y="61" width="10" height="10" fill="currentColor"/><rect x="515" y="61" width="10" height="10" fill="currentColor"/>
+        <circle cx="380" cy="102" r="8" fill="none" class="edge dashed accent-stroke"/><circle class="cap" cx="450" cy="102" r="6"/><circle class="cap" cx="520" cy="102" r="6"/>
+        <line class="edge" x1="380" y1="138" x2="398" y2="138"/><rect class="box" x="398" y="132" width="38" height="12" rx="5"/><line class="edge" x1="436" y1="138" x2="450" y2="138"/>
+        <line class="edge" x1="450" y1="174" x2="471" y2="174"/><circle class="box" cx="485" cy="174" r="14"/><path class="stripe" d="M478,161.9 A14,14 0 0 0 478,186.1 Z"/><line class="edge" x1="499" y1="174" x2="520" y2="174"/>
+        <line class="edge" x1="450" y1="210" x2="476" y2="210"/><rect class="cap" x="476" y="203" width="18" height="14" rx="4"/><line class="edge" x1="494" y1="210" x2="520" y2="210"/>
+        <text class="s" x="556" y="70">1 · the amplifier's header pins</text>
+        <text class="s" x="556" y="106">2 · jumpers: GPIO5 (at 0:40), GND, 5V</text>
+        <text class="s" x="556" y="142">3 · 4.7 kΩ, SD to GND, standing up</text>
+        <text class="s" x="556" y="178">4 · 220 µF, stripe leg in GND</text>
+        <text class="s" x="556" y="214">5 · 100 nF, either way round</text>
+      </svg>
+    </div>
+    <figcaption><strong>Each amplifier pin gets its own five-hole strip.</strong> Seat the header across the strips, as drawn. Along a single strip, every pin would be shorted together. The resistor and both capacitors then drop into the strips next to the pins they serve, so the reservoir sits right at <code>VIN</code>.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Place the amplifier</strong> on A1's breadboard with its header across the strips. Keep it away from A1's antenna end, the red ceramic block.</p></li>
+    <li><p><strong>Run five jumpers, all from A1's <code>5V</code> edge:</strong> GPIO1 to <code>LRC</code>, GPIO2 to <code>BCLK</code>, GPIO3 to <code>DIN</code>, GND to <code>GND</code>, and A1's <code>5V</code> pin to <code>VIN</code>. GPIO1 and GPIO2 already carry the microphone's wires, so the new jumper goes into the same strip as the existing one. Read <code>5V</code> off the silkscreen; two pins further along the same edge is <code>3.3</code>, which must not go to <code>VIN</code>.</p></li>
+    <li><p><strong>Add the 4.7 kΩ</strong> standing up, from the <code>SD</code> strip to the <code>GND</code> strip. Bend one leg down alongside the body.</p></li>
+    <li><p><strong>Add the 220 µF</strong> from the <code>GND</code> strip to the <code>VIN</code> strip, with the striped leg in <code>GND</code>. Put the 100 nF beside it; it goes in either way round. Check the stripe a second time.</p></li>
+    <li><p><strong>Leave both</strong> the GPIO5 jumper and the speaker terminals empty. Photograph the wiring from above.</p></li>
+  </ol>
+
+  <h2><span class="when">0:32</span>Three meter checks, still unplugged</h2>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 210" style="min-width: 640px; width: 100%;" role="img" aria-label="Three continuity checks. First, VIN to the 5V pin: a steady beep means connected. Second, VIN to GND: silence, or a short chirp as the capacitors charge, is fine, while a steady tone means a short and you stop. Third, each of OUT plus and OUT minus to GND: silence is correct and a beep means stop and find the short.">
+        <text class="t b" x="130" y="22" text-anchor="middle">VIN to the 5V pin</text>
+        <circle class="box" cx="50" cy="60" r="6"/><circle class="box" cx="210" cy="60" r="6"/>
+        <text class="s b m" x="50" y="46" text-anchor="middle">VIN</text><text class="s b m" x="210" y="46" text-anchor="middle">5V pin</text>
+        <path class="edge warn-stroke thick" d="M50,66 C50,96 92,86 112,100"/><path class="edge thick" d="M210,66 C210,96 168,86 148,100"/>
+        <rect class="box" x="100" y="100" width="60" height="44" rx="6"/><text class="t b m" x="130" y="127" text-anchor="middle">•)))</text>
+        <rect class="pass-fill" x="30" y="156" width="200" height="40" rx="5"/><text class="s b pass-ink" x="130" y="181" text-anchor="middle">steady beep: connected</text>
+        <text class="t b" x="390" y="22" text-anchor="middle">VIN to GND</text>
+        <circle class="box" cx="310" cy="60" r="6"/><circle class="box" cx="470" cy="60" r="6"/>
+        <text class="s b m" x="310" y="46" text-anchor="middle">VIN</text><text class="s b m" x="470" y="46" text-anchor="middle">GND</text>
+        <path class="edge warn-stroke thick" d="M310,66 C310,96 352,86 372,100"/><path class="edge thick" d="M470,66 C470,96 428,86 408,100"/>
+        <rect class="box" x="360" y="100" width="60" height="44" rx="6"/><text class="t b m" x="390" y="127" text-anchor="middle">•)))</text>
+        <rect class="warn-fill" x="290" y="156" width="200" height="40" rx="5"/><text class="s b" x="390" y="173" text-anchor="middle">silence or one chirp: fine</text><text class="s b warn-ink" x="390" y="189" text-anchor="middle">a steady tone: stop, a short</text>
+        <text class="t b" x="650" y="22" text-anchor="middle">OUT+ and OUT− to GND</text>
+        <circle class="box" cx="570" cy="60" r="6"/><circle class="box" cx="730" cy="60" r="6"/>
+        <text class="s b m" x="570" y="46" text-anchor="middle">OUT±</text><text class="s b m" x="730" y="46" text-anchor="middle">GND</text>
+        <path class="edge warn-stroke thick" d="M570,66 C570,96 612,86 632,100"/><path class="edge thick" d="M730,66 C730,96 688,86 668,100"/>
+        <rect class="box" x="620" y="100" width="60" height="44" rx="6"/><text class="t b m" x="650" y="127" text-anchor="middle">•)))</text>
+        <rect class="pass-fill" x="550" y="156" width="200" height="40" rx="5"/><text class="s b pass-ink" x="650" y="173" text-anchor="middle">silence, each lead: fine</text><text class="s b warn-ink" x="650" y="189" text-anchor="middle">a beep: stop, find it</text>
+      </svg>
+    </div>
+    <figcaption><strong>Three minutes that protect the computer.</strong> A1's <code>5V</code> pin is the USB supply itself, so a short between <code>VIN</code> and GND would load the computer's port. Silence is fine here, and so is a brief chirp: that is the capacitors charging from the meter, often too quick for a meter to beep at all. A tone that keeps going is a real short.</figcaption>
+  </figure>
+
+  <h2><span class="when">0:35</span>First power, amplifier held off</h2>
+  <p>Plug USB in. A1 boots the assistant image it already runs, and that image never enables the amplifier. GPIO5 is not even connected yet, so two resistors decide where <code>SD</code> sits: the board's own pull-up to <code>VIN</code>, if it has one, and your 4.7 kΩ to GND.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 300" style="min-width: 640px; width: 100%;" role="img" aria-label="Left: a voltage ladder from 0 to 1.6 volts showing the amplifier's SD thresholds from the datasheet. Below 0.08 volts is guaranteed shutdown, the target. From 0.08 to 0.36 volts is undefined. From 0.36 to 0.65 volts mixes left and right. 0.65 to 0.83 is undefined. 0.83 to 1.25 volts selects the right channel. 1.25 to 1.5 is undefined. Above 1.5 volts selects the left channel, where GPIO5 at 3.3 volts puts it later. Right: the circuit. VIN at about 5 volts feeds the board's pull-up, if any, to the SD node. SD goes down through your 4.7 kilohm and the chip's internal 100 kilohm to ground. GPIO5 is not yet connected. Expect about 0.02 volts with a 1 megohm pull-up; at 0.08 volts or more, swap in 1 kilohm.">
+        <text class="t b" x="20" y="18">Where the SD voltage lands (datasheet thresholds)</text>
+        <rect class="box" x="60" y="30" width="40" height="15"/>
+        <rect class="warn-fill" x="60" y="45" width="40" height="38"/>
+        <rect class="box" x="60" y="83" width="40" height="63"/>
+        <rect class="warn-fill" x="60" y="146" width="40" height="26"/>
+        <rect class="box" x="60" y="172" width="40" height="45"/>
+        <rect class="warn-fill" x="60" y="217" width="40" height="41"/>
+        <rect class="pass-fill" x="60" y="258" width="40" height="12"/>
+        <text class="s m muted" x="54" y="49" text-anchor="end">1.5</text><text class="s m muted" x="54" y="87" text-anchor="end">1.25</text><text class="s m muted" x="54" y="150" text-anchor="end">0.83</text><text class="s m muted" x="54" y="176" text-anchor="end">0.65</text><text class="s m muted" x="54" y="221" text-anchor="end">0.36</text><text class="s m muted" x="54" y="262" text-anchor="end">0.08</text><text class="s m muted" x="54" y="278" text-anchor="end">0 V</text>
+        <text class="s" x="110" y="41">left channel · GPIO5 high at 3.3 V, later</text>
+        <text class="s warn-ink" x="110" y="68">undefined band</text>
+        <text class="s" x="110" y="118">right channel</text>
+        <text class="s warn-ink" x="110" y="163">undefined band</text>
+        <text class="s" x="110" y="198">left and right mixed</text>
+        <text class="s warn-ink" x="110" y="241">undefined: off or on, chip to chip</text>
+        <text class="s b pass-ink" x="110" y="268">guaranteed off · your target now</text>
+        <text class="s b" x="600" y="44" text-anchor="middle">VIN ≈ 5 V</text>
+        <line class="edge" x1="600" y1="50" x2="600" y2="58"/><polyline class="edge" points="600,58 606,62 594,68 606,74 594,80 606,86 594,92 606,98 600,102"/><line class="edge" x1="600" y1="102" x2="600" y2="120"/>
+        <text class="s" x="614" y="78">board pull-up, if any</text><text class="s muted" x="614" y="92">1 MΩ on Adafruit's design</text>
+        <circle cx="600" cy="120" r="3" fill="currentColor"/><text class="s b m" x="588" y="124" text-anchor="end">SD</text>
+        <line class="edge dashed accent-stroke thick" x1="600" y1="120" x2="690" y2="120"/><circle class="box" cx="694" cy="120" r="4"/><text class="s b cap-ink" x="694" y="108" text-anchor="middle">GPIO5 · not yet</text>
+        <line class="edge" x1="600" y1="120" x2="600" y2="140"/><line class="edge" x1="570" y1="140" x2="630" y2="140"/>
+        <line class="edge" x1="570" y1="140" x2="570" y2="150"/><polyline class="edge" points="570,150 576,154 564,160 576,166 564,172 576,178 570,182"/><line class="edge" x1="570" y1="182" x2="570" y2="200"/>
+        <line class="edge" x1="630" y1="140" x2="630" y2="150"/><polyline class="edge" points="630,150 636,154 624,160 636,166 624,172 636,178 630,182"/><line class="edge" x1="630" y1="182" x2="630" y2="200"/>
+        <line class="edge" x1="570" y1="200" x2="630" y2="200"/><line class="edge" x1="600" y1="200" x2="600" y2="218"/>
+        <line class="edge" x1="585" y1="218" x2="615" y2="218"/><line class="edge" x1="590" y1="224" x2="610" y2="224"/><line class="edge" x1="595" y1="230" x2="605" y2="230"/>
+        <text class="s b" x="558" y="170" text-anchor="end">your 4.7 kΩ</text><text class="s muted" x="644" y="170">chip's 100 kΩ</text>
+        <text class="s" x="470" y="262">Expect about 0.02 V with a 1 MΩ pull-up.</text>
+        <text class="s b warn-ink" x="470" y="280">0.08 V or more: swap the 4.7 kΩ for 1 kΩ.</text>
+      </svg>
+    </div>
+    <figcaption><strong>The pull-down has to win on its own.</strong> <code>SD</code> is one pin that does two jobs. Below 0.08 V the amplifier is guaranteed off, and above 1.5 V it plays the left channel. This measurement proves the resistor alone keeps it off, which is the state it relies on while A1 resets and GPIO5 floats.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Plug USB in</strong> and let A1 boot. The OLED comes up as usual and the amplifier stays silent.</p></li>
+    <li><p><strong>Measure with the meter on DC volts,</strong> black probe on GND. Red on <code>VIN</code> should read close to 5 V. Red on <code>SD</code> must read below 0.08 V. Write both down.</p></li>
+    <li><p><strong>If <code>SD</code> reads 0.08 V or more,</strong> unplug USB, swap the 4.7 kΩ for the 1 kΩ, and measure again. If it is still 0.08 V or more, stop at the first diamond and photograph both sides of the board.</p></li>
+    <li><p><strong>Quick-press the button and ask</strong> "What is two plus two?" The reply should appear on the OLED as in Step 10. That shows the microphone and the shared clocks still work with the amplifier on their lines.</p></li>
+    <li><p><strong>Watch for a minute</strong> with no reset, then unplug USB.</p></li>
+  </ol>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-11a">
+    <label for="gate-11a">
+      <div class="name">PASS 11A · wired and silent</div>
+      <p><code>VIN</code> reads close to 5 V and is written down, <code>SD</code> reads below 0.08 V with GPIO5 disconnected, one question still gets its reply, and a minute passes without a reset.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">0:40</span>Flash the speaking image</h2>
+  <ol class="steps">
+    <li><p><strong>With USB unplugged,</strong> add the last jumper, from GPIO5 to row 2 of the <code>SD</code> strip. GPIO5 is on the edge opposite <code>5V</code>, the pin nearest the USB socket on that side. Then plug USB back in.</p></li>
+    <li><p><strong>Open a terminal and check the image.</strong> Continue only if the verifier prints <code>amplifier: ENABLED (Step 11, USB-powered)</code>.</p>
+<pre><code>cd ~/Desktop/Projects/DIY/pocket_ai_assistant
+. firmware/.work/esp-idf/export.sh
+python3 firmware/scripts/verify_source_build.py</code></pre>
+    <p>If it prints <code>disabled</code>, something else was built since 22 September. Rebuild the speaking image first; it takes about five minutes.</p>
+<pre><code>firmware/scripts/build.sh --assistant --amplifier</code></pre></li>
+    <li><p><strong>Flash with the monitor open, keeping your Wi-Fi.</strong> <code>--keep-wifi</code> skips the settings area, so A1 remembers your network. Type <code>FLASH /dev/ttyACM0</code> when it asks. If the port is different, <code>ls /dev/ttyACM*</code> lists it.</p>
+<pre><code>firmware/scripts/flash.sh /dev/ttyACM0 --keep-wifi --monitor</code></pre></li>
+    <li><p><strong>Find this line in the log.</strong> It proves the amplifier is enabled and the cap is 15.</p>
+<pre><code>Prototype volume cap: 15; amplifier: qualified opt-in</code></pre></li>
+  </ol>
+
+  <h2><span class="when">0:45</span>Wi-Fi again</h2>
+  <p><strong>Flashed with <code>--keep-wifi</code>? Skip this section:</strong> the log shows <code>Connected to WiFi</code> with your network within seconds, and you are at diamond C. On 24 September A1 rejoined its saved network this way. The rest of this section is for a plain flash, which writes a blank settings area, so A1 has forgotten your network. This is Step 10 again, and the 8.5 dBm cap that made the hotspot visible is still in the image. Do it somewhere private, because the setup hotspot is open.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 770 250" style="min-width: 640px; width: 100%;" role="img" aria-label="Where each step shows up. In the terminal: the verifier says ENABLED, then flash with the monitor and type FLASH and the port, then the log line with cap 15 and the qualified opt-in. On the OLED: the hotspot name Xiaozhi-XXXX and the address 192.168.4.1. On the phone: join the hotspot, then choose the network and type its password. Back on the OLED: an activation code, only if one is shown.">
+        <defs><marker id="m8" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+        <text class="s b muted" x="16" y="64">Terminal</text><text class="s b muted" x="16" y="139">OLED</text><text class="s b muted" x="16" y="214">Phone</text>
+        <line class="edge dashed" x1="16" y1="98" x2="760" y2="98" stroke-opacity="0.3"/><line class="edge dashed" x1="16" y1="172" x2="760" y2="172" stroke-opacity="0.3"/>
+        <rect class="box" x="90" y="38" width="110" height="44" rx="5"/><text class="s b" x="145" y="56" text-anchor="middle">verify</text><text class="s" x="145" y="72" text-anchor="middle">says ENABLED</text>
+        <rect class="box" x="230" y="38" width="110" height="44" rx="5"/><text class="s b" x="285" y="56" text-anchor="middle">flash + monitor</text><text class="s" x="285" y="72" text-anchor="middle">type FLASH …</text>
+        <rect class="cap" x="370" y="38" width="110" height="44" rx="5"/><text class="s b cap-ink" x="425" y="56" text-anchor="middle">log line</text><text class="s" x="425" y="72" text-anchor="middle">cap 15 · opt-in</text>
+        <rect class="box" x="510" y="113" width="110" height="44" rx="5"/><text class="s b m" x="565" y="131" text-anchor="middle">Xiaozhi-XXXX</text><text class="s m" x="565" y="147" text-anchor="middle">192.168.4.1</text>
+        <rect class="box" x="510" y="188" width="110" height="44" rx="5"/><text class="s b" x="565" y="206" text-anchor="middle">join the hotspot</text><text class="s" x="565" y="222" text-anchor="middle">network, password</text>
+        <rect class="soft" x="650" y="113" width="110" height="44" rx="5"/><text class="s b" x="705" y="131" text-anchor="middle">activation code?</text><text class="s" x="705" y="147" text-anchor="middle">only if shown</text>
+        <line class="edge" x1="200" y1="60" x2="228" y2="60" marker-end="url(#m8)"/>
+        <line class="edge" x1="340" y1="60" x2="368" y2="60" marker-end="url(#m8)"/>
+        <line class="edge" x1="480" y1="72" x2="508" y2="120" marker-end="url(#m8)"/>
+        <line class="edge" x1="565" y1="157" x2="565" y2="186" marker-end="url(#m8)"/>
+        <line class="edge" x1="620" y1="200" x2="660" y2="159" marker-end="url(#m8)"/>
+      </svg>
+    </div>
+    <figcaption><strong>Three screens take turns.</strong> The terminal confirms the image, the OLED shows the hotspot and the address, and the phone hands over your network. An activation code appears only if the service does not recognise the board; enter it only on the service's own site.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Watch the OLED</strong> for the hotspot name and <code>http://192.168.4.1</code>. The log shows the <code>(provisioning AP)</code> power-cap line.</p></li>
+    <li><p><strong>On the phone,</strong> join the open hotspot. Let the page open, or browse to the address. Choose your network, type its password, and submit. The phone drops off the hotspot when A1 reports success.</p></li>
+    <li><p><strong>If a code appears,</strong> enter it only on the service's own activation page.</p></li>
+    <li><p><strong>When A1 shows standby,</strong> leave the monitor with <kbd>Ctrl</kbd>+<kbd>]</kbd>.</p></li>
+  </ol>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-ready">
+    <label for="gate-ready">
+      <div class="name">Ready, no speaker yet</div>
+      <p>The log line shows cap 15 and the amplifier opt-in, A1 is back on your network, and the speaker terminals are still empty.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">0:52</span>Speaker on</h2>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 780 470" style="min-width: 660px; width: 100%;" role="img" aria-label="Top: AMP-A1 seen from above. Its seven header pins, already wired, run down one edge. The green two-screw terminal block is on the opposite edge, marked plus and minus, with its wire openings facing outward. One speaker lead goes into each opening and runs to SPK-A1, the 8 ohm 0.8 watt speaker, lying face up. Either lead can go in either terminal. Bottom: three side views of one terminal. One, loosen the screw about two turns counter-clockwise so the clamp opens. Two, slide the bare tip of the lead all the way in under the clamp, insulation stopping at the opening. Three, tighten clockwise until snug, then give the lead a gentle tug; it should not move. Along the bottom: never a lead to GND, never let the two bare ends touch, and USB stays unplugged while you do this.">
+        <defs><marker id="m9" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+        <text class="t b" x="20" y="22">Seen from above · USB unplugged</text>
+        <!-- amplifier board -->
+        <rect class="box" x="40" y="40" width="200" height="180" rx="6"/>
+        <circle class="soft" cx="58" cy="60" r="5"/><text class="s m muted" x="70" y="64">LRC</text>
+        <circle class="soft" cx="58" cy="83" r="5"/><text class="s m muted" x="70" y="87">BCLK</text>
+        <circle class="soft" cx="58" cy="106" r="5"/><text class="s m muted" x="70" y="110">DIN</text>
+        <circle class="soft" cx="58" cy="129" r="5"/><text class="s m muted" x="70" y="133">GAIN</text>
+        <circle class="soft" cx="58" cy="152" r="5"/><text class="s m muted" x="70" y="156">SD</text>
+        <circle class="soft" cx="58" cy="175" r="5"/><text class="s m muted" x="70" y="179">GND</text>
+        <circle class="soft" cx="58" cy="198" r="5"/><text class="s m muted" x="70" y="202">VIN</text>
+        <text class="s muted" x="140" y="236" text-anchor="middle">header edge: already wired, leave it</text>
+        <text class="t b" x="150" y="126" text-anchor="middle">AMP-A1</text>
+        <!-- terminal block on the opposite edge -->
+        <rect class="pass-fill" x="226" y="84" width="52" height="92" rx="3"/>
+        <circle class="box" cx="250" cy="107" r="12"/><line class="edge thick" x1="242" y1="107" x2="258" y2="107"/>
+        <circle class="box" cx="250" cy="153" r="12"/><line class="edge thick" x1="242" y1="153" x2="258" y2="153"/>
+        <text class="t b" x="214" y="111" text-anchor="end">+</text><text class="t b" x="214" y="157" text-anchor="end">−</text>
+        <rect x="274" y="100" width="8" height="14" rx="1" fill="currentColor"/><rect x="274" y="146" width="8" height="14" rx="1" fill="currentColor"/>
+        <text class="s b pass-ink" x="252" y="194" text-anchor="middle">terminal block</text>
+        <text class="s pass-ink" x="252" y="208" text-anchor="middle">openings face out</text>
+        <!-- leads -->
+        <path class="edge thick" d="M282,107 C360,107 380,112 470,112"/>
+        <path class="edge thick" d="M282,153 C360,153 380,146 470,146"/>
+        <text class="s b" x="376" y="94" text-anchor="middle">one lead in each opening</text>
+        <text class="s" x="376" y="176" text-anchor="middle">either way round</text>
+        <!-- speaker -->
+        <rect class="box" x="470" y="80" width="150" height="98" rx="8"/>
+        <rect class="soft" x="462" y="118" width="8" height="22" rx="1"/><rect class="soft" x="620" y="118" width="8" height="22" rx="1"/>
+        <circle class="soft" cx="545" cy="129" r="30"/><circle class="edge" cx="545" cy="129" r="18" stroke-opacity="0.4"/>
+        <text class="s muted" x="545" y="133" text-anchor="middle">mesh</text>
+        <text class="t b" x="545" y="198" text-anchor="middle">SPK-A1</text>
+        <text class="s muted" x="545" y="214" text-anchor="middle">8 Ω · 0.8 W · lying face up</text>
+        <!-- divider -->
+        <line class="edge dashed" x1="20" y1="252" x2="760" y2="252" stroke-opacity="0.35"/>
+        <text class="t b" x="20" y="276">One terminal, from the side</text>
+        <!-- panel 1: loosen -->
+        <text class="t b" x="130" y="300" text-anchor="middle">1 · Loosen</text>
+        <rect class="pass-fill" x="70" y="330" width="120" height="66" rx="3"/>
+        <rect class="box" x="118" y="312" width="24" height="10" rx="2"/><line class="edge" x1="130" y1="322" x2="130" y2="342"/>
+        <rect class="soft" x="104" y="342" width="52" height="7"/>
+        <rect class="soft" x="104" y="372" width="52" height="6"/>
+        <text class="b cap-ink" x="150" y="324" style="font-size:20px">↺</text>
+        <text class="s" x="130" y="420" text-anchor="middle">screw counter-clockwise,</text>
+        <text class="s" x="130" y="434" text-anchor="middle">about two turns: the clamp opens</text>
+        <!-- panel 2: insert -->
+        <text class="t b" x="390" y="300" text-anchor="middle">2 · Insert</text>
+        <rect class="pass-fill" x="330" y="330" width="120" height="66" rx="3"/>
+        <rect class="box" x="378" y="312" width="24" height="10" rx="2"/><line class="edge" x1="390" y1="322" x2="390" y2="342"/>
+        <rect class="soft" x="364" y="342" width="52" height="7"/>
+        <rect class="soft" x="364" y="372" width="52" height="6"/>
+        <line class="edge" x1="366" y1="362" x2="450" y2="362" style="stroke: var(--pass); stroke-width: 2.5"/>
+        <line class="edge" x1="450" y1="362" x2="520" y2="362" style="stroke-width: 6"/>
+        <path class="edge" d="M500,348 L470,348" marker-end="url(#m9)"/>
+        <text class="s pass-ink b" x="400" y="412" text-anchor="middle">bare tip all the way in</text>
+        <text class="s" x="390" y="428" text-anchor="middle">under the clamp, insulation</text>
+        <text class="s" x="390" y="442" text-anchor="middle">stopping at the opening</text>
+        <!-- panel 3: tighten -->
+        <text class="t b" x="650" y="300" text-anchor="middle">3 · Tighten, then tug</text>
+        <rect class="pass-fill" x="590" y="330" width="120" height="66" rx="3"/>
+        <rect class="box" x="638" y="320" width="24" height="10" rx="2"/><line class="edge" x1="650" y1="330" x2="650" y2="352"/>
+        <rect class="soft" x="624" y="352" width="52" height="7"/>
+        <rect class="soft" x="624" y="372" width="52" height="6"/>
+        <line class="edge" x1="626" y1="366" x2="710" y2="366" style="stroke: var(--pass); stroke-width: 2.5"/>
+        <line class="edge" x1="710" y1="366" x2="765" y2="366" style="stroke-width: 6"/>
+        <text class="b cap-ink" x="670" y="332" style="font-size:20px">↻</text>
+        <path class="edge" d="M728,382 L758,382" marker-end="url(#m9)"/>
+        <text class="s" x="650" y="420" text-anchor="middle">clockwise until snug, not cranked:</text>
+        <text class="s" x="650" y="434" text-anchor="middle">32 AWG is thin. A gentle tug and</text>
+        <text class="s" x="650" y="448" text-anchor="middle">the lead stays put</text>
+        <!-- rules -->
+        <text class="s b warn-ink" x="20" y="466">✗ no lead to GND   ✗ bare ends never touch each other   ✓ USB unplugged while you do this</text>
+      </svg>
+    </div>
+    <figcaption><strong>The speaker sits between the two outputs, never between an output and ground.</strong> The terminal block is on the edge opposite the header; read the <code>+</code> and <code>−</code> marks on your board. Both terminals swing up and down against each other, so neither is a ground. With one speaker, which lead goes where does not matter.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Unplug USB.</strong></p></li>
+    <li><p><strong>Loosen both screws,</strong> slide one speaker lead into each terminal, and tighten until a gentle tug does not pull it out. Don't cut, strip or re-terminate the leads.</p></li>
+    <li><p><strong>Lay the speaker face-up</strong> on the desk, with its leads clear of each other and of every other wire.</p></li>
+  </ol>
+
+  <h2><span class="when">0:55</span>Ask it something</h2>
+  <ol class="steps">
+    <li><p><strong>Plug USB in.</strong> When A1 reconnects you may hear a short chime. That is the first sound, and it will be quiet.</p></li>
+    <li><p><strong>Put your ear close,</strong> quick-press the button, and ask a question. The reply should come out of the speaker as well as onto the OLED.</p></li>
+    <li><p><strong>Ask four more.</strong> Five replies in a row without a reset make PASS 11C.</p></li>
+  </ol>
+
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>You notice</th><th>Do this</th></tr>
+    <tr><td>A harsh buzz, a smell, or a warm speaker, amplifier or capacitor</td><td>Unplug USB at once. Check the 220 µF stripe and look for a speaker lead touching anything.</td></tr>
+    <tr><td>A1 resets during a reply</td><td>Suspect the computer's USB port first. Try another port, or a wall adapter rated 1 A or more, with the OLED as your readout.</td></tr>
+    <tr><td>The reply shows on the OLED but no sound</td><td>During a reply, measure <code>SD</code> to GND. About 3.3 V means the amplifier is enabled, so check the <code>DIN</code>, <code>BCLK</code> and <code>LRC</code> jumpers and both terminal screws. Below 0.08 V means the old image is still on A1, so check for the opt-in log line.</td></tr>
+    <tr><td>Sound, but very quiet</td><td>That is expected at cap 15. See below.</td></tr>
+  </table>
+  </div>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-11c">
+    <label for="gate-11c">
+      <div class="name">PASS 11C · the device speaks</div>
+      <p>Five replies in a row are audible from the speaker at cap 15, with no reset and no warmth or smell. PASS 11B was skipped by your decision of 22 September.</p>
+    </label>
+  </div>
+
+  <div class="callout"><span class="label" style="color: var(--accent-ink);">Too quiet?</span><p>At cap 15 the speaker gets about 2 % of full amplitude, so quiet is expected. Cap 30 is the natural next step. By the same datasheet arithmetic it stays under 1 V at any gain setting, still 2.6 times below the speaker's limit. It is one line in <code>firmware/sdkconfig.defaults</code> and a rebuild. Leave that for the next session and finish this one at 15.</p></div>
+
+  <h2><span class="when">after</span>Write it down</h2>
+<pre><code>test ID:          STEP11-01
+date:             ______
+parts:            A1 · AMP-A1 · SPK-A1
+SD pull-down:     4.7 kΩ / 1 kΩ   (circle one)
+VIN to GND:       ______ V
+SD to GND:        ______ V   (GPIO5 disconnected)
+PASS 11A:         yes / no
+image:            SHA-256 c98ee78f…, amplifier ENABLED, cap 15
+log line seen:    yes / no
+PASS 11B:         SKIPPED — builder decision, 2026-09-22
+PASS 11C:         ___ of 5 replies heard, resets: ___
+photos:           joints, wiring from above, speaker on</code></pre>
+
+  <div class="evidence">
+    <p><strong>Source and authority.</strong> Built from Step 11 of <code>plan/FAST_TRACK.md</code> and the MAX98357A datasheet as of 2026-09-22. The gain table uses a 2.1 dBV reference with a 15 dB ± 0.6 dB maximum. The <code>SD_MODE</code> trip points are 0.08, 0.16 and 0.355 V, with a 100 kΩ internal pull-down. If this page and the repository differ, the repository wins.</p>
+    <p><strong>What is and is not verified.</strong> The speaking image was built and verified in software on 22 September, and nothing on this page has run on hardware yet. The pin order drawn is the common one for this board, so read your silkscreen. The 1 MΩ pull-up is Adafruit's published design, not a measurement of your board, and the checkboxes are remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    ["gate-11a", "gate-ready", "gate-11c"].forEach(function (id) {
+      var box = document.getElementById(id);
+      if (!box) return;
+      var key = "pocket-first-sound-" + id;
+      try { box.checked = window.localStorage.getItem(key) === "1"; } catch (e) {}
+      box.addEventListener("change", function () {
+        try { window.localStorage.setItem(key, box.checked ? "1" : "0"); } catch (e) {}
+      });
+    });
+  })();
+</script>
+

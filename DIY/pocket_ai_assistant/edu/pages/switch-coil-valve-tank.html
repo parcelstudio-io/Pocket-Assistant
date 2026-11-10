@@ -1,0 +1,401 @@
+<title>Switch, Coil, Valve, Tank</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EEF1F4; --paper:#FFFFFF; --ink:#14202B; --ink-2:#4A5A68; --line:#CBD3DB;
+  --brass:#B8622A; --brass-soft:#F4E3D6; --signal:#2A6FB8; --signal-soft:#DCE8F6;
+  --ok:#2E7D4F; --ok-soft:#DDF0E4; --warn:#A63D2F; --warn-soft:#F8E0DB;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Chivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+    --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+    --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+  --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+  --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900}
+h2{font-size:clamp(22px,3.5vw,28px);font-weight:700;margin-top:48px;padding-top:16px;border-top:3px solid var(--brass)}
+h3{font-size:19px;font-weight:700;margin-top:28px}
+p{margin:12px 0;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:24px}
+li{margin:6px 0}
+a{color:var(--signal)}
+code{font-family:var(--mono);font-size:.9em;background:var(--signal-soft);padding:1px 5px;border-radius:3px}
+strong{font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.masthead{padding-bottom:20px;border-bottom:3px solid var(--ink)}
+.masthead .meta{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:8px}
+.goal{background:var(--paper);border-left:4px solid var(--brass);padding:14px 18px;margin:24px 0}
+.goal p{margin:6px 0}
+.box{padding:14px 18px;margin:20px 0;border-radius:4px;max-width:none}
+.box p{max-width:none}
+.box p:first-of-type{margin-top:0}.box p:last-child{margin-bottom:0}
+.box .lbl{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.device{background:var(--brass-soft);border:1px solid var(--brass)}
+.device .lbl{color:var(--brass)}
+.analogy{background:var(--signal-soft);border:1px solid var(--signal)}
+.analogy .lbl{color:var(--signal)}
+.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.warn .lbl{color:var(--warn)}
+figure{margin:24px 0;background:var(--paper);border:1px solid var(--line);padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:68ch}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:16px 0}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:14px;background:var(--paper)}
+td.m{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+.eq{font-family:var(--mono);font-size:18px;background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:14px 0;display:inline-block}
+details{background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:10px 0;border-radius:4px}
+summary{cursor:pointer;font-weight:700}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border:2px solid var(--brass);border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+<div class="masthead">
+  <div class="eyebrow">Fundamentals &middot; companion to lesson 03</div>
+  <h1>Switch, Coil, Valve, Tank</h1>
+  <div class="meta">How a MOSFET, an inductor, a diode and a capacitor combine into a buck or boost converter &mdash; and why that beats a resistor every time.</div>
+</div>
+
+<div class="goal">
+  <p><strong>The question this answers</strong></p>
+  <p>You have 3.7 V from a battery and the amplifier wants 5 V. Or you have 5 V from USB and the chip wants 3.3 V. Neither is a job a resistor can do well. So what actually moves voltage from one value to another &mdash; and how do four ordinary components conspire to do it at 90% efficiency?</p>
+</div>
+
+<h2>1. The bad way, so the good way makes sense</h2>
+
+<p>The obvious way to get 3.3 V from 5 V is to throw away the difference. That is a <strong>linear regulator</strong>: a valve that sits partly closed and burns off the excess pressure as heat.</p>
+
+<p>It works, it is cheap, and it is quiet. But the arithmetic is brutal. Pass 1 A through it and it drops 1.7 V, so it dissipates 1.7 V &times; 1 A = <strong>1.7 W as heat</strong> to deliver 3.3 W. That is 66% efficiency, and it does not improve &mdash; it is set by the voltage ratio alone.</p>
+
+<div class="box analogy"><span class="lbl">Why it cannot be fixed</span><p>A linear regulator is like slowing a car by dragging your feet. The energy has to go somewhere, and in a linear regulator it always goes into heat. There is no clever version. The only escape is to stop throttling and start <em>switching</em>.</p></div>
+
+<h2>2. The four parts</h2>
+
+<p>A switching converter contains almost nothing. Four components, one job each.</p>
+
+<figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="The four schematic symbols side by side: a MOSFET drawn as a switch, a diode drawn as a triangle against a bar, a capacitor drawn as two parallel plates, and an inductor drawn as a coil. Each is labelled with its job: the switch, the one-way valve, the tank and the heavy pipe." xmlns="http://www.w3.org/2000/svg">
+  <!-- MOSFET as switch -->
+  <line x1="30" y1="60" x2="70" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="74" cy="60" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="77" y1="57" x2="105" y2="40" style="stroke:var(--brass)" stroke-width="2.5" fill="none"/>
+  <circle cx="108" cy="60" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="112" y1="60" x2="152" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="91" y1="80" x2="91" y2="98" style="stroke:var(--signal)" stroke-width="2" fill="none"/>
+  <text x="91" y="112" font-size="10" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">gate</text>
+  <text x="91" y="140" font-size="14" font-weight="700" fill="currentColor" text-anchor="middle">MOSFET</text>
+  <text x="91" y="160" font-size="12" style="fill:var(--brass)" text-anchor="middle" font-weight="700">the switch</text>
+  <text x="91" y="180" font-size="11.5" fill="currentColor" text-anchor="middle">opens and shuts</text>
+  <text x="91" y="195" font-size="11.5" fill="currentColor" text-anchor="middle">500 000&times; a second</text>
+  <!-- Diode -->
+  <line x1="190" y1="60" x2="228" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <path d="M228,44 L228,76 L258,60 z" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="2"/>
+  <line x1="258" y1="44" x2="258" y2="76" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+  <line x1="258" y1="60" x2="296" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="243" y="140" font-size="14" font-weight="700" fill="currentColor" text-anchor="middle">DIODE</text>
+  <text x="243" y="160" font-size="12" style="fill:var(--brass)" text-anchor="middle" font-weight="700">the one-way valve</text>
+  <text x="243" y="180" font-size="11.5" fill="currentColor" text-anchor="middle">flow this way only,</text>
+  <text x="243" y="195" font-size="11.5" fill="currentColor" text-anchor="middle">never back</text>
+  <!-- Capacitor -->
+  <line x1="340" y1="60" x2="386" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="386" y1="36" x2="386" y2="84" stroke="currentColor" stroke-width="3" fill="none"/>
+  <line x1="400" y1="36" x2="400" y2="84" stroke="currentColor" stroke-width="3" fill="none"/>
+  <line x1="400" y1="60" x2="446" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="393" y="140" font-size="14" font-weight="700" fill="currentColor" text-anchor="middle">CAPACITOR</text>
+  <text x="393" y="160" font-size="12" style="fill:var(--brass)" text-anchor="middle" font-weight="700">the tank</text>
+  <text x="393" y="180" font-size="11.5" fill="currentColor" text-anchor="middle">holds pressure steady</text>
+  <text x="393" y="195" font-size="11.5" fill="currentColor" text-anchor="middle">between pulses</text>
+  <!-- Inductor -->
+  <line x1="490" y1="60" x2="512" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <path d="M512,60 a11,11 0 0 1 22,0 a11,11 0 0 1 22,0 a11,11 0 0 1 22,0 a11,11 0 0 1 22,0" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <line x1="600" y1="60" x2="618" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="556" y="140" font-size="14" font-weight="700" fill="currentColor" text-anchor="middle">INDUCTOR</text>
+  <text x="556" y="160" font-size="12" style="fill:var(--brass)" text-anchor="middle" font-weight="700">the heavy pipe</text>
+  <text x="556" y="180" font-size="11.5" fill="currentColor" text-anchor="middle">current in it has</text>
+  <text x="556" y="195" font-size="11.5" fill="currentColor" text-anchor="middle">momentum</text>
+</svg>
+<figcaption>Learn these four shapes and you can read almost any power schematic. The MOSFET is drawn here as the switch it behaves like; its real symbol has more detail, but nothing you need today.</figcaption>
+</figure>
+
+<div class="box analogy"><span class="lbl">The analogy, in one place</span>
+<p>Think of a plumbing loop. <strong>Voltage is pressure</strong> and <strong>current is flow</strong>.</p>
+<p><strong>The MOSFET is a tap</strong> you can slam fully open or fully shut, thousands of times a second. <strong>The inductor is a long, heavy pipe full of moving water</strong> &mdash; water has mass, so once it is moving it does not want to stop. <strong>The diode is a check valve</strong>, letting flow pass one way and blocking it the other. <strong>The capacitor is a pressure tank</strong> that smooths pulses into a steady supply.</p>
+</div>
+
+<h2>3. The one idea that makes it work</h2>
+
+<p>Everything below depends on a single property of the inductor, so it is worth stating on its own:</p>
+
+<p style="font-size:20px"><strong>Current through an inductor cannot change instantly.</strong></p>
+
+<p>Voltage across it can jump anywhere it likes. The current cannot. It ramps. That is exactly the water in the heavy pipe: you can slam the tap shut in a millisecond, but the water already moving in the pipe keeps moving, because it has momentum.</p>
+
+<figure>
+<svg viewBox="0 0 640 260" role="img" aria-label="Two stacked waveforms. The top shows the switch state as a square wave jumping instantly between ON and OFF. The bottom shows the inductor current as a triangular wave that ramps upward while the switch is on and ramps downward while it is off, never jumping." xmlns="http://www.w3.org/2000/svg">
+  <g text-anchor="end" fill="currentColor">
+    <text x="94" y="52" font-size="12" font-weight="700">switch</text>
+    <text x="94" y="68" font-size="10.5" opacity="0.8">the MOSFET</text>
+    <text x="94" y="166" font-size="12" font-weight="700">current</text>
+    <text x="94" y="182" font-size="10.5" opacity="0.8">in the coil</text>
+  </g>
+  <!-- switch square wave -->
+  <path d="M110,80 L110,36 L200,36 L200,80 L260,80 L260,36 L350,36 L350,80 L410,80 L410,36 L500,36 L500,80 L560,80 L560,36 L610,36"
+        fill="none" style="stroke:var(--signal)" stroke-width="2.5"/>
+  <text x="155" y="28" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-weight="700">ON</text>
+  <text x="230" y="96" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">OFF</text>
+  <!-- current triangle wave -->
+  <path d="M110,200 L200,144 L260,176 L350,120 L410,152 L500,116 L560,150 L610,118"
+        fill="none" style="stroke:var(--brass)" stroke-width="3"/>
+  <!-- guides -->
+  <line x1="200" y1="36" x2="200" y2="200" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity="0.35" fill="none"/>
+  <line x1="260" y1="36" x2="260" y2="200" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity="0.35" fill="none"/>
+  <text x="155" y="224" font-size="11" style="fill:var(--brass)" text-anchor="middle">ramps up</text>
+  <text x="230" y="224" font-size="11" style="fill:var(--brass)" text-anchor="middle">ramps down</text>
+  <text x="360" y="246" font-size="12" fill="currentColor" text-anchor="middle">the switch jumps. the current never does.</text>
+</svg>
+<figcaption>Top: the MOSFET, on or off, nothing in between. Bottom: the current in the coil, sloping up while energy goes in and down while it comes out. That sawtooth is the heartbeat of every switching converter on your desk.</figcaption>
+</figure>
+
+<h2>4. Buck: stepping down by chopping time</h2>
+
+<p>To get a lower voltage, do not throttle the flow &mdash; open the tap fully, but only <em>some of the time</em>. The inductor and capacitor average the pulses back into a smooth, lower voltage.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="A buck converter drawn twice. On the left the switch is closed: current flows from the input through the switch, through the inductor, into the capacitor and load, and the inductor current ramps up while the diode is blocked. On the right the switch is open: the inductor current keeps flowing and is pulled up from ground through the diode, around through the inductor to the load, ramping down." xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ba" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--brass)"/></marker>
+  </defs>
+  <g>
+    <text x="150" y="24" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">Switch CLOSED &mdash; energy in</text>
+    <!-- vin -->
+    <text x="28" y="122" font-size="11" fill="currentColor" text-anchor="middle" font-family="monospace">Vin</text>
+    <line x1="42" y1="110" x2="42" y2="130" stroke="currentColor" stroke-width="3"/>
+    <line x1="36" y1="136" x2="48" y2="136" stroke="currentColor" stroke-width="2"/>
+    <line x1="42" y1="70" x2="42" y2="110" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="42" y1="136" x2="42" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <!-- switch closed -->
+    <line x1="42" y1="70" x2="84" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <circle cx="88" cy="70" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="88" y1="70" x2="116" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <circle cx="120" cy="70" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="104" y="52" font-size="10.5" style="fill:var(--brass)" text-anchor="middle" font-weight="700">closed</text>
+    <!-- inductor -->
+    <path d="M124,70 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0" fill="none" style="stroke:var(--brass)" stroke-width="3"/>
+    <line x1="184" y1="70" x2="222" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="154" y="44" font-size="10.5" fill="currentColor" text-anchor="middle">L</text>
+    <!-- diode branch (idle) -->
+    <line x1="124" y1="70" x2="124" y2="152" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <path d="M112,182 L136,182 L124,152 z" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.4"/>
+    <line x1="112" y1="152" x2="136" y2="152" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+    <line x1="124" y1="182" x2="124" y2="244" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <text x="150" y="172" font-size="10" fill="currentColor" opacity="0.55">blocked</text>
+    <!-- cap + load -->
+    <line x1="222" y1="70" x2="222" y2="148" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="210" y1="148" x2="234" y2="148" stroke="currentColor" stroke-width="3"/>
+    <line x1="210" y1="158" x2="234" y2="158" stroke="currentColor" stroke-width="3"/>
+    <line x1="222" y1="158" x2="222" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="222" y1="70" x2="272" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <rect x="262" y="118" width="20" height="46" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="272" y1="70" x2="272" y2="118" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="272" y1="164" x2="272" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="292" y="146" font-size="10.5" fill="currentColor">load</text>
+    <line x1="42" y1="244" x2="272" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="140" y1="256" x2="174" y2="256" stroke="currentColor" stroke-width="2"/>
+    <text x="157" y="274" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">GND</text>
+    <line x1="150" y1="70" x2="176" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none" marker-end="url(#ba)"/>
+    <text x="157" y="292" font-size="11" style="fill:var(--brass)" text-anchor="middle" font-weight="700">coil current ramps UP</text>
+  </g>
+  <line x1="320" y1="16" x2="320" y2="290" stroke="currentColor" stroke-width="1" stroke-dasharray="3 5" opacity="0.45" fill="none"/>
+  <g transform="translate(330,0)">
+    <text x="150" y="24" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">Switch OPEN &mdash; coasting</text>
+    <text x="28" y="122" font-size="11" fill="currentColor" text-anchor="middle" font-family="monospace" opacity="0.5">Vin</text>
+    <line x1="42" y1="110" x2="42" y2="130" stroke="currentColor" stroke-width="3" opacity="0.4"/>
+    <line x1="36" y1="136" x2="48" y2="136" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+    <line x1="42" y1="70" x2="42" y2="110" stroke="currentColor" stroke-width="2" opacity="0.4" fill="none"/>
+    <line x1="42" y1="136" x2="42" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="42" y1="70" x2="84" y2="70" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <circle cx="88" cy="70" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="91" y1="67" x2="117" y2="50" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="120" cy="70" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="104" y="40" font-size="10.5" fill="currentColor" text-anchor="middle">open</text>
+    <path d="M124,70 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0" fill="none" style="stroke:var(--brass)" stroke-width="3"/>
+    <line x1="184" y1="70" x2="222" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="154" y="44" font-size="10.5" fill="currentColor" text-anchor="middle">L</text>
+    <!-- diode conducting -->
+    <line x1="124" y1="70" x2="124" y2="152" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <path d="M112,182 L136,182 L124,152 z" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="2"/>
+    <line x1="112" y1="152" x2="136" y2="152" style="stroke:var(--brass)" stroke-width="3"/>
+    <line x1="124" y1="182" x2="124" y2="244" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="146" y="172" font-size="10" style="fill:var(--brass)" font-weight="700">catches</text>
+    <line x1="222" y1="70" x2="222" y2="148" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="210" y1="148" x2="234" y2="148" stroke="currentColor" stroke-width="3"/>
+    <line x1="210" y1="158" x2="234" y2="158" stroke="currentColor" stroke-width="3"/>
+    <line x1="222" y1="158" x2="222" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="222" y1="70" x2="272" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <rect x="262" y="118" width="20" height="46" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="272" y1="70" x2="272" y2="118" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="272" y1="164" x2="272" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="292" y="146" font-size="10.5" fill="currentColor">load</text>
+    <line x1="42" y1="244" x2="272" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="140" y1="256" x2="174" y2="256" stroke="currentColor" stroke-width="2"/>
+    <text x="157" y="274" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">GND</text>
+    <line x1="150" y1="70" x2="176" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none" marker-end="url(#ba)"/>
+    <text x="157" y="292" font-size="11" style="fill:var(--brass)" text-anchor="middle" font-weight="700">coil current ramps DOWN</text>
+  </g>
+</svg>
+<figcaption>Left: the tap is open, water accelerates down the heavy pipe, and the check valve is held shut. Right: the tap slams shut &mdash; but the water is still moving, so it drags the check valve open and keeps circulating into the tank. The diode's whole job is to give that momentum somewhere to go.</figcaption>
+</figure>
+
+<p>The output is just the input multiplied by the fraction of time the switch is closed. That fraction is called the <strong>duty cycle</strong>, <code>D</code>.</p>
+
+<div class="eq">V_out = D &times; V_in&nbsp;&nbsp;&nbsp;&nbsp; 5 V &times; 0.66 = 3.3 V</div>
+
+<div class="box warn"><span class="lbl">Leave the diode out and here is what happens</span><p>The moving current has nowhere to go. It forces the voltage at that node to climb &mdash; hundreds of volts within microseconds &mdash; until something breaks down and conducts. This is why an inductive load without a catch diode destroys the transistor driving it, and it is the same physics as the bang you hear from old plumbing when a valve shuts too fast: <strong>water hammer</strong>.</p></div>
+
+<h2>5. Boost: stepping up by harnessing the hammer</h2>
+
+<p>Now do something that looks impossible: get <em>more</em> voltage out than you put in. Same four parts, rearranged.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="A boost converter drawn twice. On the left the switch is closed and shorts the inductor to ground: current builds in the inductor, the diode is blocked, and the capacitor alone supplies the load. On the right the switch opens: the inductor's momentum drives its node above the output voltage, the diode conducts, and current is pushed into the capacitor and load at a higher voltage than the input." xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <text x="150" y="24" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">Switch CLOSED &mdash; winding up</text>
+    <text x="28" y="122" font-size="11" fill="currentColor" text-anchor="middle" font-family="monospace">Vin</text>
+    <line x1="42" y1="110" x2="42" y2="130" stroke="currentColor" stroke-width="3"/>
+    <line x1="36" y1="136" x2="48" y2="136" stroke="currentColor" stroke-width="2"/>
+    <line x1="42" y1="70" x2="42" y2="110" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="42" y1="136" x2="42" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M42,70 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0" fill="none" style="stroke:var(--brass)" stroke-width="3"/>
+    <line x1="102" y1="70" x2="140" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="72" y="44" font-size="10.5" fill="currentColor" text-anchor="middle">L</text>
+    <!-- switch to ground, closed -->
+    <line x1="140" y1="70" x2="140" y2="128" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <circle cx="140" cy="132" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="140" y1="132" x2="140" y2="164" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <circle cx="140" cy="168" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="140" y1="168" x2="140" y2="244" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="162" y="154" font-size="10.5" style="fill:var(--brass)" font-weight="700">closed</text>
+    <!-- diode blocked -->
+    <line x1="140" y1="70" x2="182" y2="70" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <path d="M182,56 L182,84 L210,70 z" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.4"/>
+    <line x1="210" y1="56" x2="210" y2="84" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+    <line x1="210" y1="70" x2="232" y2="70" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <text x="196" y="44" font-size="10" fill="currentColor" opacity="0.55" text-anchor="middle">blocked</text>
+    <!-- cap + load -->
+    <line x1="232" y1="70" x2="232" y2="148" style="stroke:var(--signal)" stroke-width="2.5" fill="none"/>
+    <line x1="220" y1="148" x2="244" y2="148" stroke="currentColor" stroke-width="3"/>
+    <line x1="220" y1="158" x2="244" y2="158" stroke="currentColor" stroke-width="3"/>
+    <line x1="232" y1="158" x2="232" y2="244" style="stroke:var(--signal)" stroke-width="2.5" fill="none"/>
+    <line x1="232" y1="70" x2="276" y2="70" style="stroke:var(--signal)" stroke-width="2.5" fill="none"/>
+    <rect x="266" y="118" width="20" height="46" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="276" y1="70" x2="276" y2="118" style="stroke:var(--signal)" stroke-width="2.5" fill="none"/>
+    <line x1="276" y1="164" x2="276" y2="244" style="stroke:var(--signal)" stroke-width="2.5" fill="none"/>
+    <text x="296" y="146" font-size="10.5" fill="currentColor">load</text>
+    <text x="232" y="196" font-size="10" style="fill:var(--signal)" text-anchor="middle" font-weight="700">tank feeds</text>
+    <text x="232" y="209" font-size="10" style="fill:var(--signal)" text-anchor="middle" font-weight="700">the load alone</text>
+    <line x1="42" y1="244" x2="276" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="157" y="292" font-size="11" style="fill:var(--brass)" text-anchor="middle" font-weight="700">momentum builds in L</text>
+  </g>
+  <line x1="320" y1="16" x2="320" y2="290" stroke="currentColor" stroke-width="1" stroke-dasharray="3 5" opacity="0.45" fill="none"/>
+  <g transform="translate(330,0)">
+    <text x="150" y="24" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">Switch OPEN &mdash; the kick</text>
+    <text x="28" y="122" font-size="11" fill="currentColor" text-anchor="middle" font-family="monospace">Vin</text>
+    <line x1="42" y1="110" x2="42" y2="130" stroke="currentColor" stroke-width="3"/>
+    <line x1="36" y1="136" x2="48" y2="136" stroke="currentColor" stroke-width="2"/>
+    <line x1="42" y1="70" x2="42" y2="110" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="42" y1="136" x2="42" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M42,70 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0 a10,10 0 0 1 20,0" fill="none" style="stroke:var(--brass)" stroke-width="3"/>
+    <line x1="102" y1="70" x2="140" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="72" y="44" font-size="10.5" fill="currentColor" text-anchor="middle">L</text>
+    <line x1="140" y1="70" x2="140" y2="128" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <circle cx="140" cy="132" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="143" y1="130" x2="166" y2="116" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="140" cy="168" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="140" y1="168" x2="140" y2="244" stroke="currentColor" stroke-width="1.6" opacity="0.4" fill="none"/>
+    <text x="150" y="196" font-size="10.5" fill="currentColor">open</text>
+    <line x1="140" y1="70" x2="182" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <path d="M182,56 L182,84 L210,70 z" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="2"/>
+    <line x1="210" y1="56" x2="210" y2="84" style="stroke:var(--brass)" stroke-width="3"/>
+    <line x1="210" y1="70" x2="232" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <text x="196" y="44" font-size="10" style="fill:var(--brass)" text-anchor="middle" font-weight="700">conducts</text>
+    <line x1="232" y1="70" x2="232" y2="148" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="220" y1="148" x2="244" y2="148" stroke="currentColor" stroke-width="3"/>
+    <line x1="220" y1="158" x2="244" y2="158" stroke="currentColor" stroke-width="3"/>
+    <line x1="232" y1="158" x2="232" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="232" y1="70" x2="276" y2="70" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <rect x="266" y="118" width="20" height="46" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="276" y1="70" x2="276" y2="118" style="stroke:var(--brass)" stroke-width="3" fill="none"/>
+    <line x1="276" y1="164" x2="276" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="296" y="146" font-size="10.5" fill="currentColor">load</text>
+    <line x1="42" y1="244" x2="276" y2="244" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="196" y="270" font-size="11" style="fill:var(--brass)" text-anchor="middle" font-weight="700">V_out &gt; V_in</text>
+    <text x="157" y="292" font-size="11" fill="currentColor" text-anchor="middle">momentum forces it uphill</text>
+  </g>
+</svg>
+<figcaption>The boost is a <strong>hydraulic ram pump</strong>. You let water build speed down a pipe, then slam the valve. The momentum has to go somewhere, and it lifts a small amount of water <em>higher than the source</em>. Real ram pumps have raised water uphill without any external power since the 1790s; the boost converter is the same trick in copper.</figcaption>
+</figure>
+
+<div class="eq">V_out = V_in / (1 &minus; D)&nbsp;&nbsp;&nbsp;&nbsp; 3.7 V / (1 &minus; 0.26) = 5 V</div>
+
+<p>Nothing is created. The converter trades <strong>current for voltage</strong>: to deliver 1 A at 5 V from a 3.7 V battery, it must draw about 1.4 A from the cell. Power in still equals power out, minus losses.</p>
+
+<h2>6. Why this beats a resistor</h2>
+
+<p>Here is the whole efficiency argument in one line. Power is voltage times current. Look at the MOSFET in each of its two states:</p>
+
+<div class="tw"><table>
+<thead><tr><th>Switch state</th><th>Voltage across it</th><th>Current through it</th><th>Power wasted</th></tr></thead>
+<tbody>
+<tr><td>Fully ON</td><td class="m">~0 V</td><td class="m">high</td><td class="m">0 &times; high &asymp; <strong>0</strong></td></tr>
+<tr><td>Fully OFF</td><td class="m">high</td><td class="m">0 A</td><td class="m">high &times; 0 &asymp; <strong>0</strong></td></tr>
+<tr><td>Linear regulator</td><td class="m">1.7 V</td><td class="m">1 A</td><td class="m"><strong>1.7 W, always</strong></td></tr>
+</tbody>
+</table></div>
+
+<p><strong>One of the two terms is always nearly zero.</strong> A switch never sits in the middle where both are large &mdash; that is precisely what a linear regulator does for a living. Real converters lose a little during the switching transition and in the coil's resistance, which is why you see 85&ndash;95% rather than 100%.</p>
+
+<div class="box device"><span class="lbl">On your devices</span>
+<p><strong>Cyber Dawn has one of each, in series, and that is the problem.</strong> The BQ25185 board boosts the 3.7 V cell to 5 V with a <strong>TPS61023 switching boost</strong> at roughly 90%. That 5 V then reaches the DevKit, whose onboard <strong>linear</strong> regulator drops it to 3.3 V at about 66%.</p>
+<p>Multiply: 0.90 &times; 0.66 = <strong>59%</strong>. The OLED needs 165 mW and costs about 280 mW at the battery. The fix in the production design is to delete the boost and use a switching <em>buck</em> straight to 3.3 V &mdash; which is exactly what <code>docs/ARCHITECTURE.md</code> recommends for the custom carrier.</p>
+</div>
+
+<h2>Self-check</h2>
+
+<details><summary>Q1. Why does a buck converter need the diode at all?</summary><p>Because when the switch opens, the inductor's current cannot stop instantly and must have a path. The diode provides it. Without one, the voltage at that node spikes until something breaks down &mdash; the electrical version of water hammer.</p></details>
+
+<details><summary>Q2. A boost gives 5 V out from 3.7 V in. Where does the extra voltage come from?</summary><p>From current. Energy is conserved: delivering 1 A at 5 V requires roughly 1.4 A drawn from the 3.7 V cell. Voltage went up, current went down, power stayed the same minus losses.</p></details>
+
+<details><summary>Q3. Why is a linear regulator's efficiency fixed by the voltage ratio alone?</summary><p>It passes the same current it draws, and burns the voltage difference as heat. Efficiency is just V_out / V_in &mdash; 3.3 / 5 = 66%, no matter the load or the design.</p></details>
+
+<details><summary>Q4. What is the capacitor actually doing?</summary><p>Holding the output steady between switching cycles. The inductor delivers current in a sawtooth; the capacitor absorbs the ripple so the load sees a smooth voltage. Remove it and your 3.3 V rail becomes a 3.3 V average with a visible sawtooth on top.</p></details>
+
+<h2>You can now explain</h2>
+
+<ul class="check">
+<li>Why a linear regulator's waste heat cannot be engineered away.</li>
+<li>That current in an inductor ramps and never jumps &mdash; the one idea everything rests on.</li>
+<li>What the diode catches, and what happens without it.</li>
+<li>Buck as chopping time, boost as harnessing momentum.</li>
+<li>Why a switch wastes almost nothing in either state.</li>
+<li>Where the 59% in the Cyber Dawn prototype chain comes from, and how to fix it.</li>
+</ul>
+
+</div>

@@ -1,0 +1,312 @@
+<title>How Does a GPIO Pin Work?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
+  .track > div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--pass); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps[start="3"] { counter-reset: step 2; }
+  ol.steps[start="4"] { counter-reset: step 3; }
+  ol.steps[start="5"] { counter-reset: step 4; }
+  ol.steps[start="6"] { counter-reset: step 5; }
+  ol.steps[start="9"] { counter-reset: step 8; }
+  ol.steps[start="10"] { counter-reset: step 9; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .thick { stroke-width: 2.2; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>
+  .stamp { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-tint); border-radius: 4px; padding: 2px 8px; margin-right: 6px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 72ch; }
+  figure svg .edge.accent-stroke { stroke: var(--accent); }
+  figure svg .edge.warn-stroke { stroke: var(--warn); }
+  figure svg .iron { stroke-width: 7; stroke-linecap: round; }
+  figure svg .stripe { fill: var(--muted); }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .8em; margin-right: 6px; }
+</style>
+<style>
+  figure svg .water { fill: color-mix(in srgb, var(--accent) 45%, transparent); stroke: none; }
+  figure svg .pipe { fill: none; stroke: currentColor; stroke-width: 2; }
+  figure svg .open { stroke: var(--pass); stroke-width: 3; }
+  figure svg .shut { stroke: var(--warn); stroke-width: 3; }
+  .pairs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 8px; }
+  .pairs > div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .pairs .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--accent-ink); }
+  .pairs p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 620px) { .pairs { grid-template-columns: 1fr; } }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; margin: 8px 0; max-width: 72ch; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { margin: 8px 0 0; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · companion page · ESP32-C3</div>
+    <h1>How does a GPIO pin work?</h1>
+    <p class="lede">GPIO means general-purpose input/output. Each pin is a small doorway between A1's chip and the outside world, and it can do one of two jobs: push a voltage out, or read a voltage in. Inside, that is two switches, one sensor, two weak springs, and a switchboard.</p>
+  </header>
+
+  <div class="pairs">
+    <div><div class="name">Output</div><p>A1 decides the voltage. GPIO5 does this to switch the amplifier on and off.</p></div>
+    <div><div class="name">Input</div><p>The outside world decides and A1 reads it. GPIO10 does this for your button.</p></div>
+    <div><div class="name">Handed over</div><p>A built-in block such as I2S or I2C drives the pin for you. GPIO1 to GPIO4 and GPIO20/21 work this way.</p></div>
+  </div>
+
+  <h2>1. What is inside one pin</h2>
+  <p>Every pin on the ESP32-C3 has the same small circuit behind it. The chip's firmware flips tiny switches in this circuit by writing numbers into registers.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 800 420" style="min-width: 660px; width: 100%;" role="img" aria-label="Block diagram of one GPIO pin. On the left, the firmware writes an output value and an output-enable bit, and reads an input value. The switchboard picks whether plain firmware or a built-in block like I2S drives the pin. The output driver is two switches: a top switch to 3.3 volts and a bottom switch to ground, and only one closes at a time. The pad connects to the outside wire. An input sensor reads the pad voltage back as 1 or 0. A weak pull-up of about 45 kilohms to 3.3 volts and a weak pull-down to ground can each be switched on. Two protection diodes run from the pad to 3.3 volts and to ground.">
+        <defs><marker id="ga" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+        <!-- rails -->
+        <line class="edge thick warn-stroke" x1="300" y1="40" x2="700" y2="40"/><text class="s b warn-ink" x="704" y="44">3.3 V</text>
+        <line class="edge thick" x1="300" y1="380" x2="700" y2="380"/><text class="s b" x="704" y="384">GND</text>
+        <!-- firmware + switchboard -->
+        <rect class="soft" x="20" y="60" width="130" height="120" rx="6"/>
+        <text class="t b" x="85" y="82" text-anchor="middle">Firmware</text>
+        <text class="s m" x="32" y="106">write 1 / 0</text>
+        <text class="s m" x="32" y="126">output on/off</text>
+        <text class="s m" x="32" y="160">read 1 / 0</text>
+        <rect class="cap" x="20" y="230" width="130" height="110" rx="6"/>
+        <text class="t b cap-ink" x="85" y="254" text-anchor="middle">Switchboard</text>
+        <text class="s" x="85" y="274" text-anchor="middle">plain firmware,</text>
+        <text class="s" x="85" y="290" text-anchor="middle">or a built-in block:</text>
+        <text class="s m" x="85" y="312" text-anchor="middle">I2S · I2C · UART</text>
+        <line class="edge" x1="150" y1="115" x2="200" y2="115"/><line class="edge" x1="150" y1="285" x2="200" y2="285"/>
+        <line class="edge" x1="200" y1="115" x2="200" y2="285"/>
+        <line class="edge" x1="200" y1="200" x2="262" y2="200" marker-end="url(#ga)"/>
+        <!-- driver control box -->
+        <rect class="box" x="264" y="160" width="76" height="80" rx="5"/>
+        <text class="s b" x="302" y="196" text-anchor="middle">driver</text><text class="s b" x="302" y="212" text-anchor="middle">control</text>
+        <!-- top switch -->
+        <line class="edge" x1="420" y1="40" x2="420" y2="92"/>
+        <circle cx="420" cy="92" r="3" fill="currentColor"/><line class="edge thick" x1="420" y1="92" x2="440" y2="122"/><circle cx="420" cy="130" r="3" fill="currentColor"/>
+        <line class="edge" x1="420" y1="130" x2="420" y2="210"/>
+        <text class="s b" x="448" y="104">top switch</text><text class="s muted" x="448" y="118">to 3.3 V</text>
+        <!-- bottom switch -->
+        <line class="edge" x1="420" y1="210" x2="420" y2="290"/>
+        <circle cx="420" cy="290" r="3" fill="currentColor"/><line class="edge thick" x1="420" y1="290" x2="440" y2="320"/><circle cx="420" cy="328" r="3" fill="currentColor"/>
+        <line class="edge" x1="420" y1="328" x2="420" y2="380"/>
+        <text class="s b" x="448" y="302">bottom switch</text><text class="s muted" x="448" y="316">to GND</text>
+        <path class="edge dashed" d="M340,180 H390 V110 H430"/><path class="edge dashed" d="M340,220 H390 V305 H430"/>
+        <text class="s muted" x="302" y="258" text-anchor="middle">only one</text><text class="s muted" x="302" y="272" text-anchor="middle">closes at a time</text>
+        <!-- node to pad -->
+        <line class="edge thick" x1="420" y1="210" x2="700" y2="210"/>
+        <circle cx="420" cy="210" r="3.5" fill="currentColor"/>
+        <rect class="cap" x="700" y="194" width="44" height="32" rx="4"/>
+        <text class="s b cap-ink" x="722" y="214" text-anchor="middle">PAD</text>
+        <line class="edge thick" x1="744" y1="210" x2="790" y2="210"/>
+        <text class="s muted" x="770" y="236" text-anchor="middle">your wire</text>
+        <!-- pull-up / pull-down -->
+        <line class="edge" x1="540" y1="40" x2="540" y2="70"/>
+        <polyline class="edge" points="540,70 546,74 534,80 546,86 534,92 546,98 540,102"/>
+        <line class="edge" x1="540" y1="102" x2="540" y2="118"/><line class="edge" x1="540" y1="118" x2="554" y2="140"/><line class="edge" x1="540" y1="146" x2="540" y2="210"/>
+        <text class="s b" x="552" y="88">weak pull-up</text><text class="s muted" x="552" y="102">≈45 kΩ</text>
+        <line class="edge" x1="540" y1="210" x2="540" y2="266"/><line class="edge" x1="540" y1="266" x2="554" y2="288"/>
+        <line class="edge" x1="540" y1="294" x2="540" y2="310"/>
+        <polyline class="edge" points="540,310 546,314 534,320 546,326 534,332 546,338 540,342"/>
+        <line class="edge" x1="540" y1="342" x2="540" y2="380"/>
+        <text class="s b" x="552" y="322">weak pull-down</text><text class="s muted" x="552" y="336">optional</text>
+        <circle cx="540" cy="210" r="3.5" fill="currentColor"/>
+        <!-- clamp diodes -->
+        <line class="edge" x1="650" y1="210" x2="650" y2="160"/><polygon points="642,160 658,160 650,148" fill="currentColor"/><line class="edge" x1="642" y1="146" x2="658" y2="146"/><line class="edge" x1="650" y1="146" x2="650" y2="40"/>
+        <line class="edge" x1="650" y1="210" x2="650" y2="260"/><polygon points="642,272 658,272 650,260" fill="currentColor"/><line class="edge" x1="642" y1="258" x2="658" y2="258"/><line class="edge" x1="650" y1="272" x2="650" y2="380"/>
+        <circle cx="650" cy="210" r="3.5" fill="currentColor"/>
+        <text class="s b warn-ink" x="662" y="156">protection</text><text class="s b warn-ink" x="662" y="170">diodes</text>
+        <!-- input sensor -->
+        <polygon class="box" points="600,240 600,276 572,258" transform="translate(0,0)"/>
+        <line class="edge" x1="600" y1="258" x2="610" y2="258"/><line class="edge" x1="610" y1="258" x2="610" y2="210"/>
+        <path class="edge" d="M572,258 H480 V400 H176 V160 H154" marker-end="url(#ga)"/>
+        <text class="s b" x="470" y="398" text-anchor="end">input sensor: reads the pad as 1 or 0</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two switches out, one sensor in, two optional springs.</strong> For output, the firmware closes the top switch for 1 or the bottom switch for 0. For input, it opens both and just reads the sensor. The pull-up or pull-down gently holds the pin when nothing else does. The diodes protect the chip from small spikes, not from a real voltage above 3.3 V.</figcaption>
+  </figure>
+
+  <h2>2. The same pin, as water</h2>
+  <p>Think of the pin as a small pipe junction. A tank on the roof holds water at the 3.3 V level, and a drain below is at ground. The water level in the junction is the pin's voltage.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 800 330" style="min-width: 660px; width: 100%;" role="img" aria-label="Three water panels. Output high: the valve to the roof tank is open and the drain valve shut, so the junction is full: 3.3 volts. Output low: the tank valve is shut and the drain valve open, so the junction is empty: 0 volts. Input with pull-up: both big valves are shut, a thin trickle hose from the tank keeps the junction full, and when the button opens a big drain, the trickle cannot keep up and the level drops: the pin reads 0.">
+        <!-- panel template function drawn three times -->
+        <g transform="translate(20,0)">
+          <text class="t b" x="110" y="22" text-anchor="middle">Output HIGH · writes 1</text>
+          <rect class="soft" x="60" y="36" width="100" height="36" rx="4"/><rect class="water" x="62" y="42" width="96" height="28"/><text class="s b" x="110" y="60" text-anchor="middle">tank · 3.3 V</text>
+          <line class="pipe" x1="110" y1="72" x2="110" y2="110"/><line class="open" x1="96" y1="110" x2="124" y2="110"/><text class="s pass-ink b" x="130" y="114">open</text>
+          <line class="pipe" x1="110" y1="110" x2="110" y2="150"/>
+          <rect class="box" x="70" y="150" width="80" height="70" rx="4"/><rect class="water" x="72" y="160" width="76" height="58"/>
+          <text class="s b" x="110" y="190" text-anchor="middle">junction</text><text class="s" x="110" y="206" text-anchor="middle">full</text>
+          <line class="pipe" x1="110" y1="220" x2="110" y2="250"/><line class="shut" x1="96" y1="250" x2="124" y2="250"/><text class="s warn-ink b" x="130" y="254">shut</text>
+          <line class="pipe" x1="110" y1="250" x2="110" y2="280"/><text class="s b" x="110" y="296" text-anchor="middle">drain · GND</text>
+          <text class="s b cap-ink" x="110" y="320" text-anchor="middle">the wire sees 3.3 V</text>
+        </g>
+        <g transform="translate(280,0)">
+          <text class="t b" x="110" y="22" text-anchor="middle">Output LOW · writes 0</text>
+          <rect class="soft" x="60" y="36" width="100" height="36" rx="4"/><rect class="water" x="62" y="42" width="96" height="28"/><text class="s b" x="110" y="60" text-anchor="middle">tank · 3.3 V</text>
+          <line class="pipe" x1="110" y1="72" x2="110" y2="110"/><line class="shut" x1="96" y1="110" x2="124" y2="110"/><text class="s warn-ink b" x="130" y="114">shut</text>
+          <line class="pipe" x1="110" y1="110" x2="110" y2="150"/>
+          <rect class="box" x="70" y="150" width="80" height="70" rx="4"/>
+          <text class="s b" x="110" y="190" text-anchor="middle">junction</text><text class="s" x="110" y="206" text-anchor="middle">empty</text>
+          <line class="pipe" x1="110" y1="220" x2="110" y2="250"/><line class="open" x1="96" y1="250" x2="124" y2="250"/><text class="s pass-ink b" x="130" y="254">open</text>
+          <line class="pipe" x1="110" y1="250" x2="110" y2="280"/><text class="s b" x="110" y="296" text-anchor="middle">drain · GND</text>
+          <text class="s b cap-ink" x="110" y="320" text-anchor="middle">the wire sees 0 V</text>
+        </g>
+        <g transform="translate(540,0)">
+          <text class="t b" x="120" y="22" text-anchor="middle">Input + pull-up · your button</text>
+          <rect class="soft" x="60" y="36" width="100" height="36" rx="4"/><rect class="water" x="62" y="42" width="96" height="28"/><text class="s b" x="110" y="60" text-anchor="middle">tank · 3.3 V</text>
+          <line class="pipe" x1="110" y1="72" x2="110" y2="110"/><line class="shut" x1="96" y1="110" x2="124" y2="110"/>
+          <path class="edge" d="M150,72 C190,90 190,130 150,160" stroke-width="1" style="stroke: var(--accent)"/><text class="s cap-ink b" x="186" y="112">thin</text><text class="s cap-ink b" x="186" y="126">trickle</text>
+          <line class="pipe" x1="110" y1="110" x2="110" y2="150"/>
+          <rect class="box" x="70" y="150" width="80" height="70" rx="4"/><rect class="water" x="72" y="160" width="76" height="58"/>
+          <text class="s b" x="110" y="190" text-anchor="middle">full</text><text class="s" x="110" y="206" text-anchor="middle">reads 1</text>
+          <line class="pipe" x1="110" y1="220" x2="110" y2="250"/><line class="shut" x1="96" y1="250" x2="124" y2="250"/>
+          <path class="pipe" d="M150,200 H200 V250" style="stroke-width: 5"/><text class="s b" x="208" y="236">button</text><text class="s" x="208" y="250">= big drain</text>
+          <text class="s b" x="110" y="296" text-anchor="middle">press: level drops</text>
+          <text class="s b cap-ink" x="110" y="320" text-anchor="middle">pin reads 0 while pressed</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption><strong>Output opens one big valve. Input shuts both and watches the level.</strong> The pull-up is the thin trickle hose: it keeps the junction full when nothing else is connected, but a big drain like your pressed button wins easily. That is why GPIO10 reads 1 at rest and 0 while you press.</figcaption>
+  </figure>
+
+  <p><strong>Two things never to do,</strong> in water terms:</p>
+  <ul>
+    <li><strong>Open both big valves.</strong> Water pours straight from the tank to the drain. In a chip that is a short from 3.3 V to GND, and the firmware prevents it.</li>
+    <li><strong>Connect a taller tank.</strong> A 5 V source on a pin pushes water backwards over the protection diodes into the 3.3 V supply. That is why nothing above 3.3 V ever goes on an A1 GPIO.</li>
+  </ul>
+
+  <h2>3. How the pin decides 1 or 0</h2>
+  <p>The input sensor does not measure exact voltages. It sorts them into three bands, from the ESP32-C3 datasheet: 1 above 75 % of the supply, 0 below 25 %, and no promise in between.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 170" style="min-width: 560px; width: 100%;" role="img" aria-label="A voltage bar from 0 to 3.3 volts. Below 0.83 volts reads as 0. Above 2.48 volts reads as 1. Between them is a band with no guarantee, where a floating pin can land and flicker.">
+        <rect class="pass-fill" x="60" y="50" width="160" height="40"/>
+        <rect class="warn-fill" x="220" y="50" width="320" height="40"/>
+        <rect class="cap" x="540" y="50" width="160" height="40"/>
+        <text class="t b pass-ink" x="140" y="75" text-anchor="middle">reads 0</text>
+        <text class="t b warn-ink" x="380" y="75" text-anchor="middle">no guarantee · a floating pin lands here</text>
+        <text class="t b cap-ink" x="620" y="75" text-anchor="middle">reads 1</text>
+        <text class="s m" x="60" y="112" text-anchor="middle">0 V</text>
+        <text class="s m b" x="220" y="112" text-anchor="middle">0.83 V</text>
+        <text class="s m b" x="540" y="112" text-anchor="middle">2.48 V</text>
+        <text class="s m" x="700" y="112" text-anchor="middle">3.3 V</text>
+        <text class="s muted" x="220" y="130" text-anchor="middle">25 % of 3.3 V</text>
+        <text class="s muted" x="540" y="130" text-anchor="middle">75 % of 3.3 V</text>
+        <text class="s muted" x="380" y="160" text-anchor="middle">DATASHEET limits (VIL max, VIH min) for a 3.3 V supply</text>
+      </svg>
+    </div>
+    <figcaption><strong>A pin with nothing connected is floating.</strong> Like a flag in the wind, it drifts with stray charge and can read 1, then 0, then 1. A pull resistor pins it into one of the safe bands. On the amplifier's SD pin your 1 kΩ pull-down did exactly this.</figcaption>
+  </figure>
+
+  <h2>4. The switchboard, and your pins</h2>
+  <p>The ESP32-C3 has built-in helpers that speak a protocol for you: I2S for audio, I2C for the display. A switchboard inside the chip, the GPIO matrix, plugs each helper's signal into whichever pin the firmware names in <code>config.h</code>. That is why the pin numbers are a choice, not a law.</p>
+
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>A1 pin</th><th>Job</th><th>Who drives it</th><th>Mode</th></tr>
+    <tr><td class="n">GPIO5</td><td>amplifier on/off, SD</td><td>firmware, directly</td><td>output, plus your 1 kΩ pull-down</td></tr>
+    <tr><td class="n">GPIO10</td><td>your button</td><td>the button; firmware reads</td><td>input with pull-up</td></tr>
+    <tr><td class="n">GPIO1, GPIO2</td><td>audio clocks, WS and BCLK</td><td>I2S helper, through the switchboard</td><td>output, shared by mic and amplifier</td></tr>
+    <tr><td class="n">GPIO3</td><td>audio to the amplifier, DIN</td><td>I2S helper</td><td>output</td></tr>
+    <tr><td class="n">GPIO4</td><td>audio from the microphone</td><td>the microphone; I2S helper reads</td><td>input</td></tr>
+    <tr><td class="n">GPIO20, GPIO21</td><td>OLED, SCL and SDA</td><td>I2C helper</td><td>open-drain: only the bottom switch is used, pull-ups make the 1</td></tr>
+  </table>
+  </div>
+
+  <h2>Check yourself</h2>
+  <details><summary>Your button reads 1 when you are not touching it. Why?</summary><p>GPIO10 is an input with its pull-up on. The thin trickle from 3.3 V holds the pin high until the pressed button connects it to GND, which wins easily.</p></details>
+  <details><summary>Why did the amplifier's SD pin need your resistor, even though GPIO5 can drive it?</summary><p>While A1 boots or resets, GPIO5 is not yet an output, so both of its big valves are shut and the pin floats. Your pull-down holds SD at 0, meaning off, until the firmware takes over.</p></details>
+  <details><summary>Why must nothing above 3.3 V touch a GPIO?</summary><p>The protection diodes connect the pin to the 3.3 V supply. A higher voltage pushes current backwards through them, which can damage the pin or lift the whole 3.3 V rail.</p></details>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> Built from the ESP32-C3 datasheet's GPIO description and DC characteristics (input thresholds 0.25 and 0.75 of the supply, internal pull resistors about 45 kΩ, typical), <a href="https://claude.ai/artifact/4oJmhiUG1jNPFo6VR7GhR5">The Pin Switchboard</a> for the deeper version, <code>firmware/src/boards/pocket-wall-e-c3/config.h</code> for A1's pin choices, and Lesson 07, GPIO and Boot Straps. If this page and the repository differ, the repository wins.</p>
+    <p><strong>What is simplified.</strong> The switches are transistors, the sensor is a digital input buffer, and the diagram leaves out drive-strength and sleep settings. The water picture shows levels, not exact currents.</p>
+  </div>
+</div>

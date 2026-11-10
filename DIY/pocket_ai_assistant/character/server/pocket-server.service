@@ -1,0 +1,14 @@
+[Unit]
+Description=Pip character server (local brain, speech and memory)
+After=network-online.target ollama.service
+Wants=ollama.service
+
+[Service]
+WorkingDirectory=/home/jaewoo-jang/Desktop/Projects/DIY/pocket_ai_assistant/character/server
+EnvironmentFile=%h/.config/pocket/pocket-server.env
+ExecStart=/home/jaewoo-jang/Desktop/Projects/DIY/pocket_ai_assistant/character/server/.venv-speech/bin/python -m pocket_server
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

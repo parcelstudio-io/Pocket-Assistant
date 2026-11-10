@@ -1,0 +1,132 @@
+<title>Wiring Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; --w-orange: #E0661C; --w-olive: #6B8E23; --w-purple: #7C3AED; --w-teal: #0B7285; --w-navy: #1B3F8B; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; --w-orange: #FF9A5C; --w-olive: #B5D46A; --w-purple: #C4A5FF; --w-teal: #4FC3D1; --w-navy: #7FA8FF; }
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 840px; margin: 0 auto; padding-block: 28px 64px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(26px, 5vw, 34px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 66ch; margin: 0 0 18px; }
+  h2 { font-size: 22px; margin: 44px 0 8px; letter-spacing: -.01em; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .72em; margin-right: 8px; }
+  h3 { font-size: 17px; margin: 26px 0 6px; }
+  p { max-width: 70ch; margin: 0 0 10px; }
+  ul, ol { max-width: 70ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 4px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; margin: 8px 0 12px; }
+  a { color: var(--accent-ink); }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .step input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--pass); cursor: pointer; }
+  .step label { cursor: pointer; }
+  .step .do { font-weight: 600; }
+  .step .chk { display: block; color: var(--accent-ink); font-size: 14px; margin-top: 4px; }
+  .step .chk::before { content: "check · "; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 11.5px; }
+  .step .note { display: block; color: var(--muted); font-size: 14px; margin-top: 3px; }
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-tint); padding: 10px 14px; margin: 14px 0; max-width: 74ch; border-radius: 0 6px 6px 0; }
+  .callout.info { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout.pass { border-left-color: var(--pass); background: var(--pass-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .callout.info .label { color: var(--accent-ink); } .callout.pass .label { color: var(--pass); }
+  .callout ul, .callout p { margin: 0; } .callout ul { padding-left: 1.2em; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 5px 10px; margin: 0 0 10px; }
+  .stock strong { color: var(--brass); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.t th, table.t td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); white-space: nowrap; }
+  table.bends { max-width: 420px; margin-top: 4px; }
+  .scrollx { overflow-x: auto; }
+  .progress { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding: 8px 0; font-family: var(--mono); font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 8px; z-index: 1; }
+  .progress b { color: var(--pass); }
+  button.reset { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; margin-left: 10px; }
+  .evidence { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); max-width: 74ch; }
+  figure { margin: 12px 0 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 8px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); background: var(--figure-bg); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; } figure svg .s { font-size: 11.5px; } figure svg .b { font-weight: 600; } figure svg .m { font-family: var(--mono); }
+  figure svg .pin { font-size: 8.5px; font-family: var(--mono); fill: var(--muted); paint-order: stroke; stroke: var(--figure-bg); stroke-width: 3px; stroke-linejoin: round; }
+  figure svg .muted { fill: var(--muted); } figure svg .acc-ink { fill: var(--accent-ink); } figure svg .warn-ink { fill: var(--warn); } figure svg .pass-ink { fill: var(--pass); } figure svg .brass-ink { fill: var(--brass); }
+  figure svg .pcb { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; } figure svg .pcb.dim { opacity: .6; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .kapton { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1; }
+  figure svg .ant { fill: none; stroke: var(--warn); stroke-width: 1.2; stroke-dasharray: 3 2; }
+  figure svg .kap { fill: var(--warn); fill-opacity: .28; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .kap2 { fill: var(--warn); fill-opacity: .55; stroke: var(--warn); stroke-width: 1.4; }
+  figure svg .num { fill: var(--warn); stroke: var(--figure-bg); stroke-width: 1.5; } figure svg .numt { fill: #fff; }
+  figure svg .shim { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  figure svg .tube { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .card { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+  figure svg .glue { fill: var(--pass); stroke: var(--figure-bg); stroke-width: 1.5; }
+  figure svg .rodx { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 2; }
+  figure svg .tapeline { fill: none; stroke: var(--warn); stroke-width: 3; opacity: .7; }
+  figure svg .spk { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .port { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .stubp { fill: var(--brass); stroke: none; }
+  figure svg .screen-out { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 4; }
+  figure svg .screen-side { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.2; }
+  figure svg .glass { fill: var(--accent); opacity: .35; }
+  figure svg .frame { fill: none; stroke: var(--brass); stroke-width: 5; } figure svg .post { fill: var(--brass); }
+  figure svg .joint { fill: var(--surface); stroke: var(--pass); stroke-width: 2.2; }
+  figure svg .floor { stroke: currentColor; stroke-width: 2; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; } figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; } figure svg .acc { stroke: var(--accent); fill: none; } figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .rod { stroke: var(--brass); stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .solder { fill: var(--muted); }
+  figure svg .sleeve { fill: var(--surface); stroke: currentColor; stroke-width: 1.4; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; max-width: 74ch; }
+  figcaption strong { color: var(--ink); }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; font-size: 13.5px; margin: 8px 0 14px; }
+  .legend span.sw { display: inline-block; width: 22px; height: 5px; border-radius: 3px; vertical-align: middle; margin-right: 7px; }
+  details.more { margin: 2px 0 8px 38px; } details.more > summary { cursor: pointer; color: var(--accent-ink); font-size: 14px; }
+  details.more[open] > summary { margin-bottom: 6px; }
+  .short ol { counter-reset: s; padding-left: 0; list-style: none; max-width: 76ch; }
+  .short li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .short li::before { content: counter(s); font-family: var(--mono); font-weight: 600; color: var(--brass); }
+  .short li a { font-weight: 600; }
+  .short .c { display: block; color: var(--muted); font-size: 14px; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 12px 14px; margin: 16px 0; max-width: 74ch; }
+  .gate input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--pass); }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); }
+  .gate p { margin: 2px 0 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>dl.notes dt{font-weight:600;margin-top:10px} dl.notes dd{margin:2px 0 0 0;color:var(--muted)}</style>
+<div class="wrap">
+<div class="eyebrow">Pocket AI Assistant · build day · the wiring sheet, line by line</div>
+<h1>Every line on the sheet, explained</h1>
+<p class="lede">The companion to the one-page wiring sheet. One entry per line on the drawing, three sentences at most: what it joins and why it is done that way.</p>
+<h2>Each line, in three sentences or fewer</h2><h3>The harness: bare rods</h3><dl class="notes"><dt>5 V rod · A1 5V → amp VIN</dt><dd>The only 5 V in the device goes to two pins: A1's own input and the amplifier. The amp wants 5 V because loudness is voltage: it can swing twice what it could at 3.3 V, which is four times the sound. One straight rod across the channel, crossing both rails without touching.</dd><dt>GND rod · A1 GND → amp GND, with the drop pin</dt><dd>The amplifier is the one part that pulls current in bursts, so its return runs on its own rod straight to A1's ground stub. A 3 mm pin under that rod drops onto the GND rail and makes the rail ground. The quiet rail hangs off the busy rod instead of carrying its current.</dd><dt>3V3 tap · A1 3V3 → 3V3 rail</dt><dd>A1 has a small regulator that turns 5 V into 3.3 V, and its 3V3 pin is that regulator's output. One tap feeds the rail, and after that nobody runs back to A1 for power. The screen and the mic are 3.3 V parts; the mic dies above 3.6 V.</dd><dt>DIN rod · GPIO3 → amp DIN</dt><dd>The sound going out, as bits. One sender, one listener, one rod.</dd><dt>BCLK rod · GPIO2 → amp BCLK, then on to mic SCK</dt><dd>The bit clock ticks 1,024,000 times a second and is the metronome both the amp and the mic play to, so one rod serves both with a tap at the amp. R3 sits on this line because GPIO2 is a boot-strapping pin the chip reads at power-on and it must be high then.</dd><dt>WS rod · GPIO1 → amp LRC, then on to mic WS</dt><dd>The word clock flips 16,000 times a second to say left slot, right slot. Shared with the amp and the mic for the same reason as BCLK: everyone must agree on the beat.</dd><dt>mic SD rod · GPIO4 → mic SD</dt><dd>The sound coming in, as bits. The mic drives this line only during its own slot and lets go the rest of the time, so the firmware switches on GPIO4's internal pull-down to keep it quiet in between. That is why there is no resistor on it.</dd><dt>amp SD rod · GPIO5 → amp SD</dt><dd>The amplifier's on-off pin, which A1 pulls high only while Pip is speaking. It runs over the top of everything because GPIO5 is on A1's left row and the amp is on the right. R1 holds it low whenever A1 is not driving it.</dd><dt>button rod · GPIO10 → button, and the button GND rod</dt><dd>Pressing the button connects GPIO10 to ground; A1 pulls the pin up internally, so it reads high until pressed. The button's other legs go to A1's GND stub by a short rod. Plain high or low, no timing.</dd><dt>SCL rod and SDA rod · GPIO20, GPIO21 → screen</dt><dd>I²C: SCL is the clock, SDA the data, and the screen only listens. Both idle at 3.3 V and get pulled low to talk; the pull-up resistors that need are already on the screen module. The two rods also hold the screen up, 17.5 mm above the amp.</dd><dt>screen VCC tap and screen GND tap</dt><dd>The screen's power, dropped from its floating position onto the front ends of the two rails. Short taps to the nearest rail, not rods back to A1.</dd><dt>mic VDD tap, mic GND tap, and the L/R link</dt><dd>The mic's power from the back ends of the two rails. The L/R pin tied to the mic's own GND selects the left I²S slot, the one the firmware listens to. All three are short because the mic lies right beside the rails.</dd><dt>speaker · amp OUT+ and OUT− only</dt><dd>The amp drives the speaker with a bridge: each output is a switched node that sits at 5 V half the time. Neither is ground, and tying one to the rail shorts 5 V straight through a transistor. The speaker gets its own two leads, twisted, and nothing else.</dd></dl><h3>The four small parts</h3><dl class="notes"><dt>R1 · 4.7 kΩ, amp SD → amp GND</dt><dd>Between power-on and the firmware running, GPIO5 is undefined. This resistor keeps the amp's shutdown pin low through that gap so the speaker cannot pop or sit at full gain on garbage.</dd><dt>R3 · 10 kΩ, BCLK rod → 3V3 rail</dt><dd>GPIO2 must read high the instant the chip powers on, and the amp and mic only listen on this line, so nothing else holds it up. Ten kilohms is far too weak to bother the clock afterwards. One meter check retires it: about 10 kΩ between GPIO2 and 3V3 with A1 unpowered means the board has its own.</dd><dt>C1 · 220 µF, 5 V net → GND, stripe to GND</dt><dd>A bass note or a Wi-Fi burst asks for a few hundred milliamps for a few milliseconds, and a long thin wire cannot deliver that fast. This capacitor is a local reservoir that answers the slow bursts so the 5 V does not sag and reset A1. The stripe marks the negative lead.</dd><dt>C2 · 100 nF, at the amp's VIN and GND pins</dt><dd>The fast part of the same job: it answers the spikes the 220 µF is too slow for. It sits at the pins because a reservoir 50 mm away is a reservoir with a straw.</dd></dl><h3>The battery storey: insulated wires</h3><dl class="notes"><dt>P1 · PowerBoost 5V → A1's 5V stub, 26 AWG red</dt><dd>That stub is where USB power used to enter, so every rod downstream sees the same 5 V it always did. The 5 V rod carries it on to the amp as before. Nothing in the harness changes.</dd><dt>P2 · PowerBoost GND → A1's GND stub, 26 AWG black</dt><dd>One ground meeting point for the supply, A1 and the amp. The rail stays a dead end, so the amp's current has no loop to run through the signal rods.</dd><dt>P3 and P4 · EN through the slide switch to PowerBoost GND</dt><dd>EN is a logic input that draws microamps, so a tiny switch controls the whole load without carrying its current or dropping volts where volts are scarce. Closed means EN at ground means output off. The cell stays on the charger even when off, so it charges either way.</dd><dt>P5 · the cell's JST into the PowerBoost socket</dt><dd>The plug is the only connection the cell will ever have: factory-terminated, keyed, behind the cell's own protection board. Meter + and − against the board's silkscreen before the first plug-in. No solder, no brass, no iron within 10 cm.</dd><dt>P6 · PowerBoost LBO → A1 GPIO6, optional</dt><dd>An open-drain flag that goes low when the cell reaches 3.2 V. A free GPIO reads it so the face can warn before the cell cuts out. Pip runs without it.</dd><dt>A1's USB-C · nothing, Kapton over it</dt><dd>On this board the 5V stub is the USB VBUS node with no diode, so a cable there would tie two supplies together. Flashing happens with the PowerBoost switched off.</dd></dl>
+<div class="evidence"><p><strong>Sources.</strong> The net list, Why the Wiring and the final-build power page. Not built.</p></div>
+</div>

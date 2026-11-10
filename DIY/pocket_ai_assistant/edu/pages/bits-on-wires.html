@@ -1,0 +1,963 @@
+<title>Bits on Wires</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EEF1F4; --paper:#FFFFFF; --ink:#14202B; --ink-2:#4A5A68; --line:#CBD3DB;
+  --brass:#B8622A; --brass-soft:#F4E3D6; --signal:#2A6FB8; --signal-soft:#DCE8F6;
+  --ok:#2E7D4F; --ok-soft:#DDF0E4; --warn:#A63D2F; --warn-soft:#F8E0DB;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Chivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+    --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+    --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+  --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+  --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900}
+h2{font-size:clamp(22px,3.5vw,28px);font-weight:700;margin-top:48px;padding-top:16px;border-top:3px solid var(--brass)}
+h3{font-size:19px;font-weight:700;margin-top:28px}
+p{margin:12px 0;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:24px}
+li{margin:6px 0}
+a{color:var(--signal)}
+code,kbd{font-family:var(--mono);font-size:0.9em;background:var(--signal-soft);padding:1px 5px;border-radius:3px}
+pre{font-family:var(--mono);font-size:14px;background:var(--paper);border:1px solid var(--line);padding:12px;overflow-x:auto;border-radius:4px}
+pre code{background:none;padding:0}
+strong{font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.masthead{display:grid;grid-template-columns:auto 1fr;gap:16px 24px;align-items:end;padding-bottom:20px;border-bottom:3px solid var(--ink)}
+.daynum{font-family:var(--display);font-weight:900;font-size:clamp(56px,10vw,88px);line-height:.9;color:var(--brass)}
+.masthead .meta{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:8px}
+.goal{background:var(--paper);border-left:4px solid var(--brass);padding:14px 18px;margin:24px 0}
+.goal p{margin:6px 0}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 16px;font-size:15px;margin:20px 0;border:1px solid var(--line);background:var(--paper)}
+.sched > div{padding:8px 12px;border-bottom:1px solid var(--line)}
+.sched > div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);color:var(--brass);white-space:nowrap}
+.clock{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-left:10px;font-weight:400}
+.box{padding:14px 18px;margin:20px 0;border-radius:4px;max-width:none}
+.box p{max-width:none}
+.box .lbl{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.device{background:var(--brass-soft);border:1px solid var(--brass)}
+.device .lbl{color:var(--brass)}
+.analogy{background:var(--signal-soft);border:1px solid var(--signal)}
+.analogy .lbl{color:var(--signal)}
+.safety{background:var(--warn-soft);border:1px solid var(--warn)}
+.safety .lbl{color:var(--warn)}
+.try{background:var(--ok-soft);border:1px solid var(--ok)}
+.try .lbl{color:var(--ok)}
+figure{margin:24px 0;background:var(--paper);border:1px solid var(--line);padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:68ch}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:16px 0}
+.tablewrap{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:14px;background:var(--paper)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eq{font-family:var(--mono);font-size:18px;background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:14px 0;display:inline-block}
+details{background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:10px 0;border-radius:4px}
+summary{cursor:pointer;font-weight:700}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border:2px solid var(--brass);border-radius:3px}
+.nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+@media (max-width:520px){.masthead{grid-template-columns:1fr}.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+<div class="masthead">
+  <div class="daynum">4</div>
+  <div>
+    <div class="eyebrow">Pocket AI blitz week · Day 4 of 7</div>
+    <h1>Bits on Wires</h1>
+    <div class="meta">Thursday 2026-09-24 · 2 hours · How a voltage becomes a 1 or a 0, what a GPIO really is, and how the OLED talks over two wires.</div>
+  </div>
+</div>
+
+<div class="goal">
+  <p><strong>By the end of today you can…</strong></p>
+  <p>1. Say which voltages the ESP32-C3 reads as 1, as 0, and as "no promise", and why 5 V on a pin is damage.</p>
+  <p>2. Draw what is inside a GPIO pin and explain why mic data moved from GPIO8 to GPIO4.</p>
+  <p>3. Read one I2C transaction on a waveform: start, address, write bit, ACK, data, stop.</p>
+  <p>4. Explain why no pull-up resistors were added to your OLED wires, and calculate what a second board's pull-ups do to the bus.</p>
+</div>
+
+<div class="sched">
+  <div class="t">0:00–0:10</div><div>Logic levels: HIGH, LOW, and the forbidden middle</div>
+  <div class="t">0:10–0:22</div><div>What a GPIO pin really is</div>
+  <div class="t">0:22–0:35</div><div>Reset, strap pins, and the BOOT button</div>
+  <div class="t">0:35–0:43</div><div>Buttons and bouncing</div>
+  <div class="t">0:43–0:52</div><div>Serial buses: UART, SPI, I2C</div>
+  <div class="t">0:52–1:07</div><div>I2C in detail: open-drain, address, ACK</div>
+  <div class="t">1:07–1:15</div><div>The SSD1306 and its 1024-byte picture</div>
+  <div class="t">1:15–1:45</div><div>Worked examples: pull-ups in parallel, frame time, logic levels, debounce</div>
+  <div class="t">1:45–1:50</div><div>Self-check quiz</div>
+  <div class="t">1:50–2:00</div><div>Design-your-own-device: assign ten pins</div>
+</div>
+
+<h2>Logic levels <span class="clock">0:00–0:10</span></h2>
+
+<p>A wall switch is up or down, but watch someone flip it slowly and there is a moment when it is neither. Digital electronics has the same secret. The chip never sees a 1 or a 0. It sees a voltage on a wire and compares it with two thresholds.</p>
+
+<p>On the ESP32-C3, anything above roughly 2.5 V (0.75 × VDD, where VDD is the 3.3 V supply) reads HIGH, a 1. Anything below roughly 0.8 V (0.25 × VDD) reads LOW, a 0. Between them is the <strong>forbidden middle</strong>. A pin at 1.5 V is not half a one; the datasheet makes no promise, so it may read 1, or 0, or flip between them as noise wiggles.</p>
+
+<div class="eq">HIGH ≥ 0.75 × VDD ≈ 2.5 V   ·   LOW ≤ 0.25 × VDD ≈ 0.8 V   (VDD = 3.3 V)</div>
+
+<figure>
+<svg viewBox="0 0 640 250" role="img" aria-label="A vertical voltage axis from 0 to 3.3 volts with a HIGH band above 2.5 volts, a LOW band below 0.8 volts and a forbidden band between; a noisy signal falls from HIGH to LOW and wiggles inside the forbidden band, where the pin reports alternating ones and zeros." xmlns="http://www.w3.org/2000/svg">
+  <text x="350" y="22" font-size="12" text-anchor="middle" fill="currentColor">5 V is off the top of this axis: past the absolute maximum, so damage</text>
+  <rect x="100" y="38" width="500" height="43" fill="var(--signal-soft)" stroke="none"/>
+  <rect x="100" y="81" width="500" height="86" fill="var(--warn-soft)" stroke="none"/>
+  <rect x="100" y="167" width="500" height="43" fill="var(--signal-soft)" stroke="none"/>
+  <line x1="90" y1="30" x2="90" y2="212" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="86" y1="38" x2="94" y2="38" stroke="currentColor" fill="none"/>
+  <line x1="86" y1="81" x2="94" y2="81" stroke="currentColor" fill="none"/>
+  <line x1="86" y1="167" x2="94" y2="167" stroke="currentColor" fill="none"/>
+  <line x1="86" y1="210" x2="94" y2="210" stroke="currentColor" fill="none"/>
+  <text x="82" y="42" font-size="12" text-anchor="end" fill="currentColor">3.3 V</text>
+  <text x="82" y="85" font-size="12" text-anchor="end" fill="currentColor">2.5 V</text>
+  <text x="82" y="171" font-size="12" text-anchor="end" fill="currentColor">0.8 V</text>
+  <text x="82" y="214" font-size="12" text-anchor="end" fill="currentColor">0 V</text>
+  <text x="450" y="62" font-size="13" fill="currentColor">HIGH: reads as 1</text>
+  <text x="400" y="118" font-size="13" fill="currentColor">forbidden middle: no promise,</text>
+  <text x="400" y="136" font-size="13" fill="currentColor">reads 1 or 0 as noise wiggles</text>
+  <text x="140" y="200" font-size="13" fill="currentColor">LOW: reads as 0</text>
+  <path d="M110 50 L180 52 L230 46 L270 58 L300 78 L318 100 L330 92 L345 118 L358 108 L372 140 L385 132 L400 160 L415 172 L450 185 L520 190 L560 188" fill="none" stroke="var(--brass)" stroke-width="2.5"/>
+  <text x="118" y="68" font-size="12" fill="var(--brass)">a real, slightly noisy signal</text>
+  <text x="100" y="232" font-size="12" fill="currentColor">what the pin reports while crossing: 1, 0, 1, 0, 0 … chatter</text>
+  <text x="600" y="232" font-size="12" text-anchor="end" fill="currentColor">time →</text>
+</svg>
+<figcaption>Voltage thresholds on a 3.3 V ESP32-C3 pin. The brass line is a real signal falling from 1 to 0; inside the forbidden band the pin can report either value, so a slow crossing gives a burst of alternating reads.</figcaption>
+</figure>
+
+<p>The absolute maximum on any pin is only about 3.6 V. A 5 V signal is not "extra HIGH"; it forces current through the pin's protection structure and can kill the pin or the chip. That is why it matters that the OLED and the INMP441 are 3.3 V parts: powered at 3.3 V, talking at 3.3 V, never exceeding what the ESP32-C3 accepts.</p>
+
+<div class="box device"><span class="lbl">On your device</span><p>The OLED and the INMP441 are powered from the SuperMini's 3.3 V pin and nothing else, so every signal on the board, SDA, SCL, WS, BCLK, mic data and the button, is a 3.3 V signal. The 5 V USB rail never touches a data pin.</p></div>
+
+<h2>What a GPIO pin really is <span class="clock">0:10–0:22</span></h2>
+
+<p>GPIO means general-purpose input/output. Behind each pin sit three tiny circuits, and software picks which one is active.</p>
+
+<p>First, an <strong>output driver</strong>: two switches in a column, one to 3.3 V and one to ground (GND), with exactly one closed at a time. This is <strong>push-pull</strong>. Writing a 1 closes the upper switch; a 0 closes the lower one.</p>
+
+<p>Second, an <strong>input comparator</strong>: the threshold judge from the last section, reporting 1 or 0 into a register your code reads.</p>
+
+<p>Third, optional <strong>pull resistors</strong>: a weak resistor, roughly 45 kΩ inside the ESP32-C3, switchable between the pin and 3.3 V (pull-up) or the pin and ground (pull-down). It gives the pin a default level so it never floats in the forbidden middle.</p>
+
+<figure>
+<svg viewBox="0 0 700 320" role="img" aria-label="Inside one GPIO pin: an OUT register bit controls an upper switch to 3.3 volts and a lower switch to ground, both joined at the pin node; a weak 45 kilo-ohm pull-up and pull-down each sit behind their own enable switch; a comparator reads the pin node into an IN register bit. Brass arrow shows current sourced out of the pin when OUT is 1; blue arrow shows current sunk into the pin when OUT is 0." xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="d4arr-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>
+    <marker id="d4arr-brass" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--brass)"/></marker>
+    <marker id="d4arr-sig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--signal)"/></marker>
+  </defs>
+  <line x1="220" y1="30" x2="600" y2="30" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="612" y="34" font-size="12" fill="currentColor">3.3 V</text>
+  <line x1="220" y1="290" x2="600" y2="290" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="612" y="294" font-size="12" fill="currentColor">GND</text>
+  <line x1="200" y1="160" x2="560" y2="160" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="560" y="148" width="36" height="24" fill="var(--brass-soft)" stroke="currentColor"/>
+  <text x="578" y="165" font-size="12" text-anchor="middle" fill="currentColor">pin</text>
+  <line x1="596" y1="160" x2="648" y2="160" stroke="currentColor" fill="none" marker-end="url(#d4arr-ink)"/>
+  <text x="622" y="184" font-size="12" text-anchor="middle" fill="currentColor">to the outside world</text>
+  <line x1="280" y1="30" x2="280" y2="70" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="280" y1="70" x2="296" y2="102" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="280" cy="70" r="3" fill="currentColor"/>
+  <circle cx="280" cy="110" r="3" fill="currentColor"/>
+  <line x1="280" y1="110" x2="280" y2="160" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="302" y="78" font-size="12" fill="currentColor">upper switch:</text>
+  <text x="302" y="93" font-size="12" fill="currentColor">closes when OUT = 1</text>
+  <line x1="280" y1="160" x2="280" y2="210" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="280" y1="210" x2="296" y2="242" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="280" cy="210" r="3" fill="currentColor"/>
+  <circle cx="280" cy="250" r="3" fill="currentColor"/>
+  <line x1="280" y1="250" x2="280" y2="290" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="302" y="222" font-size="12" fill="currentColor">lower switch:</text>
+  <text x="302" y="237" font-size="12" fill="currentColor">closes when OUT = 0</text>
+  <text x="302" y="262" font-size="12" fill="currentColor">never both at once</text>
+  <line x1="440" y1="30" x2="440" y2="50" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="432" y="50" width="16" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="2"/>
+  <text x="456" y="66" font-size="12" fill="currentColor">~45 kΩ</text>
+  <line x1="440" y1="90" x2="454" y2="118" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="440" cy="90" r="3" fill="currentColor"/>
+  <circle cx="440" cy="122" r="3" fill="currentColor"/>
+  <line x1="440" y1="122" x2="440" y2="160" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="456" y="110" font-size="12" fill="currentColor">pull-up enable</text>
+  <line x1="440" y1="160" x2="440" y2="200" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="440" y1="200" x2="454" y2="228" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="440" cy="200" r="3" fill="currentColor"/>
+  <circle cx="440" cy="232" r="3" fill="currentColor"/>
+  <rect x="432" y="232" width="16" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="2"/>
+  <line x1="440" y1="272" x2="440" y2="290" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="456" y="214" font-size="12" fill="currentColor">pull-down enable</text>
+  <text x="456" y="258" font-size="12" fill="currentColor">~45 kΩ</text>
+  <polygon points="200,140 200,180 160,160" fill="var(--signal-soft)" stroke="var(--signal)" stroke-width="2"/>
+  <line x1="160" y1="160" x2="122" y2="160" stroke="var(--signal)" stroke-width="2" fill="none" marker-end="url(#d4arr-sig)"/>
+  <text x="180" y="205" font-size="12" text-anchor="middle" fill="var(--signal)">comparator:</text>
+  <text x="180" y="220" font-size="12" text-anchor="middle" fill="var(--signal)">above 2.5 V → 1</text>
+  <text x="180" y="235" font-size="12" text-anchor="middle" fill="var(--signal)">below 0.8 V → 0</text>
+  <rect x="30" y="145" width="90" height="30" fill="var(--paper)" stroke="currentColor"/>
+  <text x="75" y="164" font-size="12" text-anchor="middle" fill="currentColor">IN bit (read)</text>
+  <rect x="30" y="55" width="90" height="30" fill="var(--paper)" stroke="currentColor"/>
+  <text x="75" y="74" font-size="12" text-anchor="middle" fill="currentColor">OUT bit (write)</text>
+  <line x1="120" y1="70" x2="268" y2="70" stroke="currentColor" stroke-dasharray="4 3" fill="none" marker-end="url(#d4arr-ink)"/>
+  <text x="130" y="100" font-size="12" fill="currentColor">MODE bits choose:</text>
+  <text x="130" y="115" font-size="12" fill="currentColor">input, output, or pull</text>
+  <text x="292" y="126" font-size="12" fill="var(--brass)">OUT = 1: current out</text>
+  <text x="292" y="139" font-size="12" fill="var(--brass)">of the pin (source)</text>
+  <line x1="292" y1="151" x2="428" y2="151" stroke="var(--brass)" stroke-width="2" fill="none" marker-end="url(#d4arr-brass)"/>
+  <line x1="428" y1="170" x2="292" y2="170" stroke="var(--signal)" stroke-width="2" fill="none" marker-end="url(#d4arr-sig)"/>
+  <text x="292" y="191" font-size="12" fill="var(--signal)">OUT = 0: current into</text>
+  <text x="292" y="204" font-size="12" fill="var(--signal)">the pin, to GND (sink)</text>
+</svg>
+<figcaption>Inside one GPIO pin. The two output switches form the push-pull driver, good for about 40 mA at most; the weak pull resistors give a default level, and the comparator turns the pin's voltage into the bit your code reads. Mode bits select which is active.</figcaption>
+</figure>
+
+<p>The switches are small transistors, so they are weak: a pin can source or sink only tens of milliamps, about 40 mA at most (the datasheet's maximum output current at the strongest drive setting). An LED through a resistor is fine; a speaker or motor straight from a pin is not. That is why the MAX98357A amplifier exists in your parts box (off the prototype this week): the pin sends a tiny data signal, and the amp supplies the speaker's current.</p>
+
+<div class="box analogy"><span class="lbl">Software analogy</span><p>A pin is a one-bit register with a mode. Input mode polls the comparator; output mode moves the switches. Enabling a pull-up is setting a default value: if nobody assigns the variable, it reads 1.</p></div>
+
+<div class="box device"><span class="lbl">On your device</span><p>GPIO10, the action button, is an input with the internal pull-up enabled. The button connects it to GND, so pressed reads 0 and released reads 1: "active-low". The wire is short, so 45 kΩ is enough and no external resistor was needed. GPIO20 and GPIO21 use a fourth mode, open-drain, the story of I2C below.</p></div>
+
+<h2>Reset, strap pins, and the BOOT button <span class="clock">0:22–0:35</span></h2>
+
+<p>On Day 2 you met the undefined window: the rail still rising, reset held, nothing trustworthy yet. Today's question is what happens the instant reset is released.</p>
+
+<p>The chip wakes running code baked into its ROM, which reads three <strong>strap pins</strong>, GPIO2, GPIO8 and GPIO9, for at least 3 ms. Their levels answer one question: boot the app from flash, or wait for a computer to send a new image over USB? GPIO9 HIGH means normal boot; GPIO9 LOW with GPIO8 HIGH means download mode. GPIO2 must be HIGH for both answers: the datasheet lists no boot mode with GPIO2 LOW, so a LOW GPIO2 at reset is not a valid boot mode at all, and the board does not come up.</p>
+
+<figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Timeline of a boot: the 3.3 volt rail ramps up, reset is released, the three strap pins are sampled during a short brass window of at least 3 milliseconds, then ROM code hands over to the bootloader and then to the application, which configures every pin. A dashed blue box marks the undefined window while the rail is rising." xmlns="http://www.w3.org/2000/svg">
+  <text x="8" y="40" font-size="12" fill="currentColor">3.3 V rail</text>
+  <path d="M100 60 L150 30 H600" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="60" y1="60" x2="100" y2="60" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="8" y="90" font-size="12" fill="currentColor">reset (EN)</text>
+  <path d="M60 100 H200 V80 H600" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="206" y="76" font-size="12" fill="currentColor">reset released</text>
+  <text x="8" y="126" font-size="12" fill="currentColor">GPIO2 / 8 / 9</text>
+  <rect x="200" y="112" width="80" height="20" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+  <text x="286" y="126" font-size="12" fill="var(--brass)">sampled ≥ 3 ms: flash boot or download mode?</text>
+  <text x="8" y="165" font-size="12" fill="currentColor">what runs</text>
+  <rect x="200" y="150" width="120" height="22" fill="var(--paper)" stroke="currentColor"/>
+  <text x="260" y="165" font-size="12" text-anchor="middle" fill="currentColor">ROM code</text>
+  <rect x="320" y="150" width="110" height="22" fill="var(--paper)" stroke="currentColor"/>
+  <text x="375" y="165" font-size="12" text-anchor="middle" fill="currentColor">bootloader</text>
+  <rect x="430" y="150" width="190" height="22" fill="var(--paper)" stroke="currentColor"/>
+  <text x="525" y="165" font-size="12" text-anchor="middle" fill="currentColor">app configures every pin</text>
+  <rect x="98" y="18" width="102" height="160" fill="none" stroke="var(--signal)" stroke-dasharray="5 4" stroke-width="1.5"/>
+  <text x="104" y="196" font-size="12" fill="var(--signal)">undefined window (Day 2): rail rising, reset held</text>
+  <line x1="60" y1="185" x2="600" y2="185" stroke="currentColor" fill="none"/>
+  <text x="600" y="203" font-size="12" text-anchor="end" fill="currentColor">time →</text>
+</svg>
+<figcaption>After power arrives. The strap pins are read only in the short brass window right after reset is released; after that they become ordinary GPIOs and the application owns every pin's mode.</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 640 250" role="img" aria-label="What the ROM decides at reset. Three strap pins feed one decision. GPIO2 is held HIGH on A1 by its 10 kilo-ohm pull-up. GPIO8 is held HIGH by the board's own pull-up, with only the onboard LED also on it, and must read HIGH for download mode. GPIO9 is the BOOT button: released reads HIGH, held reads LOW. If GPIO2 is LOW there is no valid mode and the board does not come up. If GPIO9 is HIGH the ROM boots your app from flash. If GPIO9 is LOW and GPIO8 is HIGH it enters download mode and waits for the flasher over USB." xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="d4s-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="16" y="30" width="200" height="54" fill="var(--paper)" stroke="currentColor"/>
+  <text x="28" y="52" font-size="13" font-weight="700" fill="currentColor">GPIO2</text>
+  <text x="28" y="72" font-size="12" fill="currentColor">A1: 10 kΩ pull-up → reads 1</text>
+  <rect x="16" y="98" width="200" height="54" fill="var(--paper)" stroke="currentColor"/>
+  <text x="28" y="120" font-size="13" font-weight="700" fill="currentColor">GPIO8</text>
+  <text x="28" y="140" font-size="12" fill="currentColor">board pull-up → reads 1</text>
+  <rect x="16" y="166" width="200" height="54" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+  <text x="28" y="188" font-size="13" font-weight="700" fill="currentColor">GPIO9 = BOOT button</text>
+  <text x="28" y="208" font-size="12" fill="currentColor">released → 1 · held → 0</text>
+  <line x1="216" y1="57" x2="262" y2="118" stroke="currentColor" fill="none"/>
+  <line x1="216" y1="125" x2="262" y2="125" stroke="currentColor" fill="none"/>
+  <line x1="216" y1="193" x2="262" y2="132" stroke="currentColor" fill="none"/>
+  <rect x="262" y="100" width="104" height="50" fill="var(--paper)" stroke="currentColor" stroke-width="2"/>
+  <text x="314" y="121" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">ROM reads</text>
+  <text x="314" y="137" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">all three</text>
+  <path d="M366 112 C395 112 395 57 420 57" fill="none" stroke="currentColor" marker-end="url(#d4s-ink)"/>
+  <path d="M366 125 H420" fill="none" stroke="currentColor" marker-end="url(#d4s-ink)"/>
+  <path d="M366 138 C395 138 395 193 420 193" fill="none" stroke="currentColor" marker-end="url(#d4s-ink)"/>
+  <rect x="422" y="32" width="206" height="50" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="432" y="52" font-size="12" font-weight="700" fill="var(--warn)">GPIO2 = 0</text>
+  <text x="432" y="70" font-size="12" fill="currentColor">no valid mode: board stays dark</text>
+  <rect x="422" y="100" width="206" height="50" fill="var(--ok-soft)" stroke="var(--ok)"/>
+  <text x="432" y="120" font-size="12" font-weight="700" fill="var(--ok)">GPIO9 = 1</text>
+  <text x="432" y="138" font-size="12" fill="currentColor">flash boot: runs your app</text>
+  <rect x="422" y="168" width="206" height="50" fill="var(--signal-soft)" stroke="var(--signal)"/>
+  <text x="432" y="188" font-size="12" font-weight="700" fill="var(--signal)">GPIO9 = 0 and GPIO8 = 1</text>
+  <text x="432" y="206" font-size="12" fill="currentColor">download mode: ready to flash</text>
+  <text x="16" y="244" font-size="12" fill="currentColor">Read once, in the brass window above. After that all three are ordinary pins.</text>
+</svg>
+<figcaption>Three pins, one question at wake-up. GPIO2 must read 1 for anything to happen; then GPIO9 picks between running your app and waiting for a new one. That is why A1 keeps a 10 kΩ pull-up on GPIO2 and leaves GPIO9 to the BOOT button.</figcaption>
+</figure>
+
+
+<p>The SuperMini's BOOT button simply pulls GPIO9 to ground: held through a reset, it makes the ROM enter download mode for the flasher. So GPIO9 is not an application input. Anything holding it LOW during a reset makes the board boot into download mode and look dead, which is why the action button lives on GPIO10, a pin the ROM never reads.</p>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Entering download mode by hand. The GPIO9 line, the BOOT button, is HIGH, goes LOW when you press BOOT, and stays LOW. While BOOT is held you tap RST, which pulls reset LOW briefly. When reset is released the ROM samples the straps and sees GPIO9 LOW, so it enters download mode. You then release BOOT; the chip stays in download mode until the flasher finishes and resets it." xmlns="http://www.w3.org/2000/svg">
+  <text x="8" y="46" font-size="12" fill="currentColor">GPIO9 (BOOT)</text>
+  <path d="M110 34 H170 V64 H420 V34 H620" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="172" y="28" font-size="12" fill="var(--brass)">1 · press and hold BOOT</text>
+  <text x="424" y="28" font-size="12" fill="var(--brass)">4 · release BOOT</text>
+  <text x="8" y="106" font-size="12" fill="currentColor">reset (EN)</text>
+  <path d="M110 94 H230 V124 H270 V94 H620" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="220" y="142" font-size="12" fill="var(--brass)">2 · tap RST (or replug USB)</text>
+  <rect x="270" y="52" width="60" height="18" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+  <text x="336" y="84" font-size="12" fill="var(--brass)">3 · ROM samples: GPIO9 = 0</text>
+  <line x1="270" y1="20" x2="270" y2="170" stroke="var(--signal)" stroke-dasharray="4 3" fill="none"/>
+  <text x="8" y="186" font-size="12" fill="currentColor">what runs</text>
+  <rect x="110" y="172" width="160" height="22" fill="var(--paper)" stroke="currentColor"/>
+  <text x="190" y="187" font-size="12" text-anchor="middle" fill="currentColor">your app</text>
+  <rect x="270" y="172" width="350" height="22" fill="var(--signal-soft)" stroke="var(--signal)"/>
+  <text x="445" y="187" font-size="12" text-anchor="middle" fill="var(--signal)">download mode: the flasher can write</text>
+  <text x="8" y="220" font-size="12" fill="currentColor">Only needed when automatic reset fails; flash.sh normally does all four steps over USB.</text>
+</svg>
+<figcaption>The manual route into download mode. What matters is the order: GPIO9 must already be LOW at the moment reset is released, because that is the only moment the ROM looks. Releasing BOOT afterwards changes nothing.</figcaption>
+</figure>
+
+
+<p>The vendor image put mic data on GPIO8. On a SuperMini that is a strap pin that also drives the onboard blue LED, and a microphone's output could hold it LOW during the 3 ms window, refusing download mode. Inside a sealed frame with no way to disconnect the mic, a bad flash could never be fixed. The source port moved mic data to GPIO4, a pin with no boot meaning, with a 100 kΩ pull-down for a defined default before I2S takes over.</p>
+<figure>
+<svg viewBox="0 0 640 250" role="img" aria-label="Why mic data moved from GPIO8 to GPIO4. Left, the vendor image: the microphone's data output drives GPIO8, a strap pin. If it happens to hold GPIO8 LOW at reset, holding BOOT gives GPIO9 LOW and GPIO8 LOW, which is not download mode, so the board cannot be reflashed; inside a sealed frame that is permanent. Right, the source port: mic data goes to GPIO4, which has no boot meaning and a 100 kilo-ohm pull-down for a defined default. nothing external drives GPIO8, so the board's pull-up keeps it HIGH and download mode is always reachable." xmlns="http://www.w3.org/2000/svg">
+  <text x="160" y="22" font-size="13" font-weight="700" text-anchor="middle" fill="var(--warn)">Vendor image: mic on GPIO8</text>
+  <rect x="30" y="40" width="90" height="46" fill="var(--paper)" stroke="currentColor"/>
+  <text x="75" y="60" font-size="12" text-anchor="middle" fill="currentColor">mic data</text>
+  <text x="75" y="76" font-size="12" text-anchor="middle" fill="currentColor">output</text>
+  <line x1="120" y1="63" x2="200" y2="63" stroke="var(--warn)" stroke-width="2.5" fill="none"/>
+  <rect x="200" y="46" width="90" height="34" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="2"/>
+  <text x="245" y="68" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">GPIO8 strap</text>
+  <text x="30" y="116" font-size="12" fill="currentColor">At reset the mic may hold it at 0.</text>
+  <text x="30" y="136" font-size="12" fill="currentColor">Hold BOOT: GPIO9 = 0, GPIO8 = 0</text>
+  <text x="30" y="156" font-size="12" font-weight="700" fill="var(--warn)">→ not download mode, no reflash</text>
+  <text x="30" y="184" font-size="12" fill="currentColor">Inside a sealed frame the mic cannot be</text>
+  <text x="30" y="200" font-size="12" fill="currentColor">unplugged, so one bad flash is permanent.</text>
+  <line x1="320" y1="14" x2="320" y2="236" stroke="currentColor" stroke-dasharray="4 4" fill="none"/>
+  <text x="480" y="22" font-size="13" font-weight="700" text-anchor="middle" fill="var(--ok)">Source port: mic on GPIO4</text>
+  <rect x="350" y="40" width="90" height="46" fill="var(--paper)" stroke="currentColor"/>
+  <text x="395" y="60" font-size="12" text-anchor="middle" fill="currentColor">mic data</text>
+  <text x="395" y="76" font-size="12" text-anchor="middle" fill="currentColor">output</text>
+  <line x1="440" y1="63" x2="520" y2="63" stroke="var(--ok)" stroke-width="2.5" fill="none"/>
+  <rect x="520" y="46" width="100" height="34" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/>
+  <text x="570" y="68" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">GPIO4, plain</text>
+  <line x1="570" y1="80" x2="570" y2="96" stroke="currentColor" fill="none"/>
+  <rect x="562" y="96" width="16" height="30" fill="var(--paper)" stroke="currentColor"/>
+  <line x1="570" y1="126" x2="570" y2="138" stroke="currentColor" fill="none"/>
+  <line x1="558" y1="138" x2="582" y2="138" stroke="currentColor" fill="none"/>
+  <text x="556" y="116" font-size="12" text-anchor="end" fill="currentColor">100 kΩ to GND</text>
+  <text x="350" y="166" font-size="12" fill="currentColor">GPIO4 has no boot meaning, and the</text>
+  <text x="350" y="182" font-size="12" fill="currentColor">pull-down gives it a defined 0.</text>
+  <text x="350" y="206" font-size="12" fill="currentColor">Nothing drives GPIO8, so its pull-up wins:</text>
+  <text x="350" y="222" font-size="12" font-weight="700" fill="var(--ok)">BOOT always reaches download mode.</text>
+</svg>
+<figcaption>Keep live signals off strap pins. A microphone that happens to hold GPIO8 LOW at the wrong moment can lock the flasher out; moving it to GPIO4 makes recovery independent of what the microphone is doing.</figcaption>
+</figure>
+
+
+<div class="box device"><span class="lbl">On your device</span><p>GPIO2 carries the I2S bit clock (BCLK) and has a 10 kΩ pull-up to 3V3 so it reads HIGH at boot. GPIO8 is left to the onboard LED. GPIO9 is BOOT and nothing else. Mic data is on GPIO4 with a 100 kΩ pull-down to GND. The vendor image's GPIO8 assignment and the source port's GPIO4 assignment are two different pinouts, and they never mix.</p></div>
+
+<div class="box analogy"><span class="lbl">Software analogy</span><p>Strap pins are command-line flags read once at process start, before <code>main()</code> runs; nothing you write later changes what they meant. A live data line on a flag pin lets a random value pick recovery mode.</p></div>
+
+<h3>Your board, pin by pin</h3>
+
+<p>Here is A1 as it sits on your breadboard, with every pin labelled by what it connects to and the voltage it should rest at while the assistant sits idle, listening for its wake word. Most pins rest HIGH because something pulls them up: a strap pull-up, a button's pull-up, or the OLED module's bus pull-ups. The three audio pins never rest; they carry the I2S clocks and data all the time the microphone is listening.</p>
+
+<figure>
+<svg viewBox="0 0 840 560" role="img" aria-label="A1, the ESP32-C3 SuperMini, drawn component side up with USB-C at the top and the antenna at the bottom. Each of its sixteen pins is labelled with what it connects to and its expected voltage with the assistant idle. Left edge from the USB end: GPIO5 to the amplifier SD with a 1 kilo-ohm pull-down, 0 volts, 3.3 volts only while speaking; GPIO6 and GPIO7 not connected; GPIO8 the onboard LED with the board pull-up, 3.3 volts; GPIO9 the BOOT button, 3.3 volts; GPIO10 the action button with its internal pull-up, 3.3 volts; GPIO20 and GPIO21 the OLED clock and data with the module pull-ups, 3.3 volts. Right edge from the USB end: 5V to the amplifier VIN, 5 volts; GND, 0 volts; 3.3 to the OLED and microphone, 3.3 volts; GPIO4 microphone data, toggling; GPIO3 amplifier data, 0 volts in silence; GPIO2 the shared bit clock at 1.024 megahertz with a 10 kilo-ohm pull-up; GPIO1 the shared word select at 16 kilohertz; GPIO0 not connected." xmlns="http://www.w3.org/2000/svg">
+<rect x="340" y="62" width="160" height="398" rx="10" fill="var(--paper)" stroke="currentColor" stroke-width="2"/>
+<rect x="382.0" y="40" width="76" height="46" rx="6" fill="var(--bg)" stroke="currentColor"/>
+<text x="420.0" y="68" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">USB-C</text>
+<rect x="384.0" y="438" width="72" height="16" fill="var(--warn-soft)" stroke="var(--warn)"/>
+<text x="420.0" y="450" font-size="11" text-anchor="middle" fill="var(--warn)">antenna</text>
+<text x="420.0" y="278" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">A1</text>
+<text x="420.0" y="294" font-size="11" text-anchor="middle" fill="currentColor">ESP32-C3</text>
+<text x="420.0" y="308" font-size="11" text-anchor="middle" fill="currentColor">component side up</text>
+<circle cx="356" cy="112" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="116" font-size="11" font-family="var(--mono)" fill="currentColor">5</text>
+<line x1="350" y1="112" x2="318" y2="112" stroke="currentColor" fill="none"/>
+<rect x="254" y="101" width="64" height="22" rx="4" fill="var(--paper)" stroke="currentColor"/>
+<text x="286" y="116" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0 V</text>
+<text x="246" y="110" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO5</tspan> amplifier SD · 1 kΩ to GND</text>
+<text x="246" y="125" font-size="11" text-anchor="end" fill="var(--ink-2)">3.3 V only while it speaks</text>
+<circle cx="356" cy="156" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="160" font-size="11" font-family="var(--mono)" fill="currentColor">6</text>
+<line x1="350" y1="156" x2="318" y2="156" stroke="currentColor" fill="none"/>
+<rect x="254" y="145" width="64" height="22" rx="4" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>
+<text x="286" y="160" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">—</text>
+<text x="246" y="160" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO6</tspan> not connected</text>
+<circle cx="356" cy="200" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="204" font-size="11" font-family="var(--mono)" fill="currentColor">7</text>
+<line x1="350" y1="200" x2="318" y2="200" stroke="currentColor" fill="none"/>
+<rect x="254" y="189" width="64" height="22" rx="4" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>
+<text x="286" y="204" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">—</text>
+<text x="246" y="204" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO7</tspan> not connected</text>
+<circle cx="356" cy="244" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="248" font-size="11" font-family="var(--mono)" fill="currentColor">8</text>
+<line x1="350" y1="244" x2="318" y2="244" stroke="currentColor" fill="none"/>
+<rect x="254" y="233" width="64" height="22" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="286" y="248" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="246" y="242" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO8</tspan> onboard blue LED · board pull-up</text>
+<text x="246" y="257" font-size="11" text-anchor="end" fill="var(--ink-2)">strap: must be 1 for download</text>
+<circle cx="356" cy="288" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="292" font-size="11" font-family="var(--mono)" fill="currentColor">9</text>
+<line x1="350" y1="288" x2="318" y2="288" stroke="currentColor" fill="none"/>
+<rect x="254" y="277" width="64" height="22" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="286" y="292" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="246" y="286" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO9</tspan> BOOT button · pull-up</text>
+<text x="246" y="301" font-size="11" text-anchor="end" fill="var(--ink-2)">strap: 0 V while BOOT is held</text>
+<circle cx="356" cy="332" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="336" font-size="11" font-family="var(--mono)" fill="currentColor">10</text>
+<line x1="350" y1="332" x2="318" y2="332" stroke="currentColor" fill="none"/>
+<rect x="254" y="321" width="64" height="22" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="286" y="336" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="246" y="330" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO10</tspan> action button · internal pull-up</text>
+<text x="246" y="345" font-size="11" text-anchor="end" fill="var(--ink-2)">0 V while you press it</text>
+<circle cx="356" cy="376" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="380" font-size="11" font-family="var(--mono)" fill="currentColor">20</text>
+<line x1="350" y1="376" x2="318" y2="376" stroke="currentColor" fill="none"/>
+<rect x="254" y="365" width="64" height="22" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="286" y="380" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="246" y="374" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO20</tspan> OLED SCL · module pull-up</text>
+<text x="246" y="389" font-size="11" text-anchor="end" fill="var(--ink-2)">dips only during a redraw</text>
+<circle cx="356" cy="420" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="368" y="424" font-size="11" font-family="var(--mono)" fill="currentColor">21</text>
+<line x1="350" y1="420" x2="318" y2="420" stroke="currentColor" fill="none"/>
+<rect x="254" y="409" width="64" height="22" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="286" y="424" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="246" y="418" font-size="12" text-anchor="end" fill="currentColor"><tspan font-weight="700">GPIO21</tspan> OLED SDA · module pull-up</text>
+<text x="246" y="433" font-size="11" text-anchor="end" fill="var(--ink-2)">dips only during a redraw</text>
+<circle cx="484" cy="112" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="116" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">5V</text>
+<line x1="490" y1="112" x2="522" y2="112" stroke="currentColor" fill="none"/>
+<rect x="522" y="101" width="72" height="22" rx="4" fill="var(--warn-soft)" stroke="var(--warn)"/>
+<text x="558" y="116" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">5 V</text>
+<text x="602" y="110" font-size="12" fill="currentColor"><tspan font-weight="700">5V</tspan> amplifier VIN</text>
+<text x="602" y="125" font-size="11" fill="var(--ink-2)">USB VBUS, no diode</text>
+<circle cx="484" cy="156" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="160" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">GND</text>
+<line x1="490" y1="156" x2="522" y2="156" stroke="currentColor" fill="none"/>
+<rect x="522" y="145" width="72" height="22" rx="4" fill="var(--paper)" stroke="currentColor"/>
+<text x="558" y="160" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0 V</text>
+<text x="602" y="160" font-size="12" fill="currentColor"><tspan font-weight="700">GND</tspan> ground for every module</text>
+<circle cx="484" cy="200" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="204" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">3.3</text>
+<line x1="490" y1="200" x2="522" y2="200" stroke="currentColor" fill="none"/>
+<rect x="522" y="189" width="72" height="22" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="558" y="204" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="602" y="198" font-size="12" fill="currentColor"><tspan font-weight="700">3.3</tspan> OLED VCC · microphone VDD</text>
+<text x="602" y="213" font-size="11" fill="var(--ink-2)">the only 3.3 V source</text>
+<circle cx="484" cy="244" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="248" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">4</text>
+<line x1="490" y1="244" x2="522" y2="244" stroke="currentColor" fill="none"/>
+<rect x="522" y="233" width="72" height="22" rx="4" fill="var(--ok-soft)" stroke="var(--ok)"/>
+<text x="558" y="248" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">data</text>
+<text x="602" y="242" font-size="12" fill="currentColor"><tspan font-weight="700">GPIO4</tspan> microphone data · 100 kΩ to GND</text>
+<text x="602" y="257" font-size="11" fill="var(--ink-2)">0 V at reset</text>
+<circle cx="484" cy="288" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="292" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">3</text>
+<line x1="490" y1="288" x2="522" y2="288" stroke="currentColor" fill="none"/>
+<rect x="522" y="277" width="72" height="22" rx="4" fill="var(--paper)" stroke="currentColor"/>
+<text x="558" y="292" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0 V</text>
+<text x="602" y="286" font-size="12" fill="currentColor"><tspan font-weight="700">GPIO3</tspan> amplifier DIN</text>
+<text x="602" y="301" font-size="11" fill="var(--ink-2)">silence sends 0s</text>
+<circle cx="484" cy="332" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="336" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">2</text>
+<line x1="490" y1="332" x2="522" y2="332" stroke="currentColor" fill="none"/>
+<rect x="522" y="321" width="72" height="22" rx="4" fill="var(--ok-soft)" stroke="var(--ok)"/>
+<text x="558" y="336" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1.024 MHz</text>
+<text x="602" y="330" font-size="12" fill="currentColor"><tspan font-weight="700">GPIO2</tspan> mic SCK + amp BCLK · 10 kΩ to 3.3</text>
+<text x="602" y="345" font-size="11" fill="var(--ink-2)">strap: 3.3 V at reset</text>
+<circle cx="484" cy="376" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="380" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">1</text>
+<line x1="490" y1="376" x2="522" y2="376" stroke="currentColor" fill="none"/>
+<rect x="522" y="365" width="72" height="22" rx="4" fill="var(--ok-soft)" stroke="var(--ok)"/>
+<text x="558" y="380" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">16 kHz</text>
+<text x="602" y="374" font-size="12" fill="currentColor"><tspan font-weight="700">GPIO1</tspan> mic WS + amp LRC</text>
+<text x="602" y="389" font-size="11" fill="var(--ink-2)">one frame per sample</text>
+<circle cx="484" cy="420" r="6" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+<text x="472" y="424" font-size="11" text-anchor="end" font-family="var(--mono)" fill="currentColor">0</text>
+<line x1="490" y1="420" x2="522" y2="420" stroke="currentColor" fill="none"/>
+<rect x="522" y="409" width="72" height="22" rx="4" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>
+<text x="558" y="424" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">—</text>
+<text x="602" y="424" font-size="12" fill="currentColor"><tspan font-weight="700">GPIO0</tspan> not connected</text>
+<rect x="20" y="511" width="44" height="20" rx="4" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="42" y="525" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">3.3 V</text>
+<text x="70" y="525" font-size="11" fill="currentColor">held HIGH</text>
+<rect x="142.4" y="511" width="44" height="20" rx="4" fill="var(--paper)" stroke="currentColor"/>
+<text x="164.4" y="525" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0 V</text>
+<text x="192.4" y="525" font-size="11" fill="currentColor">held LOW</text>
+<rect x="259.2" y="511" width="44" height="20" rx="4" fill="var(--ok-soft)" stroke="var(--ok)"/>
+<text x="281.2" y="525" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">clock</text>
+<text x="309.2" y="525" font-size="11" fill="currentColor">clock or data: a meter reads ≈1.65 V</text>
+<rect x="549.5999999999999" y="511" width="44" height="20" rx="4" fill="var(--warn-soft)" stroke="var(--warn)"/>
+<text x="571.5999999999999" y="525" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">5 V</text>
+<text x="599.5999999999999" y="525" font-size="11" fill="currentColor">USB power</text>
+<rect x="671.9999999999999" y="511" width="44" height="20" rx="4" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>
+<text x="693.9999999999999" y="525" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--mono)" fill="currentColor">—</text>
+<text x="721.9999999999999" y="525" font-size="11" fill="currentColor">not connected</text>
+<text x="20" y="550" font-size="11" fill="var(--ink-2)">Expected with the assistant idle and listening for its wake word. Pin order from the published SuperMini pinout; read your silkscreen.</text>
+</svg>
+<figcaption>A1 at rest. A meter on DC volts reads a steady voltage on every held pin, but on a clock it reads the average of a fast square wave, about half of 3.3 V; only a scope shows the real 0-and-3.3 V switching. GPIO5 is the one pin the firmware changes on purpose: 0 V at rest, 3.3 V while A1 speaks.</figcaption>
+</figure>
+
+
+<h2>Buttons and bouncing <span class="clock">0:35–0:43</span></h2>
+
+<p>A tactile button is two springy contacts. Pressed, they do not meet once; they bang together, separate and meet again for a few milliseconds. To you that is one press. To a comparator sampling thousands of times a second it is a burst of 0-1-0-1 before the line settles LOW.</p>
+
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Voltage on GPIO10 during a press: it sits at 3.3 volts, falls at time zero, bounces between 3.3 and 0 volts for about 2 milliseconds, then stays at 0. Raw reads every half millisecond show 1 0 1 0 1 0 0 0. A brass bracket marks an example 20 millisecond debounce window, and a blue marker shows the single accepted press at its end." xmlns="http://www.w3.org/2000/svg">
+  <text x="40" y="32" font-size="12" fill="currentColor">GPIO10 voltage (button to GND, internal pull-up)</text>
+  <text x="8" y="54" font-size="12" fill="currentColor">3.3 V</text>
+  <text x="8" y="114" font-size="12" fill="currentColor">0 V</text>
+  <path d="M40 50 H180 V110 H190 V50 H196 V110 H208 V50 H212 V110 H222 V50 H224 V110 H600" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="232" y="80" font-size="12" fill="currentColor">contact chatter ≈ 2 ms</text>
+  <line x1="40" y1="140" x2="600" y2="140" stroke="currentColor" fill="none"/>
+  <line x1="180" y1="136" x2="180" y2="144" stroke="currentColor" fill="none"/>
+  <line x1="280" y1="136" x2="280" y2="144" stroke="currentColor" fill="none"/>
+  <line x1="380" y1="136" x2="380" y2="144" stroke="currentColor" fill="none"/>
+  <line x1="480" y1="136" x2="480" y2="144" stroke="currentColor" fill="none"/>
+  <line x1="580" y1="136" x2="580" y2="144" stroke="currentColor" fill="none"/>
+  <text x="180" y="156" font-size="12" text-anchor="middle" fill="currentColor">0 ms</text>
+  <text x="280" y="156" font-size="12" text-anchor="middle" fill="currentColor">5 ms</text>
+  <text x="380" y="156" font-size="12" text-anchor="middle" fill="currentColor">10 ms</text>
+  <text x="480" y="156" font-size="12" text-anchor="middle" fill="currentColor">15 ms</text>
+  <text x="580" y="156" font-size="12" text-anchor="middle" fill="currentColor">20 ms</text>
+  <text x="8" y="178" font-size="12" fill="currentColor">raw reads:</text>
+  <text x="170" y="178" font-size="12" text-anchor="middle" fill="currentColor">1</text>
+  <text x="182" y="178" font-size="12" text-anchor="middle" fill="currentColor">0</text>
+  <text x="193" y="178" font-size="12" text-anchor="middle" fill="currentColor">1</text>
+  <text x="204" y="178" font-size="12" text-anchor="middle" fill="currentColor">0</text>
+  <text x="215" y="178" font-size="12" text-anchor="middle" fill="currentColor">0</text>
+  <text x="226" y="178" font-size="12" text-anchor="middle" fill="currentColor">0</text>
+  <text x="240" y="178" font-size="12" fill="currentColor">0 0 0 0 0 … stable</text>
+  <line x1="180" y1="200" x2="580" y2="200" stroke="var(--brass)" stroke-width="3" fill="none"/>
+  <line x1="180" y1="194" x2="180" y2="206" stroke="var(--brass)" stroke-width="3" fill="none"/>
+  <line x1="580" y1="194" x2="580" y2="206" stroke="var(--brass)" stroke-width="3" fill="none"/>
+  <text x="188" y="220" font-size="12" fill="var(--brass)">debounce window, here 20 ms: ignore changes until the line settles</text>
+  <circle cx="580" cy="200" r="6" fill="var(--signal)" stroke="none"/>
+  <text x="630" y="192" font-size="12" text-anchor="end" fill="var(--signal)">accepted: one press</text>
+</svg>
+<figcaption>One press of the GPIO10 button as the pin sees it. The chatter lasts about 2 ms, far shorter than this example's 20 ms debounce window, so the firmware reports one press instead of three.</figcaption>
+</figure>
+
+<p>Firmware fixes this by <strong>debouncing</strong>: after the first change, ignore the pin for a settle time (say 20 ms) and then read it once, or accept a new state only after N identical reads in a row. The window is longer than any bounce and shorter than the fastest deliberate double-press (about 100 ms), so nothing real is lost.</p>
+
+<div class="box analogy"><span class="lbl">Software analogy</span><p>Debouncing is a retry with a settle timeout. A flapping health check does not mark a service down on the first failed check; it waits for the state to be stable for a window before acting.</p></div>
+
+<h2>Serial buses: UART, SPI, I2C <span class="clock">0:43–0:52</span></h2>
+
+<p>The OLED needs 1024 bytes of picture. Eight wires at once, a <strong>parallel</strong> bus, would cost eight pins plus a "now" line. Your SuperMini exposes only 13 usable GPIOs, several already spent, so the picture goes <strong>serially</strong>: one bit after another, in time, on one wire.</p>
+
+<p>That raises one problem: when should the receiver look? A slow wire may still be rising when the sender moves on. The clean answer is a second wire, a <strong>clock</strong>, whose edges say "look now". The three buses you will meet differ in how they answer that and in how many devices share the wires.</p>
+
+<div class="tablewrap">
+<table>
+<tr><th>Bus</th><th>Signal wires</th><th>Clock?</th><th>Many devices?</th><th>Where you meet it</th></tr>
+<tr><td>UART</td><td class="num">2</td><td>No; both sides agree a speed in advance</td><td>One pair</td><td>The boot log a board prints to a computer (the C3 carries it over native USB)</td></tr>
+<tr><td>SPI</td><td class="num">3 + 1 select each</td><td>Yes</td><td>Yes, one select wire per device</td><td>Fast displays, SD cards</td></tr>
+<tr><td>I2C</td><td class="num">2</td><td>Yes, shared</td><td>Yes, by address on the same wires</td><td>Your OLED; most sensors</td></tr>
+</table>
+</div>
+
+<p>I2C won for the OLED because it costs two pins however many devices you add later, and a text screen changes slowly, so SPI's speed is not needed. GPIO20 and GPIO21 would otherwise sit idle as the old UART0 lines that native USB replaced.</p>
+
+<div class="box analogy"><span class="lbl">Software analogy</span><p>I2C addresses are ports on one network interface. SDA and SCL are the cable; the 7-bit address says which service should answer. UART is a point-to-point socket with no addressing; SPI gives each peer its own physical select line instead.</p></div>
+
+<h2>I2C in detail <span class="clock">0:52–1:07</span></h2>
+
+<p>Here is the idea that makes I2C shareable. On SDA and SCL no device may ever push the wire up to 3.3 V. Each device has only the lower switch of the push-pull pair: pull the line to ground, or let go. This is <strong>open-drain</strong>. One <strong>pull-up resistor</strong> per wire does the lifting: when everyone lets go, the resistor pulls the line to 3.3 V, the idle state.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="Three states of one shared SDA wire. Each panel shows 3.3 volts feeding a pull-up resistor down to SDA, and two switches from SDA to ground, one in the ESP32-C3 and one in the OLED. Left: both let go, so the pull-up lifts SDA to 3.3 volts, reading 1 or idle. Middle: the ESP32-C3 closes its switch, current flows from the pull-up through it to ground, and SDA reads 0: the ESP32 is sending a 0. Right: the OLED closes its switch the same way, which is how it answers ACK. Neither side can ever push SDA up; only the resistor does that." xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="d4w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker></defs>
+<text x="110" y="22" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">Nobody pulls</text>
+<line x1="20" y1="42" x2="200" y2="42" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="200" y="36" font-size="11" text-anchor="end" fill="currentColor">3.3 V</text>
+<line x1="110" y1="42" x2="110" y2="52" stroke="var(--brass)" stroke-width="2" fill="none"/>
+<rect x="103" y="52" width="14" height="36" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+<text x="122" y="74" font-size="11" fill="var(--brass)">pull-up</text>
+<line x1="110" y1="88" x2="110" y2="112" stroke="var(--brass)" stroke-width="2" fill="none"/>
+<line x1="30" y1="112" x2="190" y2="112" stroke="var(--signal)" stroke-width="4" fill="none"/>
+<text x="32" y="106" font-size="11" font-weight="700" fill="var(--signal)">SDA</text>
+<line x1="60" y1="112" x2="60" y2="140" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="60" cy="140" r="3" fill="currentColor"/>
+<line x1="60" y1="140" x2="76" y2="168" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="80" y="156" font-size="11" fill="currentColor">lets go</text>
+<circle cx="60" cy="172" r="3" fill="currentColor"/>
+<line x1="60" y1="172" x2="60" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="60" y="226" font-size="11" text-anchor="middle" fill="currentColor">ESP32-C3</text>
+<line x1="160" y1="112" x2="160" y2="140" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="160" cy="140" r="3" fill="currentColor"/>
+<line x1="160" y1="140" x2="176" y2="168" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="180" y="156" font-size="11" fill="currentColor">lets go</text>
+<circle cx="160" cy="172" r="3" fill="currentColor"/>
+<line x1="160" y1="172" x2="160" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="160" y="226" font-size="11" text-anchor="middle" fill="currentColor">OLED</text>
+<line x1="20" y1="192" x2="200" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="200" y="208" font-size="11" text-anchor="end" fill="currentColor">GND</text>
+<rect x="20" y="238" width="180" height="26" rx="4" fill="var(--signal-soft)" stroke="var(--signal)"/>
+<text x="110" y="256" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">SDA = 3.3 V → reads 1</text>
+<text x="110" y="282" font-size="11" text-anchor="middle" fill="currentColor">idle, a 1 bit, or no ACK</text>
+<text x="320" y="22" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">The ESP32 pulls</text>
+<line x1="230" y1="42" x2="410" y2="42" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="410" y="36" font-size="11" text-anchor="end" fill="currentColor">3.3 V</text>
+<line x1="320" y1="42" x2="320" y2="52" stroke="var(--brass)" stroke-width="2" fill="none"/>
+<rect x="313" y="52" width="14" height="36" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+<text x="332" y="74" font-size="11" fill="var(--brass)">pull-up</text>
+<line x1="320" y1="88" x2="320" y2="112" stroke="var(--brass)" stroke-width="2" fill="none"/>
+<line x1="240" y1="112" x2="400" y2="112" stroke="currentColor" stroke-width="4" fill="none"/>
+<text x="242" y="106" font-size="11" font-weight="700" fill="currentColor">SDA</text>
+<line x1="270" y1="112" x2="270" y2="140" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="270" cy="140" r="3" fill="currentColor"/>
+<line x1="270" y1="140" x2="270" y2="172" stroke="var(--warn)" stroke-width="3" fill="none"/>
+<text x="278" y="160" font-size="11" font-weight="700" fill="var(--warn)">pulls</text>
+<circle cx="270" cy="172" r="3" fill="currentColor"/>
+<line x1="270" y1="172" x2="270" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="270" y="226" font-size="11" text-anchor="middle" fill="currentColor">ESP32-C3</text>
+<line x1="370" y1="112" x2="370" y2="140" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="370" cy="140" r="3" fill="currentColor"/>
+<line x1="370" y1="140" x2="386" y2="168" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="390" y="156" font-size="11" fill="currentColor">lets go</text>
+<circle cx="370" cy="172" r="3" fill="currentColor"/>
+<line x1="370" y1="172" x2="370" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="370" y="226" font-size="11" text-anchor="middle" fill="currentColor">OLED</text>
+<line x1="230" y1="192" x2="410" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="410" y="208" font-size="11" text-anchor="end" fill="currentColor">GND</text>
+<path d="M320 96 V104 H270 V180" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#d4w)"/>
+<rect x="230" y="238" width="180" height="26" rx="4" fill="var(--warn-soft)" stroke="var(--warn)"/>
+<text x="320" y="256" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">SDA = 0 V → reads 0</text>
+<text x="320" y="282" font-size="11" text-anchor="middle" fill="currentColor">the ESP32 sends a 0 bit</text>
+<text x="530" y="22" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">The OLED pulls</text>
+<line x1="440" y1="42" x2="620" y2="42" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="620" y="36" font-size="11" text-anchor="end" fill="currentColor">3.3 V</text>
+<line x1="530" y1="42" x2="530" y2="52" stroke="var(--brass)" stroke-width="2" fill="none"/>
+<rect x="523" y="52" width="14" height="36" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+<text x="542" y="74" font-size="11" fill="var(--brass)">pull-up</text>
+<line x1="530" y1="88" x2="530" y2="112" stroke="var(--brass)" stroke-width="2" fill="none"/>
+<line x1="450" y1="112" x2="610" y2="112" stroke="currentColor" stroke-width="4" fill="none"/>
+<text x="452" y="106" font-size="11" font-weight="700" fill="currentColor">SDA</text>
+<line x1="480" y1="112" x2="480" y2="140" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="480" cy="140" r="3" fill="currentColor"/>
+<line x1="480" y1="140" x2="496" y2="168" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="500" y="156" font-size="11" fill="currentColor">lets go</text>
+<circle cx="480" cy="172" r="3" fill="currentColor"/>
+<line x1="480" y1="172" x2="480" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="480" y="226" font-size="11" text-anchor="middle" fill="currentColor">ESP32-C3</text>
+<line x1="580" y1="112" x2="580" y2="140" stroke="currentColor" stroke-width="2" fill="none"/>
+<circle cx="580" cy="140" r="3" fill="currentColor"/>
+<line x1="580" y1="140" x2="580" y2="172" stroke="var(--warn)" stroke-width="3" fill="none"/>
+<text x="588" y="160" font-size="11" font-weight="700" fill="var(--warn)">pulls</text>
+<circle cx="580" cy="172" r="3" fill="currentColor"/>
+<line x1="580" y1="172" x2="580" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="580" y="226" font-size="11" text-anchor="middle" fill="currentColor">OLED</text>
+<line x1="440" y1="192" x2="620" y2="192" stroke="currentColor" stroke-width="2" fill="none"/>
+<text x="620" y="208" font-size="11" text-anchor="end" fill="currentColor">GND</text>
+<path d="M530 96 V104 H580 V180" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#d4w)"/>
+<rect x="440" y="238" width="180" height="26" rx="4" fill="var(--warn-soft)" stroke="var(--warn)"/>
+<text x="530" y="256" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">SDA = 0 V → ACK</text>
+<text x="530" y="282" font-size="11" text-anchor="middle" fill="currentColor">the OLED says: I heard you</text>
+</svg>
+<figcaption>One wire, two switches to ground, one resistor to 3.3 V. Each device can only pull SDA down or let go; neither can push it up. When everyone lets go, the pull-up lifts the line to 3.3 V. When anyone pulls, the line is LOW, and the small current (about 0.7 mA with a 4.7 kΩ pull-up) flows through the resistor and that device's switch. The pull-up here is the OLED module's own resistor in parallel with the C3's weak ~45 kΩ internal one. SCL works exactly the same way on its own wire.</figcaption>
+</figure>
+
+<p>Two push-pull outputs on one wire would fight, a short circuit between one shoving up and one shoving down. Open-drain devices cannot fight: if any device pulls LOW, the line is LOW. This "wired-AND" lets the OLED answer on the same wire the ESP32-C3 talks on.</p>
+
+<p>The resistor's value is a compromise. Smaller rises faster after release, which 400 kHz needs, but every device must sink more current when LOW. Larger means less current but a lazier rise. Typical module values are 4.7 to 10 kΩ. Your Hosyond OLED carries its own pair, which is exactly why none were added to your breadboard: extra resistors would sit in parallel and change the value blindly.</p>
+
+<div class="eq">I_sink = V / R = 3.3 V / 4.7 kΩ ≈ 0.7 mA per line while LOW</div>
+
+<h3>One transaction, bit by bit</h3>
+
+<p>The ESP32-C3 is the <strong>controller</strong>; the OLED is a <strong>target</strong>. Rule one: SDA changes only while SCL is LOW, and is read while SCL is HIGH. The two deliberate exceptions are the bookends: <strong>START</strong> is SDA falling while SCL stays HIGH; <strong>STOP</strong> is SDA rising while SCL stays HIGH.</p>
+
+<figure>
+<svg viewBox="0 0 800 320" role="img" aria-label="One I2C write to the OLED at address 0x3C, drawn with coloured bands. START: SDA falls while SCL is high. Then seven address bits 0111100 in a blue band, the write bit 0, an ACK slot in a brass band, eight data bits 10100101 in a green band, a second ACK slot, and STOP: SDA rises while SCL is high. A dot on SDA marks where each bit is read, in the middle of each SCL high pulse. A bottom row shows who drives SDA: the ESP32-C3 for the address, write bit and data, the OLED only in the two ACK slots." xmlns="http://www.w3.org/2000/svg">
+<rect x="100" y="30" width="224" height="190" fill="var(--signal-soft)" stroke="var(--line)"/>
+<text x="212.0" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">address 0x3C</text>
+<rect x="324" y="30" width="32" height="190" fill="var(--paper)" stroke="var(--line)"/>
+<text x="340.0" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">W</text>
+<rect x="356" y="30" width="32" height="190" fill="var(--brass-soft)" stroke="var(--line)"/>
+<text x="372.0" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">ACK</text>
+<rect x="388" y="30" width="256" height="190" fill="var(--ok-soft)" stroke="var(--line)"/>
+<text x="516.0" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">data byte 0xA5</text>
+<rect x="644" y="30" width="32" height="190" fill="var(--brass-soft)" stroke="var(--line)"/>
+<text x="660.0" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">ACK</text>
+<text x="85.0" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="var(--signal)">START</text>
+<text x="730" y="22" font-size="12" font-weight="700" text-anchor="middle" fill="var(--signal)">STOP</text>
+<text x="124" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="156" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="188" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="220" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="252" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="284" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="316" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="348" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">W=0</text>
+<text x="380" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="412" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="444" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="476" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="508" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="540" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="572" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="604" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="636" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">1</text>
+<text x="668" y="48" font-size="12" text-anchor="middle" font-family="var(--mono)" fill="currentColor">0</text>
+<text x="8" y="94" font-size="13" font-weight="700" fill="currentColor">SCL</text>
+<path d="M30 70 H100 V110 H116 V70 H132 V110 H148 V70 H164 V110 H180 V70 H196 V110 H212 V70 H228 V110 H244 V70 H260 V110 H276 V70 H292 V110 H308 V70 H324 V110 H340 V70 H356 V110 H372 V70 H388 V110 H404 V70 H420 V110 H436 V70 H452 V110 H468 V70 H484 V110 H500 V70 H516 V110 H532 V70 H548 V110 H564 V70 H580 V110 H596 V70 H612 V110 H628 V70 H644 V110 H660 V70 H676 H760" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="8" y="184" font-size="13" font-weight="700" fill="currentColor">SDA</text>
+<path d="M30 160 H80 V200 H136 V160 H264 V200 H392 V160 H424 V200 H456 V160 H488 V200 H552 V160 H584 V200 H616 V160 H648 V200 H708 V160 H760" fill="none" stroke="currentColor" stroke-width="2"/>
+<circle cx="124" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="156" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="188" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="220" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="252" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="284" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="316" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="348" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="380" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="412" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="444" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="476" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="508" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="540" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="572" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="604" cy="200" r="3.5" fill="var(--signal)"/>
+<circle cx="636" cy="160" r="3.5" fill="var(--signal)"/>
+<circle cx="668" cy="200" r="3.5" fill="var(--signal)"/>
+<line x1="80" y1="60" x2="80" y2="212" stroke="var(--signal)" stroke-dasharray="4 3" stroke-width="1.5" fill="none"/>
+<line x1="708" y1="60" x2="708" y2="212" stroke="var(--signal)" stroke-dasharray="4 3" stroke-width="1.5" fill="none"/>
+<text x="8" y="244" font-size="12" font-weight="700" fill="currentColor">drives SDA</text>
+<rect x="101" y="230" width="254" height="20" rx="3" fill="var(--paper)" stroke="currentColor"/>
+<text x="228.0" y="244" font-size="11" text-anchor="middle" fill="currentColor">ESP32-C3</text>
+<rect x="357" y="230" width="30" height="20" rx="3" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="372.0" y="244" font-size="11" text-anchor="middle" fill="currentColor">OLED</text>
+<rect x="389" y="230" width="254" height="20" rx="3" fill="var(--paper)" stroke="currentColor"/>
+<text x="516.0" y="244" font-size="11" text-anchor="middle" fill="currentColor">ESP32-C3</text>
+<rect x="645" y="230" width="30" height="20" rx="3" fill="var(--brass-soft)" stroke="var(--brass)"/>
+<text x="660.0" y="244" font-size="11" text-anchor="middle" fill="currentColor">OLED</text>
+<circle cx="30" cy="276" r="3.5" fill="var(--signal)"/><text x="40" y="280" font-size="12" fill="currentColor">bit is read here, while SCL is HIGH</text>
+<text x="330" y="280" font-size="12" fill="currentColor">SDA only changes while SCL is LOW, except at START and STOP</text>
+<text x="30" y="304" font-size="12" fill="currentColor">18 clock pulses, 2.5 µs each at 400 kHz. The ESP32-C3 makes every SCL pulse.</text>
+</svg>
+<figcaption>One write to the OLED at 0x3C, read left to right. The blue band is the address, the green band is one data byte, and each brass band is an ACK slot. Every blue dot is the moment a bit is read: the middle of an SCL HIGH pulse, when SDA is guaranteed steady. The bottom row shows whose turn it is on SDA: the ESP32-C3 talks, then lets go for one pulse so the OLED can pull the line LOW to answer.</figcaption>
+</figure>
+
+<p>Read it left to right. After START the controller sends seven address bits, most significant first: 0x3C is 0111100. The eighth bit is 0 for write, 1 for read. On the ninth clock the controller lets go of SDA. If a device with that address is alive it pulls SDA LOW: <strong>ACK</strong>. If nothing answers, the pull-up keeps SDA HIGH: <strong>NACK</strong>, nobody home. Each data byte follows the same pattern, eight bits then an ACK slot, and STOP releases the bus.</p>
+
+<p>The OLED's address is set by a solder jumper on the module: generic modules ship at 0x3C, Adafruit's at 0x3D. The firmware tries 0x3C, then 0x3D, and if both NACK it boots headless instead of crashing, so a display fault never takes the rest of the device down. Whatever the silkscreen says, the address that ACKs is the truth.</p>
+
+<div class="box device"><span class="lbl">On your device</span><p>SDA is GPIO21, SCL is GPIO20, 400 kHz, addresses 0x3C then 0x3D tried at boot. The external pull-ups are the Hosyond module's own, so the breadboard has none; the firmware also enables the C3's weak ~45 kΩ internal pull-up on both lines, which sits in parallel and changes the total only slightly. A second I2C module with its own pull-ups would land in parallel and drop the effective resistance; work out the sum first.</p></div>
+
+<div class="box analogy"><span class="lbl">Software analogy</span><p>An I2C write is a request with a mandatory per-byte acknowledgement. A NACK on the address byte is "connection refused": the port exists on the cable, but nothing is listening.</p></div>
+
+<h2>The SSD1306 and its 1024-byte picture <span class="clock">1:07–1:15</span></h2>
+
+<p>The SSD1306 is the controller chip on the OLED module. It holds a <strong>framebuffer</strong>: one bit per pixel, 128 × 64 = 8192 bits = 1024 bytes. Your firmware keeps its own copy in RAM, draws text into it, and pushes the whole thing across I2C as one block.</p>
+
+<div class="eq">1024 bytes × 9 clocks per byte = 9216 clocks  →  9216 / 400 000 Hz ≈ 23 ms per frame</div>
+
+<p>Each byte costs nine clocks, eight bits plus ACK, so a frame takes about 23 ms plus a little overhead. That caps refresh near 40 frames per second: slow for a game, plenty for a line of text, and it costs two pins.</p>
+
+<p>Why an OLED rather than an LCD? Each pixel is its own light source. No backlight, so a mostly black screen draws very little current, exactly the white-on-black look this device uses. It runs from 3.3 V directly, so no extra regulator and no level shifting.</p>
+
+<div class="box device"><span class="lbl">On your device</span><p>Hosyond 0.96" SSD1306, 128 × 64, I2C, powered from the SuperMini 3.3 V pin. <code>DISPLAY_INVERT_COLOR</code> is true so lit pixels appear as bright text on black, keeping current low. Identical-looking modules ship in two pin orders, GND-VCC-SCL-SDA or VCC-GND-SCL-SDA, and swapped power pins can destroy a module, which is why the silkscreen, not the look of the board, defines the wiring.</p></div>
+
+<div class="box safety"><span class="lbl">Safety</span><p>The prototype is USB-only. Battery, charger, amplifier, speaker and brass frame are held until a reviewed power design exists. Nothing on this page is an instruction to wire, change or test anything: this week is theory only, with no hands-on work on the prototype.</p></div>
+
+<h2>Worked examples <span class="clock">1:15–1:45</span></h2>
+
+<p>Paper only this week, so these examples put numbers on today's ideas. Cover the steps, try each one on paper, then compare. About five minutes each.</p>
+
+<h3>Example 1. Sharing the OLED's two wires</h3>
+
+<p><strong>Scenario.</strong> Your Hosyond module carries a pull-up on SDA (GPIO21) and one on SCL (GPIO20); suppose each is 4.7 kΩ, a common value. You add a sensor board that carries its own 10 kΩ pair. The I2C standard asks every device to sink 3 mA and still hold its line below 0.4 V.</p>
+
+<p><strong>Step 1, one module.</strong> While the OLED holds SDA LOW for an ACK, the whole pull-up current flows into its switch.</p>
+
+<div class="eq">I = V / R = 3.3 V / 4.7 kΩ ≈ 0.70 mA</div>
+
+<p><strong>Step 2, two modules.</strong> Two pull-ups from the same 3.3 V to the same wire are in parallel, so the pair acts like one smaller resistor.</p>
+
+<div class="eq">R = (4.7 × 10) / (4.7 + 10) kΩ ≈ 3.2 kΩ  →  I ≈ 3.3 V / 3.2 kΩ ≈ 1.0 mA</div>
+
+<p><strong>Step 3, the floor.</strong> The budget is gone when the combined pull-up reaches 3.3 V / 3 mA = 1.1 kΩ. Four boards at 4.7 kΩ each give 1.2 kΩ, right at the edge.</p>
+
+<p><strong>For a designer:</strong> the 112 usable addresses are rarely the limit on an I2C bus; the pull-up budget is. The habit is one pair per bus, and cut the jumpers on every board you add.</p>
+
+<h3>Example 2. The screen's time budget at two bus speeds</h3>
+
+<p><strong>Scenario.</strong> Suppose the firmware sends the whole framebuffer in one transaction: an address byte, a control byte meaning "data follows", then 1024 picture bytes, nine clocks each. Compare the 400 kHz your firmware uses with the 100 kHz of standard mode.</p>
+
+<p><strong>Step 1, count the clocks.</strong></p>
+
+<div class="eq">(1 + 1 + 1024) bytes × 9 clocks = 9234 clocks</div>
+
+<p><strong>Step 2, turn clocks into time.</strong></p>
+
+<div class="eq">400 kHz: 9234 / 400 000 ≈ 23 ms   ·   100 kHz: 9234 / 100 000 ≈ 92 ms</div>
+
+<p><strong>Step 3, the busy fraction.</strong> At five redraws a second, SDA is busy for 5 × 23 = 115 ms of every second, about 12 %, and released, resting at 3.3 V, the rest of the time.</p>
+
+<p><strong>For a designer:</strong> 23 ms is about one debounce window, so the screen keeps up with any press; 92 ms is a lag you would notice. The numbers also say what the wires look like: HIGH nearly always, dipping only during a redraw. A line stuck near 0 V means something holds it LOW; one drifting near 1.5 V means nothing pulls it up at all.</p>
+
+<h3>Example 3. A phone's 1.8 V sensor bus</h3>
+
+<p><strong>Scenario.</strong> Inside a phone, the accelerometer, compass and light sensor share an I2C bus that runs at 1.8 V to save power. Most chips put HIGH at about 0.7 × VDD and LOW at about 0.3 × VDD; the ESP32-C3's 0.75 and 0.25 are a stricter version of the same rule. Suppose someone wires an OLED like yours, powered at 3.3 V, onto that 1.8 V bus.</p>
+
+<p><strong>Step 1, the phone's chips.</strong></p>
+
+<div class="eq">HIGH ≥ 0.7 × 1.8 V ≈ 1.3 V   ·   LOW ≤ 0.3 × 1.8 V ≈ 0.5 V</div>
+
+<p><strong>Step 2, the OLED.</strong></p>
+
+<div class="eq">HIGH ≥ 0.7 × 3.3 V ≈ 2.3 V   ·   LOW ≤ 0.3 × 3.3 V ≈ 1.0 V</div>
+
+<p><strong>Step 3, compare.</strong> The bus pull-ups go to 1.8 V, so the wire never rises above 1.8 V. To the OLED that is above its 1.0 V LOW ceiling and below its 2.3 V HIGH floor: the forbidden middle. Every 1 the phone sends is "no promise" to the OLED, which may never recognise its address. The phone's own chips are safe; nothing exceeds 1.8 V.</p>
+
+<p><strong>For a designer:</strong> a logic level is a fraction of a supply, not a fixed voltage, so two supplies on one wire need a level shifter, a small circuit with a pull-up to each rail and a transistor between them. That is why your OLED and INMP441 were chosen as 3.3 V parts: one rail, one set of thresholds, nothing to translate.</p>
+
+<h3>Example 4. A debounce window for a gaming keyboard</h3>
+
+<p><strong>Scenario.</strong> A mechanical key switch is rated to stop bouncing within 5 ms. The keyboard's controller scans every key 1000 times a second. The fastest deliberate repeat on one key is about 20 presses a second, one every 50 ms. Pick a window and work out what it costs.</p>
+
+<p><strong>Step 1, the floor.</strong> The window must outlast the worst bounce, 5 ms. One scan is 1 ms, so "accept a new state after 5 identical scans in a row" is a 5 ms window.</p>
+
+<p><strong>Step 2, the ceiling.</strong> The window must be shorter than the 50 ms between deliberate presses, or real presses merge. 5 ms is ten times shorter, a comfortable margin.</p>
+
+<p><strong>Step 3, the cost.</strong> Every press is reported 5 ms late. A 120 Hz screen redraws every 8.3 ms, so the delay is under one frame.</p>
+
+<div class="eq">5 ms bounce ≤ 5 ms window  ·  5 ms window is 10× shorter than the 50 ms repeat  ·  delay added = 5 ms</div>
+
+<p><strong>For a designer:</strong> a debounce window sits between the part's bounce time and the fastest human repeat, and the scan rate sets how finely you can place it. On the Pocket AI's single action button a 20 ms window would be generous, since there is no fast repeat to protect; the button library your firmware uses defaults to a window of roughly 10 ms. On a keyboard, 20 ms would add a delay players notice.</p>
+
+<h3>Predict, then reveal</h3>
+
+<p><strong>Thought experiment 1.</strong> A second board joins the OLED's bus, but its designer made its SDA pin push-pull instead of open-drain. During a transaction the new board drives SDA HIGH at the same moment the OLED pulls SDA LOW for an ACK. Predict what happens on the wire and inside the two chips, then reveal.</p>
+
+<details><summary>Reveal</summary><p>A fight. One chip's upper switch ties the wire to 3.3 V while the other's lower switch ties it to ground, with only two closed transistors, a few ohms each, in between. The wire settles in the forbidden middle, so neither side reads a clean bit, and tens to hundreds of milliamps flow, far past the roughly 40 mA a pin can deliver at most; the push-pull chip heats and may die. Open-drain removes the upper switch, so nothing can ever push the wire up, LOW always wins, and no two devices can fight.</p></details>
+
+<p><strong>Thought experiment 2.</strong> The GPIO10 button's contacts have worn and now chatter for 30 ms on a slow, gentle push, instead of the 2 ms in the bounce diagram. Suppose the debounce window is the diagram's 20 ms. Predict how many presses the firmware reports for one real push, and what the fix is.</p>
+
+<details><summary>Reveal</summary><p>The count becomes unpredictable. The firmware waits out the 20 ms window after the first change and reads once, but the contacts are still chattering at 20 ms, so that read may land on a 0 or a 1, and a bounce arriving after the window looks like a fresh press. One push can report one press, two, or none. A well-debounced input reports exactly one press per push; a double means the bounce outlasted the window. The fix is a longer window, say 50 ms, still far shorter than any deliberate repeat, not a different button.</p></details>
+
+<h2>Self-check <span class="clock">1:45–1:50</span></h2>
+
+<details><summary>Q1. A sensor output sits at 1.5 V. What will the ESP32-C3 read?</summary><p>No promise. 1.5 V is above the 0.8 V LOW ceiling and below the 2.5 V HIGH floor, so the pin may report 1, 0, or a mix that changes with noise and temperature.</p></details>
+
+<details><summary>Q2. Who drives SDA HIGH during an I2C transaction?</summary><p>Nobody. Every device is open-drain and can only pull LOW or release. The pull-ups raise the line whenever every device has let go: the resistor on the OLED module, in parallel with the ESP32-C3's weak ~45 kΩ internal pull-up on GPIO20 and GPIO21, which the firmware enables.</p></details>
+
+<details><summary>Q3. What does the ninth clock after a byte carry, and who drives it?</summary><p>The acknowledge slot. The sender releases SDA; the receiver pulls it LOW for ACK or leaves it HIGH for NACK. After the address byte, ACK means a device at that address is alive.</p></details>
+
+<details><summary>Q4. Why is the action button on GPIO10 and not on the free-looking GPIO9?</summary><p>GPIO9 is a strap pin the ROM samples at reset. Held LOW during a reset it selects download mode, so a button there would make the device look dead whenever a reset happened mid-press. GPIO10 has no boot meaning.</p></details>
+
+<details><summary>Q5. You add a second I2C board with its own 10 kΩ pull-ups next to the OLED's 10 kΩ. What changes?</summary><p>The pairs sit in parallel, so each line now has an effective 5 kΩ pull-up. Lines rise faster, but every device must sink 3.3 V / 5 kΩ ≈ 0.66 mA when LOW instead of 0.33 mA. Fine here; several more boards and a weak device's sink rating can be exceeded.</p>
+<figure style="margin:12px 0 4px">
+<svg viewBox="0 0 700 360" role="img" aria-label="Circuit for Q5. A 3.3 volt rail runs across the top, the SDA wire across the middle and ground across the bottom. Three boards hang on SDA. The ESP32-C3, left, has only a switch from SDA to ground, drawn closed because it is sending a 0. The OLED module has a 10 kilo-ohm pull-up from 3.3 volts to SDA and an open switch to ground. The new sensor board has its own 10 kilo-ohm pull-up and an open switch. Each pull-up carries 0.33 milliamps down into SDA; the two currents join and 0.66 milliamps flows through the ESP32's closed switch to ground. Below, the two 10 kilo-ohm resistors in parallel are drawn as one 5 kilo-ohm resistor." xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="q5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--brass)"/></marker></defs>
+  <line x1="40" y1="36" x2="670" y2="36" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="670" y="28" font-size="12" text-anchor="end" fill="currentColor">3.3 V</text>
+  <line x1="40" y1="172" x2="670" y2="172" stroke="var(--signal)" stroke-width="4" fill="none"/>
+  <text x="46" y="164" font-size="12" font-weight="700" fill="var(--signal)">SDA</text>
+  <line x1="40" y1="292" x2="670" y2="292" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="670" y="310" font-size="12" text-anchor="end" fill="currentColor">GND</text>
+  <!-- ESP32 -->
+  <rect x="60" y="54" width="150" height="224" fill="none" stroke="currentColor" stroke-dasharray="5 4"/>
+  <text x="135" y="74" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">ESP32-C3 · GPIO21</text>
+  <text x="135" y="90" font-size="11" text-anchor="middle" fill="currentColor">no pull-up drawn</text>
+  <line x1="135" y1="172" x2="135" y2="206" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="135" cy="206" r="3" fill="currentColor"/>
+  <line x1="135" y1="206" x2="135" y2="246" stroke="var(--warn)" stroke-width="3.5" fill="none"/>
+  <circle cx="135" cy="246" r="3" fill="currentColor"/>
+  <line x1="135" y1="246" x2="135" y2="292" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="144" y="224" font-size="11" font-weight="700" fill="var(--warn)">closed:</text>
+  <text x="144" y="238" font-size="11" fill="var(--warn)">sending a 0</text>
+  <!-- OLED -->
+  <rect x="250" y="54" width="180" height="224" fill="none" stroke="currentColor" stroke-dasharray="5 4"/>
+  <text x="340" y="74" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">OLED module</text>
+  <line x1="300" y1="36" x2="300" y2="96" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="292" y="96" width="16" height="44" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+  <text x="314" y="116" font-size="12" font-weight="700" fill="var(--brass)">10 kΩ</text>
+  <line x1="300" y1="140" x2="300" y2="172" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="390" y1="172" x2="390" y2="206" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="390" cy="206" r="3" fill="currentColor"/>
+  <line x1="390" y1="206" x2="406" y2="240" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="390" cy="246" r="3" fill="currentColor"/>
+  <line x1="390" y1="246" x2="390" y2="292" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="402" y="266" font-size="11" fill="currentColor">open</text>
+  <!-- sensor -->
+  <rect x="470" y="54" width="180" height="224" fill="none" stroke="currentColor" stroke-dasharray="5 4"/>
+  <text x="560" y="74" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor">new sensor board</text>
+  <line x1="520" y1="36" x2="520" y2="96" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="512" y="96" width="16" height="44" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+  <text x="534" y="116" font-size="12" font-weight="700" fill="var(--brass)">10 kΩ</text>
+  <line x1="520" y1="140" x2="520" y2="172" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="610" y1="172" x2="610" y2="206" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="610" cy="206" r="3" fill="currentColor"/>
+  <line x1="610" y1="206" x2="626" y2="240" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="610" cy="246" r="3" fill="currentColor"/>
+  <line x1="610" y1="246" x2="610" y2="292" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="622" y="266" font-size="11" fill="currentColor">open</text>
+  <!-- currents -->
+  <path d="M284 100 V156" fill="none" stroke="var(--brass)" stroke-width="2" marker-end="url(#q5a)"/>
+  <text x="280" y="152" font-size="11" font-weight="700" text-anchor="end" fill="var(--brass)">0.33 mA</text>
+  <path d="M504 100 V156" fill="none" stroke="var(--brass)" stroke-width="2" marker-end="url(#q5a)"/>
+  <text x="500" y="152" font-size="11" font-weight="700" text-anchor="end" fill="var(--brass)">0.33 mA</text>
+  <path d="M500 186 H150" fill="none" stroke="var(--brass)" stroke-width="2" marker-end="url(#q5a)"/>
+  <path d="M120 190 V270" fill="none" stroke="var(--brass)" stroke-width="2" marker-end="url(#q5a)"/>
+  <text x="114" y="260" font-size="11" font-weight="700" text-anchor="end" fill="var(--brass)">0.66 mA</text>
+  <text x="288" y="202" font-size="11" text-anchor="middle" fill="var(--brass)">both currents → the one closed switch</text>
+  <!-- equivalent -->
+  <text x="40" y="334" font-size="12" font-weight="700" fill="currentColor">Same as one resistor:</text>
+  <text x="200" y="334" font-size="12" fill="currentColor">10 kΩ ∥ 10 kΩ = (10 × 10) ÷ (10 + 10) = 5 kΩ</text>
+  <text x="200" y="352" font-size="12" fill="currentColor">I = 3.3 V ÷ 5 kΩ ≈ 0.66 mA, double the 0.33 mA with the OLED alone</text>
+</svg>
+<figcaption>Two pull-ups on one wire act as one smaller resistor. When the ESP32 pulls SDA LOW, it now has to carry both boards' current. When it lets go, twice the current lifts the wire, so it rises about twice as fast. SCL gets the same change on its own wire. The C3's weak ~45 kΩ internal pull-up would add a little more and is left out to keep the picture simple.</figcaption>
+</figure></details>
+
+<h2>Design-your-own-device <span class="clock">1:50–2:00</span></h2>
+
+<p>Your own device needs an OLED, a temperature sensor (I2C, address 0x48), a NeoPixel strip (one data pin, timing-critical), and two buttons, on an ESP32-C3 with these free GPIOs: 0, 1, 3, 4, 5, 6, 7, 10, 20, 21. On paper: assign pins, decide which parts share the I2C bus, and name the two pins you would not use for anything and why.</p>
+
+<details><summary>Worked answer</summary>
+<p><strong>I2C bus, GPIO21 SDA and GPIO20 SCL.</strong> The OLED at 0x3C and the sensor at 0x48 share the same two wires: different addresses, one bus, no extra pins. If the sensor board has its own pull-ups they parallel the OLED's, so work out the combined value.</p>
+<p><strong>NeoPixel data, GPIO10.</strong> The strip needs precisely timed pulses, which the ESP32-C3's RMT peripheral can route to any plain pin. GPIO10 is plain: not a strap, not USB, not needed for analog. The strip's power must not come from the 3.3 V pin; it wants its own supply, a Day 6 question.</p>
+<p><strong>Buttons, GPIO6 and GPIO7.</strong> Inputs with internal pull-ups, active-low, debounced in firmware. Plain pins with no boot meaning.</p>
+<p><strong>Leave alone: GPIO0 and GPIO1.</strong> They are the first two ADC1 channels (and the optional 32 kHz crystal pads), the pins you will want later for an analog job such as a battery-voltage divider. Nothing here needs analog, so spending them on a button would waste the chip's easiest path to reading an analog voltage. GPIO3, 4 and 5 stay spare. Straps 2, 8, 9 and USB pins 18, 19 were not offered, and that is the right instinct.</p>
+</details>
+
+<h2>You can now explain</h2>
+<ul class="check">
+  <li>why a pin reports a range of voltages as 1, a range as 0, and makes no promise in between</li>
+  <li>why 5 V into an ESP32-C3 pin is damage, and why every part on your board being 3.3 V avoids that</li>
+  <li>what push-pull, input, pull-up and open-drain mean, and why a pin cannot drive a speaker</li>
+  <li>what the BOOT button on GPIO9 does, and why mic data moved from GPIO8 to GPIO4</li>
+  <li>why a mechanical button needs debouncing and how a settle window fixes it</li>
+  <li>the address, write bit, ACK and STOP of one I2C transaction, and who drives each part</li>
+  <li>why the OLED wires carry no added resistors, and what a second board's pull-ups do to the bus</li>
+</ul>
+
+<h2>Further reading in your repo</h2>
+<ul>
+  <li><code>edu/fundamentals/07-digital-logic-gpio-pullups-boot-straps.md</code>, thresholds, pin modes, straps</li>
+  <li><code>edu/fundamentals/08-i2c-and-the-oled.md</code>, the full transaction, rise time, the debug tree</li>
+  <li><code>plan/concepts/06-from-code-to-boot.md</code>, ROM, bootloader and application in one picture</li>
+  <li><code>plan/concepts/08-i2c-and-the-oled.md</code>, why the two wires need resistors</li>
+  <li><code>firmware/src/boards/pocket-wall-e-c3/config.h</code>, the pin map and the 0x3C/0x3D address search as the firmware reads them</li>
+  <li><code>docs/PROTOTYPE_QUICKSTART.md</code>, the compact pin and wiring reference for the USB prototype</li>
+</ul>
+
+<div class="nav">
+  <span>← Day 3: Capacitors and Clean Power</span>
+  <span>Day 5: Sound into Numbers →</span>
+</div>
+
+</div>
+

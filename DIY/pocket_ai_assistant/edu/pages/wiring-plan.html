@@ -1,0 +1,517 @@
+<title>Wiring Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; }
+  .sw { display: inline-block; width: 22px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+
+  /* Pocket AI page system: one reading column; wire colours are tokens so diagrams read in both themes. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 820px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 48px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .75em; margin-right: 8px; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; }
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--brass); background: var(--brass-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--accent-ink); }
+  .callout.warn .label { color: var(--warn); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; margin: 0 0 12px; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); margin: 0; }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li > * { min-width: 0; margin: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 18px 0 22px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; }
+  figure svg .s { font-size: 11.5px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .acc-ink { fill: var(--accent-ink); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .brass-ink { fill: var(--brass); }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .tube { stroke: var(--brass); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .brass-fill { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .brass-solid { fill: var(--brass); }
+  figure svg .acc { stroke: var(--accent); fill: none; }
+  figure svg .acc-fill { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.4; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .ink-fill { fill: currentColor; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 6px 10px; margin: 0 0 12px; max-width: 72ch; }
+  .stock strong { color: var(--brass); letter-spacing: .04em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  figure svg .solder { fill: var(--muted); }
+  .stage { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--brass); font-weight: 500; display: block; margin-bottom: 2px; }
+</style>
+
+<div class="wrap">
+  <div class="callout warn"><span class="label">Superseded for the wiring method</span><p>On 8 October the builder chose bare brass rods instead of insulated wire: see the Brass Wiring page. The connections, tests and the layout on this page still apply; the wire table, lengths and the soldering-to-pins figure do not.</p></div>
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · enclosure, step 4d · wiring</div>
+    <h1>Wiring plan</h1>
+    <p class="lede">How the parts talk to each other, every permanent wire, and how the whole thing fits inside the brass frame. You build the wiring on the bench this week, test it module by module, and drop the finished, working harness into the frame after it is soldered.</p>
+  </header>
+
+  <h2>Where this fits</h2>
+  <div class="road">
+    <div class="done"><div class="n">done</div><div class="h">Breadboard prototype</div><p>everything worked on jumpers</p></div>
+    <div class="now"><div class="n">this week</div><div class="h">Wire on the bench</div><p>permanent wires, off the frame, tested per module</p></div>
+    <div><div class="n">Friday</div><div class="h">Solder the frame</div><p>Frame Soldering page</p></div>
+    <div><div class="n">after</div><div class="h">Into the frame</div><p>insulate, place, glue, Wi-Fi check</p></div>
+  </div>
+
+  <h2>How the wiring works</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 380" role="img" aria-label="How the parts connect. USB brings 5 volts into A1. A1 makes 3.3 volts for the screen and microphone, and passes 5 volts straight to the amplifier. The screen talks to A1 over two I2C wires. The microphone and amplifier share two I2S clock wires; the microphone sends sound data in on one wire and A1 sends sound data out to the amplifier on another. The amplifier drives the speaker. The button pulls GPIO10 to ground when pressed.">
+        <rect x="270" y="120" width="170" height="130" rx="8" class="box"/>
+        <text class="t b" x="355" y="150" text-anchor="middle">A1</text>
+        <text class="s" x="355" y="168" text-anchor="middle">ESP32-C3 SuperMini</text>
+        <text class="s muted" x="355" y="190" text-anchor="middle">the brain: runs the</text>
+        <text class="s muted" x="355" y="205" text-anchor="middle">assistant, Wi-Fi, and</text>
+        <text class="s muted" x="355" y="220" text-anchor="middle">every part below</text>
+        <rect x="20" y="40" width="160" height="60" rx="6" class="soft"/>
+        <text class="t b" x="100" y="66" text-anchor="middle">USB</text><text class="s" x="100" y="84" text-anchor="middle">computer or charger</text>
+        <path d="M180,70 C230,70 230,150 268,150" fill="none" stroke="var(--w-red)" stroke-width="4"/>
+        <text class="s b" x="190" y="58">5 V power in</text>
+        <rect x="20" y="270" width="160" height="60" rx="6" class="pass-fill"/>
+        <text class="t b" x="100" y="296" text-anchor="middle">Button</text><text class="s" x="100" y="314" text-anchor="middle">GPIO10 → GND</text>
+        <path d="M180,300 C230,300 230,230 268,230" fill="none" stroke="var(--w-white)" stroke-width="3"/>
+        <text class="s" x="190" y="342">pressed = pin pulled to ground</text>
+        <rect x="530" y="20" width="170" height="64" rx="6" class="acc-fill"/>
+        <text class="t b acc-ink" x="615" y="46" text-anchor="middle">Screen</text><text class="s acc-ink" x="615" y="64" text-anchor="middle">I²C · 3.3 V</text>
+        <path d="M440,140 C490,140 490,52 528,52" fill="none" stroke="var(--w-blue)" stroke-width="3"/>
+        <path d="M440,148 C498,148 498,62 528,62" fill="none" stroke="var(--w-green)" stroke-width="3"/>
+        <text class="s" x="446" y="100">2 wires: SDA, SCL</text>
+        <rect x="530" y="140" width="170" height="64" rx="6" class="acc-fill"/>
+        <text class="t b acc-ink" x="615" y="166" text-anchor="middle">Microphone</text><text class="s acc-ink" x="615" y="184" text-anchor="middle">I²S in · 3.3 V</text>
+        <rect x="530" y="250" width="170" height="64" rx="6" class="acc-fill"/>
+        <text class="t b acc-ink" x="615" y="276" text-anchor="middle">Amplifier</text><text class="s acc-ink" x="615" y="294" text-anchor="middle">I²S out · 5 V</text>
+        <path d="M440,180 H500 V172 H528" fill="none" stroke="var(--w-yellow)" stroke-width="3"/>
+        <path d="M440,190 H508 V180 H528" fill="none" stroke="var(--w-white)" stroke-width="3"/>
+        <path d="M500,180 V272 H528" fill="none" stroke="var(--w-yellow)" stroke-width="3"/>
+        <path d="M508,190 V282 H528" fill="none" stroke="var(--w-white)" stroke-width="3"/>
+        <path d="M528,192 H460 V200 H440" fill="none" stroke="var(--w-green)" stroke-width="3"/>
+        <path d="M440,232 H516 V292 H528" fill="none" stroke="var(--w-blue)" stroke-width="3"/>
+        <path d="M440,242 H470 V306 H528" fill="none" stroke="var(--w-red)" stroke-width="5"/>
+        <text class="s" x="446" y="126">shared clocks: WS, BCLK</text>
+        <text class="s" x="446" y="222">sound in, sound out</text>
+        <text class="s" x="446" y="330">5 V</text>
+        <rect x="560" y="336" width="110" height="34" rx="6" class="warn-fill"/>
+        <text class="s b warn-ink" x="615" y="358" text-anchor="middle">Speaker</text>
+        <path d="M615,314 V336" class="warn-line" stroke-width="3"/>
+      </svg>
+    </div>
+    <figcaption><strong>One brain, four helpers.</strong> Coloured lines use the wire colours from the table below: yellow and white are the two clocks the mic and the amp share.</figcaption>
+  </figure>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Connection</th><th>What it does</th><th>Wires</th></tr>
+      <tr><td><strong>Power</strong></td><td>USB brings 5 V into A1. A1 makes 3.3 V for the screen and the microphone, which must never see 5 V. The amplifier is the one part that takes 5 V straight from A1's <code>5V</code> pin. Every part shares one ground, the return path for all current.</td><td>5V, 3V3, GND</td></tr>
+      <tr><td><strong>I²C</strong> (screen)</td><td>Two wires carry everything the screen shows: <code>SCL</code> is the clock, <code>SDA</code> the data. A1 calls the screen by its address, 0x3C or 0x3D.</td><td>2 + power</td></tr>
+      <tr><td><strong>I²S</strong> (mic and amp)</td><td>Digital sound. Two clock wires tick 16,000 times a second for each sample: <code>WS</code> marks each sample and <code>BCLK</code> each bit. The mic and the amp share both clocks. Sound comes in from the mic on <code>SD</code> and goes out to the amp on <code>DIN</code>.</td><td>2 shared + 1 each way</td></tr>
+      <tr><td><strong>Simple pins</strong></td><td>The button pulls GPIO10 to ground when pressed. GPIO5 turns the amplifier on; its pull-down keeps the amp off while A1 starts up.</td><td>1 each</td></tr>
+      <tr><td><strong>Speaker</strong></td><td>The amp pushes and pulls the speaker with two outputs, <code>OUT+</code> and <code>OUT−</code>. Neither is ground, so they never touch GND or the frame.</td><td>2, twisted</td></tr>
+    </table>
+  </div>
+  <p>This is exactly the circuit you already built and tested on the breadboard. The breadboard rails become short soldered wires and two small splices; nothing about the electronics changes.</p>
+
+  <h2>Every connection</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>A1 pin</th><th>Goes to</th><th>Colour</th><th>Wire</th><th>Note</th></tr>
+      <tr><td class="n">5V</td><td>Amp VIN</td><td><span class="sw" style="background:var(--w-red)"></span>red</td><td>26 AWG</td><td>the only 5 V wire; never to the screen or mic</td></tr>
+<tr><td class="n">GND</td><td>Amp GND</td><td><span class="sw" style="background:var(--w-black)"></span>black</td><td>26 AWG</td><td>its own wire</td></tr>
+<tr><td class="n">GND</td><td>Splice → screen GND, mic GND, button</td><td><span class="sw" style="background:var(--w-black)"></span>black</td><td>30 AWG</td><td>one wire to the pin, splice near the parts</td></tr>
+<tr><td class="n">3V3</td><td>Screen VCC</td><td><span class="sw" style="background:var(--w-red)"></span>red</td><td>30 AWG</td><td>3.3 V only</td></tr>
+<tr><td class="n">3V3</td><td>Mic VDD</td><td><span class="sw" style="background:var(--w-red)"></span>red</td><td>30 AWG</td><td>3.3 V only</td></tr>
+<tr><td class="n">GPIO20</td><td>Screen SCL</td><td><span class="sw" style="background:var(--w-green)"></span>green</td><td>30 AWG</td><td>I²C clock</td></tr>
+<tr><td class="n">GPIO21</td><td>Screen SDA</td><td><span class="sw" style="background:var(--w-blue)"></span>blue</td><td>30 AWG</td><td>I²C data</td></tr>
+<tr><td class="n">GPIO1</td><td>Mic WS and amp LRC</td><td><span class="sw" style="background:var(--w-yellow)"></span>yellow</td><td>30 AWG</td><td>shared word select: two wires on one pin</td></tr>
+<tr><td class="n">GPIO2</td><td>Mic SCK and amp BCLK</td><td><span class="sw" style="background:var(--w-white)"></span>white</td><td>30 AWG</td><td>shared bit clock: two wires on one pin</td></tr>
+<tr><td class="n">GPIO4</td><td>Mic SD</td><td><span class="sw" style="background:var(--w-green)"></span>green</td><td>30 AWG</td><td>sound coming in</td></tr>
+<tr><td class="n">GPIO3</td><td>Amp DIN</td><td><span class="sw" style="background:var(--w-blue)"></span>blue</td><td>30 AWG</td><td>sound going out</td></tr>
+<tr><td class="n">GPIO5</td><td>Amp SD</td><td><span class="sw" style="background:var(--w-green)"></span>green</td><td>30 AWG</td><td>amplifier on / off</td></tr>
+<tr><td class="n">GPIO10</td><td>Button</td><td><span class="sw" style="background:var(--w-white)"></span>white</td><td>30 AWG</td><td>pressed = to ground</td></tr>
+    </table>
+  </div>
+  <div class="callout">
+    <span class="label">Colour rule</span>
+    <p><span class="sw" style="background:var(--w-black)"></span><strong>black = ground</strong>, <span class="sw" style="background:var(--w-red)"></span><strong>red = power</strong>. The only <strong>thick</strong> red wire is 5 V and goes only to the amplifier. Signal colours repeat between modules, so put a small Kapton flag with the pin name on each end. If your wire kit's colours differ, keep black for ground and red for power and label the rest.</p>
+  </div>
+  <p>Small parts that live right at a module, not on A1:</p>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>At</th><th>Part</th><th>Between</th><th>Why</th></tr>
+      <tr><td>Mic</td><td>10 kΩ resistor</td><td><code>SCK</code> and <code>VDD</code></td><td>holds GPIO2, a start-up pin, high while A1 boots</td></tr>
+      <tr><td>Mic</td><td>100 kΩ resistor</td><td><code>SD</code> and <code>GND</code></td><td>keeps the data line from floating</td></tr>
+      <tr><td>Mic</td><td>short wire link</td><td><code>L/R</code> and <code>GND</code></td><td>selects the left channel the firmware reads</td></tr>
+      <tr><td>Amp</td><td>your <code>SD</code> pull-down (4.7 kΩ unless you chose 1 kΩ in Step 11)</td><td><code>SD</code> and <code>GND</code></td><td>amp stays off while A1 resets</td></tr>
+      <tr><td>Amp</td><td>100 kΩ resistor</td><td><code>GAIN</code> and <code>GND</code></td><td>the 15 dB volume setting you chose</td></tr>
+      <tr><td>Amp</td><td>220 µF electrolytic + 100 nF ceramic</td><td><code>VIN</code> and <code>GND</code></td><td>energy for loud sounds; stripe side to GND</td></tr>
+    </table>
+  </div>
+
+  <h2>Module by module</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 172" role="img" aria-label="The button: A1 GPIO10 to one button contact, A1 ground to the other contact. Pressing the button joins them.">
+        <rect x="30" y="36" width="150" height="88" rx="6" class="box"/><text class="t b" x="105" y="28" text-anchor="middle">A1 controller</text><rect x="470" y="36" width="130" height="88" rx="6" class="acc-fill"/><text class="t b acc-ink" x="535" y="28" text-anchor="middle">Button</text><text class="s b m" x="168" y="68" text-anchor="end">GPIO10</text><circle cx="180" cy="64" r="4" class="box"/><line x1="184" y1="64" x2="466" y2="64" stroke="var(--w-white)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="64" r="4" class="box"/><text class="s b m" x="482" y="68">contact 1</text><text class="s muted" x="325" y="58" text-anchor="middle">white</text><text class="s b m" x="168" y="102" text-anchor="end">GND</text><circle cx="180" cy="98" r="4" class="box"/><line x1="184" y1="98" x2="466" y2="98" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="98" r="4" class="box"/><text class="s b m" x="482" y="102">contact 2</text><text class="s muted" x="325" y="92" text-anchor="middle">black</text>
+        
+      </svg>
+    </div>
+    <figcaption><strong>Two wires.</strong> Use the two contacts that you proved, with the meter, are open when released and joined when pressed. The firmware's internal pull-up holds GPIO10 high until you press.</figcaption>
+  </figure>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 240" role="img" aria-label="The screen: A1 3V3 to VCC, ground to GND, GPIO20 to SCL, GPIO21 to SDA.">
+        <rect x="30" y="36" width="150" height="156" rx="6" class="box"/><text class="t b" x="105" y="28" text-anchor="middle">A1 controller</text><rect x="470" y="36" width="130" height="156" rx="6" class="acc-fill"/><text class="t b acc-ink" x="535" y="28" text-anchor="middle">OLED screen</text><text class="s b m" x="168" y="68" text-anchor="end">3V3</text><circle cx="180" cy="64" r="4" class="box"/><line x1="184" y1="64" x2="466" y2="64" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="64" r="4" class="box"/><text class="s b m" x="482" y="68">VCC</text><text class="s muted" x="325" y="58" text-anchor="middle">red</text><text class="s b m" x="168" y="102" text-anchor="end">GND</text><circle cx="180" cy="98" r="4" class="box"/><line x1="184" y1="98" x2="466" y2="98" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="98" r="4" class="box"/><text class="s b m" x="482" y="102">GND</text><text class="s muted" x="325" y="92" text-anchor="middle">black</text><text class="s b m" x="168" y="136" text-anchor="end">GPIO20</text><circle cx="180" cy="132" r="4" class="box"/><line x1="184" y1="132" x2="466" y2="132" stroke="var(--w-green)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="132" r="4" class="box"/><text class="s b m" x="482" y="136">SCL</text><text class="s muted" x="325" y="126" text-anchor="middle">green · clock</text><text class="s b m" x="168" y="170" text-anchor="end">GPIO21</text><circle cx="180" cy="166" r="4" class="box"/><line x1="184" y1="166" x2="466" y2="166" stroke="var(--w-blue)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="166" r="4" class="box"/><text class="s b m" x="482" y="170">SDA</text><text class="s muted" x="325" y="160" text-anchor="middle">blue · data</text>
+        
+      </svg>
+    </div>
+    <figcaption><strong>Four wires, wired by the printed label.</strong> Identical-looking screens put GND and VCC in different orders, so read your board's labels, never a photo.</figcaption>
+  </figure>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 800 302" role="img" aria-label="The microphone: A1 3V3 to VDD, ground to GND, GPIO2 to SCK, GPIO1 to WS, GPIO4 to SD. At the microphone, L/R is linked to its own GND pin, a 10 kilohm resistor joins SCK to VDD, and a 100 kilohm resistor joins SD to GND.">
+        <rect x="30" y="36" width="150" height="224" rx="6" class="box"/><text class="t b" x="105" y="28" text-anchor="middle">A1 controller</text><rect x="470" y="36" width="130" height="224" rx="6" class="acc-fill"/><text class="t b acc-ink" x="535" y="28" text-anchor="middle">Microphone</text><text class="s b m" x="168" y="68" text-anchor="end">3V3</text><circle cx="180" cy="64" r="4" class="box"/><line x1="184" y1="64" x2="466" y2="64" stroke="var(--w-red)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="64" r="4" class="box"/><text class="s b m" x="482" y="68">VDD</text><text class="s muted" x="325" y="58" text-anchor="middle">red</text><text class="s b m" x="168" y="102" text-anchor="end">GND</text><circle cx="180" cy="98" r="4" class="box"/><line x1="184" y1="98" x2="466" y2="98" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="98" r="4" class="box"/><text class="s b m" x="482" y="102">GND</text><text class="s muted" x="325" y="92" text-anchor="middle">black</text><text class="s b m" x="168" y="136" text-anchor="end">GPIO2</text><circle cx="180" cy="132" r="4" class="box"/><line x1="184" y1="132" x2="466" y2="132" stroke="var(--w-white)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="132" r="4" class="box"/><text class="s b m" x="482" y="136">SCK</text><text class="s muted" x="325" y="126" text-anchor="middle">white · bit clock</text><text class="s b m" x="168" y="170" text-anchor="end">GPIO1</text><circle cx="180" cy="166" r="4" class="box"/><line x1="184" y1="166" x2="466" y2="166" stroke="var(--w-yellow)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="166" r="4" class="box"/><text class="s b m" x="482" y="170">WS</text><text class="s muted" x="325" y="160" text-anchor="middle">yellow · word select</text><text class="s b m" x="168" y="204" text-anchor="end">GPIO4</text><circle cx="180" cy="200" r="4" class="box"/><line x1="184" y1="200" x2="466" y2="200" stroke="var(--w-green)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="200" r="4" class="box"/><text class="s b m" x="482" y="204">SD</text><text class="s muted" x="325" y="194" text-anchor="middle">green · sound data in</text><line x1="184" y1="234" x2="184" y2="234" stroke="var(--w-black)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="234" r="4" class="box"/><text class="s b m" x="482" y="238">L/R</text>
+        <path d="M600,132 H650 V84.0 M650,112.0 V64 H600" class="edge" stroke-width="1.6"/><rect x="644" y="84.0" width="12" height="28" rx="2" class="warn-fill"/><text class="s b warn-ink" x="662" y="98.0">10 kΩ</text><text class="s muted" x="662" y="112.0">SCK to VDD</text><path d="M600,200 H700 V135.0 M700,163.0 V98 H600" class="edge" stroke-width="1.6"/><rect x="694" y="135.0" width="12" height="28" rx="2" class="warn-fill"/><text class="s b warn-ink" x="712" y="149.0">100 kΩ</text><text class="s muted" x="712" y="163.0">SD to GND</text><path d="M470,234 H452 V98 H470" class="edge" stroke-width="2"/><text class="s b" x="446" y="170" text-anchor="end">short link</text><text class="s muted" x="446" y="184" text-anchor="end">L/R to GND</text>
+      </svg>
+    </div>
+    <figcaption><strong>Five wires to A1, three small parts at the mic.</strong> L/R gets a short link to the mic's own GND pin (it picks the left channel). The 10 kΩ and 100 kΩ resistors you used on the breadboard now sit right on the mic's pins, which are the same electrical points as before.</figcaption>
+  </figure>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 800 366" role="img" aria-label="The amplifier: A1 5V to VIN and ground to GND with thicker 26 gauge wire, GPIO1 to LRC, GPIO2 to BCLK, GPIO3 to DIN, GPIO5 to SD. At the amplifier, a pull-down resistor joins SD to GND, a 100 kilohm resistor joins GAIN to GND, a 220 microfarad and a 100 nanofarad capacitor sit across VIN and GND, and OUT plus and OUT minus go to the speaker on a twisted pair.">
+        <rect x="30" y="36" width="150" height="224" rx="6" class="box"/><text class="t b" x="105" y="28" text-anchor="middle">A1 controller</text><rect x="470" y="36" width="130" height="224" rx="6" class="acc-fill"/><text class="t b acc-ink" x="535" y="28" text-anchor="middle">Amplifier</text><text class="s b m" x="168" y="68" text-anchor="end">5V</text><circle cx="180" cy="64" r="4" class="box"/><line x1="184" y1="64" x2="466" y2="64" stroke="var(--w-red)" stroke-width="5" stroke-linecap="round"/><circle cx="470" cy="64" r="4" class="box"/><text class="s b m" x="482" y="68">VIN</text><text class="s muted" x="325" y="58" text-anchor="middle">red · 26 AWG · thick: power</text><text class="s b m" x="168" y="102" text-anchor="end">GND</text><circle cx="180" cy="98" r="4" class="box"/><line x1="184" y1="98" x2="466" y2="98" stroke="var(--w-black)" stroke-width="5" stroke-linecap="round"/><circle cx="470" cy="98" r="4" class="box"/><text class="s b m" x="482" y="102">GND</text><text class="s muted" x="325" y="92" text-anchor="middle">black · 26 AWG · thick</text><text class="s b m" x="168" y="136" text-anchor="end">GPIO1</text><circle cx="180" cy="132" r="4" class="box"/><line x1="184" y1="132" x2="466" y2="132" stroke="var(--w-yellow)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="132" r="4" class="box"/><text class="s b m" x="482" y="136">LRC</text><text class="s muted" x="325" y="126" text-anchor="middle">yellow · word select</text><text class="s b m" x="168" y="170" text-anchor="end">GPIO2</text><circle cx="180" cy="166" r="4" class="box"/><line x1="184" y1="166" x2="466" y2="166" stroke="var(--w-white)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="166" r="4" class="box"/><text class="s b m" x="482" y="170">BCLK</text><text class="s muted" x="325" y="160" text-anchor="middle">white · bit clock</text><text class="s b m" x="168" y="204" text-anchor="end">GPIO3</text><circle cx="180" cy="200" r="4" class="box"/><line x1="184" y1="200" x2="466" y2="200" stroke="var(--w-blue)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="200" r="4" class="box"/><text class="s b m" x="482" y="204">DIN</text><text class="s muted" x="325" y="194" text-anchor="middle">blue · sound data out</text><text class="s b m" x="168" y="238" text-anchor="end">GPIO5</text><circle cx="180" cy="234" r="4" class="box"/><line x1="184" y1="234" x2="466" y2="234" stroke="var(--w-green)" stroke-width="3" stroke-linecap="round"/><circle cx="470" cy="234" r="4" class="box"/><text class="s b m" x="482" y="238">SD</text><text class="s muted" x="325" y="228" text-anchor="middle">green · on / off</text>
+        <path d="M600,234 H640 V152.0 M640,180.0 V98 H600" class="edge" stroke-width="1.6"/><rect x="634" y="152.0" width="12" height="28" rx="2" class="warn-fill"/><text class="s b warn-ink" x="652" y="118">SD pull-down</text><text class="s muted" x="652" y="132">SD to GND</text><text class="s b m" x="482" y="272">GAIN</text><circle cx="470" cy="268" r="4" class="box"/><path d="M600,268 H700 V169.0 M700,197.0 V98 H600" class="edge" stroke-width="1.6"/><rect x="694" y="169.0" width="12" height="28" rx="2" class="warn-fill"/><text class="s b warn-ink" x="712" y="232">100 kΩ</text><text class="s muted" x="712" y="246">GAIN to GND</text><text class="s b m" x="482" y="306">OUT+ / OUT−</text><path d="M600,302 C630,294 640,310 670,302 S700,294 712,302" class="edge" stroke-width="2"/><text class="s b" x="640" y="324" text-anchor="middle">to the speaker, twisted</text><text class="s muted" x="40" y="272">At the amp, across VIN and GND:</text><text class="s muted" x="40" y="288">220 µF (stripe to GND) + 100 nF</text>
+      </svg>
+    </div>
+    <figcaption><strong>Six wires to A1, four small parts at the amp, two leads to the speaker.</strong> The thick red wire is the only 5 V wire in the device and goes nowhere but VIN. Neither speaker output ever touches GND or the frame.</figcaption>
+  </figure>
+
+  <h2>Shared pins and splices</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 200" role="img" aria-label="A star splice for the quiet ground: three short black wires from the screen, the microphone and the button are twisted together with one wire to A1's GND pin, soldered, and covered with a heat-shrink sleeve. The amplifier's thick ground wire goes to A1's GND pin on its own.">
+        <line x1="40" y1="50" x2="300" y2="96" stroke="var(--w-black)" stroke-width="3"/>
+        <line x1="40" y1="100" x2="300" y2="100" stroke="var(--w-black)" stroke-width="3"/>
+        <line x1="40" y1="150" x2="300" y2="104" stroke="var(--w-black)" stroke-width="3"/>
+        <text class="s" x="44" y="42">screen GND</text>
+        <text class="s" x="44" y="92">mic GND</text>
+        <text class="s" x="44" y="166">button</text>
+        <rect x="290" y="86" width="60" height="28" rx="6" fill="var(--figure-bg)" stroke="currentColor" stroke-width="1.8"/>
+        <text class="s b" x="320" y="134" text-anchor="middle">splice + sleeve</text>
+        <line x1="350" y1="100" x2="560" y2="100" stroke="var(--w-black)" stroke-width="3"/>
+        <rect x="560" y="80" width="120" height="40" rx="6" class="box"/>
+        <text class="s b" x="620" y="105" text-anchor="middle">A1 GND pin</text>
+        <line x1="440" y1="170" x2="560" y2="112" stroke="var(--w-black)" stroke-width="5"/>
+        <text class="s" x="436" y="184" text-anchor="end">amp GND, thick, on its own</text>
+      </svg>
+    </div>
+    <figcaption><strong>A1 has one GND pin and one 3V3 pin, but several parts need them.</strong> Join the quiet grounds in one sleeved splice with one wire to the pin. The amplifier's noisy, higher-current ground gets its own thick wire, so its switching never shares a wire with the microphone. The two 3.3 V wires (screen VCC, mic VDD) can both go on the 3V3 pin, or through a second small splice.</figcaption>
+  </figure>
+
+  <h2>How to solder a wire to a header pin</h2>
+  <p class="stock">Use: the <strong>electronics</strong> tip, not the brass tip · Chip Quik no-clean flux pen, <strong>never the Harris acid flux</strong> · iron about 330–350 °C (625–660 °F) · USB unplugged</p>
+  <p>Your modules already have header pins from Step 5. Keep them and solder the wires to the pins: it is far less work than removing the pins, and the stack still fits with about 8 mm to spare.</p>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 230" role="img" aria-label="Soldering a wire to a header pin in five steps: trim the pin to about 3 millimetres, strip and tin the wire, slide a small heat-shrink sleeve onto the wire, solder the wire along the pin, then slide the sleeve over the joint and shrink it with the heat gun."><text class="t b" x="12" y="26">1 · Trim</text><rect x="80" y="118" width="8" height="52" class="ink-fill"/><rect x="60" y="150" width="48" height="12" class="soft"/><path d="M70,112 h28" class="warn-line" stroke-width="2" stroke-dasharray="4 3"/><text class="s" x="72" y="200" text-anchor="middle">cut the pin to about</text><text class="s" x="72" y="215" text-anchor="middle">3 mm above the board</text><line x1="144" y1="12" x2="144" y2="226" class="grid"/><text class="t b" x="156" y="26">2 · Strip, tin</text><line x1="164" y1="100" x2="244" y2="100" stroke="var(--w-red)" stroke-width="7" stroke-linecap="round"/><line x1="244" y1="100" x2="262" y2="100" stroke="var(--muted)" stroke-width="3"/><text class="s" x="216" y="200" text-anchor="middle">strip 2 mm, twist,</text><text class="s" x="216" y="215" text-anchor="middle">melt a little solder on</text><line x1="288" y1="12" x2="288" y2="226" class="grid"/><text class="t b" x="300" y="26">3 · Sleeve on</text><line x1="304" y1="100" x2="388" y2="100" stroke="var(--w-red)" stroke-width="7" stroke-linecap="round"/><rect x="328" y="92" width="30" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="388" y1="100" x2="406" y2="100" stroke="var(--muted)" stroke-width="3"/><text class="s" x="360" y="200" text-anchor="middle">slide 1.5 mm heat-shrink</text><text class="s" x="360" y="215" text-anchor="middle">onto the wire first</text><line x1="432" y1="12" x2="432" y2="226" class="grid"/><text class="t b" x="444" y="26">4 · Solder</text><rect x="512" y="118" width="8" height="52" class="ink-fill"/><rect x="492" y="150" width="48" height="12" class="soft"/><path d="M452,90 Q502,92 510,120" fill="none" stroke="var(--w-red)" stroke-width="6"/><polygon points="552,70 562,78 528,124 520,118" class="box"/><text class="s" x="504" y="200" text-anchor="middle">wire along the pin,</text><text class="s" x="504" y="215" text-anchor="middle">iron 1–2 s, it flows</text><line x1="576" y1="12" x2="576" y2="226" class="grid"/><text class="t b" x="588" y="26">5 · Shrink</text><rect x="656" y="132" width="8" height="38" class="ink-fill"/><rect x="636" y="150" width="48" height="12" class="soft"/><path d="M596,90 Q646,92 654,120" fill="none" stroke="var(--w-red)" stroke-width="6"/><rect x="650" y="108" width="20" height="32" rx="4" fill="var(--figure-bg)" stroke="currentColor" stroke-width="1.6"/><text class="s" x="648" y="200" text-anchor="middle">slide the sleeve over,</text><text class="s" x="648" y="215" text-anchor="middle">warm it with the heat gun</text>
+      </svg>
+    </div>
+    <figcaption><strong>Sleeve on before you solder.</strong> Once the wire is soldered you cannot get the heat-shrink over it any more. Every pin joint gets its own sleeve, so neighbouring pins can never touch.</figcaption>
+  </figure>
+
+  <h2>How it fits inside the brass frame</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 420" role="img" aria-label="Top view of the inside of the frame, 57 by 39 millimetres, front at the bottom. Bottom layer: A1 on the left with its USB end at the front face and its antenna end pointing into the open back-left corner, which stays clear. The amplifier sits on the right with the speaker behind it, mesh up. The microphone stands against the right wall. Top layer: the screen sits over the amplifier, and the button sits over A1's USB end. Wires run in the channel between A1 and the right-hand column.">
+        <rect x="40" y="60" width="399" height="273" rx="10" fill="none" stroke="var(--brass)" stroke-width="5"/>
+        <text class="s brass-ink b" x="40" y="50">brass frame, inside 57 × 39 mm (top view, front at the bottom)</text>
+        <rect x="43.5" y="64" width="150.5" height="98" class="warn-fill" opacity=".6" stroke-dasharray="5 4"/>
+        <text class="s b warn-ink" x="117" y="109" text-anchor="middle">keep clear: no wires,</text>
+        <text class="s b warn-ink" x="117" y="123" text-anchor="middle">nothing above</text>
+        <rect x="54" y="167.1" width="126" height="154" rx="3" class="soft"/>
+        <rect x="54" y="167.1" width="126" height="28" class="warn-fill"/>
+        <text class="s b warn-ink" x="117" y="186" text-anchor="middle">antenna end</text>
+        <text class="t b" x="117" y="249" text-anchor="middle">A1</text>
+        <text class="s" x="117" y="266.5" text-anchor="middle">bottom layer</text>
+        <rect x="85.5" y="321.1" width="63" height="13.9" class="box"/>
+        <path d="M117,337 V377 M111,369 L117,377 L123,369" class="acc" stroke-width="2"/>
+        <text class="s acc-ink b" x="129" y="367">USB cable out through the front face</text>
+        <rect x="61" y="291" width="35" height="35" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text class="s" x="103" y="312">button</text>
+        <rect x="187" y="165" width="42" height="161" fill="var(--code-bg)" stroke="var(--line)"/>
+        <text class="s muted" transform="translate(212,249) rotate(-90)" text-anchor="middle">wire channel</text>
+        <rect x="250" y="200" width="119" height="119" rx="3" class="soft"/>
+        <text class="s b" x="309.5" y="263" text-anchor="middle">amp</text>
+        <rect x="250" y="64" width="147" height="91" rx="4" class="warn-fill"/>
+        <text class="s b warn-ink" x="323.5" y="109" text-anchor="middle">speaker, mesh up</text>
+        <rect x="229" y="144" width="189" height="189" rx="3" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text class="s b acc-ink" x="323.5" y="179" text-anchor="middle">screen, top layer</text>
+        <rect x="421.5" y="228" width="17.5" height="91" rx="2" class="pass-fill"/>
+        <text class="s b pass-ink" x="414.5" y="217.5" text-anchor="end">mic</text>
+        <text class="t b" x="470" y="80">Solid = bottom layer</text>
+        <text class="t b acc-ink" x="470" y="100">Dashed = top layer</text>
+        <text class="s" x="470" y="130">· A1's antenna points into the open</text>
+        <text class="s" x="470" y="145">  back-left corner: about 15 mm to the</text>
+        <text class="s" x="470" y="160">  back brass and nothing above it</text>
+        <text class="s" x="470" y="185">· The screen stacks over the amp,</text>
+        <text class="s" x="470" y="200">  not over A1</text>
+        <text class="s" x="470" y="225">· The mic stands on the right wall,</text>
+        <text class="s" x="470" y="240">  its port facing out, away from</text>
+        <text class="s" x="470" y="255">  the speaker</text>
+        <text class="s" x="470" y="280">· All wires run in the channel and</text>
+        <text class="s" x="470" y="295">  along the floor, never across the</text>
+        <text class="s" x="470" y="310">  antenna corner</text>
+      </svg>
+    </div>
+    <figcaption><strong>Drawn to scale (7 px per mm), positions proposed.</strong> Part sizes are your caliper measurements; where each part sits is a first plan to confirm on the cardboard floor before any wire is cut.</figcaption>
+  </figure>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 300" role="img" aria-label="Front view of the inside of the frame, 57 millimetres wide and 32 millimetres tall. A1 sits on the floor at the left, about 10 millimetres tall with its pins. The amplifier sits on the right, 18 millimetres tall with its pins, with the screen on top of it reaching about 24 millimetres. The microphone stands against the right wall. About 8 millimetres of headroom remain under the top loop.">
+        <rect x="40" y="46" width="399" height="224" fill="none" stroke="var(--brass)" stroke-width="5"/>
+        <text class="s brass-ink b" x="40" y="36">front view, inside 57 × 32 mm</text>
+        <rect x="54" y="200" width="126" height="70" rx="2" class="soft"/>
+        <text class="s b" x="117" y="235" text-anchor="middle">A1 ≈ 10</text>
+        <rect x="250" y="144" width="119" height="126" rx="2" class="soft"/>
+        <text class="s b" x="309.5" y="207" text-anchor="middle">amp 18</text>
+        <rect x="229" y="102" width="189" height="35" rx="2" class="acc-fill"/>
+        <text class="s b acc-ink" x="323.5" y="126.5" text-anchor="middle">screen ≈ 19–24</text>
+        <rect x="421.5" y="165" width="17.5" height="91" class="pass-fill"/>
+        <path d="M455,46 V102 M449,46 H461 M449,102 H461" class="edge"/>
+        <text class="s b" x="467" y="78">≈ 8 mm spare</text>
+        <text class="s muted" x="467" y="94">for wires and the</text>
+        <text class="s muted" x="467" y="109">spacer under the screen</text>
+      </svg>
+    </div>
+    <figcaption><strong>Heights are estimates</strong> from your measurements: the amplifier's 18 mm includes its pins. A card or Kapton spacer sits between the amp and the screen's back so no pin touches another board.</figcaption>
+  </figure>
+  <div class="callout warn">
+    <span class="label">One change from your mock-up</span>
+    <p>Your cardboard stack put the screen over A1. Its copper would then sit right over A1's antenna, which already needed its Wi-Fi power capped to be heard. This plan stacks the screen over the amplifier instead and leaves A1's antenna under open air, in the same 57 × 39 mm box. If you would rather keep the screen over A1, tell Claude: the wires stay the same, only some lengths change, and the Wi-Fi check after mounting decides.</p>
+  </div>
+  <h3 style="font-size:18px;margin:26px 0 8px">Wire lengths</h3>
+  <p>Lay the parts on a card cut to 57 × 39 mm in the positions above. Measure each wire's path with a piece of thread or the calipers, then <strong>cut it 10 mm longer</strong>: the spare lets you move a part when it goes into the frame. My first estimates:</p>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Wires</th><th>Estimate</th><th>Path</th></tr>
+      <tr><td>Button: 2 wires</td><td class="n">≈ 30 mm</td><td>A1's side pins to the button over A1's USB end</td></tr>
+<tr><td>Screen: 4 wires</td><td class="n">≈ 45 mm</td><td>up the wire channel to the screen's pin edge</td></tr>
+<tr><td>Amp: 6 wires</td><td class="n">≈ 40 mm</td><td>across the channel; the two thick ones as short as possible</td></tr>
+<tr><td>Mic: 5 wires</td><td class="n">≈ 55 mm</td><td>along the floor under the amp to the right wall</td></tr>
+<tr><td>Speaker: its own leads</td><td class="n">do not cut</td><td>twist the pair, fold the spare length beside the speaker</td></tr>
+    </table>
+  </div>
+
+  <h2>Build order</h2>
+  <div class="callout warn">
+    <span class="label">Rules for every wiring session</span>
+    <ul>
+      <li><strong>USB unplugged</strong> for every solder joint and every change. Plug in only to test.</li>
+      <li><strong>Electronics tip and Chip Quik flux only.</strong> The Harris acid flux and the brass tip never touch a module.</li>
+      <li><strong>Mic port:</strong> no flux, heat, glue or air near its sound hole.</li>
+      <li><strong>Speaker leads:</strong> never cut or strip them; they go into the amp's screw terminal.</li>
+      <li><strong>Read every label</strong> on the board itself before soldering, especially the screen's VCC and GND.</li>
+    </ul>
+  </div>
+  <ol class="steps">
+    <li><p><strong>Lay out and measure.</strong> Parts on the 57 × 39 card in the planned positions; measure and write down every wire length, plus 10 mm.</p></li>
+    <li><p><strong>Cut and prepare all wires</strong>: strip 2 mm at each end with the Hakko stripper, twist, tin, and flag each end with its pin name.</p></li>
+    <li><p><strong>Button first</strong> (2 wires). Test: plug USB in and press ten times; each press registers, as in fast-track Step 6.</p></li>
+    <li><p><strong>Screen</strong> (4 wires). Unplugged meter check: VCC to GND gives no steady tone. Test: the screen lights at start-up and the log shows address 0x3C or 0x3D, as in Step 7.</p></li>
+    <li><p><strong>Microphone</strong> (5 wires, the L/R link, two resistors). Test: speech makes the sound level rise compared with quiet, as in Step 8; on the assistant build, it hears a question.</p></li>
+    <li><p><strong>Amplifier</strong> (6 wires, pull-down, GAIN resistor, two capacitors), speaker <em>not</em> yet connected. Meter, unplugged: 5V to VIN continuous, VIN to GND no steady tone, OUT+ and OUT− not connected to GND. Powered: SD below 0.08 V before speech, as in PASS 11A.</p></li>
+    <li><p><strong>Speaker on</strong>, unplugged, into the amp's terminal. Test: five spoken replies in a row, clear, no reset, nothing warm, at cap 45, as in PASS 11C.</p></li>
+    <li><p><strong>Two cold starts</strong> with everything wired. Then the harness is done.</p></li>
+  </ol>
+  <div class="gate">
+    <input type="checkbox" id="gate-wire">
+    <label for="gate-wire">
+      <div class="name">WIRE-01 · the harness works off the frame</div>
+      <p>All five modules pass their tests on the permanent wires, two cold starts are clean, and every joint has its sleeve. Tell Claude, and send a photo of the harness laid out on the card.</p>
+    </label>
+  </div>
+  <p>Claude can read the test logs for you: plug A1 in, say which module you just wired, and Claude opens the monitor and checks the result.</p>
+
+  <h2>Then into the frame</h2>
+  <ol class="steps">
+    <li><p><strong>FRAME-01 done</strong>, washed and dry (Frame Soldering page).</p></li>
+    <li><p><strong>Project rules updated</strong> to allow the isolated frame. Claude makes that change with your OK.</p></li>
+    <li><p><strong>Kapton</strong> on every module back and wherever a wire or pin could touch brass.</p></li>
+    <li><p><strong>Place the harness</strong> in the frame, nothing glued, and re-run the full test.</p></li>
+    <li><p><strong>Fix the modules</strong> with dabs of low-temperature hot glue, away from the mic port and connectors.</p></li>
+    <li><p><strong>Wi-Fi check</strong>: compare signal and dropouts inside the frame with the open bench.</p></li>
+  </ol>
+
+  <h2>The finished device</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 420" role="img" aria-label="The finished Pocket AI drawn in a see-through view, to scale. A brass cage, 60 by 42 by 35 millimetres: a bottom loop, a top loop and four corner posts. Inside, on the floor at the left, A1 with its USB-C port at the front and the cable running out and down; nothing sits above its antenna end at the back-left. The button sits above A1's front. On the right, the amplifier on the floor with the screen lying face up on it, showing the word Listening, and the speaker behind them with its mesh facing up. The microphone stands against the right wall with its sound hole facing out.">
+        <text class="s muted" x="40" y="24">see-through view from the front, a little above · to scale, 6 px per mm · outside 60 × 42 × 35 mm</text>
+        <!-- back posts and back half of the bottom loop first, so the front draws over them -->
+        <line x1="159.0" y1="269.0" x2="159.0" y2="77.0" stroke="currentColor" stroke-width="3" opacity=".5"/>
+        <line x1="501.0" y1="269.0" x2="501.0" y2="77.0" stroke="currentColor" stroke-width="3" opacity=".5"/>
+        <polyline points="80.0,325.5 150.0,273.5 510.0,273.5 440.0,325.5" class="tube" stroke-width="6" opacity=".5"/>
+        <!-- parts, back to front -->
+        <polygon points="303.4,267.8 429.4,267.8 452.5,250.6 326.5,250.6" class="warn-fill" opacity=".7"/><polygon points="429.4,297.8 452.5,280.6 452.5,250.6 429.4,267.8" class="warn-fill" opacity=".5"/><polygon points="303.4,297.8 429.4,297.8 429.4,267.8 303.4,267.8" class="warn-fill"/>
+        <text class="s warn-ink b" x="418" y="245" text-anchor="middle">speaker behind, mesh up</text>
+        <polygon points="276.0,216.8 378.0,216.8 409.5,193.4 307.5,193.4" class="soft" opacity=".7"/><polygon points="378.0,324.8 409.5,301.4 409.5,193.4 378.0,216.8" class="soft" opacity=".5"/><polygon points="276.0,324.8 378.0,324.8 378.0,216.8 276.0,216.8" class="soft"/>
+        <text class="s b" x="327" y="277" text-anchor="middle">amp</text>
+        <polygon points="253.8,183.9 415.8,183.9 463.4,148.6 301.4,148.6" class="box" opacity=".7"/><polygon points="415.8,213.9 463.4,178.6 463.4,148.6 415.8,183.9" class="box" opacity=".5"/><polygon points="253.8,213.9 415.8,213.9 415.8,183.9 253.8,183.9" class="box"/>
+        <polygon points="274.4,179.8 406.4,179.8 441.4,153.8 309.4,153.8" fill="var(--ink)"/>
+        <text x="358" y="171" font-size="11" font-family="var(--mono)" fill="var(--bg)" text-anchor="middle">Listening…</text>
+        <text class="s b acc-ink" x="358" y="153" text-anchor="middle">screen, face up</text>
+        <polygon points="108.0,264.8 216.0,264.8 254.5,236.2 146.5,236.2" class="soft" opacity=".7"/><polygon points="216.0,324.8 254.5,296.2 254.5,236.2 216.0,264.8" class="soft" opacity=".5"/><polygon points="108.0,324.8 216.0,324.8 216.0,264.8 108.0,264.8" class="soft"/>
+        <polygon points="148.0,244.0 232.0,244.0 242.5,236.2 158.5,236.2" class="warn-fill"/>
+        <text class="s b" x="162" y="301" text-anchor="middle">A1</text>
+        <text class="s warn-ink b" x="218" y="139" text-anchor="middle">antenna end: open air above</text>
+        <rect x="128" y="312" width="54" height="18" rx="2" class="box"/>
+        <path d="M155.0,334 V380 Q155.0,408 200,414" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <text class="s" x="164" y="374">USB-C cable</text>
+        <polygon points="124.0,229.6 154.0,229.6 175.0,214.0 145.0,214.0" class="pass-fill" opacity=".7"/><polygon points="154.0,253.6 175.0,238.0 175.0,214.0 154.0,229.6" class="pass-fill" opacity=".5"/><polygon points="124.0,253.6 154.0,253.6 154.0,229.6 124.0,229.6" class="pass-fill"/>
+        <text class="s pass-ink b" x="90" y="216">button</text>
+        <polygon points="434.0,224.4 449.0,224.4 477.0,203.6 462.0,203.6" class="pass-fill" opacity=".7"/><polygon points="449.0,302.4 477.0,281.6 477.0,203.6 449.0,224.4" class="pass-fill" opacity=".5"/><polygon points="434.0,302.4 449.0,302.4 449.0,224.4 434.0,224.4" class="pass-fill"/>
+        <circle cx="442" cy="263" r="3" class="pass-line" stroke-width="1.5"/>
+        <text class="s pass-ink b" x="467" y="266">mic, hole out</text>
+        <!-- front posts, then front half of both loops on top of everything -->
+        <line x1="89.0" y1="321.0" x2="89.0" y2="129.0" stroke="currentColor" stroke-width="4"/>
+        <line x1="431.0" y1="321.0" x2="431.0" y2="129.0" stroke="currentColor" stroke-width="4"/>
+        <polyline points="150.0,273.5 80.0,325.5 440.0,325.5 510.0,273.5" class="tube" stroke-width="6"/>
+        <polygon points="80.0,124.5 440.0,124.5 510.0,72.5 150.0,72.5" class="tube" stroke-width="6" fill="none"/>
+        <text class="s brass-ink b" x="518" y="76">top loop</text>
+        <text class="s brass-ink b" x="448" y="330">bottom loop</text>
+        <text class="s" x="40" y="412">Raw brass, or Rust-Oleum white after the paint test. Kapton lines every spot where a part or wire meets brass.</text>
+      </svg>
+    </div>
+    <figcaption><strong>What you are building.</strong> A see-through brass cage the size of a matchbox: screen reading up, speaker grille up at the back, one USB-C cable out of the front. Every opening the cardboard mock-up asked for is here: USB at the front, the open top is the screen window and the speaker grille, and the mic hole and button face the sides.</figcaption>
+  </figure>
+  <h3 style="font-size:18px;margin:26px 0 8px">Component check</h3>
+  <p>Every part in the plan, checked against the hardware contract and the fast-track steps you passed:</p>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Part</th><th>Connection and settings</th><th>Wires</th><th>Checked against</th></tr>
+      <tr><td><strong>A1 · ESP32-C3 SuperMini</strong></td><td>flashed, PASS 10C; 8.5 dBm Wi-Fi cap</td><td>5V, 3V3, GND, GPIO1, 2, 3, 4, 5, 10, 20, 21</td><td>✔ matches the hardware contract in CLAUDE.md</td></tr>
+<tr><td><strong>OLED SSD1306 128×64</strong></td><td>I²C on GPIO21 SDA / GPIO20 SCL, address 0x3C or 0x3D</td><td>4 wires</td><td>✔ Step 7</td></tr>
+<tr><td><strong>INMP441 microphone</strong></td><td>I²S in: WS GPIO1, SCK GPIO2, SD GPIO4; L/R→GND = left slot; 10 kΩ up on GPIO2, 100 kΩ down on GPIO4</td><td>5 wires + link + 2 resistors</td><td>✔ Step 8; nothing on GPIO8</td></tr>
+<tr><td><strong>MAX98357A amplifier</strong></td><td>I²S out: LRC GPIO1, BCLK GPIO2, DIN GPIO3; SD GPIO5 with pull-down; GAIN 100 kΩ to GND = 15 dB; VIN from 5V only; 220 µF + 100 nF</td><td>6 wires + 4 parts</td><td>✔ Step 11 and the 2026-09-30 GAIN change</td></tr>
+<tr><td><strong>Speaker CES-20134-088PM, 8 Ω 0.8 W</strong></td><td>OUT+ / OUT−, never GND; volume cap 45 (2.20 V peak worst case < 2.53 V)</td><td>its own 2 leads</td><td>✔ PASS 11C at cap 45</td></tr>
+<tr><td><strong>Button</strong></td><td>GPIO10 to GND, internal pull-up</td><td>2 wires</td><td>✔ Step 6; GPIO9 BOOT stays free</td></tr>
+<tr><td><strong>Brass frame</strong></td><td>isolated: no current, no GND, no OUT±; Kapton at every contact; antenna end open</td><td>0 wires</td><td>⚠ allowed only once the project rules are updated with your OK</td></tr>
+<tr><td><strong>Battery, charger, regulator, switch</strong></td><td>not in this device</td><td>none</td><td>✔ out of scope by your decision of 2026-09-21</td></tr>
+    </table>
+  </div>
+  <p>Pin count on A1: 5V ×1, GND ×2 (amp, splice), 3V3 ×2, GPIO1 ×2, GPIO2 ×2, GPIO3, GPIO4, GPIO5, GPIO10, GPIO20, GPIO21 ×1 each: <strong>16 wire ends on 11 pins</strong>, all on the two header rows you already soldered.</p>
+
+  <h2>Your kit</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Product you bought</th><th>Use</th><th>Link</th></tr>
+      <tr><td>Meshnology ESP32-C3 SuperMini (A1)</td><td>the controller</td><td><a href="https://www.amazon.com/dp/B0F888JQ91" target="_blank" rel="noopener">B0F888JQ91</a></td></tr>
+      <tr><td>Hosyond SSD1306 OLED, 0.96″</td><td>screen</td><td><a href="https://www.amazon.com/dp/B09T6SJBV5" target="_blank" rel="noopener">B09T6SJBV5</a></td></tr>
+      <tr><td>AITRIP INMP441 microphone</td><td>mic</td><td><a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">B092HWW4RS</a></td></tr>
+      <tr><td>HiLetgo MAX98357A amplifier</td><td>amp</td><td><a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">B0CDWXZZCH</a></td></tr>
+      <tr><td>Same Sky CES-20134-088PM speaker</td><td>speaker</td><td><a href="https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309" target="_blank" rel="noopener">DigiKey CES-20134-088PM</a></td></tr>
+      <tr><td>QTEATAK tactile button</td><td>button</td><td><a href="https://www.amazon.com/dp/B0FHW6HMG4" target="_blank" rel="noopener">B0FHW6HMG4</a></td></tr>
+      <tr><td>CBAZY 30 AWG silicone wire, 6 colours</td><td>all signal and 3.3 V wires</td><td><a href="https://www.amazon.com/dp/B073RDGTPB" target="_blank" rel="noopener">B073RDGTPB</a></td></tr>
+      <tr><td>TUOFENG 26 AWG silicone wire</td><td>the amp's 5V and GND</td><td><a href="https://www.amazon.com/dp/B07G2LRX68" target="_blank" rel="noopener">B07G2LRX68</a></td></tr>
+      <tr><td>LuminologyPro resistor kit</td><td>10 kΩ, 100 kΩ ×2, SD pull-down</td><td><a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">B0F4P352BB</a></td></tr>
+      <tr><td>ALLECIN electrolytic and BOJACK ceramic kits</td><td>220 µF and 100 nF at the amp</td><td>owned · no link recorded</td></tr>
+      <tr><td>Pointool heat-shrink kit, 14 sizes, white</td><td>a sleeve on every joint and splice</td><td><a href="https://www.amazon.com/dp/B08N4W4K9X" target="_blank" rel="noopener">B08N4W4K9X</a></td></tr>
+      <tr><td>QWORK mini heat gun</td><td>shrinking the sleeves</td><td>owned · no link recorded</td></tr>
+      <tr><td>Hakko CSP-30-1 wire stripper</td><td>stripping 2 mm cleanly</td><td><a href="https://www.amazon.com/dp/B00FZPHMUG" target="_blank" rel="noopener">B00FZPHMUG</a></td></tr>
+      <tr><td>MAIYUM 63/37 solder, 0.8 mm</td><td>every joint</td><td><a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">B076QF1Y85</a></td></tr>
+      <tr><td>Chip Quik CQ4LF no-clean flux pen</td><td>electronics flux</td><td>owned (Adafruit order) · no link recorded</td></tr>
+      <tr><td>JoTownCand solder wick</td><td>clearing a bridge</td><td><a href="https://www.amazon.com/dp/B0DRN688Q5" target="_blank" rel="noopener">B0DRN688Q5</a></td></tr>
+      <tr><td>ELEGOO Kapton tape</td><td>wire flags now, insulation later</td><td><a href="https://www.amazon.com/dp/B072Z92QZ2" target="_blank" rel="noopener">B072Z92QZ2</a></td></tr>
+      <tr><td>KAIWEETS HT118A multimeter</td><td>continuity and voltage checks</td><td><a href="https://www.amazon.com/dp/B08BL288LW" target="_blank" rel="noopener">B08BL288LW</a></td></tr>
+      <tr><td>NEIKO digital caliper</td><td>measuring wire paths</td><td><a href="https://www.amazon.com/dp/B000GSLKIW" target="_blank" rel="noopener">B000GSLKIW</a></td></tr>
+      <tr><td>Amazon Basics cardstock</td><td>the 57 × 39 layout card</td><td><a href="https://www.amazon.com/dp/B0DSH5V1TT" target="_blank" rel="noopener">B0DSH5V1TT</a></td></tr>
+    </table>
+  </div>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> Every connection, resistor and capacitor comes from <code>plan/FAST_TRACK.md</code> Steps 6–11 and the hardware contract in <code>CLAUDE.md</code>; the 100 kΩ GAIN resistor is the 15 dB setting from the Louder Speaker page. Part sizes are your caliper measurements of 28 September; the frame size is from the frame template. Product links are from <code>plan/FAST_TRACK_PARTS.md</code>, <code>docs/INVENTORY.md</code> and the original order sheet.</p>
+    <p><strong>What is and is not verified.</strong> The circuit is the one you tested on the breadboard. The layout inside the frame, the heights and the wire lengths are first estimates, not yet checked on parts. The checkbox is remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var box = document.getElementById("gate-wire"); if (!box) return;
+    try { box.checked = localStorage.getItem("pocket-wire-gate") === "1"; } catch (e) {}
+    box.addEventListener("change", function () { try { localStorage.setItem("pocket-wire-gate", box.checked ? "1" : "0"); } catch (e) {} });
+  })();
+</script>

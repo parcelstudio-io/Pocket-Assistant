@@ -1,5 +1,14 @@
 # Device host tools
 
+For the beginner USB prototype, start with the
+[action-only fast track](../plan/FAST_TRACK.md) and the corrected source
+diagnostic build. The [quickstart](../docs/PROTOTYPE_QUICKSTART.md) remains the
+compact technical reference. You do not need to download the vendor binary or
+create a second Python environment after activating ESP-IDF. The tests and
+`netcheck.py` below are useful for both paths; this page's `fetch`/`flash`
+commands are for the **historical vendor image only**, not the corrected-source
+artifact.
+
 The Pocket AI Assistant normally runs without a laptop-side application. The
 ESP32-C3 firmware provisions Wi-Fi locally, then obtains its MQTT or WebSocket
 session details from a Xiaozhi-compatible OTA/bootstrap service. These tools are
@@ -29,6 +38,21 @@ may need membership in their distribution's serial-port group (often
 If `python3 -m venv` reports that `ensurepip` is unavailable, install your
 distribution's Python venv package (commonly `python3-venv`) and retry; do not
 fall back to installing or running the flashing stack as root.
+
+## Verify the host tools
+
+From the repository root:
+
+```bash
+python3 -m unittest discover -s tools/tests -v
+python3 tools/netcheck.py
+```
+
+The unit tests exercise image validation, write safeguards, source-build
+provenance, and intentionally invalid logical connections. `netcheck.py`
+checks the corrected-source GPIO/protocol contract, endpoint uniqueness, and
+the modeled floating speaker connections. It does not inspect your breadboard
+or qualify power, USB isolation, physical modules, audio, RF, or fit.
 
 ## Fetch and verify
 
@@ -91,6 +115,21 @@ service. That third-party service receives device metadata and assistant audio;
 review its terms and privacy behavior before using it. No cloud token or API key
 belongs in this repository. A different backend requires a compatible OTA
 service URL and, preferably, a source build configured for that service.
+
+## Check which Wi-Fi network a board has saved
+
+`saved_wifi.py` reads only the board's NVS settings partition, prints the saved
+network names with every password shown as `<hidden, set>` or `<hidden, empty>`,
+and deletes its temporary copy even if a step fails. The read resets the board
+once and writes nothing. Run it inside the ESP-IDF environment:
+
+```bash
+. firmware/.work/esp-idf/export.sh
+python tools/saved_wifi.py --port /dev/ttyACM0
+```
+
+`No saved Wi-Fi network` is the expected result after a full diagnostics
+reflash, which writes a blank settings area.
 
 ## Troubleshooting
 

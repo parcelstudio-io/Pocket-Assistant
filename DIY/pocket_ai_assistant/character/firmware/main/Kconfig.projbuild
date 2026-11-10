@@ -1,0 +1,78 @@
+menu "Pocket character"
+
+    config POCKET_WIFI_SSID
+        string "Wi-Fi network name"
+        default ""
+        help
+            Put real credentials in sdkconfig.secrets (ignored by git), not here.
+
+    config POCKET_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+
+    config POCKET_SERVER_URL
+        string "Server WebSocket URL"
+        default "ws://192.168.1.171:8790/ws"
+        help
+            The computer running pocket-server, on the same Wi-Fi. ws:// only on a trusted LAN.
+
+    config POCKET_TOKEN
+        string "Server token"
+        default ""
+        help
+            Must match POCKET_TOKEN on the server when it binds a LAN address.
+
+    config POCKET_DEVICE_ID
+        string "Device id sent in hello"
+        default "pocket-a1"
+
+    config POCKET_ENABLE_AMPLIFIER
+        bool "Drive the amplifier (GPIO5 SD) during replies"
+        default n
+        help
+            Off: the amplifier stays in shutdown and replies are silent (eyes still animate).
+            On: the amplifier is enabled only while speaking, after silent clocks and the
+            startup delay, exactly as the Step 11 build does. Enable it only on the wired,
+            qualified speaker path.
+
+    config POCKET_MAX_VOLUME
+        int "Volume cap (0-65)"
+        range 0 65
+        default 65
+        help
+            Builder decision 2026-09-30: up to 45 may drive the speaker directly (2.20 V
+            worst-case peak at the amplifier's highest gain, against the speaker's 2.53 V limit).
+            Builder decision 2026-10-26: 65 is the permanent cap, on the basis that the GAIN pin
+            is left open (9 dB), where full scale is 5.43 V peak and cap 65 gives 2.29 V peak;
+            measured 2.06 V on normalised speech. The firmware refuses anything above 65, and
+            the figure is wrong if GAIN is ever strapped higher.
+
+    config POCKET_AMP_STARTUP_DELAY_MS
+        int "Silent clocks before enabling the amplifier (ms)"
+        range 1 10000
+        default 100
+
+    config POCKET_TX_POWER_QDBM
+        int "Wi-Fi transmit power cap, quarter dBm (34 = 8.5 dBm)"
+        range 8 80
+        default 34
+        help
+            Board A1's chip antenna only worked once capped at 8.5 dBm (2026-09-21).
+            Applied after every radio start.
+
+    config POCKET_MIC_SHIFT
+        int "Microphone 32-bit to 16-bit shift (gain)"
+        range 8 16
+        default 12
+        help
+            The INMP441 puts 24 bits in a 32-bit slot. Shifting by 16 is unity; 12 is 16x gain.
+
+    config POCKET_DISPLAY_FLIP
+        bool "Rotate the screen 180 degrees"
+        default n
+        help
+            In the brass harness the OLED's header edge faces the front of the device, which
+            is upside down for the panel's default scan. Turn this on if the eyes appear
+            upside down; it mirrors both axes in the SSD1306 driver, nothing else changes.
+
+endmenu

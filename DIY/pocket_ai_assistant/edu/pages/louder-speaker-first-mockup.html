@@ -1,0 +1,514 @@
+<title>Louder Speaker, First Mock-Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
+  .track > div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--pass); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps[start="3"] { counter-reset: step 2; }
+  ol.steps[start="4"] { counter-reset: step 3; }
+  ol.steps[start="5"] { counter-reset: step 4; }
+  ol.steps[start="6"] { counter-reset: step 5; }
+  ol.steps[start="9"] { counter-reset: step 8; }
+  ol.steps[start="10"] { counter-reset: step 9; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .thick { stroke-width: 2.2; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>
+  .stamp { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-tint); border-radius: 4px; padding: 2px 8px; margin-right: 6px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 72ch; }
+  figure svg .edge.accent-stroke { stroke: var(--accent); }
+  figure svg .edge.warn-stroke { stroke: var(--warn); }
+  figure svg .iron { stroke-width: 7; stroke-linecap: round; }
+  figure svg .stripe { fill: var(--muted); }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .8em; margin-right: 6px; }
+</style>
+<style>
+  .progress { display: grid; gap: 8px; margin: 18px 0; }
+  .ms { display: grid; grid-template-columns: 170px 1fr 92px; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .ms .t { font-weight: 700; }
+  .ms .bar { height: 10px; background: var(--code-bg); border-radius: 5px; overflow: hidden; }
+  .ms .bar i { display: block; height: 100%; background: var(--pass); }
+  .ms .bar i.part { background: var(--accent); }
+  .ms .s { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; }
+  .ms p { grid-column: 1 / -1; margin: 0; max-width: none; color: var(--muted); font-size: 13.5px; }
+  @media (max-width: 560px) { .ms { grid-template-columns: 1fr; } .ms .s { text-align: left; } }
+  table.t input { width: 5.5em; font-family: var(--mono); font-size: 13px; padding: 3px 5px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); }
+  .sheet { display: grid; gap: 14px; margin: 14px 0; }
+  .part { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px 4px; }
+  .part-h { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+  .part-h .note { margin: 0; font-size: 13px; }
+  table.meas td { vertical-align: middle; }
+  table.meas td.val { white-space: nowrap; }
+  table.meas input { width: 6em; }
+  table.meas input.wide { width: 11em; }
+  .u { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .num { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 700; border: 1.8px solid; background: var(--surface); }
+  .num.b { color: var(--accent); border-color: var(--accent); }
+  .num.g { color: var(--pass); border-color: var(--pass); }
+  .chip { display: inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .04em; padding: 1px 6px; border-radius: 3px; margin-left: 4px; vertical-align: 1px; }
+  .chip.blue { background: var(--accent-tint); color: var(--accent-ink); }
+  .chip.green { background: var(--pass-tint); color: var(--pass); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · build day · Sunday 27 September</div>
+    <h1>Louder speaker, then the first mock-up</h1>
+    <p class="lede">Today is all building, no scope. First make A1 clearly audible with two changes that stay inside the limits you already approved. Then close out Step 11 and start the enclosure the way every enclosure starts: calipers and cardboard.</p>
+  </header>
+
+  <h2>Where the whole project stands</h2>
+  <div class="progress">
+    <div class="ms"><span class="t">1 · USB prototype</span><span class="bar"><i style="width:100%"></i></span><span class="s">done 20 Sep</span></div>
+    <div class="ms"><span class="t">2 · Talks to the cloud</span><span class="bar"><i style="width:100%"></i></span><span class="s">done 21 Sep</span></div>
+    <div class="ms"><span class="t">3 · Speaks</span><span class="bar"><i class="part" style="width:80%"></i></span><span class="s">today</span>
+      <p>It speaks at cap 15. Left: louder (today), PASS 11C record (today), scope check PASS 11B (later this week, only needed above cap 30).</p></div>
+    <div class="ms"><span class="t">4 · Enclosure</span><span class="bar"><i class="part" style="width:5%"></i></span><span class="s">starts today</span>
+      <p>The biggest part left: measure parts, cardboard mock-up, paint test coupons, frame design, cut brass, permanent wiring off the breadboard, final assembly. Roughly six to eight build sessions.</p></div>
+  </div>
+  <p class="note">Rough estimate: the electronics are about 90 % done; counting the enclosure, the whole device is a little under half done. The enclosure is where most of the remaining hours go, and it needs no scope.</p>
+
+  <h2><span class="when">0:00</span>Louder, step 1: cap 30</h2>
+  <p>The image with cap 30 is already built and verified (SHA-256 starting <code>595a4c8b</code>). Cap 30 plays four times the amplitude of cap 15, about 12 dB louder, and needs no dummy load.</p>
+  <ol class="steps">
+    <li><p><strong>Plug A1's USB into the computer and tell Claude.</strong> The speaker can stay connected. A1 was unplugged when this page was last checked, so nothing has been flashed yet.</p></li>
+    <li><p><strong>Flash it, keeping your Wi-Fi.</strong> Or tell Claude it is plugged in, and Claude runs this for you.</p>
+<pre><code>. firmware/.work/esp-idf/export.sh
+firmware/scripts/flash.sh /dev/ttyACM0 --keep-wifi --monitor</code></pre></li>
+    <li><p><strong>Find</strong> <code>Prototype volume cap: 30</code> in the log, then leave the monitor with <kbd>Ctrl</kbd>+<kbd>]</kbd>.</p></li>
+    <li><p><strong>Turn the volume up once.</strong> A1 saved volume 15, and a higher cap does not raise it. Press the button and say "set the volume to maximum". It goes to 30 and saves it.</p></li>
+  </ol>
+
+  <h2><span class="when">0:15</span>Louder, step 2: the GAIN pin</h2>
+  <p>The amplifier has its own volume knob, set by what you connect to its <code>GAIN</code> pin. Yours is unconnected, which is the quietest common setting, 9 dB. One resistor raises it to 15 dB, another 6 dB louder. The datasheet arithmetic already allowed the highest gain at cap 30, so this stays under the speaker's limit.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 300" style="min-width: 620px; width: 100%;" role="img" aria-label="Largest calculated peak across the speaker for four settings, drawn to scale against the 2.53 volt limit. Now, cap 15 with GAIN unconnected at 9 dB: 0.11 volts. Cap 30 at 9 dB: 0.46 volts, 12 dB louder than now. Cap 30 with GAIN to GND at 12 dB: 0.65 volts, 15 dB louder. Cap 30 with 100 kilo-ohms from GAIN to GND at 15 dB: 0.91 volts, 18 dB louder, and 0.98 volts at the gain tolerance limit. All stay well left of the 2.53 volt limit.">
+        <text class="t b" x="20" y="22">Largest peak across the speaker, calculated from the datasheet</text>
+        <text class="s b" x="20" y="62">now · cap 15 · GAIN open (9 dB)</text>
+        <rect class="soft" x="290" y="48" width="16" height="22" rx="2"/><text class="s b " x="314" y="63">0.11 V</text>
+        <text class="s b" x="20" y="112">cap 30 · GAIN open (9 dB)</text>
+        <rect class="cap" x="290" y="98" width="69" height="22" rx="2"/><text class="s b cap-ink" x="367" y="113">0.46 V · +12 dB</text>
+        <text class="s b" x="20" y="162">cap 30 · GAIN to GND (12 dB)</text>
+        <rect class="cap" x="290" y="148" width="98" height="22" rx="2"/><text class="s b cap-ink" x="396" y="163">0.65 V · +15 dB</text>
+        <text class="s b" x="20" y="212">cap 30 · 100 kΩ GAIN to GND (15 dB)</text>
+        <rect class="pass-fill" x="290" y="198" width="136" height="22" rx="2"/><text class="s b pass-ink" x="434" y="213">0.91 V · +18 dB</text>
+        <line class="edge dashed warn-stroke thick" x1="670" y1="36" x2="670" y2="232"/>
+        <text class="s b warn-ink" x="664" y="46" text-anchor="end">speaker limit 2.53 V</text>
+        <line class="edge" x1="290" y1="240" x2="740" y2="240"/>
+        <line class="edge" x1="290" y1="240" x2="290" y2="245"/><text class="s m muted" x="290" y="258" text-anchor="middle">0 V</text>
+        <line class="edge" x1="440" y1="240" x2="440" y2="245"/><text class="s m muted" x="440" y="258" text-anchor="middle">1 V</text>
+        <line class="edge" x1="590" y1="240" x2="590" y2="245"/><text class="s m muted" x="590" y="258" text-anchor="middle">2 V</text>
+        <line class="edge" x1="740" y1="240" x2="740" y2="245"/><text class="s m muted" x="740" y="258" text-anchor="middle">3 V</text>
+        <text class="s muted" x="20" y="286">CALCULATED from the MAX98357A gain table and the squared volume curve. At 15.6 dB, the 15 dB tolerance limit: 0.98 V.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two knobs, one in software and one in hardware.</strong> Cap 30 is the software knob; the GAIN resistor is the hardware knob. Together they make A1 about 18 dB louder than now, roughly eight times the amplitude, and still under 1 V against a 2.53 V limit.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 250" style="min-width: 620px; width: 100%;" role="img" aria-label="Wiring for the GAIN pin. The amplifier's GAIN pin sits in its own breadboard strip. A 100 kilo-ohm resistor goes from a free hole in the GAIN strip to a free hole on the breadboard's GND rail, the same ground as A1. The amplifier's GND strip is already full with five parts, so the resistor goes to the rail instead. Alternative for 12 dB: a plain jumper from the GAIN strip to GND instead of the resistor.">
+        <text class="t b" x="20" y="22">USB unplugged · one part</text>
+        <rect class="box" x="40" y="44" width="150" height="176" rx="6"/>
+        <text class="t b" x="115" y="130" text-anchor="middle">AMP-A1</text>
+        <text class="s m" x="200" y="62">LRC</text><text class="s m" x="200" y="86">BCLK</text><text class="s m" x="200" y="110">DIN</text>
+        <text class="s m b cap-ink" x="200" y="134">GAIN</text><text class="s m" x="200" y="158">SD</text><text class="s m" x="200" y="182">GND</text><text class="s m" x="200" y="206">VIN</text>
+        <rect class="cap" x="250" y="124" width="170" height="14" rx="3"/>
+        <text class="s cap-ink b" x="335" y="118" text-anchor="middle">GAIN strip · 4 free holes</text>
+        <rect class="soft" x="250" y="172" width="170" height="14" rx="3"/>
+        <text class="s muted" x="335" y="200" text-anchor="middle">GND strip · already full (5 parts)</text>
+        <circle class="box" cx="400" cy="131" r="4"/>
+        <line class="edge thick" x1="400" y1="131" x2="480" y2="131"/>
+        <polyline class="edge thick" points="480,131 486,123 494,139 502,123 510,139 518,123 526,139 532,131"/>
+        <line class="edge thick" x1="532" y1="131" x2="600" y2="131"/>
+        <text class="s b" x="506" y="112" text-anchor="middle">100 kΩ</text>
+        <text class="s muted" x="506" y="156" text-anchor="middle">brown · black · yellow</text>
+        <line class="edge thick" x1="600" y1="131" x2="600" y2="210"/>
+        <rect class="soft" x="560" y="210" width="190" height="14" rx="3"/>
+        <text class="s b" x="655" y="242" text-anchor="middle">breadboard GND rail (A1 ground)</text>
+        <circle class="box" cx="600" cy="217" r="4"/>
+        <text class="s muted" x="620" y="190">any free hole that meters</text>
+        <text class="s muted" x="620" y="204">as continuous with A1 GND</text>
+      </svg>
+    </div>
+    <figcaption><strong>One resistor from GAIN to ground.</strong> The amplifier's own GND strip has no free hole, so land the far leg on the breadboard's GND rail from Step 6, or any hole your meter confirms is A1's ground. A plain jumper in place of the resistor gives 12 dB instead of 15 dB.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Unplug USB.</strong></p></li>
+    <li><p><strong>Find a 100 kΩ</strong> in the resistor kit (brown, black, yellow) and confirm it with the meter: 95 to 105 kΩ.</p></li>
+    <li><p><strong>Place it</strong> from a free hole in the <code>GAIN</code> strip to a free GND hole. Meter continuity from its far leg to A1's <code>GND</code> pin: steady beep. Meter from the <code>GAIN</code> strip to <code>VIN</code>: no beep.</p></li>
+    <li><p><strong>Plug USB in</strong> and ask a question. It should be clearly louder. Too loud for the desk? Remove the resistor to go back to 9 dB, or use the jumper for 12 dB.</p></li>
+  </ol>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-11c">
+    <label for="gate-11c">
+      <div class="name">PASS 11C · the device speaks, at cap 30</div>
+      <p>Five replies in a row are clearly audible, with no reset, no harsh buzz, no smell, and nothing warm: speaker, amplifier or 220 µF. Write down the cap, the GAIN setting, and the VIN reading if you have it.</p>
+    </label>
+  </div>
+
+  <h2><span class="when">0:40</span>The enclosure starts: measure every part</h2>
+  <p>The old CAD models an earlier design, so the real parts have to be measured before any case is drawn. Zero the caliper closed, then measure each dimension three times and keep the largest. Listing sizes are guesses; your parts are the truth.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 190" style="min-width: 640px; width: 100%;" role="img" aria-label="Caliper guide: outside jaws for most measurements, inside jaws for openings, the depth rod at the end. Close and zero it first, keep the jaws square and snug, take three readings and keep the largest, and type the number in millimetres.">
+        <text class="t b" x="20" y="22" text-anchor="start">Using the caliper</text><rect class="box" x="40" y="70" width="400" height="18" rx="2"/><line class="edge" x1="50" y1="70" x2="50" y2="76"/><line class="edge" x1="70" y1="70" x2="70" y2="76"/><line class="edge" x1="90" y1="70" x2="90" y2="76"/><line class="edge" x1="110" y1="70" x2="110" y2="76"/><line class="edge" x1="130" y1="70" x2="130" y2="76"/><line class="edge" x1="150" y1="70" x2="150" y2="76"/><line class="edge" x1="170" y1="70" x2="170" y2="76"/><line class="edge" x1="190" y1="70" x2="190" y2="76"/><line class="edge" x1="210" y1="70" x2="210" y2="76"/><line class="edge" x1="230" y1="70" x2="230" y2="76"/><line class="edge" x1="250" y1="70" x2="250" y2="76"/><line class="edge" x1="270" y1="70" x2="270" y2="76"/><line class="edge" x1="290" y1="70" x2="290" y2="76"/><line class="edge" x1="310" y1="70" x2="310" y2="76"/><line class="edge" x1="330" y1="70" x2="330" y2="76"/><line class="edge" x1="350" y1="70" x2="350" y2="76"/><line class="edge" x1="370" y1="70" x2="370" y2="76"/><line class="edge" x1="390" y1="70" x2="390" y2="76"/><line class="edge" x1="410" y1="70" x2="410" y2="76"/><path class="box" d="M40,88 h26 v70 l-26,-14 z"/><path class="box" d="M160,88 h26 v70 l-26,-14 z"/><rect class="soft" x="160" y="60" width="70" height="38" rx="3"/><path class="box" d="M46,70 v-22 l12,0 v22 z"/><path class="box" d="M160,70 v-22 l12,0 v22 z"/><rect class="soft" x="340" y="64" width="80" height="16" rx="2"/><text class="s m b" x="380" y="76" text-anchor="middle">12.34 mm</text><line class="edge thick" x1="440" y1="79" x2="486" y2="79"/><text class="s b cap-ink" x="100" y="176" text-anchor="middle">outside jaws: most measurements</text><text class="s b" x="110" y="40" text-anchor="middle">inside jaws: openings</text><text class="s b" x="486" y="64" text-anchor="end">depth rod</text><text class="s" x="510" y="80" text-anchor="start">1 · close the jaws, press ZERO</text><text class="s" x="510" y="98" text-anchor="start">2 · jaws square to the part, snug not tight</text><text class="s" x="510" y="116" text-anchor="start">3 · three readings, keep the largest</text><text class="s" x="510" y="134" text-anchor="start">4 · type the number in mm, e.g. 22.52</text>
+      </svg>
+    </div>
+    <figcaption><strong>Every box below has its own numbered drawing.</strong> Blue numbers are the <code>L W H</code> rows; green numbers are the <code>extra</code> rows. Drawings are not to scale.</figcaption>
+  </figure>
+  <div class="sheet">
+  <div class="part"><div class="part-h"><strong>A1, SuperMini</strong><span class="note">Use a spare board for pin length if A1&#x27;s pins are in the breadboard.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 250" style="min-width: 600px; width: 100%;" role="img" aria-label="A1 measurements. 1: length, USB end to antenna end, board edge to board edge. 2: width across the board. 3: height from the top of the USB socket to the header pin tips. 4: pin length below the board. 5: antenna start, from the antenna end of the board to where the red block begins.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">Top view</text><text class="t b" x="330" y="20" text-anchor="start">Side view (USB end on the left)</text><rect class="soft" x="80" y="44" width="110" height="170" rx="4"/><rect class="box" x="113" y="34" width="44" height="26" rx="3"/><text class="s b" x="135" y="76" text-anchor="middle">USB</text><rect class="warn-fill" x="100" y="190" width="70" height="18"/><text class="s b warn-ink" x="135" y="203" text-anchor="middle">antenna</text><line class="edge" x1="60" y1="44" x2="80" y2="44" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="60" y1="214" x2="80" y2="214" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="60" y1="44" x2="60" y2="214" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="60" cy="129.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="60" y="133.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">1</text><line class="edge" x1="80" y1="214" x2="80" y2="232" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="190" y1="214" x2="190" y2="232" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="80" y1="232" x2="190" y2="232" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="135.0" cy="232" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="135.0" y="236" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><line class="edge" x1="170" y1="190" x2="214" y2="190" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="210" y1="190" x2="210" y2="214" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="226" cy="202.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="226" y="206.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">5</text><rect class="soft" x="360" y="124" width="240" height="10"/><rect class="box" x="360" y="100" width="44" height="24" rx="2"/><text class="s" x="382" y="94" text-anchor="middle">USB socket</text><line class="edge thick" x1="380" y1="134" x2="380" y2="196"/><line class="edge thick" x1="420" y1="134" x2="420" y2="196"/><line class="edge thick" x1="460" y1="134" x2="460" y2="196"/><line class="edge thick" x1="500" y1="134" x2="500" y2="196"/><line class="edge thick" x1="540" y1="134" x2="540" y2="196"/><line class="edge thick" x1="580" y1="134" x2="580" y2="196"/><text class="s muted" x="480" y="214" text-anchor="middle">header pins</text><line class="edge" x1="404" y1="100" x2="630" y2="100" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="600" y1="196" x2="630" y2="196" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="630" y1="100" x2="630" y2="196" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="630" cy="148.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="630" y="152.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text><line class="edge" x1="345" y1="134" x2="360" y2="134" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="345" y1="196" x2="380" y2="196" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="345" y1="134" x2="345" y2="196" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="345" cy="165.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="345" y="169.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text>
+      </svg>
+    </div>
+    <figcaption>Numbers match the rows below. Length and width are the board only; height runs from the top of the USB socket to the pin tips.</figcaption>
+  </figure>
+  <div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num b">1</span> <strong>Length</strong> <span class="chip blue">L W H</span></td><td>USB end to antenna end, board edge to board edge</td><td class="val"><input id="m-a1-l" inputmode="decimal" aria-label="A1, SuperMini Length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Width</strong> <span class="chip blue">L W H</span></td><td>across the board, edge to edge</td><td class="val"><input id="m-a1-w" inputmode="decimal" aria-label="A1, SuperMini Width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Height</strong> <span class="chip blue">L W H</span></td><td>top of the tallest part (USB socket) to the header pin tips</td><td class="val"><input id="m-a1-h" inputmode="decimal" aria-label="A1, SuperMini Height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Pin length</strong> <span class="chip green">extra</span></td><td>how far the header pins stick out below the board</td><td class="val"><input id="m-a1-pin" inputmode="decimal" aria-label="A1, SuperMini Pin length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">5</span> <strong>Antenna start</strong> <span class="chip green">extra</span></td><td>from the antenna end of the board to where the red block begins</td><td class="val"><input id="m-a1-ant" inputmode="decimal" aria-label="A1, SuperMini Antenna start in mm"> <span class="u">mm</span></td></tr>
+  </table></div></div>
+  <div class="part"><div class="part-h"><strong>OLED module</strong><span class="note">The lit area is where the screen can show pixels, not the whole glass.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 240" style="min-width: 600px; width: 100%;" role="img" aria-label="OLED measurements. 1: length, the board's long side. 2: width, the short side. 3: height from the top of the glass to the pin tips. 4 and 5: the lit area's length and width, the part that glows. 6: pin length below the board.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">Top view (screen side)</text><text class="t b" x="330" y="20" text-anchor="start">Side view</text><rect class="soft" x="70" y="40" width="170" height="160" rx="4"/><circle class="box" cx="125" cy="52" r="4"/><circle class="box" cx="145" cy="52" r="4"/><circle class="box" cx="165" cy="52" r="4"/><circle class="box" cx="185" cy="52" r="4"/><rect class="box" x="80" y="66" width="150" height="116" rx="2"/><rect class="cap" x="94" y="78" width="122" height="70" rx="2"/><text class="s b cap-ink" x="155" y="118" text-anchor="middle">lit area</text><line class="edge" x1="70" y1="200" x2="70" y2="222" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="240" y1="200" x2="240" y2="222" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="70" y1="222" x2="240" y2="222" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="155.0" cy="222" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="155.0" y="226" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">1</text><line class="edge" x1="48" y1="40" x2="70" y2="40" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="48" y1="200" x2="70" y2="200" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="48" y1="40" x2="48" y2="200" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="48" cy="120.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="48" y="124.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><line x1="94" y1="166" x2="216" y2="166" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="155.0" cy="166" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="155.0" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text><line x1="226" y1="78" x2="226" y2="148" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="226" cy="113.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="226" y="117.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">5</text><rect class="soft" x="370" y="126" width="220" height="8"/><rect class="box" x="385" y="106" width="190" height="20" rx="2"/><text class="s" x="480" y="100" text-anchor="middle">glass</text><line class="edge thick" x1="395" y1="134" x2="395" y2="190"/><line class="edge thick" x1="405" y1="134" x2="405" y2="190"/><line class="edge thick" x1="415" y1="134" x2="415" y2="190"/><line class="edge thick" x1="425" y1="134" x2="425" y2="190"/><text class="s muted" x="420" y="208" text-anchor="middle">pins</text><line class="edge" x1="575" y1="106" x2="620" y2="106" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="435" y1="190" x2="620" y2="190" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="620" y1="106" x2="620" y2="190" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="620" cy="148.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="620" y="152.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text><line class="edge" x1="355" y1="134" x2="370" y2="134" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="355" y1="190" x2="395" y2="190" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="355" y1="134" x2="355" y2="190" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="355" cy="162.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="355" y="166.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">6</text>
+      </svg>
+    </div>
+    <figcaption>Turn A1 on to see the lit area clearly: measure only the part that glows, not the whole glass.</figcaption>
+  </figure>
+  <div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num b">1</span> <strong>Length</strong> <span class="chip blue">L W H</span></td><td>board, the long side</td><td class="val"><input id="m-oled-l" inputmode="decimal" aria-label="OLED module Length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Width</strong> <span class="chip blue">L W H</span></td><td>board, the short side</td><td class="val"><input id="m-oled-w" inputmode="decimal" aria-label="OLED module Width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Height</strong> <span class="chip blue">L W H</span></td><td>top of the glass to the header pin tips</td><td class="val"><input id="m-oled-h" inputmode="decimal" aria-label="OLED module Height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Lit area length</strong> <span class="chip green">extra</span></td><td>the glowing part only, long side (turn A1 on to see it)</td><td class="val"><input id="m-oled-litl" inputmode="decimal" aria-label="OLED module Lit area length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">5</span> <strong>Lit area width</strong> <span class="chip green">extra</span></td><td>the glowing part only, short side</td><td class="val"><input id="m-oled-litw" inputmode="decimal" aria-label="OLED module Lit area width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">6</span> <strong>Pin length</strong> <span class="chip green">extra</span></td><td>below the board</td><td class="val"><input id="m-oled-pin" inputmode="decimal" aria-label="OLED module Pin length in mm"> <span class="u">mm</span></td></tr>
+  </table></div></div>
+  <div class="part"><div class="part-h"><strong>Microphone board (round)</strong><span class="note">Check both sides to find the tiny sound hole before measuring its position.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 240" style="min-width: 600px; width: 100%;" role="img" aria-label="Microphone measurements. 1 and 2: the diameter measured twice at right angles. 3: height from the top of the metal can to the pin tips. 4: which face the sound hole is on. 5: from the centre of the hole to the nearest edge. 6: from the centre of the hole to the nearest row of pins.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">Top view</text><text class="t b" x="330" y="20" text-anchor="start">Side view</text><circle class="soft" cx="150" cy="125" r="80"/><circle class="box" cx="122" cy="80" r="5"/><circle class="box" cx="122" cy="170" r="5"/><circle class="box" cx="150" cy="80" r="5"/><circle class="box" cx="150" cy="170" r="5"/><circle class="box" cx="178" cy="80" r="5"/><circle class="box" cx="178" cy="170" r="5"/><line class="edge" x1="110" y1="170" x2="190" y2="170" stroke-dasharray="3 3"/><text class="s muted" x="150" y="196" text-anchor="middle">pin row</text><circle class="cap" cx="196" cy="125" r="7"/><text class="s b cap-ink" x="170" y="129" text-anchor="end">hole</text><line class="edge" x1="70" y1="125" x2="70" y2="228" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="230" y1="125" x2="230" y2="228" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="70" y1="228" x2="230" y2="228" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="150.0" cy="228" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="150.0" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">1</text><line class="edge" x1="40" y1="45" x2="150" y2="45" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="40" y1="205" x2="150" y2="205" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="40" y1="45" x2="40" y2="205" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="40" cy="125.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="40" y="129.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><line x1="203" y1="125" x2="230" y2="125" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="240" cy="108" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="240" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">5</text><line x1="214" y1="132" x2="214" y2="170" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="232" cy="151.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="232" y="155.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">6</text><rect class="soft" x="370" y="120" width="200" height="8"/><rect class="box" x="440" y="100" width="60" height="20" rx="2"/><text class="s" x="470" y="94" text-anchor="middle">metal can</text><line class="edge thick" x1="400" y1="128" x2="400" y2="186"/><line class="edge thick" x1="470" y1="128" x2="470" y2="186"/><line class="edge thick" x1="540" y1="128" x2="540" y2="186"/><line class="edge" x1="500" y1="100" x2="610" y2="100" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="540" y1="186" x2="610" y2="186" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="610" y1="100" x2="610" y2="186" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="610" cy="143.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="610" y="147.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text><circle cx="352" cy="112" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="352" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text><text class="s b pass-ink" x="364" y="116" text-anchor="start">which face?</text><line class="edge" x1="352" y1="121" x2="372" y2="124" style="stroke:var(--pass)"/><text class="s pass-ink" x="470" y="226" text-anchor="middle">④ the hole is on the can side or the other side: check both</text>
+      </svg>
+    </div>
+    <figcaption>The hole is tiny: use a light and your phone camera. Measure 5 and 6 to the centre of the hole.</figcaption>
+  </figure>
+  <div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num b">1</span> <strong>Diameter</strong> <span class="chip blue">L W H</span></td><td>straight across the circle</td><td class="val"><input id="m-mic-l" inputmode="decimal" aria-label="Microphone board (round) Diameter in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Diameter, turned 90°</strong> <span class="chip blue">L W H</span></td><td>straight across again, at right angles to the first</td><td class="val"><input id="m-mic-w" inputmode="decimal" aria-label="Microphone board (round) Diameter, turned 90° in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Height</strong> <span class="chip blue">L W H</span></td><td>top of the metal can to the pin tips</td><td class="val"><input id="m-mic-h" inputmode="decimal" aria-label="Microphone board (round) Height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Hole side</strong> <span class="chip green">extra</span></td><td>type: can side, or other side</td><td class="val"><input id="m-mic-hole-side" class="wide" aria-label="Microphone board (round) Hole side"></td></tr>
+    <tr><td><span class="num g">5</span> <strong>Hole to edge</strong> <span class="chip green">extra</span></td><td>centre of the hole to the nearest edge of the circle</td><td class="val"><input id="m-mic-hole-edge" inputmode="decimal" aria-label="Microphone board (round) Hole to edge in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">6</span> <strong>Hole to pin row</strong> <span class="chip green">extra</span></td><td>centre of the hole to the nearest row of pins</td><td class="val"><input id="m-mic-hole-row" inputmode="decimal" aria-label="Microphone board (round) Hole to pin row in mm"> <span class="u">mm</span></td></tr>
+  </table></div></div>
+  <div class="part"><div class="part-h"><strong>AMP-A1</strong><span class="note">Use a spare amplifier if AMP-A1&#x27;s pins are in the breadboard.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 245" style="min-width: 600px; width: 100%;" role="img" aria-label="Amplifier measurements. 1: length from the header edge to the outside face of the terminal block, which may overhang the board. 2: width across. 3: height from the top of the terminal block to the header pin tips. 4: pin length below the board.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">Top view</text><text class="t b" x="330" y="20" text-anchor="start">Side view</text><rect class="soft" x="70" y="50" width="150" height="150" rx="4"/><circle class="box" cx="84" cy="64" r="4"/><circle class="box" cx="84" cy="84" r="4"/><circle class="box" cx="84" cy="104" r="4"/><circle class="box" cx="84" cy="124" r="4"/><circle class="box" cx="84" cy="144" r="4"/><circle class="box" cx="84" cy="164" r="4"/><circle class="box" cx="84" cy="184" r="4"/><text class="s muted" x="100" y="210" text-anchor="start">header pins</text><rect class="pass-fill" x="196" y="95" width="44" height="60" rx="3"/><text class="s pass-ink" x="218" y="176" text-anchor="middle">terminal</text><line class="edge" x1="70" y1="200" x2="70" y2="228" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="240" y1="155" x2="240" y2="228" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="70" y1="228" x2="240" y2="228" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="155.0" cy="228" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="155.0" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">1</text><line class="edge" x1="48" y1="50" x2="70" y2="50" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="48" y1="200" x2="70" y2="200" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="48" y1="50" x2="48" y2="200" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="48" cy="125.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="48" y="129.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><rect class="soft" x="370" y="124" width="190" height="8"/><rect class="pass-fill" x="520" y="92" width="40" height="32" rx="2"/><text class="s" x="540" y="86" text-anchor="middle">terminal block</text><line class="edge thick" x1="382" y1="132" x2="382" y2="190"/><line class="edge thick" x1="388" y1="132" x2="388" y2="190"/><line class="edge" x1="560" y1="92" x2="610" y2="92" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="388" y1="190" x2="610" y2="190" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="610" y1="92" x2="610" y2="190" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="610" cy="141.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="610" y="145.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text><line class="edge" x1="355" y1="132" x2="370" y2="132" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="355" y1="190" x2="382" y2="190" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="355" y1="132" x2="355" y2="190" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="355" cy="161.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="355" y="165.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text>
+      </svg>
+    </div>
+    <figcaption>Length runs to the outside of the green terminal block, which often hangs past the board edge.</figcaption>
+  </figure>
+  <div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num b">1</span> <strong>Length</strong> <span class="chip blue">L W H</span></td><td>including the green terminal block where it overhangs</td><td class="val"><input id="m-amp-l" inputmode="decimal" aria-label="AMP-A1 Length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Width</strong> <span class="chip blue">L W H</span></td><td>across the board, edge to edge</td><td class="val"><input id="m-amp-w" inputmode="decimal" aria-label="AMP-A1 Width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Height</strong> <span class="chip blue">L W H</span></td><td>top of the terminal block to the header pin tips</td><td class="val"><input id="m-amp-h" inputmode="decimal" aria-label="AMP-A1 Height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Pin length</strong> <span class="chip green">extra</span></td><td>below the board</td><td class="val"><input id="m-amp-pin" inputmode="decimal" aria-label="AMP-A1 Pin length in mm"> <span class="u">mm</span></td></tr>
+  </table></div></div>
+  <div class="part"><div class="part-h"><strong>Speaker</strong><span class="note">Measure a spare speaker if SPK-A1 is screwed in. The listed sizes come from its datasheet; confirm them.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 290" style="min-width: 600px; width: 100%;" role="img" aria-label="Speaker measurements, as in the datasheet drawing. 1: body length, the 20 millimetre long side. 2: body width, the 13 millimetre short side. 3: thickness, 4.87 millimetres. 4: across the flanges, 21 millimetres, measured across the width because the two mounting flanges stick out from the long sides. 5: the wires leave from one 13 millimetre short side.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">Top view (mesh side up)</text><text class="t b" x="440" y="20" text-anchor="start">Side view</text><rect class="soft" x="160" y="40" width="30" height="44" rx="12"/><circle class="box" cx="175" cy="58" r="6"/><rect class="soft" x="160" y="206" width="30" height="44" rx="12"/><circle class="box" cx="175" cy="232" r="6"/><rect class="box" x="100" y="80" width="200" height="130" rx="8"/><rect class="soft" x="140" y="108" width="120" height="74" rx="4"/><text class="s muted" x="200" y="150" text-anchor="middle">mesh</text><path class="edge thick" d="M300,140 H330 Q340,140 344,132"/><path class="edge thick" d="M300,150 H330 Q340,150 344,158"/><text class="s b pass-ink" x="352" y="136" text-anchor="start">wires leave the</text><text class="s b pass-ink" x="352" y="150" text-anchor="start">13 mm short side</text><circle cx="360" cy="168" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="360" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">5</text><line class="edge" x1="100" y1="210" x2="100" y2="266" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="300" y1="210" x2="300" y2="266" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="100" y1="262" x2="300" y2="262" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="200.0" cy="262" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="200.0" y="266" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">1</text><line class="edge" x1="70" y1="80" x2="100" y2="80" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="70" y1="210" x2="100" y2="210" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="76" y1="80" x2="76" y2="210" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="76" cy="145.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="76" y="149.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><line class="edge" x1="34" y1="40" x2="160" y2="40" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="34" y1="250" x2="160" y2="250" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="40" y1="40" x2="40" y2="250" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="40" cy="145.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="40" y="149.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text><text class="s muted" x="20" y="284" text-anchor="start">flanges stick out from the two long sides</text><rect class="box" x="470" y="130" width="200" height="30" rx="6"/><rect class="soft" x="490" y="160" width="160" height="6"/><text class="s muted" x="570" y="186" text-anchor="middle">mesh + 0.6 mm foam</text><line class="edge" x1="670" y1="130" x2="690" y2="130" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="670" y1="166" x2="690" y2="166" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="690" y1="130" x2="690" y2="166" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="690" cy="112" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="690" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text>
+      </svg>
+    </div>
+    <figcaption>From the datasheet (±0.2 mm): body 20 × 13 × 4.87 mm, 21 mm across the flanges, mounting holes ø2.0 mm, 16.09 mm apart. The wires leave the 13 mm short side.</figcaption>
+  </figure>
+  <div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num b">1</span> <strong>Body length</strong> <span class="chip blue">L W H</span></td><td>the long side, 20 mm listed</td><td class="val"><input id="m-spk-l" inputmode="decimal" aria-label="Speaker Body length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Body width</strong> <span class="chip blue">L W H</span></td><td>the short side, where the wires leave, 13 mm listed</td><td class="val"><input id="m-spk-w" inputmode="decimal" aria-label="Speaker Body width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Height</strong> <span class="chip blue">L W H</span></td><td>thickness of the body with the foam, 4.87 mm listed</td><td class="val"><input id="m-spk-h" inputmode="decimal" aria-label="Speaker Height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Across the flanges</strong> <span class="chip green">extra</span></td><td>tip of one flange to the other, across the width, 21 mm listed</td><td class="val"><input id="m-spk-flange" inputmode="decimal" aria-label="Speaker Across the flanges in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">5</span> <strong>Lead exit</strong> <span class="chip green">extra</span></td><td>type: short side (check yours matches)</td><td class="val"><input id="m-spk-leads" class="wide" aria-label="Speaker Lead exit"></td></tr>
+  </table></div></div>
+  <div class="part"><div class="part-h"><strong>Button with its cap</strong><span class="note">Travel is how far the cap moves down before it clicks.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 235" style="min-width: 600px; width: 100%;" role="img" aria-label="Button measurements. 1 and 2: length and width of the button body. 3: height from the base of the body to the top of the cap, not pressed. 4: travel, how far the cap moves down when pressed. The pins underneath are not part of the height.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">Top view</text><text class="t b" x="330" y="20" text-anchor="start">Side view</text><rect class="box" x="90" y="60" width="120" height="120" rx="4"/><circle class="cap" cx="150" cy="120" r="36"/><line class="edge" x1="90" y1="180" x2="90" y2="206" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="210" y1="180" x2="210" y2="206" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="90" y1="206" x2="210" y2="206" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="150.0" cy="206" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="150.0" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">1</text><line class="edge" x1="64" y1="60" x2="90" y2="60" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="64" y1="180" x2="90" y2="180" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="64" y1="60" x2="64" y2="180" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="64" cy="120.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="64" y="124.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><rect class="box" x="400" y="140" width="130" height="40" rx="3"/><rect class="cap" x="440" y="86" width="50" height="54" rx="3"/><line class="edge" x1="432" y1="100" x2="498" y2="100" stroke-dasharray="4 3"/><text class="s muted" x="506" y="104" text-anchor="start">cap pressed</text><line class="edge" x1="415" y1="180" x2="415" y2="204" stroke-opacity="0.5"/><line class="edge" x1="515" y1="180" x2="515" y2="204" stroke-opacity="0.5"/><text class="s muted" x="465" y="222" text-anchor="middle">pins: not included in height</text><line class="edge" x1="490" y1="86" x2="580" y2="86" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="530" y1="180" x2="580" y2="180" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="580" y1="86" x2="580" y2="180" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="580" cy="133.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="580" y="137.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text><line class="edge" x1="385" y1="86" x2="440" y2="86" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="385" y1="100" x2="432" y2="100" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="385" y1="86" x2="385" y2="100" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="366" cy="93.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="366" y="97.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text>
+      </svg>
+    </div>
+    <figcaption>Travel = cap height not pressed minus cap height pressed. Height stops at the base of the body; leave the pins out.</figcaption>
+  </figure>
+  <div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num b">1</span> <strong>Length</strong> <span class="chip blue">L W H</span></td><td>the button body</td><td class="val"><input id="m-btn-l" inputmode="decimal" aria-label="Button with its cap Length in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Width</strong> <span class="chip blue">L W H</span></td><td>the button body</td><td class="val"><input id="m-btn-w" inputmode="decimal" aria-label="Button with its cap Width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Height</strong> <span class="chip blue">L W H</span></td><td>from its base to the top of the cap, not pressed</td><td class="val"><input id="m-btn-h" inputmode="decimal" aria-label="Button with its cap Height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Travel</strong> <span class="chip green">extra</span></td><td>cap height not pressed minus cap height pressed</td><td class="val"><input id="m-btn-travel" inputmode="decimal" aria-label="Button with its cap Travel in mm"> <span class="u">mm</span></td></tr>
+  </table></div></div>
+  <div class="part"><div class="part-h"><strong>USB-C socket and cable plug</strong><span class="note">The socket is on A1, at the board edge. Measure with a spare SuperMini if easier, and your own cable plugged in.</span></div>
+  <figure style="margin:10px 0 8px">
+    <div class="scroll">
+      <svg viewBox="0 0 700 265" style="min-width: 600px; width: 100%;" role="img" aria-label="USB measurements. 1: socket offset, board edge to the socket face. 2: socket width, outside of the metal shell. 3: socket height, outside of the metal. 4: socket centre height above the bottom of the board. 5 and 6: your cable's plastic plug body, width and height. 7: plug gap, with the plug pushed in, from the board edge to where the plug's plastic starts. 8: bend room, from the board edge to the outside of the cable's bend.">
+        <defs><marker id="pb" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="pg" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--pass)"/></marker></defs>
+        <text class="t b" x="20" y="20" text-anchor="start">A · Top view</text><text class="t b" x="245" y="20" text-anchor="start">B · End views</text><text class="t b" x="470" y="20" text-anchor="start">C · Side view, plug in</text><rect class="soft" x="40" y="80" width="150" height="150" rx="4"/><text class="s muted" x="115" y="160" text-anchor="middle">A1</text><rect class="box" x="85" y="62" width="60" height="62" rx="4"/><text class="s" x="115" y="100" text-anchor="middle">socket</text><line class="edge" x1="62" y1="62" x2="85" y2="62" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="62" y1="80" x2="85" y2="80" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="70" y1="62" x2="70" y2="80" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="54" cy="71.0" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="54" y="75.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">1</text><line class="edge" x1="85" y1="62" x2="85" y2="42" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="145" y1="62" x2="145" y2="42" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="85" y1="42" x2="145" y2="42" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="115.0" cy="42" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="115.0" y="46" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><text class="s b" x="245" y="44" text-anchor="start">socket, looking in</text><rect class="box" x="255" y="64" width="150" height="50" rx="24"/><rect class="soft" x="267" y="74" width="126" height="30" rx="14"/><rect class="warn-fill" x="295" y="84" width="70" height="10" rx="2"/><line x1="255" y1="128" x2="405" y2="128" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="330.0" cy="128" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="330.0" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">2</text><line class="edge" x1="405" y1="64" x2="428" y2="64" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="405" y1="114" x2="428" y2="114" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="422" y1="64" x2="422" y2="114" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="438" cy="89.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="438" y="93.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">3</text><text class="s warn-ink" x="330" y="150" text-anchor="middle">outside of the metal, not the tongue</text><text class="s b" x="245" y="176" text-anchor="start">your cable's plug, unplugged</text><rect class="cap" x="270" y="186" width="120" height="34" rx="6"/><line x1="270" y1="238" x2="390" y2="238" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="330.0" cy="238" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="330.0" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">5</text><line class="edge" x1="390" y1="186" x2="428" y2="186" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="390" y1="220" x2="428" y2="220" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="422" y1="186" x2="422" y2="220" stroke="var(--accent)" stroke-width="1.8" marker-start="url(#pb)" marker-end="url(#pb)"/><circle cx="438" cy="203.0" r="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/><text x="438" y="207.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">6</text><rect class="soft" x="470" y="150" width="96" height="8"/><text class="s muted" x="505" y="176" text-anchor="middle">A1 board</text><rect class="box" x="534" y="132" width="32" height="18" rx="2"/><rect class="soft" x="566" y="136" width="12" height="10"/><rect class="cap" x="578" y="128" width="50" height="26" rx="5"/><path class="edge" d="M628,141 H646 Q664,141 664,159 V238" style="stroke-width:5"/><line class="edge" x1="566" y1="150" x2="566" y2="104" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="578" y1="128" x2="578" y2="104" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="566" y1="108" x2="578" y2="108" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="572" cy="92" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="572" y="96" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">7</text><line class="edge" x1="520" y1="158" x2="534" y2="158" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="520" y1="141" x2="534" y2="141" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="524" y1="141" x2="524" y2="158" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="508" cy="149.5" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="508" y="153.5" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">4</text><line class="edge" x1="566" y1="158" x2="566" y2="252" stroke-dasharray="2 3" stroke-opacity="0.6"/><line class="edge" x1="672" y1="238" x2="672" y2="252" stroke-dasharray="2 3" stroke-opacity="0.6"/><line x1="566" y1="250" x2="672" y2="250" stroke="var(--pass)" stroke-width="1.8" marker-start="url(#pg)" marker-end="url(#pg)"/><circle cx="619.0" cy="250" r="9" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/><text x="619.0" y="254" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pass)">8</text>
+      </svg>
+    </div>
+    <figcaption>Measure 2 and 3 on the outside of the metal shell; a reading near 5 mm means the jaws caught the tongue. Measure 7 with the plug pushed all the way in.</figcaption>
+  </figure>
+<div class="scrollx"><table class="t meas">
+    <tr><th>Measurement</th><th>How to measure</th><th>Your value</th></tr>
+    <tr><td><span class="num g">1</span> <strong>Socket offset</strong> <span class="chip green">extra</span></td><td>board edge to the socket&#x27;s open face: 0 if flush, + if it sticks out, − if set back</td><td class="val"><input id="m-usb-offset" inputmode="decimal" aria-label="USB Socket offset in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">2</span> <strong>Socket width</strong> <span class="chip blue">L W H</span></td><td>outside of the metal socket, side to side (sets the hole width)</td><td class="val"><input id="m-usb-w" inputmode="decimal" aria-label="USB Socket width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">3</span> <strong>Socket height</strong> <span class="chip blue">L W H</span></td><td>outside of the metal socket, top to bottom (sets the hole height)</td><td class="val"><input id="m-usb-h" inputmode="decimal" aria-label="USB Socket height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">4</span> <strong>Socket above board</strong> <span class="chip green">extra</span></td><td>bottom of the board to the centre of the socket opening</td><td class="val"><input id="m-usb-above" inputmode="decimal" aria-label="USB Socket above board in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">5</span> <strong>Plug width</strong> <span class="chip blue">L W H</span></td><td>your cable&#x27;s plastic plug body, side to side</td><td class="val"><input id="m-usb-pw" inputmode="decimal" aria-label="USB Plug width in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num b">6</span> <strong>Plug height</strong> <span class="chip blue">L W H</span></td><td>your cable&#x27;s plastic plug body, top to bottom</td><td class="val"><input id="m-usb-ph" inputmode="decimal" aria-label="USB Plug height in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">7</span> <strong>Plug gap</strong> <span class="chip green">extra</span></td><td>plug pushed fully in: board edge to where the plug&#x27;s plastic starts. The case wall at the port must be thinner than this, or the hole must fit the plastic.</td><td class="val"><input id="m-usb-gap" inputmode="decimal" aria-label="USB Plug gap in mm"> <span class="u">mm</span></td></tr>
+    <tr><td><span class="num g">8</span> <strong>Bend room</strong> <span class="chip green">extra</span></td><td>board edge to the outside of the cable&#x27;s bend when turned 90°</td><td class="val"><input id="m-usb-bend" inputmode="decimal" aria-label="USB Bend room in mm"> <span class="u">mm</span></td></tr>
+  </table></div></div>
+  <p class="note" id="sheet-count" aria-live="polite">0 of 38 filled</p>
+  <div class="part"><div class="part-h"><strong>Send your measurements to Claude</strong><span class="note">Click in the box, select all (Ctrl+A), copy (Ctrl+C), and paste it into the chat.</span></div>
+  <textarea id="sheet-export" readonly rows="12" style="width:100%;font-family:var(--mono);font-size:13px;margin:8px 0 10px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)" aria-label="All measurements as text"></textarea></div>
+</div>
+  <p class="note">Values are in millimetres unless the box asks for words, and are remembered only in this browser; anything you already typed is kept. Photograph each part with the caliper on it as a second record.</p>
+
+  <h2><span class="when">1:10</span>First cardboard mock-up</h2>
+  <p>A 1:1 cardboard layout answers the questions a drawing hides: does the USB plug reach, can a finger reach the button, is there a path for sound out and sound in. It cannot check radio; it only checks space.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 760 330" style="min-width: 620px; width: 100%;" role="img" aria-label="What to mark on the first cardboard layout, seen from above. A rectangle outlines the case. Inside, part outlines: A1 with its USB-C end at the case edge and a gap for the plug and cable bend, and its antenna end at another edge with a hatched keep-out marked no metal or wires. The OLED behind a window cut in the lid. The speaker facing a grille of holes. The microphone behind a small sound hole. The button under a finger-sized opening, with room for its travel. The amplifier near the speaker with short leads. A margin around every part for wires and insulation.">
+        <defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" style="stroke: var(--warn)" stroke-width="2"/></pattern></defs>
+        <rect class="box" x="120" y="30" width="420" height="270" rx="18"/>
+        <text class="s muted" x="130" y="48">case outline, cardboard, 1:1</text>
+        <!-- A1 -->
+        <rect class="soft" x="140" y="120" width="90" height="120" rx="4"/>
+        <text class="s b" x="185" y="176" text-anchor="middle">A1</text>
+        <rect class="cap" x="165" y="236" width="40" height="18" rx="3"/>
+        <text class="s cap-ink b" x="185" y="249" text-anchor="middle">USB-C</text>
+        <path class="edge dashed" d="M185,254 V300"/>
+        <text class="s" x="100" y="318" text-anchor="middle">plug + cable bend</text>
+        <line class="edge" x1="120" y1="310" x2="170" y2="300"/>
+        <rect x="140" y="62" width="90" height="56" fill="url(#hatch)" opacity="0.5"/>
+        <rect class="edge warn-stroke" x="140" y="62" width="90" height="56" fill="none" stroke-dasharray="4 3"/>
+        <text class="s b warn-ink" x="60" y="80" text-anchor="middle">antenna end:</text>
+        <text class="s warn-ink" x="60" y="94" text-anchor="middle">no metal,</text>
+        <text class="s warn-ink" x="60" y="108" text-anchor="middle">no wires</text>
+        <line class="edge warn-stroke" x1="100" y1="90" x2="140" y2="90"/>
+        <!-- OLED -->
+        <rect class="soft" x="260" y="70" width="140" height="80" rx="3"/>
+        <rect class="cap" x="272" y="82" width="116" height="52" rx="2"/>
+        <text class="s b cap-ink" x="330" y="112" text-anchor="middle">OLED window</text>
+        <!-- speaker -->
+        <rect class="soft" x="430" y="70" width="80" height="60" rx="6"/>
+        <circle class="edge" cx="455" cy="92" r="3"/><circle class="edge" cx="470" cy="92" r="3"/><circle class="edge" cx="485" cy="92" r="3"/>
+        <circle class="edge" cx="455" cy="108" r="3"/><circle class="edge" cx="470" cy="108" r="3"/><circle class="edge" cx="485" cy="108" r="3"/>
+        <text class="s b" x="470" y="146" text-anchor="middle">speaker grille</text>
+        <!-- amp -->
+        <rect class="soft" x="420" y="170" width="90" height="60" rx="4"/>
+        <text class="s b" x="465" y="204" text-anchor="middle">amplifier</text>
+        <!-- mic -->
+        <rect class="soft" x="270" y="190" width="50" height="50" rx="4"/>
+        <circle class="cap" cx="295" cy="215" r="6"/>
+        <text class="s b" x="295" y="258" text-anchor="middle">mic hole</text>
+        <!-- button -->
+        <circle class="soft" cx="360" cy="215" r="18"/>
+        <circle class="cap" cx="360" cy="215" r="9"/>
+        <text class="s b" x="360" y="252" text-anchor="middle">button</text>
+        <!-- callouts right -->
+        <text class="s b" x="560" y="80">Mark on the cardboard:</text>
+        <text class="s" x="560" y="100">· every part outline, measured</text>
+        <text class="s" x="560" y="118">· USB plug reach and cable bend</text>
+        <text class="s" x="560" y="136">· antenna keep-out at an edge</text>
+        <text class="s" x="560" y="154">· OLED window, speaker grille</text>
+        <text class="s" x="560" y="172">· mic sound hole, button travel</text>
+        <text class="s" x="560" y="190">· 2–3 mm around parts for wires</text>
+        <text class="s" x="560" y="220">One arrangement shown.</text>
+        <text class="s" x="560" y="238">Move the cardboard parts</text>
+        <text class="s" x="560" y="256">until everything fits.</text>
+      </svg>
+    </div>
+    <figcaption><strong>The antenna end goes at an edge, away from metal.</strong> This SuperMini already needed a transmit-power cap to be seen at all, and the brass frame will make that harder. Everything else is about reach: the plug, your finger, sound out, sound in.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p><strong>Cut a paper outline</strong> for each measured part, 1:1, and label it.</p></li>
+    <li><p><strong>Arrange them on cardboard</strong> until the rules above hold. Trace the case outline around them with 2 to 3 mm of margin.</p></li>
+    <li><p><strong>Hold the real board next to it</strong> with the USB cable plugged in, and check the cable really bends that way.</p></li>
+    <li><p><strong>Photograph</strong> the layout from above with a ruler in the frame.</p></li>
+  </ol>
+
+  <h2>Later this week</h2>
+  <ul>
+    <li><strong>The scope,</strong> on the <a href="https://claude.ai/artifact/MZVivhRD8t6zohH4fCdewA">Scope the Volume</a> page. You only need it to go above cap 30; today's settings do not need it.</li>
+    <li><strong>Paint coupons:</strong> sand brass offcuts, wipe with the 91 % alcohol, spray the satin and gloss whites side by side, and test that neither lifts once cured.</li>
+    <li><strong>Frame design</strong> from the mock-up, before any brass is cut.</li>
+  </ul>
+
+  <h2>Write it down</h2>
+<pre><code>test ID:          STEP11-03
+date:             ______
+cap:              30   (image 595a4c8b…)
+GAIN:             open 9 dB / GND 12 dB / 100 kΩ 15 dB   (circle one)
+PASS 11C:         ___ of 5 replies, resets: ___, warm parts: ___
+VIN to GND:       ______ V   (optional, meter on DC volts)
+mock-up:          dimension table filled · layout photographed
+date started:     Sunday 27 September (planned Friday 25)</code></pre>
+
+  <div class="evidence">
+    <p><strong>Source and authority.</strong> Built from Step 11 and "Stop here before the enclosure" in <code>plan/FAST_TRACK.md</code>, <code>plan/concepts/14-fit-and-radio.md</code>, the MAX98357A gain table, and the builder's decision of 22 September on caps up to 30. If this page and the repository differ, the repository wins.</p>
+    <p><strong>What is and is not verified.</strong> The cap-30 image is built and verified in software; it has not run on A1 yet. The peak voltages are <code>CALCULATED</code>, not measured; the scope measures them later this week. The GAIN wiring assumes the common HiLetgo pin order and your Step 6 GND rail; read the silkscreen and meter before powering. The progress estimates are rough. The table values and checkbox are remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+    var boxes = document.querySelectorAll("table.meas input");
+    var count = document.getElementById("sheet-count");
+    function recount() {
+      var n = 0; boxes.forEach(function (b) { if (b.value.trim()) n++; });
+      if (count) count.textContent = n + " of " + boxes.length + " filled";
+      var out = document.getElementById("sheet-export");
+      if (out) {
+        var lines = [];
+        document.querySelectorAll(".sheet .part").forEach(function (part) {
+          var h = part.querySelector(".part-h strong");
+          var rows = part.querySelectorAll("table.meas tr");
+          if (!rows.length) return;
+          lines.push("## " + (h ? h.textContent : ""));
+          rows.forEach(function (tr) {
+            var inp = tr.querySelector("input"); if (!inp) return;
+            var label = tr.querySelector("td strong").textContent;
+            var unit = tr.querySelector(".u") ? " mm" : "";
+            lines.push(label + ": " + (inp.value.trim() ? inp.value.trim() + unit : "(blank)"));
+          });
+        });
+        out.value = lines.join("\n");
+      }
+    }
+    boxes.forEach(function (el) {
+      var key = "pocket-today-" + el.id;
+      var saved = store(key); if (saved) el.value = saved;
+      el.addEventListener("input", function () { store(key, el.value); recount(); });
+    });
+    recount();
+    var box = document.getElementById("gate-11c");
+    if (box) {
+      box.checked = store("pocket-today-gate-11c") === "1";
+      box.addEventListener("change", function () { store("pocket-today-gate-11c", box.checked ? "1" : "0"); });
+    }
+  })();
+</script>

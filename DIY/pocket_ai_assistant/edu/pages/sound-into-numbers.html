@@ -1,0 +1,474 @@
+<title>Sound into Numbers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EEF1F4; --paper:#FFFFFF; --ink:#14202B; --ink-2:#4A5A68; --line:#CBD3DB;
+  --brass:#B8622A; --brass-soft:#F4E3D6; --signal:#2A6FB8; --signal-soft:#DCE8F6;
+  --ok:#2E7D4F; --ok-soft:#DDF0E4; --warn:#A63D2F; --warn-soft:#F8E0DB;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Chivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+    --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+    --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1620; --paper:#172130; --ink:#E6EBF0; --ink-2:#A6B3C0; --line:#2C3A4A;
+  --brass:#E0925A; --brass-soft:#3A2A1E; --signal:#6FA6E6; --signal-soft:#1D2F45;
+  --ok:#6CC28F; --ok-soft:#1C3328; --warn:#F08C7B; --warn-soft:#3F1F1B;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900}
+h2{font-size:clamp(22px,3.5vw,28px);font-weight:700;margin-top:48px;padding-top:16px;border-top:3px solid var(--brass)}
+h3{font-size:19px;font-weight:700;margin-top:28px}
+p{margin:12px 0;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:24px}
+li{margin:6px 0}
+a{color:var(--signal)}
+code,kbd{font-family:var(--mono);font-size:0.9em;background:var(--signal-soft);padding:1px 5px;border-radius:3px}
+pre{font-family:var(--mono);font-size:14px;background:var(--paper);border:1px solid var(--line);padding:12px;overflow-x:auto;border-radius:4px}
+pre code{background:none;padding:0}
+strong{font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.masthead{display:grid;grid-template-columns:auto 1fr;gap:16px 24px;align-items:end;padding-bottom:20px;border-bottom:3px solid var(--ink)}
+.daynum{font-family:var(--display);font-weight:900;font-size:clamp(56px,10vw,88px);line-height:.9;color:var(--brass)}
+.masthead .meta{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:8px}
+.goal{background:var(--paper);border-left:4px solid var(--brass);padding:14px 18px;margin:24px 0}
+.goal p{margin:6px 0}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 16px;font-size:15px;margin:20px 0;border:1px solid var(--line);background:var(--paper)}
+.sched > div{padding:8px 12px;border-bottom:1px solid var(--line)}
+.sched > div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);color:var(--brass);white-space:nowrap}
+.clock{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-left:10px;font-weight:400}
+.box{padding:14px 18px;margin:20px 0;border-radius:4px;max-width:none}
+.box p{max-width:none}
+.box .lbl{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.device{background:var(--brass-soft);border:1px solid var(--brass)}
+.device .lbl{color:var(--brass)}
+.analogy{background:var(--signal-soft);border:1px solid var(--signal)}
+.analogy .lbl{color:var(--signal)}
+.safety{background:var(--warn-soft);border:1px solid var(--warn)}
+.safety .lbl{color:var(--warn)}
+.try{background:var(--ok-soft);border:1px solid var(--ok)}
+.try .lbl{color:var(--ok)}
+figure{margin:24px 0;background:var(--paper);border:1px solid var(--line);padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:68ch}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:16px 0}
+.tablewrap{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:14px;background:var(--paper)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eq{font-family:var(--mono);font-size:18px;background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:14px 0;display:inline-block}
+details{background:var(--paper);border:1px solid var(--line);padding:10px 16px;margin:10px 0;border-radius:4px}
+summary{cursor:pointer;font-weight:700}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border:2px solid var(--brass);border-radius:3px}
+.nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+@media (max-width:520px){.masthead{grid-template-columns:1fr}.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="daynum">5</div>
+  <div>
+    <div class="eyebrow">Pocket AI blitz week · Day 5 of 7</div>
+    <h1>Sound into Numbers</h1>
+    <div class="meta">Friday 2026-09-25 · 2 hours · Pressure waves, sampling, the I2S bus, and the still-silent speaker path.</div>
+  </div>
+</header>
+
+<div class="goal">
+  <p><strong>By the end of today you can…</strong></p>
+  <p>1. Explain what a microphone senses and why the INMP441 sends numbers, not a tiny voltage.</p>
+  <p>2. Calculate any I2S bit clock and say why yours is 1.024 MHz.</p>
+  <p>3. Calculate an rms and predict how <code>MIC24</code> changes with speech and distance.</p>
+  <p>4. Explain why a speaker needs an amplifier and why neither BTL lead may touch ground, and choose a safe supply for an 8 Ω, 0.8 W speaker.</p>
+</div>
+
+<div class="sched">
+  <div class="t">0:00–0:10</div><div>Sound is pressure: frequency, amplitude, decibels</div>
+  <div class="t">0:10–0:20</div><div>Microphones: diaphragm, MEMS capacitor, why digital</div>
+  <div class="t">0:20–0:35</div><div>Sampling: Nyquist, aliasing, bit depth, rms</div>
+  <div class="t">0:35–0:50</div><div>The I2S bus and its clock arithmetic</div>
+  <div class="t">0:50–0:55</div><div>Why 16 kHz, not the vendor's 24 kHz</div>
+  <div class="t">0:55–1:10</div><div>Speakers and amplifiers: class-D and BTL</div>
+  <div class="t">1:10–1:15</div><div>Sensitivity and the missing pass number</div>
+  <div class="t">1:15–1:45</div><div>Worked examples and thought experiments</div>
+  <div class="t">1:45–1:50</div><div>Self-check quiz</div>
+  <div class="t">1:50–2:00</div><div>Design-your-own-device: the baby monitor</div>
+</div>
+
+<h2>Sound is pressure <span class="clock">0:00–0:10</span></h2>
+
+<p>Clap your hands. Your palms shove the air, that air shoves the air beside it, and the shove travels outward at about 343 metres per second. Nothing moves from hand to ear except pressure rising above and dipping below the room's resting pressure. That pattern is sound.</p>
+
+<p><strong>Frequency</strong>, in hertz (Hz), is cycles per second and sets the pitch; speech lives mostly between 100 Hz and 4 kHz. <strong>Amplitude</strong>, the pressure swing from rest, sets loudness. The <strong>period</strong> T is the time for one cycle.</p>
+
+<div class="eq">f = 1 / T  →  hertz = 1 / seconds</div>
+
+<figure>
+<svg viewBox="0 0 640 240" role="img" aria-label="A sine-shaped pressure wave over time with the ambient pressure line, one period marked between two peaks, and the amplitude marked from the ambient line to a peak">
+  <line x1="40" y1="120" x2="632" y2="120" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4" fill="none"/>
+  <text x="628" y="134" font-size="12" fill="currentColor" text-anchor="end">ambient pressure</text>
+  <path d="M40,120 Q80,0 120,120 Q160,240 200,120 Q240,0 280,120 Q320,240 360,120 Q400,0 440,120 Q480,240 520,120 Q560,0 600,120" fill="none" stroke="var(--brass)" stroke-width="2.5"/>
+  <line x1="80" y1="30" x2="240" y2="30" stroke="var(--signal)" stroke-width="1.5" fill="none"/>
+  <line x1="80" y1="24" x2="80" y2="36" stroke="var(--signal)" stroke-width="1.5" fill="none"/>
+  <line x1="240" y1="24" x2="240" y2="36" stroke="var(--signal)" stroke-width="1.5" fill="none"/>
+  <text x="160" y="18" font-size="12" fill="var(--signal)" text-anchor="middle">one period T, so f = 1/T sets the pitch</text>
+  <line x1="400" y1="120" x2="400" y2="62" stroke="var(--signal)" stroke-width="1.5" fill="none"/>
+  <polygon points="400,60 396,68 404,68" fill="var(--signal)"/>
+  <text x="392" y="52" font-size="12" fill="var(--signal)" text-anchor="end">amplitude sets loudness</text>
+  <text x="560" y="50" font-size="12" fill="currentColor" text-anchor="middle">squeezed air (+)</text>
+  <text x="160" y="200" font-size="12" fill="currentColor" text-anchor="middle">stretched air (−)</text>
+  <line x1="40" y1="226" x2="600" y2="226" stroke="currentColor" stroke-width="1" fill="none"/>
+  <polygon points="608,226 600,222 600,230" fill="currentColor"/>
+  <text x="320" y="222" font-size="12" fill="currentColor" text-anchor="middle">time</text>
+</svg>
+<figcaption>A pure tone as pressure over time. The dashed line is the still room; the wave swings above it (air squeezed) and below (air stretched). Peak to peak is one period T; peak height is the amplitude.</figcaption>
+</figure>
+
+<p>Ears span an enormous range: a whisper and a rock concert differ in power by about a hundred million times, so sound uses <strong>decibels</strong> (dB), a log scale. Every 10 dB is ten times the power; every 6 dB doubles pressure, or voltage.</p>
+
+<div class="eq">dB = 10 × log10(P2/P1) for power;  20 × log10(A2/A1) for pressure or voltage</div>
+
+<div class="box analogy"><span class="lbl">Software analogy</span><p>Decibels are the log axis on a latency chart: ratios, not differences.</p></div>
+
+<h2>Microphones: turning pressure into a moving plate <span class="clock">0:10–0:20</span></h2>
+
+<p>Every microphone starts with a <strong>diaphragm</strong>, a thin membrane the pressure wave pushes back and forth. A <strong>MEMS</strong> microphone etches it into silicon a hair's breadth from a fixed backplate, forming a capacitor, Day 3's two plates with a gap. Sound moves the diaphragm, the capacitance changes, and with a fixed charge the voltage between the plates wobbles with the sound.</p>
+
+<p>That wobble is millivolts, easy prey on a wire for noise from the Wi-Fi radio, the OLED, and the USB supply. An <strong>analog electret</strong> microphone sends that fragile voltage to an analog-to-digital converter (ADC) in the microcontroller. A <strong>digital I2S</strong> microphone such as your INMP441 converts inside the can, so the wire carries numbers, and noise on a logic level is ignored.</p>
+
+<div class="box device"><span class="lbl">On your device</span><p>The AITRIP INMP441 is a MEMS microphone with its ADC built in, powered only from the SuperMini's 3.3 V pin, data on <strong>GPIO4</strong>. It beat an electret plus the ESP32-C3's own ADC, which is noisy, shares a die with a radio, and would need a preamplifier.</p></div>
+
+<h2>Sampling: looking at the wave often enough <span class="clock">0:20–0:35</span></h2>
+
+<p>The ADC takes a snapshot N times per second; N is the <strong>sample rate</strong>. The <strong>Nyquist</strong> rule: to capture a frequency f, sample at more than 2f. Sample slower and a fast wiggle masquerades as a slow one, called <strong>aliasing</strong>, and nothing can undo it afterwards.</p>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="Two copies of the same fast wave: the upper one sampled four times per cycle with dots tracing the true shape, the lower one sampled less than twice per cycle with the same dots also fitting a slow dashed alias wave">
+  <text x="40" y="16" font-size="12" fill="currentColor">sampled 4 times per cycle: the dots trace the true wave</text>
+  <path d="M40,70 Q60,-10 80,70 Q100,150 120,70 Q140,-10 160,70 Q180,150 200,70 Q220,-10 240,70 Q260,150 280,70 Q300,-10 320,70 Q340,150 360,70 Q380,-10 400,70 Q420,150 440,70 Q460,-10 480,70 Q500,150 520,70 Q540,-10 560,70 Q580,150 600,70" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <circle cx="40" cy="70" r="3.5" fill="var(--brass)"/><circle cx="60" cy="30" r="3.5" fill="var(--brass)"/><circle cx="80" cy="70" r="3.5" fill="var(--brass)"/><circle cx="100" cy="110" r="3.5" fill="var(--brass)"/><circle cx="120" cy="70" r="3.5" fill="var(--brass)"/><circle cx="140" cy="30" r="3.5" fill="var(--brass)"/><circle cx="160" cy="70" r="3.5" fill="var(--brass)"/><circle cx="180" cy="110" r="3.5" fill="var(--brass)"/><circle cx="200" cy="70" r="3.5" fill="var(--brass)"/><circle cx="220" cy="30" r="3.5" fill="var(--brass)"/><circle cx="240" cy="70" r="3.5" fill="var(--brass)"/><circle cx="260" cy="110" r="3.5" fill="var(--brass)"/><circle cx="280" cy="70" r="3.5" fill="var(--brass)"/><circle cx="300" cy="30" r="3.5" fill="var(--brass)"/><circle cx="320" cy="70" r="3.5" fill="var(--brass)"/><circle cx="340" cy="110" r="3.5" fill="var(--brass)"/><circle cx="360" cy="70" r="3.5" fill="var(--brass)"/><circle cx="380" cy="30" r="3.5" fill="var(--brass)"/><circle cx="400" cy="70" r="3.5" fill="var(--brass)"/><circle cx="420" cy="110" r="3.5" fill="var(--brass)"/><circle cx="440" cy="70" r="3.5" fill="var(--brass)"/><circle cx="460" cy="30" r="3.5" fill="var(--brass)"/><circle cx="480" cy="70" r="3.5" fill="var(--brass)"/><circle cx="500" cy="110" r="3.5" fill="var(--brass)"/><circle cx="520" cy="70" r="3.5" fill="var(--brass)"/><circle cx="540" cy="30" r="3.5" fill="var(--brass)"/><circle cx="560" cy="70" r="3.5" fill="var(--brass)"/><circle cx="580" cy="110" r="3.5" fill="var(--brass)"/><circle cx="600" cy="70" r="3.5" fill="var(--brass)"/>
+  <line x1="40" y1="140" x2="600" y2="140" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+  <text x="40" y="160" font-size="12" fill="currentColor">sampled less than twice per cycle: the same dots also fit a slow, false wave</text>
+  <path d="M40,210 Q60,130 80,210 Q100,290 120,210 Q140,130 160,210 Q180,290 200,210 Q220,130 240,210 Q260,290 280,210 Q300,130 320,210 Q340,290 360,210 Q380,130 400,210 Q420,290 440,210 Q460,130 480,210 Q500,290 520,210 Q540,130 560,210 Q580,290 600,210" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <path d="M40,210 Q180,290 320,210 Q460,130 600,210" fill="none" stroke="var(--signal)" stroke-width="2.5" stroke-dasharray="8 5"/>
+  <circle cx="40" cy="210" r="4" fill="var(--brass)"/><circle cx="110" cy="240" r="4" fill="var(--brass)"/><circle cx="180" cy="250" r="4" fill="var(--brass)"/><circle cx="250" cy="240" r="4" fill="var(--brass)"/><circle cx="320" cy="210" r="4" fill="var(--brass)"/><circle cx="390" cy="180" r="4" fill="var(--brass)"/><circle cx="460" cy="170" r="4" fill="var(--brass)"/><circle cx="530" cy="180" r="4" fill="var(--brass)"/><circle cx="600" cy="210" r="4" fill="var(--brass)"/>
+  <text x="600" y="282" font-size="12" fill="var(--signal)" text-anchor="end">alias: the wave your samples "remember"</text>
+</svg>
+<figcaption>Aliasing. Top: a fast wave sampled four times per cycle; the brass dots follow the real shape. Bottom: sampled less than twice per cycle, the same dots also fit a slow dashed wave (blue), and nothing downstream can tell which was real.</figcaption>
+</figure>
+
+<p>Your firmware samples at 16,000 Hz, capturing anything below 8 kHz: speech with room to spare, and Opus's native rate.</p>
+
+<p><strong>Bit depth</strong> is how finely each snapshot is rounded: 24-bit signed integers from the INMP441, each in a 32-bit slot whose extra 8 bits are padding, discarded with <code>raw &gt;&gt; 8</code>.</p>
+
+<p>Once a second the diagnostics print a <code>MIC24</code> line with <code>min</code>, <code>max</code>, and <code>rms</code>. <strong>Root mean square</strong> is the fair "average size" of a signal that swings both ways: square every sample, average, take the root. Loudness and heating both follow rms.</p>
+
+<div class="eq">rms = √( (x1² + x2² + … + xN²) / N )  →  counts</div>
+
+<h2>The I2S bus: three wires, one clock <span class="clock">0:35–0:50</span></h2>
+
+<p>Yesterday's I2C bus was a conversation: address, request, acknowledge. Audio is a firehose of 16,000 numbers a second, so <strong>I2S</strong> (Inter-IC Sound) streams with no addresses and no acknowledgements.</p>
+
+<ul>
+  <li><strong>BCLK</strong>, the bit clock, ticks once per bit. Yours: <strong>GPIO2</strong>.</li>
+  <li><strong>WS</strong>, word select, completes one cycle per frame: low for the left slot, high for the right. Yours: <strong>GPIO1</strong>, at the sample rate, 16 kHz.</li>
+  <li>Data. The mic's <code>SD</code> drives numbers in on <strong>GPIO4</strong>; the finished device drives numbers out to the amplifier's <code>DIN</code> from <strong>GPIO3</strong>.</li>
+</ul>
+
+<div class="eq">BCLK = 16,000 frames/s × 2 slots × 32 bits = 1,024,000 bits/s = 1.024 MHz</div>
+
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="I2S timing: word select low for the 32-tick left slot and high for the 32-tick right slot, bit clock ticking continuously, and the data line carrying 24 microphone bits then 8 padding bits in the left slot and staying silent in the right slot, with one frame of 64 ticks marked below">
+  <text x="218" y="22" font-size="12" fill="currentColor" text-anchor="middle">left slot: 32 BCLK ticks (mic data)</text>
+  <text x="474" y="22" font-size="12" fill="currentColor" text-anchor="middle">right slot: 32 BCLK ticks (silent)</text>
+  <line x1="90" y1="32" x2="90" y2="200" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <line x1="346" y1="32" x2="346" y2="200" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <line x1="602" y1="32" x2="602" y2="200" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <text x="40" y="38" font-size="12" fill="var(--signal)">WS GPIO1</text>
+  <path d="M40,45 h50 v25 h256 v-25 h256 v25 h20" fill="none" stroke="var(--signal)" stroke-width="2"/>
+  <text x="40" y="104" font-size="12" fill="currentColor">BCLK GPIO2</text>
+  <path d="M42,125 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 v-16 h4 v16 h4 h20" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="40" y="159" font-size="12" fill="var(--brass)">SD GPIO4</text>
+  <path d="M40,180 h58 v-16 h8 v16 h8 v-16 h8 h8 v16 h8 h8 v-16 h8 v16 h8 v-16 h8 h8 h8 v16 h8 h8 v-16 h8 v16 h8 v-16 h8 v16 h8 h8 v-16 h8 h8 v16 h8 v-16 h8 v16 h8 v-16 h8 v16 h56 h256 h20" fill="none" stroke="var(--brass)" stroke-width="2"/>
+  <text x="194" y="198" font-size="12" fill="var(--brass)" text-anchor="middle">24 data bits, MSB first</text>
+  <text x="322" y="198" font-size="12" fill="currentColor" text-anchor="middle">8 pad</text>
+  <text x="474" y="198" font-size="12" fill="currentColor" text-anchor="middle">silent: L/R pin to GND selects left</text>
+  <line x1="90" y1="218" x2="602" y2="218" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="90" y1="212" x2="90" y2="224" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <line x1="602" y1="212" x2="602" y2="224" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <text x="346" y="240" font-size="12" fill="currentColor" text-anchor="middle">one frame = 64 BCLK ticks = 1/16,000 s = 62.5 µs, so BCLK = 1.024 MHz</text>
+</svg>
+<figcaption>One I2S frame. WS (blue, GPIO1) is low for the left slot, high for the right; BCLK (GPIO2) ticks 32 times per slot; SD (brass, GPIO4) carries the 24-bit sample, MSB first, from one tick after the WS edge, then 8 padding bits, the last landing one tick into the right slot. The right slot is silent because L/R is tied to GND.</figcaption>
+</figure>
+
+<p>Why share BCLK and WS? The ESP32-C3 has one I2S peripheral, run in <strong>duplex</strong> mode: one clock generator, data in on one pin, out on another. It saves two GPIOs but forces one sample rate on both directions.</p>
+
+<div class="box device"><span class="lbl">On your device</span><p>Two breadboard resistors belong here: a 10 kΩ pull-up on GPIO2, a boot strap pin the ROM reads at reset that must not float, and a 100 kΩ pull-down on GPIO4, parking the data line. The vendor image used GPIO8, also a strap pin and the onboard LED, so the source port moved it. Never mix the two pinouts.</p></div>
+
+<h2>Why 16 kHz and not the vendor's 24 kHz <span class="clock">0:50–0:55</span></h2>
+
+<p>The vendor image runs the bus at 24 kHz; the source port runs it at 16 kHz, because of one datasheet line: the MAX98357A supports 8, 16, 32, 44.1, 48, 88.2, and 96 kHz, and 24 kHz is listed as not supported. The amplifier shares WS with the microphone, so the microphone must use the amplifier's rate; 16 kHz is legal for both and native for Opus. Nobody ran a test; someone read the table and changed a constant in <code>config.h</code>.</p>
+
+<h2>Speakers and amplifiers: theory only this week <span class="clock">0:55–1:10</span></h2>
+
+<div class="box safety"><span class="lbl">Safety</span><p>The prototype is USB-only. The MAX98357A, speaker, battery, charger, and brass frame stay off it until a reviewed power design exists; the firmware holds the amplifier enable, <strong>GPIO5</strong>, low. Nothing here is an instruction to wire anything, and no test of the amplifier or speaker exists yet.</p></div>
+
+<p>A speaker is a microphone run backwards: a coil in a magnet's field, glued to a cone. Current shoves the coil one way, reversed current the other, and the cone pumps the air. Your Same Sky speaker is rated 8 Ω, its <strong>impedance</strong> (the AC cousin of resistance), and 0.8 W, the heat its coil can survive; together they fix the largest rms voltage it may see.</p>
+
+<div class="eq">P = V² / R  →  V = √(P × R) = √(0.8 W × 8 Ω) ≈ 2.53 V rms</div>
+
+<p>A GPIO pin cannot drive that: 2.5 V into 8 Ω is over 300 mA, and a pin manages a few tens of milliamps at 0 or 3.3 V, never a smooth wave. So the chip sends numbers to an <strong>amplifier</strong>, which shapes supply energy to follow them.</p>
+
+<p>A classic amplifier is a variable resistor between supply and speaker, wasting as heat whatever it does not deliver. A <strong>class-D</strong> amplifier's transistors are instead fully on (no voltage drop, so no heat) or fully off (no current, so no heat), switching at hundreds of kilohertz, with the on-fraction following the audio. The coil's inductance smooths the pulses, so the cone follows the audio underneath.</p>
+
+<figure>
+<svg viewBox="0 0 640 260" role="img" aria-label="Upper trace: a class-D output switching fully on and off with pulse widths that grow and shrink following a slow sine. Lower trace: the smooth sine of speaker current that results after the coil's inductance averages the pulses">
+  <text x="40" y="24" font-size="12" fill="currentColor">amplifier output: fully on or fully off, hundreds of kHz (drawn slowed down)</text>
+  <text x="8" y="54" font-size="12" fill="currentColor">on</text>
+  <text x="8" y="94" font-size="12" fill="currentColor">off</text>
+  <path d="M40,90 v-40 h14 v40 h14 v-40 h17 v40 h11 v-40 h20 v40 h8 v-40 h22 v40 h6 v-40 h24 v40 h4 v-40 h24 v40 h4 v-40 h24 v40 h4 v-40 h22 v40 h6 v-40 h20 v40 h8 v-40 h17 v40 h11 v-40 h14 v40 h14 v-40 h11 v40 h17 v-40 h8 v40 h20 v-40 h6 v40 h22 v-40 h4 v40 h24 v-40 h4 v40 h24 v-40 h4 v40 h24 v-40 h6 v40 h22 v-40 h8 v40 h20 v-40 h11 v40 h17" fill="none" stroke="var(--brass)" stroke-width="2"/>
+  <line x1="320" y1="102" x2="320" y2="126" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <polygon points="320,132 316,124 324,124" fill="currentColor"/>
+  <text x="330" y="120" font-size="12" fill="currentColor">the coil's inductance averages the pulses</text>
+  <text x="40" y="146" font-size="12" fill="var(--signal)">speaker current: wide pulses push the cone out, narrow pulses let it back</text>
+  <line x1="40" y1="190" x2="600" y2="190" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4" fill="none"/>
+  <path d="M40,190 Q180,110 320,190 Q460,270 600,190" fill="none" stroke="var(--signal)" stroke-width="2.5"/>
+  <line x1="40" y1="246" x2="600" y2="246" stroke="currentColor" stroke-width="1" fill="none"/>
+  <polygon points="608,246 600,242 600,250" fill="currentColor"/>
+  <text x="320" y="242" font-size="12" fill="currentColor" text-anchor="middle">time</text>
+</svg>
+<figcaption>Class-D. The output (brass) is a train of full-height pulses whose widths follow the audio; the coil averages them into the smooth current (blue), and little is lost as heat.</figcaption>
+</figure>
+
+<p>The MAX98357A adds <strong>BTL</strong>, bridge-tied load: it drives both speaker wires in opposite directions, so the speaker sees the difference, twice the swing from one supply. The cost is a rule with no exceptions: <strong>neither speaker wire is ground</strong>. Ground either, or touch it to the brass frame, and you short half the bridge.</p>
+
+<figure>
+<svg viewBox="0 0 640 250" role="img" aria-label="An H-bridge inside the amplifier: four switches between the supply rail and ground, with the speaker connected between the two midpoints, current flowing from the supply through one closed high switch, through the speaker, and down the opposite closed low switch; on the right, OUT+ and OUT− swing in opposite directions around ground and their difference across the speaker has twice the swing">
+  <text x="270" y="28" font-size="12" fill="currentColor" text-anchor="middle">amplifier supply (+)</text>
+  <line x1="110" y1="40" x2="430" y2="40" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="110" y1="205" x2="430" y2="205" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="250" y1="212" x2="290" y2="212" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="258" y1="218" x2="282" y2="218" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="266" y1="224" x2="274" y2="224" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="270" y="242" font-size="12" fill="currentColor" text-anchor="middle">amplifier GND: logic return only, never a speaker lead</text>
+  <line x1="150" y1="40" x2="150" y2="125" stroke="var(--brass)" stroke-width="2.5" fill="none"/>
+  <circle cx="150" cy="66" r="3" fill="currentColor"/><circle cx="150" cy="96" r="3" fill="currentColor"/>
+  <text x="120" y="85" font-size="12" fill="currentColor" text-anchor="end">S1 on</text>
+  <circle cx="150" cy="125" r="4" fill="var(--brass)"/>
+  <text x="140" y="112" font-size="12" fill="currentColor" text-anchor="end">OUT+</text>
+  <line x1="150" y1="125" x2="150" y2="150" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="150" cy="152" r="3" fill="currentColor"/>
+  <line x1="150" y1="152" x2="166" y2="180" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="150" cy="184" r="3" fill="currentColor"/>
+  <line x1="150" y1="184" x2="150" y2="205" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="120" y="172" font-size="12" fill="currentColor" text-anchor="end">S2 off</text>
+  <line x1="390" y1="40" x2="390" y2="62" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="390" cy="64" r="3" fill="currentColor"/>
+  <line x1="390" y1="64" x2="406" y2="92" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="390" cy="96" r="3" fill="currentColor"/>
+  <line x1="390" y1="96" x2="390" y2="125" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="400" y="85" font-size="12" fill="currentColor">S3 off</text>
+  <circle cx="390" cy="125" r="4" fill="var(--brass)"/>
+  <text x="400" y="112" font-size="12" fill="currentColor">OUT−</text>
+  <line x1="390" y1="125" x2="390" y2="205" stroke="var(--brass)" stroke-width="2.5" fill="none"/>
+  <circle cx="390" cy="152" r="3" fill="currentColor"/><circle cx="390" cy="184" r="3" fill="currentColor"/>
+  <text x="400" y="172" font-size="12" fill="currentColor">S4 on</text>
+  <line x1="150" y1="125" x2="195" y2="125" stroke="var(--brass)" stroke-width="2.5" fill="none"/>
+  <polyline points="195,125 203,113 219,137 235,113 251,137 267,113 283,137 299,113 315,137 331,113 345,125" fill="none" stroke="var(--brass)" stroke-width="2.5"/>
+  <line x1="345" y1="125" x2="390" y2="125" stroke="var(--brass)" stroke-width="2.5" fill="none"/>
+  <polygon points="180,125 172,121 172,129" fill="var(--brass)"/>
+  <polygon points="368,125 360,121 360,129" fill="var(--brass)"/>
+  <text x="270" y="155" font-size="12" fill="var(--brass)" text-anchor="middle">current flows left to right now,</text>
+  <text x="270" y="170" font-size="12" fill="var(--brass)" text-anchor="middle">then S2, S3 close and it reverses</text>
+  <text x="450" y="38" font-size="12" fill="currentColor">OUT+ vs GND</text>
+  <line x1="450" y1="60" x2="620" y2="60" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <path d="M450,60 Q492,36 535,60 Q577,84 620,60" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="450" y="93" font-size="12" fill="currentColor">OUT− vs GND: the opposite</text>
+  <line x1="450" y1="115" x2="620" y2="115" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <path d="M450,115 Q492,139 535,115 Q577,91 620,115" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="440" y="160" font-size="12" fill="var(--signal)">difference: twice the swing</text>
+  <line x1="450" y1="195" x2="620" y2="195" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <path d="M450,195 Q492,147 535,195 Q577,243 620,195" fill="none" stroke="var(--signal)" stroke-width="2.5"/>
+</svg>
+<figcaption>Bridge-tied load. With S1 and S4 closed, current (brass) runs from the supply through the speaker to ground; then S2 and S3 close and it reverses. OUT+ and OUT− swing in opposite directions; the speaker sees their difference (blue), twice as large.</figcaption>
+</figure>
+
+<div class="box device"><span class="lbl">On your device</span><p>The HiLetgo MAX98357A takes I2S directly, needs no heatsink, and gives usable loudness from 3.3 V. <strong>GPIO5</strong> is its enable, held low by the firmware, so even a wired amplifier stays silent until someone deliberately changes that.</p></div>
+
+<h2>Sensitivity, rms numbers, and the missing pass mark <span class="clock">1:10–1:15</span></h2>
+
+<p>The INMP441 datasheet gives a typical <strong>sensitivity</strong> of −26 dBFS: a 1 kHz tone at 94 dB SPL lands 26 dB below full scale, about one-twentieth of the range. Conversation at 30 cm is roughly 30 dB quieter, so its rms lands in the low tens of thousands. Datasheet expectations, not values from your board.</p>
+
+<p>The quickstart gives no single pass number because rms depends on distance, room, voice, and breadboard hum. A healthy microphone gives a <em>repeatable change</em>: quiet, speech, quiet, and rms rises and falls back every time. Judge the pattern, not the number.</p>
+
+<figure>
+<svg viewBox="0 0 640 262" role="img" aria-label="About ten seconds of microphone samples drawn as a thin jagged trace around a zero line: small during quiet, large during speech at 30 cm, small again, then about half as large for the same voice at 60 cm. A brass rms line sits low during quiet, rises within a second of speech starting, and falls back after it stops. A dashed full-scale line above marks where samples would count as clipped, and the largest and smallest samples are marked max and min">
+  <text x="40" y="20" font-size="12" fill="currentColor">samples (thin) and the once-per-second rms (brass) over about ten seconds</text>
+  <text x="40" y="40" font-size="12" fill="var(--brass)">rms rises several times within a second</text>
+  <line x1="178" y1="46" x2="178" y2="130" stroke="var(--brass)" stroke-width="1.5" fill="none"/>
+  <polygon points="178,138 174,130 182,130" fill="var(--brass)"/>
+  <text x="330" y="40" font-size="12" fill="var(--brass)">falls back within a second or two</text>
+  <line x1="350" y1="46" x2="350" y2="132" stroke="var(--brass)" stroke-width="1.5" fill="none"/>
+  <polygon points="350,140 346,132 354,132" fill="var(--brass)"/>
+  <line x1="40" y1="64" x2="600" y2="64" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4" fill="none"/>
+  <text x="600" y="58" font-size="12" fill="currentColor" text-anchor="end">full scale (would count as clipped)</text>
+  <line x1="40" y1="150" x2="600" y2="150" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+  <text x="34" y="154" font-size="12" fill="currentColor" text-anchor="end">0</text>
+  <path d="M40,150 l5,-6 l5,12 l5,-10 l5,8 l5,-8 l5,10 l5,-12 l5,6 l5,-6 l5,12 l5,-10 l5,8 l5,-8 l5,10 l5,-12 l5,6 l5,-6 l5,12 l5,-10 l5,8 l5,-8 l5,10 l5,-12 l5,6 l5,-6 l5,12 l5,-10 l5,4 l4,-20 l4,40 l4,-50 l4,60 l4,-70 l4,80 l4,-90 l4,100 l4,-110 l4,120 l4,-120 l4,120 l4,-110 l4,110 l4,-124 l4,126 l4,-102 l4,100 l4,-118 l4,118 l4,-116 l4,116 l4,-122 l4,122 l4,-104 l4,104 l4,-120 l4,120 l4,-112 l4,112 l4,-100 l4,90 l4,-80 l4,70 l4,-60 l4,50 l4,-40 l4,30 l4,-20 l4,0 l5,-6 l5,12 l5,-10 l5,8 l5,-8 l5,10 l5,-12 l5,6 l5,-6 l5,12 l5,-10 l5,8 l5,-8 l5,10 l5,-12 l5,6 l5,-6 l5,12 l5,-10 l5,4 l4,-10 l4,20 l4,-25 l4,30 l4,-35 l4,40 l4,-45 l4,50 l4,-55 l4,60 l4,-60 l4,60 l4,-55 l4,55 l4,-62 l4,62 l4,-50 l4,50 l4,-59 l4,59 l4,-58 l4,58 l4,-61 l4,61 l4,-52 l4,52 l4,-60 l4,60 l4,-56 l4,56 l4,-50 l4,45 l4,-40 l4,35 l4,-30 l4,25 l4,-20 l4,15 l4,-10 l4,0" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M40,146 H176 L200,105 H322 L342,146 H440 L462,128 H582 L600,146" fill="none" stroke="var(--brass)" stroke-width="2.5"/>
+  <circle cx="240" cy="86" r="4" fill="var(--signal)"/>
+  <text x="240" y="80" font-size="12" fill="var(--signal)" text-anchor="middle">max</text>
+  <circle cx="244" cy="212" r="4" fill="var(--signal)"/>
+  <text x="244" y="228" font-size="12" fill="var(--signal)" text-anchor="middle">min</text>
+  <text x="600" y="100" font-size="12" fill="var(--brass)" text-anchor="end">roughly half the rms (−6 dB)</text>
+  <line x1="40" y1="236" x2="600" y2="236" stroke="currentColor" stroke-width="1" fill="none"/>
+  <polygon points="608,236 600,232 600,240" fill="currentColor"/>
+  <text x="320" y="231" font-size="12" fill="currentColor" text-anchor="middle">time</text>
+  <text x="110" y="254" font-size="12" fill="currentColor" text-anchor="middle">quiet</text>
+  <text x="260" y="254" font-size="12" fill="currentColor" text-anchor="middle">speech at 30 cm</text>
+  <text x="390" y="254" font-size="12" fill="currentColor" text-anchor="middle">quiet</text>
+  <text x="520" y="254" font-size="12" fill="currentColor" text-anchor="middle">same voice at 60 cm</text>
+</svg>
+<figcaption>A healthy stream, from typical values, not your board. Thin trace: samples. Brass: the once-per-second rms, rising within a second of speech, falling back after, roughly halving from 30 cm to 60 cm. Rms exactly zero, or min equal to max, means no varying data on GPIO4: a wiring or slot fault.</figcaption>
+</figure>
+
+<h2>Worked examples <span class="clock">1:15–1:45</span></h2>
+
+<p>Try each on paper before reading the steps; about five minutes each.</p>
+
+<h3>Example 1. Your I2S wire budget</h3>
+
+<p><strong>Scenario.</strong> The INMP441 streams at 16 kHz in two 32-bit slots, and the assistant sends compressed speech over Wi-Fi. How much of the traffic on the wire actually leaves the device?</p>
+
+<p><strong>Step 1, the wire rate.</strong> Every bit slot on the I2S wire, used or not.</p>
+
+<div class="eq">16,000 frames/s × 2 slots × 32 bits = 1,024,000 bit/s</div>
+
+<p><strong>Step 2, the useful bits.</strong> Only the left slot carries data, and only 24 of its 32 bits count.</p>
+
+<div class="eq">16,000 × 24 = 384,000 bit/s</div>
+
+<p><strong>Step 3, what the encoder takes.</strong> Opus works on 16-bit samples.</p>
+
+<div class="eq">16,000 × 16 = 256,000 bit/s</div>
+
+<p><strong>Step 4, what the radio sends.</strong> Opus speech is about 24 kbit/s.</p>
+
+<div class="eq">1,024,000 ÷ 24,000 ≈ 43  →  1 bit sent for every 43 on GPIO4</div>
+
+<p><strong>For a designer:</strong> the microphone's wire is busy, but the radio sends very little. On a battery device, the radio, not the microphone, sets battery life.</p>
+
+<h3>Example 2. The speaker's ceiling</h3>
+
+<p><strong>Scenario.</strong> A bridge amplifier fed from V volts can ideally swing a peak of V across the coil. Could a 3.3 V supply overdrive your 8 Ω, 0.8 W speaker? Could 5 V?</p>
+
+<p><strong>Step 1, the limit.</strong> From the equation in the speakers section.</p>
+
+<div class="eq">V = √(0.8 W × 8 Ω) ≈ 2.53 V rms</div>
+
+<p><strong>Step 2, from 3.3 V.</strong> The largest clean sine has a 3.3 V peak.</p>
+
+<div class="eq">3.3 ÷ √2 ≈ 2.33 V rms  →  2.33² ÷ 8 ≈ 0.68 W, about 0.29 A</div>
+
+<p>Under the limit.</p>
+
+<p><strong>Step 3, from 5 V.</strong></p>
+
+<div class="eq">5 ÷ √2 ≈ 3.54 V rms  →  3.54² ÷ 8 ≈ 1.56 W</div>
+
+<p>Nearly double the rating.</p>
+
+<p><strong>For a designer:</strong> at 3.3 V the supply itself protects the speaker; at 5 V only the firmware's volume cap does. Your amplifier now runs from the 5 V pin, which is why A1's firmware caps the volume.</p>
+
+<h3>Example 3. A phone camera and a ceiling fan</h3>
+
+<p><strong>Scenario.</strong> A phone films a three-blade ceiling fan turning at 580 rpm, at 30 frames per second. What does the video show?</p>
+
+<p><strong>Step 1, how often a blade passes.</strong></p>
+
+<div class="eq">3 blades × 580 rpm ÷ 60 s = 29 per second</div>
+
+<p><strong>Step 2, the camera's limit.</strong> Nyquist at 30 frames per second is 15 Hz, and 29 is above it, so aliasing is certain.</p>
+
+<p><strong>Step 3, what you see.</strong> The alias is the distance to the nearest multiple of the frame rate.</p>
+
+<div class="eq">|29 − 30| = 1 Hz  →  the fan seems to creep backwards, one blade-step per second</div>
+
+<p><strong>Step 4, the fixes.</strong> Sample faster, for example 240 fps, or blur the blades first with a longer shutter.</p>
+
+<p><strong>For a designer:</strong> the INMP441 uses the second fix. A built-in filter removes everything above 8 kHz before its converter samples, so ultrasonic whine cannot fold down into the speech band.</p>
+
+<h3>Predict, then reveal</h3>
+
+<p><strong>Thought experiment 1.</strong> A contributor changes one constant in <code>config.h</code> from 16,000 to 24,000 "to match the vendor image", on a finished device whose amplifier shares WS and BCLK with the microphone. Predict: what does BCLK become, and does each end still work?</p>
+
+<details><summary>Reveal</summary><p>BCLK becomes 24,000 × 64 = 1.536 MHz. The INMP441 keeps streaming, so MIC24 looks healthy; the MAX98357A does not support 24 kHz, so it stays muted or distorts. The fault hides on the side that exists.</p></details>
+
+<p><strong>Thought experiment 2.</strong> The INMP441's L/R pin is tied to 3.3 V instead of GND; everything else, including the 100 kΩ pull-down on GPIO4, is correct. What does SD carry in each half of the frame, and what does the firmware report?</p>
+
+<details><summary>Reveal</summary><p>The microphone now answers the right slot: it drives its 24 bits while WS is high and releases the line while WS is low. The firmware reads the left slot and finds the line parked by the pull-down, so every sample is the same number: rms 0, min equal to max, a "no varying samples" warning. Nothing is broken; the two ends disagree about which slot is the conversation.</p></details>
+
+<h2>Self-check quiz <span class="clock">1:45–1:50</span></h2>
+
+<details><summary>Q1. At 16 kHz, what is the highest frequency you can capture without aliasing, and does it cover speech?</summary><p>8 kHz, half the sample rate. Speech carries nearly all its energy below that.</p></details>
+
+<details><summary>Q2. Why is the bit clock 1.024 MHz and not 16,000 × 24 = 384 kHz?</summary><p>Each sample rides in a 32-bit slot and every frame has two slots, used or not.</p></details>
+
+<details><summary>Q3. Why does the INMP441's L/R pin go to GND, and could an I2C scan find the microphone?</summary><p>L/R picks the mic's slot; GND means left, which the firmware reads. A scan finds nothing: I2S has no addresses.</p></details>
+
+<details><summary>Q4. Why did the source port move from the vendor's 24 kHz to 16 kHz?</summary><p>The MAX98357A does not support 24 kHz, and it shares WS with the microphone.</p></details>
+
+<details><summary>Q5. Someone suggests grounding one speaker wire to the brass frame "for a cleaner signal". What is wrong?</summary><p>The MAX98357A is BTL: both wires are driven and neither is ground, so grounding one shorts half the bridge. And this week the amplifier is not on the prototype.</p></details>
+
+<h2>Design-your-own-device: the baby monitor <span class="clock">1:50–2:00</span></h2>
+
+<p>Your device is a baby monitor: detect crying (300 Hz to 4 kHz) and play a lullaby through a 4 Ω, 1 W speaker. On paper, choose the sample rate, analog or I2S microphone, whether to share I2S clocks, the maximum amplifier output, and one datasheet line to check first.</p>
+
+<details><summary>Worked answer</summary>
+<p><strong>Sample rate.</strong> Crying tops out at 4 kHz, so Nyquist demands more than 8 kHz; pick 16 kHz for margin, on the MAX98357A's list and native to Opus.</p>
+<p><strong>Microphone.</strong> I2S digital: near a Wi-Fi radio and maybe a charger, an electret's millivolts would collect noise on the way to a mediocre ADC.</p>
+<p><strong>Share clocks?</strong> Yes: both run at 16 kHz, and it saves two pins.</p>
+<p><strong>Maximum output.</strong> V = √(1 W × 4 Ω) = 2.0 V rms, about 2.83 V peak; more overheats the coil.</p>
+<p><strong>Datasheet line.</strong> Minimum load impedance and output power into 4 Ω at your supply; an 8 Ω-only chip will overheat or current-limit.</p>
+</details>
+
+<h2>You can now explain</h2>
+<ul class="check">
+  <li>What sound is physically, and what frequency, amplitude, and decibels describe.</li>
+  <li>Why the INMP441 sends numbers instead of a tiny voltage.</li>
+  <li>The Nyquist rule, why 16 kHz covers speech, and what aliasing does.</li>
+  <li>What BCLK, WS, and SD do, which GPIO carries each, and why BCLK is 1.024 MHz.</li>
+  <li>Why mic and amplifier share clocks, and why that forced the rate off 24 kHz.</li>
+  <li>Why class-D stays cool and why neither BTL lead may touch ground.</li>
+</ul>
+
+<h2>Further reading in your repo</h2>
+<ul>
+  <li><code>edu/fundamentals/09-i2s-sampling-and-digital-audio.md</code></li>
+  <li><code>edu/fundamentals/10-class-d-btl-speakers-and-acoustics.md</code></li>
+  <li><code>plan/concepts/09-sampling-and-i2s.md</code> and <code>plan/concepts/10-speakers-and-amplifiers.md</code></li>
+  <li><code>firmware/src/boards/pocket-wall-e-c3/config.h</code>: the 24 kHz decision and the GPIO8 to GPIO4 move.</li>
+  <li><code>docs/PROTOTYPE_QUICKSTART.md</code>: the MIC24 fields.</li>
+</ul>
+
+<div class="nav">
+  <span>← Day 4: Bits on Wires</span>
+  <span>Day 6: Radio, Heat, and Metal →</span>
+</div>
+
+</div>
+

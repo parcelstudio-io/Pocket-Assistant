@@ -1,0 +1,280 @@
+<title>Pip Eyes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* The character's design tool: the real 128x64 frame, big, with the controls the device has. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2; --oled: #05070A; --pixel: #F4F7FA;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412; --oled: #000; --pixel: #FFFFFF; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412; --oled: #000; --pixel: #FFFFFF; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding-block: 28px 56px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(26px, 5vw, 34px); margin: 2px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0 0 20px; }
+  .screen { background: var(--oled); border: 10px solid #2b2f33; border-radius: 10px; padding: 6px; display: inline-block; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  canvas { display: block; width: 100%; max-width: 640px; height: auto; image-rendering: pixelated; }
+  .stage { display: grid; gap: 12px; justify-items: start; margin-bottom: 18px; }
+  .status { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .status b { color: var(--accent-ink); font-weight: 500; }
+  h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 22px 0 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  button { font: inherit; font-size: 14px; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  button.go { background: var(--brass-tint); border-color: var(--brass); }
+  label { font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+  input[type=range] { width: 180px; accent-color: var(--accent); }
+  .note { color: var(--muted); font-size: 14px; max-width: 70ch; margin-top: 22px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Pocket AI Assistant · the character</div>
+  <h1>Pip's eyes</h1>
+  <p class="lede">The exact eye model that runs on the device's 128 × 64 screen, drawn pixel for pixel. Click an emotion or a state, or let the demo run a whole conversation.</p>
+
+  <div class="stage">
+    <div class="screen"><canvas id="c" width="640" height="320" aria-label="Pip's eyes on a 128 by 64 pixel display"></canvas></div>
+    <div class="status">state <b id="st">boot</b> · emotion <b id="em">neutral</b> · level <b id="lv">0.00</b> · <span id="fps">30 fps</span></div>
+  </div>
+
+  <h2>Emotion (what the brain says)</h2>
+  <div class="row" id="emotions"></div>
+  <h2>State (what the device is doing)</h2>
+  <div class="row" id="states"></div>
+  <h2>Try</h2>
+  <div class="row">
+    <button class="go" id="demo">Run a conversation</button>
+    <button id="blink">Blink</button>
+    <button id="roll">Roll eyes</button>
+    <label>level <input type="range" id="level" min="0" max="100" value="0"></label>
+    <label><input type="checkbox" id="autolevel" checked> animate level while listening / speaking</label>
+  </div>
+
+  <p class="note">This page mirrors <code>character/firmware/main/eyes.c</code> line for line: the same shape table, the same easing, blinks every 2.5–6 s, idle glances, the smile arch, the eye roll, the sleepy drift after 90 s. If it looks right here, it looks right on the OLED. The firmware adds nothing but the I²C flush.</p>
+</div>
+
+<script>
+(() => {
+  // ---- gfx: 1-bit 128x64 buffer, same primitives as gfx.c ----
+  const W = 128, H = 64;
+  const buf = new Uint8Array(W * H);
+  const clear = () => buf.fill(0);
+  const px = (x, y, on) => { if (x >= 0 && x < W && y >= 0 && y < H) buf[y * W + x] = on ? 1 : 0; };
+  function fillRRect(x, y, w, h, r, on) {
+    if (w <= 0 || h <= 0) return;
+    r = Math.max(0, Math.min(r, Math.floor(w / 2), Math.floor(h / 2)));
+    for (let yy = 0; yy < h; yy++) {
+      let inset = 0;
+      if (r > 0) {
+        let dy = -1;
+        if (yy < r) dy = r - 1 - yy; else if (yy >= h - r) dy = yy - (h - r);
+        if (dy >= 0) { let dx = 0; while (dx < r && (dx + 1) * (dx + 1) + dy * dy <= r * r) dx++; inset = r - dx; }
+      }
+      for (let xx = inset; xx < w - inset; xx++) px(x + xx, y + yy, on);
+    }
+  }
+  function fillEllipse(cx, cy, rx, ry, on) {
+    if (rx <= 0 || ry <= 0) return;
+    for (let dy = -ry; dy <= ry; dy++) {
+      const num = rx * rx * (ry * ry - dy * dy);
+      let half = 0; while ((half + 1) * (half + 1) * ry * ry <= num) half++;
+      for (let dx = -half; dx <= half; dx++) px(cx + dx, cy + dy, on);
+    }
+  }
+  function fillHeart(cx, cy, w, h, on) {
+    const lobe = Math.floor(w / 4), top = cy - Math.floor(h / 2) + lobe, bottom = cy + Math.floor(h / 2);
+    fillEllipse(cx - lobe, top, lobe, lobe, on); fillEllipse(cx + lobe, top, lobe, lobe, on);
+    for (let yy = top; yy <= bottom; yy++) {
+      const hw = Math.floor(Math.floor(w / 2) * (bottom - yy) / (bottom - top + 1));
+      for (let xx = cx - hw; xx <= cx + hw; xx++) px(xx, yy, on);
+    }
+  }
+  const clearColumn = (x, y0, y1) => { for (let y = Math.max(0, y0); y < Math.min(H, y1); y++) px(x, y, false); };
+
+  // ---- eyes: same model as eyes.c ----
+  const EMO = ["neutral", "happy", "excited", "sad", "surprised", "confused", "thinking", "sleepy", "angry", "love", "sarcastic"];
+  const STATES = ["boot", "idle", "listening", "thinking", "speaking", "error"];
+  const BASE = { //           w   h   r   lidIn lidOut lidBot dx  dy  heart
+    neutral:   [28, 34, 10, 0.00, 0.00, 0.00, 0, 0, false],
+    happy:     [28, 34, 10, 0.00, 0.00, 0.45, 0, -2, false],
+    excited:   [30, 38, 11, 0.00, 0.00, 0.22, 0, -2, false],
+    sad:       [26, 30, 9, 0.12, 0.50, 0.00, 0, 4, false],
+    surprised: [32, 40, 15, 0.00, 0.00, 0.00, 0, -2, false],
+    confused:  [26, 30, 9, 0.30, 0.05, 0.00, 0, 1, false],
+    thinking:  [28, 32, 10, 0.22, 0.22, 0.00, 6, -5, false],
+    sleepy:    [28, 34, 10, 0.58, 0.58, 0.08, 0, 3, false],
+    angry:     [28, 30, 8, 0.50, 0.08, 0.12, 0, 0, false],
+    love:      [30, 30, 10, 0.00, 0.00, 0.00, 0, -1, true],
+    sarcastic: [28, 32, 9, 0.42, 0.36, 0.00, 0, -1, false],
+  };
+  const shapeFor = (emo, eye) => {
+    const b = BASE[emo];
+    const s = { w: b[0], h: b[1], r: b[2], lidIn: b[3], lidOut: b[4], lidBot: b[5], dx: b[6], dy: b[7], heart: b[8] };
+    if (emo === "confused" && eye === 1) { s.w = 30; s.h = 36; s.r = 11; s.lidIn = 0; s.lidOut = 0; s.dy = -1; }
+    return s;
+  };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  let rng = 12345;
+  const rnd = () => { rng ^= rng << 13; rng ^= rng >>> 17; rng ^= rng << 5; rng >>>= 0; return rng; };
+  const rndf = (lo, hi) => lo + (hi - lo) * (rnd() % 10000) / 9999;
+  const BLINK = { close: 0.07, hold: 0.04, open: 0.11 }; BLINK.total = BLINK.close + BLINK.hold + BLINK.open;
+  const SLEEPY_AFTER = 90;
+
+  const E = {
+    emotion: "neutral", state: "boot", cur: [shapeFor("neutral", 0), shapeFor("neutral", 1)], target: [null, null],
+    level: 0, open: 0.08, blinkT: -1, nextBlink: 3, nextGlance: 2, glanceDx: 0, glanceDy: 0, t: 0, stateT: 0, shake: 0, idleS: 0,
+    rollT: -1, rollDur: 0, rollAmp: 0, rollDir: 1, rollDx: 0, rollDy: 0, rollLid: 0,
+  };
+  const roll = amount => {
+    if (amount <= 0) return; amount = Math.min(1, amount);
+    E.rollT = 0; E.rollAmp = amount; E.rollDur = 0.7 + 0.5 * (1 - amount); E.rollDir = (rnd() & 1) ? 1 : -1;
+  };
+  const setEmotion = e => {
+    const changed = e !== E.emotion; E.emotion = e; E.idleS = 0;
+    if (changed && e === "sarcastic") roll(1); if (changed && e === "confused") roll(0.5);
+  };
+  const setState = s => {
+    if (s === E.state) return;
+    E.state = s; E.stateT = 0; E.idleS = 0; E.level = 0;
+    if (s === "error") E.shake = 1;
+    if (s === "listening" || s === "thinking") { E.glanceDx = 0; E.glanceDy = 0; }
+  };
+  const blink = () => { if (E.blinkT >= 0 && E.blinkT < BLINK.total) E.nextBlink = 0.15; else E.blinkT = 0; };
+  const ease = (o, k, target, f) => { o[k] += (target - o[k]) * f; };
+
+  function tick(dt) {
+    if (dt <= 0) return; if (dt > 0.1) dt = 0.1;
+    E.t += dt; E.stateT += dt; E.idleS += dt;
+    const k = clamp(dt * 9, 0, 1);
+    let emo = E.emotion;
+    if (E.state === "idle" && E.idleS > SLEEPY_AFTER) emo = "sleepy";
+    for (let i = 0; i < 2; i++) E.target[i] = shapeFor(emo, i);
+    const T = E.target;
+    switch (E.state) {
+      case "boot": for (const t of T) { t.lidIn = t.lidOut = 0.2; } break;
+      case "listening": for (const t of T) { t.w *= 1.08; t.h *= 1.08; t.dx = 0; t.dy = -1 - E.level * 4; } break;
+      case "thinking": for (const t of T) { t.dx += 7 + 2 * Math.sin(E.stateT * 1.3); t.dy -= 5; t.lidIn += 0.18; t.lidOut += 0.18; } break;
+      case "speaking": for (const t of T) t.h *= 1 + 0.22 * E.level; break;
+      case "error": {
+        T[0] = shapeFor("confused", 0); T[1] = shapeFor("confused", 1);
+        const sh = E.shake * 4 * Math.sin(E.t * 45);
+        for (const t of T) t.dx += sh;
+        E.shake *= 1 - clamp(dt * 4, 0, 1);
+        break;
+      }
+      default: for (const t of T) { t.dx += E.glanceDx; t.dy += E.glanceDy; }
+    }
+    for (let i = 0; i < 2; i++) {
+      const c = E.cur[i], t = T[i];
+      for (const key of ["w", "h", "r", "lidIn", "lidOut", "lidBot"]) ease(c, key, t[key], k);
+      ease(c, "dx", t.dx, k * 1.3); ease(c, "dy", t.dy, k * 1.3); c.heart = t.heart;
+    }
+    E.rollDx = E.rollDy = E.rollLid = 0;
+    if (E.rollT >= 0) {
+      E.rollT += dt; const p = E.rollT / E.rollDur;
+      if (p >= 1) { E.rollT = -1; blink(); }
+      else { const env = Math.sin(Math.PI * p); E.rollDx = E.rollDir * 9 * E.rollAmp * Math.cos(Math.PI * (1 - p)) * env; E.rollDy = -7 * E.rollAmp * env * env; E.rollLid = 0.22 * E.rollAmp * env; }
+    }
+    if (E.state === "idle") {
+      E.nextGlance -= dt;
+      if (E.nextGlance <= 0) {
+        if (E.glanceDx !== 0 || E.glanceDy !== 0) { if (rnd() % 3) { E.glanceDx = 0; E.glanceDy = 0; } else { E.glanceDx = rndf(-8, 8); E.glanceDy = rndf(-4, 3); } }
+        else { E.glanceDx = rndf(-9, 9); E.glanceDy = rndf(-4, 3); }
+        E.nextGlance = rndf(1.2, 3.5);
+      }
+    }
+    if (E.state === "boot") { ease(E, "open", E.stateT < 0.6 ? 0.08 : 1, clamp(dt * 3.5, 0, 1)); return; }
+    if (E.blinkT >= 0) {
+      E.blinkT += dt; let o;
+      if (E.blinkT < BLINK.close) o = 1 - 0.92 * (E.blinkT / BLINK.close);
+      else if (E.blinkT < BLINK.close + BLINK.hold) o = 0.08;
+      else if (E.blinkT < BLINK.total) o = 0.08 + 0.92 * ((E.blinkT - BLINK.close - BLINK.hold) / BLINK.open);
+      else { o = 1; E.blinkT = -1; E.nextBlink = rndf(2.5, 6); if (rnd() % 5 === 0) E.nextBlink = 0.2; }
+      E.open = o;
+    } else {
+      ease(E, "open", 1, k); E.nextBlink -= dt;
+      const may = E.state !== "speaking" || E.level < 0.1;
+      if (E.nextBlink <= 0 && may) E.blinkT = 0;
+    }
+  }
+
+  function drawEye(i) {
+    const s = { ...E.cur[i] };
+    s.dx += E.rollDx; s.dy += E.rollDy; s.lidIn += E.rollLid; s.lidOut += E.rollLid;
+    const cx = (i === 0 ? 40 : 88) + Math.round(s.dx), cy = 32 + Math.round(s.dy);
+    const w = Math.round(s.w); let h = Math.round(s.h * E.open); if (h < 2) h = 2;
+    const top = cy - Math.floor(h / 2), left = cx - Math.floor(w / 2);
+    if (s.heart && E.open > 0.5) fillHeart(cx, cy, w, h, true); else fillRRect(left, top, w, h, Math.round(s.r * E.open), true);
+    if (E.open < 0.5) return;
+    for (let x = left; x < left + w; x++) {
+      const t = w > 1 ? (x - left) / (w - 1) : 0, inner = i === 0 ? t : 1 - t;
+      const depth = (s.lidOut + (s.lidIn - s.lidOut) * inner) * h;
+      if (depth > 0.5) clearColumn(x, top, top + Math.round(depth));
+    }
+    if (s.lidBot > 0.02) {
+      const base = Math.round(s.lidBot * h);
+      for (let x = left; x < left + w; x++) {
+        const t = w > 1 ? (x - left) / (w - 1) : 0, u = 2 * t - 1, curve = 1 - 0.75 * u * u;
+        const d = Math.round(base * curve); if (d > 0) clearColumn(x, top + h - d, top + h);
+      }
+    }
+  }
+
+  // ---- page ----
+  const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
+  const S = 5; // canvas pixels per OLED pixel
+  function paint() {
+    const css = getComputedStyle(document.documentElement);
+    ctx.fillStyle = css.getPropertyValue("--oled").trim() || "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = css.getPropertyValue("--pixel").trim() || "#fff";
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (buf[y * W + x]) ctx.fillRect(x * S, y * S, S - 1, S - 1);
+  }
+  const $ = id => document.getElementById(id);
+  const emoRow = $("emotions"), stRow = $("states");
+  for (const e of EMO) { const b = document.createElement("button"); b.textContent = e; b.dataset.e = e; b.onclick = () => { setEmotion(e); if (E.state === "boot") setState("idle"); }; emoRow.appendChild(b); }
+  for (const s of STATES) { const b = document.createElement("button"); b.textContent = s; b.dataset.s = s; b.onclick = () => setState(s); stRow.appendChild(b); }
+  $("blink").onclick = () => blink();
+  $("roll").onclick = () => roll(1);
+  const levelInput = $("level"), auto = $("autolevel");
+  let demoTimer = null;
+  $("demo").onclick = () => {
+    if (demoTimer) { clearTimeout(demoTimer); demoTimer = null; }
+    const steps = [[0, () => { setState("idle"); setEmotion("neutral"); }], [600, () => setState("listening")], [3200, () => setState("thinking")],
+      [5200, () => { setEmotion("happy"); setState("speaking"); }], [9200, () => setState("idle")], [9700, () => blink()], [13000, () => setEmotion("love")], [16000, () => setEmotion("neutral")]];
+    for (const [ms, fn] of steps) demoTimer = setTimeout(fn, ms);
+  };
+  let last = performance.now(), frames = 0, fpsAt = last;
+  function loop(now) {
+    const dt = (now - last) / 1000; last = now;
+    if (auto.checked && (E.state === "listening" || E.state === "speaking")) {
+      const v = Math.max(0, 0.45 + 0.45 * Math.sin(now / 90) * Math.sin(now / 410) + 0.1 * Math.sin(now / 37));
+      E.level = clamp(v, 0, 1); levelInput.value = Math.round(E.level * 100);
+    } else E.level = levelInput.value / 100;
+    tick(dt); clear(); drawEye(0); drawEye(1); paint();
+    $("st").textContent = E.state; $("em").textContent = E.emotion; $("lv").textContent = E.level.toFixed(2);
+    for (const b of emoRow.children) b.classList.toggle("on", b.dataset.e === E.emotion);
+    for (const b of stRow.children) b.classList.toggle("on", b.dataset.s === E.state);
+    if (++frames >= 30) { $("fps").textContent = Math.round(frames * 1000 / (now - fpsAt)) + " fps"; frames = 0; fpsAt = now; }
+    requestAnimationFrame(loop);
+  }
+  setTimeout(() => { if (E.state === "boot") { setState("idle"); setEmotion("happy"); blink(); } }, 2200);
+  requestAnimationFrame(loop);
+})();
+</script>

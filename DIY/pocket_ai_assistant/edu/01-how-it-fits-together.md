@@ -1,98 +1,126 @@
-# How it all fits together
+# Pocket Assistant project overview
 
-## The block diagram
+For your first working bench setup, follow the
+[USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md): controller, button,
+OLED, then microphone diagnostics. That path uses the parts already owned and
+one USB source. The power architecture discussed below is future portable
+device work, not a requirement for these first experiments.
+
+> **Scope and evidence:** this is the single applied overview for the course.
+> It summarizes the intended system; it is not a released power schematic,
+> bill of materials, or test result. The USB portion — controller, button,
+> OLED, microphone — was built and passed its cold-start gate on 2026-09-20
+> and completed one cloud round trip on 2026-09-21. The amplifier, battery,
+> and enclosure described below have not been built.
+> The firmware manifest still records `hardware_tested: false`, which
+> describes the build workflow rather than the bench.
+
+## Sources of truth
+
+Use the narrowest authority for the question you are answering:
+
+| Question | Authority |
+| --- | --- |
+| Concepts, safety, measurement, and debugging | [EE foundations course](fundamentals/README.md) |
+| First USB prototype and owned-part wiring | [Prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) |
+| Logical pins, buses, rates, and build identity | [`config.h`](../firmware/src/boards/pocket-wall-e-c3/config.h), the [firmware README](../firmware/README.md), and [source-build manifest](../firmware/source-build.json) |
+| Current hardware candidates, purchase status, and release gates | [Current material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md) |
+| What happened on a physical article | A completed [lab record](fundamentals/reference/lab-record-template.md) |
+
+This page is a navigation aid. If its summary ever differs from an authority
+above, follow the authority and correct this page.
+
+## Functional system view
 
 ```text
-                                 USB-C (flash/debug only)
-                                        │
- ┌──────────┐   ┌─────────┐   ┌─────────┴──────────┐
- │ 16340    │   │ Pololu  │   │  ESP32-C3 SuperMini │
- │ Li-ion   ├──►│ S8V9F3  ├──►│  (Wi-Fi + firmware) │
- │ in holder│ ▲ │ 3.3 V   │3V3│                     │
- └──────────┘ │ │buck-boost│  └──┬───┬───┬───┬───┬──┘
-   PTC fuse ──┘ └─────────┘     │   │   │   │   │
-   + slide switch           I2C │   │ I2S clocks │ I2S data
-   (load switch)                │   │ (shared)   │
-                          ┌─────┴─┐ │ ┌────────┐ │ ┌───────────┐
-                          │SSD1306│ │ │INMP441 │ │ │ MAX98357A │
-                          │ OLED  │ │ │  mic   │ │ │ amp (I2S) │
-                          │(white)│ │ └────────┘ │ └─────┬─────┘
-                          └───────┘ │            │       │ OUT+/OUT−
-                                    └────────────┘   ┌───┴────┐
-                                                     │Speaker │
-                                                     │ in 1cc │
-                                                     │  box   │
-                                                     └────────┘
+ current-limited bench source
+             │
+             ▼
+ reviewed protection / switching / regulation
+             │
+           5V_SYS ───────────────► I2S amplifier
+             │                           │
+             │                     floating BTL + / -
+             │                           ▼
+             │                        speaker
+             ▼
+ reviewed controller power interface
+             │
+            3V3 ────────┬──────────┬───────────┐
+                        ▼          ▼           ▼
+                    ESP32-C3      OLED      microphone
+                        │           ▲           │
+                        ├── I2C ────┘           │
+                        ├── I2S clocks ─────────┤
+                        ├◄─ microphone data ────┘
+                        └── speaker data ──► candidate gated boundary ──► amp
+
+ conductive frame = mechanical structure only, isolated from every net
 ```
 
-The brass frame appears nowhere in this diagram — that is the point. It holds
-the parts; it carries no current.
+Every signal current needs a return path through the insulated ground network.
+Neither bridge-amplifier speaker lead is ground. The frame must remain isolated
+from raw power, regulated rails, ground, signals, and both speaker leads.
 
-## The five buses and what runs on them
+The diagram deliberately leaves protection, conversion, charging, switching,
+and USB-isolation details abstract. Those details are not released until the
+current material decision and a reviewed schematic say they are.
 
-**1. The battery rail (3.0–4.2 V, unregulated).**
-Cell → PTC resettable fuse → slide switch → regulator input. This is the only
-part of the circuit connected directly to the cell, so it is the only part
-that can deliver dangerous current if shorted. It is kept as short as
-physically possible and is the most carefully insulated wiring in the build.
+## Corrected-source logical contract
 
-**2. The 3.3 V rail (regulated).**
-The Pololu S8V9F3 turns the sagging battery voltage into a constant 3.3 V and
-feeds *everything*: the ESP32-C3 (through its 3V3 pin), the OLED, the
-microphone, and the amplifier. Because the regulator has its own over-current
-and over-temperature protection, a fault anywhere downstream is limited by
-the regulator — the cell never sees it directly.
+| Signal | ESP32-C3 pin | Destination or role |
+| --- | ---: | --- |
+| I2S word select | GPIO1 | microphone; amplifier through the candidate boundary |
+| I2S bit clock | GPIO2 | microphone; amplifier through the candidate boundary |
+| Speaker data | GPIO3 | amplifier through the candidate boundary |
+| Microphone data | GPIO4 | ESP32-C3 input |
+| Amplifier enable | GPIO5 | held low in default firmware; future powered hardware remains separate |
+| Action button | GPIO10 | normally-open input to ground |
+| OLED SCL | GPIO20 | I2C clock |
+| OLED SDA | GPIO21 | I2C data |
+| Native USB D− / D+ | GPIO18 / GPIO19 | flashing and service |
 
-**3. I2C — the display's control bus (2 wires: SDA=GPIO21, SCL=GPIO20).**
-I2C is a polite, slow, shared bus: the ESP32-C3 calls out a 7-bit address and
-the matching device answers. Our firmware probes address 0x3C first (generic
-modules) then 0x3D (Adafruit's 128x64 breakouts) and uses whichever answers.
+The source requests 16 kHz audio with 32-bit slots: 64 bit clocks per stereo
+frame and an expected 1.024 MHz bit clock. It probes unshifted 7-bit OLED
+addresses `0x3C` and `0x3D`.
 
-**4. I2S — the audio bus (4 wires total for both directions).**
-I2S carries digital audio as a stream of bits paced by two clocks: BCLK (the
-bit clock, GPIO2) and WS/LRCLK (the word-select clock that says "left slot /
-right slot," GPIO1). The clever economy of this design: the microphone and
-amplifier *share* both clocks, because the ESP32-C3's I2S peripheral runs
-full-duplex — it transmits speaker data on GPIO3 and receives microphone data
-on GPIO4 in the same clock frame. Four wires do the work of six.
+These are source facts, not proof of a received module's controller, pin order,
+pull resistors, flash size, or electrical behavior. In particular, the
+corrected source uses microphone data on GPIO4 at 16 kHz; the historical
+creator binary and harness used a different pin/rate contract. Do not combine
+the two.
 
-**5. The speaker pair (OUT+ / OUT−).**
-The MAX98357A is a "bridge-tied load" amplifier: it drives the speaker between
-two opposite-phase outputs, doubling the swing available from 3.3 V. Neither
-lead is ground. Grounding one (or letting it touch the brass frame) shorts
-half the bridge — this is the one wiring mistake the amplifier cannot forgive.
+## Find the right lesson
 
-## Who is in charge
+| Engineering question | Read |
+| --- | --- |
+| What can hurt me, and what counts as evidence? | [Lesson 00](fundamentals/00-safety-evidence-and-course-map.md) |
+| What do voltage, current, power, and energy mean? | Lessons [01](fundamentals/01-units-charge-voltage-current-power-energy-heat.md), [02](fundamentals/02-dc-circuits-ohm-kirchhoff-series-parallel.md), and [03](fundamentals/03-components-rc-diodes-mosfets-converters.md) |
+| How do I read a board, datasheet, footprint, or connector? | [Lesson 04](fundamentals/04-boards-schematics-datasheets-and-connectors.md) |
+| How should I measure and debug a rail or signal? | [Lesson 05](fundamentals/05-measurement-dmm-supply-scope-logic-analyzer.md) |
+| Why can power look correct at idle and fail under load? | [Lesson 06](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md) |
+| Which pins are risky at reset? | [Lesson 07](fundamentals/07-digital-logic-gpio-pullups-boot-straps.md) |
+| How does the display bus work? | [Lesson 08](fundamentals/08-i2c-and-the-oled.md) |
+| How does digital audio timing work? | [Lesson 09](fundamentals/09-i2s-sampling-and-digital-audio.md) |
+| Why are both speaker outputs live? | [Lesson 10](fundamentals/10-class-d-btl-speakers-and-acoustics.md) |
+| How do frame, antenna, soldering, and fit interact? | Lessons [11](fundamentals/11-rf-emc-antennas-and-metal-frame.md) and [12](fundamentals/12-soldering-mechanics-insulation-tolerance.md) |
+| In what order should the system be integrated? | [Lesson 13](fundamentals/13-debugging-integration-and-capstone.md) |
 
-The ESP32-C3 is the only intelligent part. On boot it: initializes the display
-(probe, then draw), starts the duplex I2S engine at 16 kHz, joins Wi-Fi, and
-runs a local wake-word detector (WakeNet) on the microphone stream. When it
-hears the wake word, it opus-encodes your speech at 16 kHz and streams it to
-the assistant server; replies come back as 24 kHz Opus, which the firmware
-resamples to the codec's 16 kHz and plays out through the amplifier.
+## Release path
 
-Two consequences worth knowing before you build:
+1. Confirm the build identity against the manifest.
+2. Use the [quickstart](../docs/PROTOTYPE_QUICKSTART.md) for the first USB
+   prototype. Consult the [material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md)
+   for later amplifier, battery, and portable-power experiments.
+3. Bring up one layer at a time, following
+   [Lesson 13](fundamentals/13-debugging-integration-and-capstone.md).
+4. Record predictions, setup, measurements, and failures in a lab record.
+5. Apply the promotion gates in the current material decision before calling
+   any hardware path released.
 
-- **The intelligence is in the cloud.** The stock firmware bootstraps against
-  a third-party server (`api.tenclass.net`); the device is an ornament if that
-  service is unreachable or unacceptable to you. Test this on a bare board
-  before you cut brass (Phase 0 of the build guide).
-- **It is half-duplex in conversation.** There is no echo cancellation on this
-  chip, so the microphone is muted while the assistant talks — you cannot
-  interrupt it mid-reply.
-
-## Why the corrected design differs from the video
-
-The video's wiring runs the raw battery into the SuperMini's `5V` pin and the
-amp, solders the cell's can directly into the frame, and uses parts whose
-defaults conflict with this firmware. The corrected build keeps the same
-five-bus architecture and the same visual layout, but:
-
-| Video | Corrected build | Why (details in the linked note) |
-| --- | --- | --- |
-| Raw cell → `5V` pin | Buck-boost → `3V3` pin | The onboard LDO browns out during Wi-Fi bursts as the cell sags ([03](03-power-and-battery.md)) |
-| Cell soldered to frame | Protected cell in a polarity-marked guarded holder + PTC/reverse protection | Soldering to a lithium cell is a fire risk; a holder also makes "remove battery to flash" possible ([03](03-power-and-battery.md)) |
-| Mic data on GPIO8 | Mic data on GPIO4 | GPIO8 is a boot-strapping pin and the SuperMini's LED pin ([05](05-display-and-pins.md)) |
-| 24 kHz audio | 16 kHz audio | The amplifier's datasheet excludes 24 kHz outright ([04](04-audio.md)) |
-| Bare speaker glued to frame | Speaker in a ~1 cc sealed box | The speaker's own spec sheet says "Enclosure: Required" ([04](04-audio.md)) |
-| Switch in the battery line (1 A through a 0.5 A switch) | MOSFET slide switch (or a separately reviewed load switch) | Lower-loss operational switching and reverse-voltage protection; cell removal remains the safety disconnect ([03](03-power-and-battery.md)) |
+Keep the lithium cell out of early experiments. Use controller USB for the
+quickstart or a current-limited supply for its specified bench labs. Never
+solder to or deliberately short a cell, keep native USB and
+recovery controls accessible, and do not cut the final metal frame until exact
+parts and the relevant electrical, RF, acoustic, thermal, and service tests
+have passed.

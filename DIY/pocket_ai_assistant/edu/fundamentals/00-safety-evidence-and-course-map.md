@@ -59,13 +59,33 @@ numbers in your notebook.
 2. De-energize a circuit before continuity or resistance measurement.
 3. A voltmeter goes **across** two points. An ammeter goes **in series** with a
    branch. Never place a current-mode meter directly across a source.
-4. Start new circuits on a bench supply with a deliberate current limit.
+4. Use a bench supply with a deliberate current limit for the resistor and
+   external-power labs. For the controller/button/OLED/microphone prototype,
+   use the [quickstart's USB-only setup](../../docs/PROTOTYPE_QUICKSTART.md),
+   with no external power source connected to its rails.
 5. Confirm instrument ground references before attaching a scope or logic
    analyzer. A grounded scope clip can create a short.
 6. Never connect either BTL speaker output to ground.
 7. Wear eye protection for cutting, soldering, and powered fault finding.
 8. Stop immediately for unexpected heat, smell, smoke, swelling, noise, or a
    current limit that activates unexpectedly.
+
+Rule 3 is easiest to remember by comparing the two meter connections:
+
+```text
+Voltage mode: meter bridges the two load terminals (parallel)
+
+  +3.3 V ─────────[ load ]──────── GND
+              │              │
+              └─────( V )────┘
+
+Current mode: meter replaces part of the current path (series)
+
+  +3.3 V ─────( A )────[ load ]──── GND
+```
+
+`( V )` and `( A )` represent the meter in voltage and current mode. Never
+make the voltage-mode bridge shown above with a meter configured for current.
 
 ## What software can and cannot prove
 
@@ -105,7 +125,9 @@ Before powering the pager from a cell, you should be able to:
 1. No. Treat it as **TYPICAL** unless the electrical-characteristics table
    gives an applicable minimum or maximum.
 2. No. The result covers only modeled geometry.
-3. A correctly configured current-limited bench supply, after unpowered
-   inspection and continuity checks—not the lithium cell.
+3. The source specified by the experiment, after unpowered inspection and
+   continuity checks: a current-limited bench supply for the circuit labs,
+   or controller USB for the quickstart's low-current peripherals. No lithium
+   cell is used in either starting setup.
 
 </details>

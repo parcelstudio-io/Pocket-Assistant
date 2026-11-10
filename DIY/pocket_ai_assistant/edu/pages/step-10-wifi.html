@@ -1,0 +1,735 @@
+<title>Pocket AI Step 10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7;
+    --surface: #FFFFFF;
+    --ink: #16202A;
+    --muted: #5B6B7A;
+    --line: #D3DAE1;
+    --accent: #0B7285;
+    --accent-ink: #085B6B;
+    --accent-tint: #E1F2F5;
+    --warn: #9A5B00;
+    --warn-tint: #FFF3DB;
+    --pass: #1E7B3E;
+    --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3;
+    --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519;
+      --surface: #161E24;
+      --ink: #E4EAEF;
+      --muted: #98A7B4;
+      --line: #2A363F;
+      --accent: #4FC3D1;
+      --accent-ink: #7AD6E1;
+      --accent-tint: #10292F;
+      --warn: #F0B14A;
+      --warn-tint: #2C2310;
+      --pass: #5FCB7E;
+      --pass-tint: #112A1A;
+      --code-bg: #0B1014;
+      --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519;
+    --surface: #161E24;
+    --ink: #E4EAEF;
+    --muted: #98A7B4;
+    --line: #2A363F;
+    --accent: #4FC3D1;
+    --accent-ink: #7AD6E1;
+    --accent-tint: #10292F;
+    --warn: #F0B14A;
+    --warn-tint: #2C2310;
+    --pass: #5FCB7E;
+    --pass-tint: #112A1A;
+    --code-bg: #0B1014;
+    --figure-bg: #121A1F;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-block: 32px 64px;
+    padding-inline: 20px;
+  }
+  header.top {
+    display: grid;
+    gap: 10px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 36px);
+    line-height: 1.12;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 62ch;
+    margin: 0;
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 1.2;
+    margin: 44px 0 12px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 28px 0 8px;
+    font-weight: 600;
+  }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul, ol { max-width: 68ch; padding-left: 1.3em; margin: 0 0 12px; }
+  li { margin-bottom: 6px; }
+  li > p { margin-bottom: 6px; }
+  code {
+    font-family: var(--mono);
+    font-size: .9em;
+    background: var(--code-bg);
+    padding: .1em .35em;
+    border-radius: 4px;
+  }
+  pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 8px 0 14px;
+    max-width: 100%;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre .cap { color: var(--accent-ink); font-weight: 500; }
+  pre .dim { color: var(--muted); }
+
+  .callout {
+    border-left: 3px solid var(--line);
+    background: var(--surface);
+    padding: 12px 16px;
+    margin: 16px 0;
+    max-width: 72ch;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout.radio { border-left-color: var(--accent); background: var(--accent-tint); }
+  .callout .label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .callout.warn .label { color: var(--warn); }
+  .callout.radio .label { color: var(--accent-ink); }
+
+  /* Steps: a real sequence, so the numbers carry information */
+  ol.steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+    max-width: 72ch;
+  }
+  ol.steps > li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before {
+    content: counter(step);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    padding-top: 3px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  ol.steps[start="7"] { counter-reset: step 6; }
+  ol.steps[start="14"] { counter-reset: step 13; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+
+  /* Pass gates */
+  .gate {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+    align-items: start;
+    background: var(--pass-tint);
+    border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 18px 0;
+    max-width: 72ch;
+  }
+  .gate input[type="checkbox"] {
+    width: 20px; height: 20px; margin: 2px 0 0;
+    accent-color: var(--pass);
+    cursor: pointer;
+  }
+  .gate .name {
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pass);
+    margin-bottom: 2px;
+  }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+
+  /* Gate track (overview) */
+  .track {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 18px 0 8px;
+  }
+  .track > div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--pass);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+
+  /* Figures */
+  figure {
+    margin: 20px 0 24px;
+    background: var(--figure-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 12px 10px;
+  }
+  figure .scroll { overflow-x: auto; }
+  figure svg {
+    display: block;
+    height: auto;
+    color: var(--ink);
+    font-family: var(--sans);
+  }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-fill { fill: var(--accent); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figcaption {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 10px;
+    max-width: 72ch;
+  }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+
+  .checklist { list-style: none; padding: 0; max-width: 72ch; }
+  .checklist li {
+    display: grid; grid-template-columns: 18px 1fr; gap: 10px;
+    padding: 6px 0; border-top: 1px solid var(--line);
+  }
+  .checklist li:last-child { border-bottom: 1px solid var(--line); }
+  .checklist li::before {
+    content: ""; width: 14px; height: 14px; margin-top: 5px;
+    border: 1.5px solid var(--muted); border-radius: 3px;
+  }
+
+  .evidence {
+    margin-top: 44px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .evidence p { max-width: 72ch; }
+  a { color: var(--accent-ink); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · fast track · optional step</div>
+    <h1>Step 10: put board A1 on Wi-Fi and get one answer back</h1>
+    <p class="lede">The USB prototype passed on 2026-09-20. This step adds the radio and a third-party cloud service. It still produces no spoken output. The goal is one round trip you can see in the log or on the OLED.</p>
+  </header>
+
+  <div class="callout warn">
+    <span class="label">Stop unless both are true</span>
+    <p>Step 9 passed, and you accept that the Xiaozhi/Tenclass bootstrap service receives device metadata and microphone audio. The setup hotspot is open, the form is plain HTTP, and the credentials you type are stored unencrypted in flash until a full reflash. Do this in a private place, on a dedicated 2.4 GHz guest network with a unique password.</p>
+  </div>
+
+  <div class="callout radio">
+    <span class="label">Radio note for this board</span>
+    <p>The SuperMini's ceramic chip antenna is poorly matched. At the firmware's default 20 dBm the setup hotspot was invisible on three boards from this batch, including A1, even with the phone touching the board. The assistant build therefore caps transmit power at <strong>8.5 dBm</strong>, once for the hotspot and once for the normal connection, and logs it each time. That is lower power, not higher. Expect short range and keep the phone close.</p>
+  </div>
+
+  <h2>The three gates</h2>
+  <p>Each gate is a checkpoint you record. Nothing on this page marks a gate passed for you.</p>
+  <div class="track">
+    <div><div class="name">Pass 10A</div><p>Safe to flash. Build, verifier and preview all say assistant mode, amplifier disabled, right port.</p></div>
+    <div><div class="name">Pass 10B</div><p>On your network at capped power. Hotspot seen, form accepted, station cap line, then <code>Connected to WiFi</code>.</p></div>
+    <div><div class="name">Pass 10C</div><p>One round trip. A quick press listens, one question, one remote answer, no reset.</p></div>
+  </div>
+
+  <h2>What the radio does, and where the cap applies</h2>
+  <p>The firmware starts the radio twice: once as a hotspot so your phone can hand it the network, and again as a normal station to join that network. The transmit-power cap only takes effect after a start, so it is applied after each one. Knowing this tells you which log line to expect at which moment.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 960 290" style="min-width: 760px; width: 100%;" role="img" aria-label="Flow of the two radio starts: on boot without a saved network the board starts the hotspot and caps power, the phone sends the form, the board tests the credentials, config mode exits, the station starts and is capped again, then it connects, activates and completes a round trip. A saved network skips straight to the station start on every later boot. A station that gets no link in 60 seconds falls back to the hotspot.">
+        <defs>
+          <marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- Row 1 -->
+        <rect class="box" x="20" y="40" width="120" height="52" rx="5"/>
+        <text class="t b" x="80" y="62" text-anchor="middle">Power on</text>
+        <text class="s muted" x="80" y="78" text-anchor="middle">or reset</text>
+
+        <rect class="box" x="170" y="40" width="120" height="52" rx="5"/>
+        <text class="t b" x="230" y="62" text-anchor="middle">Saved network</text>
+        <text class="s muted" x="230" y="78" text-anchor="middle">in flash?</text>
+
+        <rect class="box" x="320" y="40" width="120" height="52" rx="5"/>
+        <text class="t b" x="380" y="62" text-anchor="middle">Start hotspot</text>
+        <text class="s muted" x="380" y="78" text-anchor="middle">Xiaozhi-XXXX, open</text>
+
+        <rect class="cap" x="470" y="40" width="130" height="52" rx="5"/>
+        <text class="t b cap-ink" x="535" y="62" text-anchor="middle">cap 8.5 dBm</text>
+        <text class="s cap-ink" x="535" y="78" text-anchor="middle">log: (provisioning AP)</text>
+
+        <rect class="box" x="630" y="40" width="120" height="52" rx="5"/>
+        <text class="t b" x="690" y="62" text-anchor="middle">Phone joins,</text>
+        <text class="s muted" x="690" y="78" text-anchor="middle">sends the form</text>
+
+        <rect class="box" x="780" y="40" width="140" height="52" rx="5"/>
+        <text class="t b" x="850" y="62" text-anchor="middle">Board tests the</text>
+        <text class="s muted" x="850" y="78" text-anchor="middle">credentials</text>
+
+        <!-- Row 1 arrows -->
+        <line class="edge" x1="140" y1="66" x2="170" y2="66" marker-end="url(#arrowA)"/>
+        <line class="edge" x1="290" y1="66" x2="320" y2="66" marker-end="url(#arrowA)"/>
+        <text class="s muted" x="305" y="58" text-anchor="middle">no</text>
+        <line class="edge" x1="440" y1="66" x2="470" y2="66" marker-end="url(#arrowA)"/>
+        <line class="edge" x1="600" y1="66" x2="630" y2="66" marker-end="url(#arrowA)"/>
+        <line class="edge" x1="750" y1="66" x2="780" y2="66" marker-end="url(#arrowA)"/>
+
+        <!-- Row 2 -->
+        <rect class="box" x="320" y="200" width="120" height="52" rx="5"/>
+        <text class="t b" x="380" y="222" text-anchor="middle">Start station</text>
+        <text class="s muted" x="380" y="238" text-anchor="middle">join your network</text>
+
+        <rect class="cap" x="470" y="200" width="130" height="52" rx="5"/>
+        <text class="t b cap-ink" x="535" y="222" text-anchor="middle">cap 8.5 dBm</text>
+        <text class="s cap-ink" x="535" y="238" text-anchor="middle">log: (station)</text>
+
+        <rect class="box" x="630" y="200" width="120" height="52" rx="5"/>
+        <text class="t b" x="690" y="222" text-anchor="middle">Connected to</text>
+        <text class="s muted" x="690" y="238" text-anchor="middle">WiFi: your network</text>
+
+        <rect class="box" x="780" y="200" width="140" height="52" rx="5"/>
+        <text class="t b" x="850" y="222" text-anchor="middle">Activation, then</text>
+        <text class="s muted" x="850" y="238" text-anchor="middle">one round trip</text>
+
+        <!-- Row 2 arrows -->
+        <line class="edge" x1="440" y1="226" x2="470" y2="226" marker-end="url(#arrowA)"/>
+        <line class="edge" x1="600" y1="226" x2="630" y2="226" marker-end="url(#arrowA)"/>
+        <line class="edge" x1="750" y1="226" x2="780" y2="226" marker-end="url(#arrowA)"/>
+
+        <!-- yes branch: saved network goes straight to station -->
+        <path class="edge" d="M230 92 V226 H320" marker-end="url(#arrowA)"/>
+        <text class="s muted" x="238" y="246">yes: every</text>
+        <text class="s muted" x="238" y="260">later boot</text>
+
+        <!-- config mode exits: from credentials test down to station start -->
+        <path class="edge" d="M850 92 V150 H400 V200" marker-end="url(#arrowA)"/>
+        <text class="s muted" x="625" y="144" text-anchor="middle">credentials accepted, config mode exits</text>
+
+        <!-- timeout loop -->
+        <path class="edge dashed" d="M340 200 V92" marker-end="url(#arrowA)"/>
+        <text class="s muted" x="332" y="150" text-anchor="end">no link</text>
+        <text class="s muted" x="332" y="164" text-anchor="end">in 60 s</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two starts, two caps.</strong> The teal boxes are where the firmware applies the 8.5 dBm cap and prints a log line. A board with a saved network skips the hotspot on every later boot, so the station cap is the one that matters after tonight.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 132" style="min-width: 560px; width: 100%;" role="img" aria-label="A ruler of transmit-power values from 8 to 84 in quarter-dBm units. The firmware default is 80, which is 20 dBm and was invisible on three boards. This build uses 34, which is 8.5 dBm, and that made board A1's hotspot visible. The change moves left, to lower power.">
+        <defs>
+          <marker id="arrowB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- change arrow -->
+        <line class="edge accent-stroke" x1="618" y1="24" x2="278" y2="24" marker-end="url(#arrowB)"/>
+        <text class="s cap-ink b" x="448" y="16" text-anchor="middle">the change: lower power</text>
+
+        <!-- ruler -->
+        <line class="edge" x1="60" y1="72" x2="660" y2="72"/>
+        <!-- ticks -->
+        <line class="edge" x1="60" y1="64" x2="60" y2="80"/>
+        <line class="edge" x1="265" y1="64" x2="265" y2="80"/>
+        <line class="edge" x1="344" y1="66" x2="344" y2="78"/>
+        <line class="edge" x1="470" y1="66" x2="470" y2="78"/>
+        <line class="edge" x1="628" y1="64" x2="628" y2="80"/>
+        <line class="edge" x1="660" y1="64" x2="660" y2="80"/>
+
+        <!-- markers -->
+        <circle class="accent-fill" cx="265" cy="72" r="7"/>
+        <circle cx="628" cy="72" r="7" fill="var(--figure-bg)" stroke="currentColor" stroke-width="1.6"/>
+        <text class="t b cap-ink" x="265" y="46" text-anchor="middle">this build</text>
+        <text class="t b" x="628" y="46" text-anchor="middle">firmware default</text>
+
+        <!-- tick labels -->
+        <text class="s muted" x="60" y="96" text-anchor="middle">8 = 2 dBm</text>
+        <text class="s b" x="265" y="96" text-anchor="middle">34 = 8.5 dBm</text>
+        <text class="s muted" x="344" y="96" text-anchor="middle">44 = 11 dBm</text>
+        <text class="s muted" x="470" y="96" text-anchor="middle">60 = 15 dBm</text>
+        <text class="s b" x="628" y="96" text-anchor="middle">80 = 20 dBm</text>
+        <text class="s muted" x="660" y="112" text-anchor="middle">84 = 21 dBm</text>
+        <text class="s muted" x="360" y="124" text-anchor="middle">value passed to esp_wifi_set_max_tx_power(), in quarter-dBm units</text>
+      </svg>
+    </div>
+    <figcaption><strong>34 is not a boost.</strong> The number in the source is in quarter-dBm units, so 34 means 8.5 dBm, well below the default 80 (20 dBm). Board A1's hotspot became visible at 34. Never describe this change as raising the power.</figcaption>
+  </figure>
+
+  <h2>Before you start</h2>
+  <ul class="checklist">
+    <li>Step 9 passed, and the Step 9 wiring is untouched. Add nothing.</li>
+    <li>A dedicated 2.4 GHz guest/IoT network exists with a unique password, and the router confirms it broadcasts on 2.4 GHz. The ESP32-C3 cannot see 5 GHz.</li>
+    <li>You are in a private place. Nearby people could observe the open hotspot and the plain-HTTP form.</li>
+    <li>The phone is in hand, and you can turn its mobile data off for the setup minute so the captive portal is not bypassed.</li>
+    <li>You know the exact serial port from Step 3. The commands below say <code>/dev/ttyACM0</code>; replace it with yours.</li>
+  </ul>
+
+  <h2>Part 1: build, verify, preview</h2>
+  <ol class="steps">
+    <li><p>Read the assistant-mode privacy and provisioning notes in the firmware README (<code>firmware/README.md</code>, section "Flash and monitor source builds").</p></li>
+    <li><p>Prepare the dedicated 2.4 GHz guest/IoT network and confirm on the router that it is 2.4 GHz.</p></li>
+    <li><p>Leave the Step 9 wiring exactly as it passed.</p></li>
+    <li>
+      <p>With the existing USB-only hardware, build assistant mode. If this prints an error, stop; never run a later command against an older artifact.</p>
+<pre><code>. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh --assistant</code></pre>
+    </li>
+    <li>
+      <p>Verify the build. Stop unless it prints <code>Build mode: assistant; amplifier: disabled</code> with no error.</p>
+<pre><code>python3 firmware/scripts/verify_source_build.py</code></pre>
+    </li>
+    <li>
+      <p>Preview the flash on the exact port from Step 3.</p>
+<pre><code>firmware/scripts/flash.sh /dev/ttyACM0 --dry-run</code></pre>
+    </li>
+  </ol>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-10a">
+    <label for="gate-10a">
+      <div class="name">Pass 10A · safe to flash assistant mode</div>
+      <p>The build and verifier finished without errors, the verifier and preview both print <code>Build mode: assistant; amplifier: disabled</code>, and the preview names the exact port from Step 3.</p>
+    </label>
+  </div>
+
+  <h2>Part 2: flash, find the hotspot, hand over the network</h2>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 640 250" style="min-width: 520px; width: 100%;" role="img" aria-label="Bench placement during setup: the SuperMini sits on the breadboard with USB at its left end and the ceramic antenna at its right end. A dashed zone around the antenna end must stay free of wires and metal. The phone is held within 30 centimetres of the antenna end.">
+        <defs>
+          <marker id="arrowC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- breadboard -->
+        <rect class="soft" x="40" y="40" width="340" height="180" rx="6"/>
+        <text class="s muted" x="52" y="58">breadboard, Step 9 wiring untouched</text>
+
+        <!-- USB cable to computer -->
+        <line class="edge" x1="10" y1="120" x2="70" y2="120"/>
+        <text class="s muted" x="12" y="108">to computer</text>
+        <rect class="box" x="70" y="106" width="16" height="28" rx="2"/>
+
+        <!-- board -->
+        <rect class="box" x="86" y="90" width="200" height="60" rx="4"/>
+        <text class="t b" x="186" y="114" text-anchor="middle">ESP32-C3 SuperMini, A1</text>
+        <text class="s muted" x="100" y="140">USB end</text>
+
+        <!-- antenna block -->
+        <rect class="accent-fill" x="270" y="106" width="10" height="28"/>
+        <text class="s b cap-ink" x="275" y="80" text-anchor="middle">antenna end (opposite USB)</text>
+
+        <!-- keep clear zone -->
+        <rect class="edge dashed accent-stroke" x="250" y="60" width="110" height="120" rx="8"/>
+        <text class="s cap-ink" x="305" y="196" text-anchor="middle">keep clear: no wires, no metal</text>
+
+        <!-- phone -->
+        <rect class="box" x="450" y="70" width="64" height="112" rx="8"/>
+        <rect class="soft" x="456" y="80" width="52" height="86" rx="3"/>
+        <text class="s muted" x="482" y="200" text-anchor="middle">your phone</text>
+
+        <!-- distance -->
+        <line class="edge" x1="290" y1="228" x2="450" y2="228" marker-start="url(#arrowC)" marker-end="url(#arrowC)"/>
+        <text class="s b" x="370" y="220" text-anchor="middle">30 cm or less</text>
+      </svg>
+    </div>
+    <figcaption><strong>Where things sit while you look for the hotspot.</strong> The antenna is the small block at the end opposite the USB connector. Nothing may cross that end. Hold the phone close to it; at 8.5 dBm the range is short by design.</figcaption>
+  </figure>
+
+  <ol class="steps" start="7">
+    <li>
+      <p>Flash and open the monitor.</p>
+<pre><code>. firmware/.work/esp-idf/export.sh
+firmware/scripts/flash.sh /dev/ttyACM0 --monitor</code></pre>
+    </li>
+    <li>
+      <p>In the boot log, find these three lines in this order. Other lines appear between them and the numbers in parentheses vary. Write down the exact hotspot name; its last four characters differ per board.</p>
+<pre><code><span class="dim">I (…)</span> WifiManager: Starting config AP
+<span class="dim">I (…)</span> WifiConfigurationAp: Access Point started with SSID Xiaozhi-XXXX
+<span class="cap"><span class="dim">I (…)</span> WifiBoard: Wi-Fi max TX power capped at 8.5 dBm (provisioning AP)</span></code></pre>
+      <p>If the third line is missing, the board is running an older image at full power, the exact condition that was invisible on this batch. Go back to item 4 and rebuild.</p>
+    </li>
+    <li><p>The OLED shows the Wi-Fi configuration screen with the same hotspot name and the address <code>http://192.168.4.1</code>.</p></li>
+    <li><p>On the phone, turn mobile data off. Hold the phone within 30 cm of the antenna end, open the Wi-Fi list, and wait up to 30 seconds. Pull down to rescan if the list does not refresh. The hotspot is open, with no password. Join it. If the phone warns that the network has no internet, choose to stay connected.</p></li>
+    <li><p>If the captive portal does not open by itself within 15 seconds, open a browser and go to <code>http://192.168.4.1</code>.</p></li>
+    <li><p>In the form, choose your 2.4 GHz guest network from the scanned list, type its password, and submit. The board switches to that network's channel to test the credentials. If the router refuses the first attempt, the firmware waits three seconds and tries once more by itself, so wait for the page's result before touching anything. The phone drops off the hotspot when the board reports success. That is expected.</p></li>
+    <li>
+      <p>Back in the monitor, find these lines in this order.</p>
+<pre><code><span class="dim">I (…)</span> WifiBoard: Starting WiFi connection attempt
+<span class="cap"><span class="dim">I (…)</span> WifiBoard: Wi-Fi max TX power capped at 8.5 dBm (station)</span>
+<span class="dim">I (…)</span> WifiBoard: Connected to WiFi: &lt;your guest network&gt;</code></pre>
+      <p>If the board instead logs <code>WiFi connection timeout, entering config mode</code>, it could not reach the router at 8.5 dBm. Move the board and the router into the same room and repeat from item 10.</p>
+    </li>
+  </ol>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 900 215" style="min-width: 720px; width: 100%;" role="img" aria-label="Who talks to whom. First the phone joins the board's open hotspot and sends the form over plain HTTP. Second the board joins the router's 2.4 GHz guest network at 8.5 dBm and the phone drops off. Third the board reaches the third-party service through the router, which receives device metadata and microphone audio. A dashed line marks where traffic leaves your home.">
+        <defs>
+          <marker id="arrowD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- boundary -->
+        <line class="edge dashed warn-stroke" x1="715" y1="20" x2="715" y2="180"/>
+        <text class="s b warn-ink" x="715" y="200" text-anchor="middle">leaves your home</text>
+
+        <!-- boxes -->
+        <rect class="box" x="30" y="70" width="130" height="56" rx="5"/>
+        <text class="t b" x="95" y="93" text-anchor="middle">Your phone</text>
+        <text class="s muted" x="95" y="110" text-anchor="middle">Wi-Fi list, browser</text>
+
+        <rect class="box" x="280" y="70" width="150" height="56" rx="5"/>
+        <text class="t b" x="355" y="93" text-anchor="middle">Board A1</text>
+        <text class="s cap-ink" x="355" y="110" text-anchor="middle">SuperMini, 8.5 dBm cap</text>
+
+        <rect class="box" x="540" y="70" width="130" height="56" rx="5"/>
+        <text class="t b" x="605" y="93" text-anchor="middle">Your router</text>
+        <text class="s muted" x="605" y="110" text-anchor="middle">2.4 GHz guest network</text>
+
+        <rect class="box" x="760" y="70" width="120" height="56" rx="5"/>
+        <text class="t b" x="820" y="93" text-anchor="middle">Third-party</text>
+        <text class="s muted" x="820" y="110" text-anchor="middle">service</text>
+
+        <!-- 1: phone <-> board -->
+        <line class="edge" x1="160" y1="98" x2="280" y2="98" marker-start="url(#arrowD)" marker-end="url(#arrowD)"/>
+        <text class="s b" x="220" y="58" text-anchor="middle">1 · joins the open hotspot</text>
+        <text class="s muted" x="220" y="146" text-anchor="middle">form to 192.168.4.1</text>
+        <text class="s muted" x="220" y="160" text-anchor="middle">plain HTTP, no password</text>
+
+        <!-- 2: board -> router -->
+        <line class="edge" x1="430" y1="98" x2="540" y2="98" marker-end="url(#arrowD)"/>
+        <text class="s b" x="485" y="58" text-anchor="middle">2 · joins the guest network</text>
+        <text class="s muted" x="485" y="146" text-anchor="middle">tests the credentials,</text>
+        <text class="s muted" x="485" y="160" text-anchor="middle">then phone drops off</text>
+
+        <!-- 3: router -> service -->
+        <line class="edge" x1="670" y1="98" x2="760" y2="98" marker-end="url(#arrowD)"/>
+        <text class="s b" x="740" y="40" text-anchor="middle">3 · activation, then audio</text>
+        <text class="s warn-ink" x="820" y="146" text-anchor="middle">receives device metadata</text>
+        <text class="s warn-ink" x="820" y="160" text-anchor="middle">and microphone audio</text>
+      </svg>
+    </div>
+    <figcaption><strong>Three hops in order.</strong> Your phone only ever talks to the board. After the board joins the router it reaches the third-party service on its own, and from that point microphone audio crosses the dashed line. A full diagnostics reflash is what removes the saved credentials.</figcaption>
+  </figure>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-10b">
+    <label for="gate-10b">
+      <div class="name">Pass 10B · the board is on your network at capped power</div>
+      <p>The hotspot appeared on the phone, the form accepted the guest network, and the monitor shows the station cap line followed by <code>Connected to WiFi: &lt;your guest network&gt;</code> without a reset. Record the hotspot name, the network name, and the time.</p>
+    </label>
+  </div>
+
+  <h2>Part 3: activation and one round trip</h2>
+  <ol class="steps" start="14">
+    <li><p>Keep watching the monitor and the OLED. Once on the network the firmware contacts the third-party bootstrap service. <code>Ota: Activation successful</code> in the log means the service already knows this board. Otherwise the display or log shows an activation instruction, usually a short code to enter on the service's own site. That flow belongs to the third party and may change independently of this repository. Enter the code only on the service's own activation page.</p></li>
+    <li><p>Give the external GPIO10 button one quick press. When the log or display shows that it is listening, ask one short question such as "What is two plus two?" Wait for a remote response to appear in the log or display. Quick-press the button once more if the interface remains active.</p></li>
+  </ol>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-10c">
+    <label for="gate-10c">
+      <div class="name">Pass 10C · one assistant round trip</div>
+      <p>Your quick press starts listening, and one spoken question produces a remote response in the display or serial log without a reset. Record the evidence: the log excerpt and a photograph of the display.</p>
+    </label>
+  </div>
+
+  <h2>If the hotspot never appears</h2>
+  <p>Work down this tree and stop at the first branch that changes the result.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 440" style="min-width: 560px; width: 100%;" role="img" aria-label="Decision tree when the hotspot is missing. First check whether the cap line is in the boot log; if not, the image is old and runs at 20 dBm, so rebuild and reflash. If yes, hold the phone within 30 centimetres of the antenna end, rescan and wait 30 seconds; if it appears, continue at item 10. If still nothing, flash the same image onto a bare spare board on an open desk. If the spare is visible and A1 is not, the wiring crowds the antenna, so move jumpers off the antenna end. If neither is visible, 8.5 dBm is not enough for this batch and the next fixes are hardware: a 31 millimetre wire mod or a XIAO C3 board, which changes the pin map.">
+        <defs>
+          <marker id="arrowE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- start -->
+        <rect class="soft" x="230" y="16" width="260" height="44" rx="5"/>
+        <text class="t b" x="360" y="43" text-anchor="middle">Hotspot not in the phone's list</text>
+        <line class="edge" x1="360" y1="60" x2="360" y2="96" marker-end="url(#arrowE)"/>
+
+        <!-- q1 -->
+        <rect class="box" x="230" y="96" width="260" height="44" rx="5"/>
+        <text class="t b" x="360" y="123" text-anchor="middle">Is the cap line in the boot log?</text>
+        <!-- no -->
+        <line class="edge" x1="230" y1="118" x2="210" y2="118" marker-end="url(#arrowE)"/>
+        <text class="s muted" x="220" y="110" text-anchor="middle">no</text>
+        <rect class="cap" x="20" y="90" width="190" height="60" rx="5"/>
+        <text class="s b cap-ink" x="115" y="112" text-anchor="middle">Old image at 20 dBm.</text>
+        <text class="s cap-ink" x="115" y="128" text-anchor="middle">Rebuild and reflash</text>
+        <text class="s cap-ink" x="115" y="142" text-anchor="middle">(items 4 to 7)</text>
+        <!-- yes -->
+        <line class="edge" x1="360" y1="140" x2="360" y2="176" marker-end="url(#arrowE)"/>
+        <text class="s muted" x="368" y="162">yes</text>
+
+        <!-- a2 -->
+        <rect class="box" x="230" y="176" width="260" height="44" rx="5"/>
+        <text class="s b" x="360" y="195" text-anchor="middle">Phone 30 cm from the antenna end,</text>
+        <text class="s" x="360" y="210" text-anchor="middle">rescan, wait 30 s</text>
+        <!-- appears -->
+        <line class="edge" x1="490" y1="198" x2="510" y2="198" marker-end="url(#arrowE)"/>
+        <rect class="box" x="510" y="176" width="190" height="44" rx="5"/>
+        <text class="s b pass-ink" x="605" y="195" text-anchor="middle">Appears:</text>
+        <text class="s" x="605" y="210" text-anchor="middle">continue at item 10</text>
+        <!-- still nothing -->
+        <line class="edge" x1="360" y1="220" x2="360" y2="256" marker-end="url(#arrowE)"/>
+        <text class="s muted" x="368" y="242">still nothing</text>
+
+        <!-- a3 -->
+        <rect class="box" x="230" y="256" width="260" height="44" rx="5"/>
+        <text class="s b" x="360" y="275" text-anchor="middle">Flash the same image onto a bare</text>
+        <text class="s" x="360" y="290" text-anchor="middle">spare board lying on an open desk</text>
+
+        <!-- split -->
+        <path class="edge" d="M360 300 V326 H180 V350" marker-end="url(#arrowE)"/>
+        <path class="edge" d="M360 300 V326 H540 V350" marker-end="url(#arrowE)"/>
+
+        <rect class="box" x="20" y="350" width="320" height="76" rx="5"/>
+        <text class="s b" x="180" y="371" text-anchor="middle">Spare visible, A1 not</text>
+        <text class="s" x="180" y="388" text-anchor="middle">The breadboard wiring crowds the antenna.</text>
+        <text class="s" x="180" y="403" text-anchor="middle">Move jumpers off the antenna end, retry.</text>
+
+        <rect class="box" x="380" y="350" width="320" height="76" rx="5"/>
+        <text class="s b" x="540" y="371" text-anchor="middle">Neither visible</text>
+        <text class="s" x="540" y="388" text-anchor="middle">8.5 dBm is not enough for this batch.</text>
+        <text class="s" x="540" y="403" text-anchor="middle">Hardware next: 31 mm wire mod, or XIAO C3</text>
+        <text class="s muted" x="540" y="418" text-anchor="middle">(XIAO changes the pin map; not a drop-in swap)</text>
+      </svg>
+    </div>
+    <figcaption><strong>The cheapest test first.</strong> The cap line costs nothing to check and rules out the one mistake that recreates the invisible condition. The spare-board test separates wiring from the batch. Both hardware fixes are described in the controller entry of the inventory.</figcaption>
+  </figure>
+
+  <h2>Return to offline diagnostics</h2>
+  <p>Do this whenever you need to isolate a hardware problem, and before a provisioned board leaves your control. The diagnostics reflash writes this project's blank NVS area, which clears the saved Wi-Fi credentials. A reset does not.</p>
+<pre><code>. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh --diagnostics
+python3 firmware/scripts/verify_source_build.py      <span class="dim"># expect: Build mode: diagnostics; amplifier: disabled</span>
+firmware/scripts/flash.sh /dev/ttyACM0 --dry-run     <span class="dim"># expect diagnostics, amplifier disabled, right port</span>
+firmware/scripts/flash.sh /dev/ttyACM0 --monitor</code></pre>
+  <p>Stop at any command that prints an error. Never run a later command against an older artifact.</p>
+
+  <div class="evidence">
+    <p><strong>What is and is not verified.</strong> Steps 0 to 9 passed on physical hardware on 2026-09-20 (two cold starts). On 2026-09-21 the builder reported Step 10 complete: the 8.5 dBm cap made A1's hotspot visible, A1 joined Wi-Fi, and one spoken question returned a remote response from the Xiaozhi backend (Pass 10C). That is builder-reported, not instrument-verified. The order of the log lines on this page was read from the source, not observed on a board. A successful build or matching checksum proves nothing about hardware. The amplifier stays disabled, so there is still no spoken output.</p>
+    <p><strong>Authority.</strong> This page is a companion to Step 10 of <code>plan/FAST_TRACK.md</code> in the repository. If the two differ, the repository wins. The gate checkboxes above are remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ids = ["gate-10a", "gate-10b", "gate-10c"];
+    ids.forEach(function (id) {
+      var box = document.getElementById(id);
+      if (!box) return;
+      try {
+        box.checked = window.localStorage.getItem("pocket-step10:" + id) === "1";
+      } catch (e) { /* storage unavailable: page still works */ }
+      box.addEventListener("change", function () {
+        try {
+          window.localStorage.setItem("pocket-step10:" + id, box.checked ? "1" : "0");
+        } catch (e) { /* ignore */ }
+      });
+    });
+  })();
+</script>
+

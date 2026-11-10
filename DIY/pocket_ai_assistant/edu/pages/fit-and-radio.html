@@ -1,0 +1,303 @@
+<title>Fit and Radio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Same reading column and tokens as the other Pocket AI learning pages: one narrow column, figures full width. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h2 .num { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .8em; margin-right: 8px; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul, ol { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--accent-ink); }
+  .callout.warn .label { color: var(--warn); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--accent); background: var(--accent-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  .effects { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0 18px; max-width: 72ch; }
+  .effects > div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .effects .h { font-weight: 700; color: var(--warn); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .effects p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 620px) { .effects { grid-template-columns: 1fr 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); margin: 0; }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li > * { min-width: 0; margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 560px; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .acc { stroke: var(--accent); fill: none; }
+  figure svg .acc-ink { fill: var(--accent-ink); }
+  figure svg .warn-line { stroke: var(--warn); fill: none; }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 13px; }
+  figure svg .s { font-size: 11.5px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; margin: 8px 0; max-width: 72ch; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 6px; }
+  details p { margin: 0; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · enclosure theory</div>
+    <h1>Fit and radio: parts need space beyond their outlines</h1>
+    <p class="lede">The reading that goes with the cardboard mock-up. “The rectangles fit” is only the start: real parts vary in size, plugs need a path in and out, and the antenna reacts to everything near it, even things it never touches.</p>
+  </header>
+
+  <h2>Where this sits</h2>
+  <div class="road">
+    <div class="done"><div class="n">1–2 · done</div><div class="h">Prototype + cloud</div><p>USB prototype, Wi-Fi, assistant replies</p></div>
+    <div class="done"><div class="n">3 · done</div><div class="h">It speaks</div><p>amplifier, cap 45</p></div>
+    <div class="now"><div class="n">4a · now</div><div class="h">Mock-up + this reading</div><p>why the fit rules exist</p></div>
+    <div><div class="n">4b–4e · next</div><div class="h">Case</div><p>paint test, frame design, brass, wiring</p></div>
+  </div>
+
+  <h2><span class="num">1</span>The antenna includes everything around it</h2>
+  <p>An antenna turns fast-changing current into radio waves, and incoming waves back into current. It is not just the small ceramic chip at the end of A1. The radio, the board's ground copper, the USB cable, your hand and any nearby metal form <strong>one system</strong>.</p>
+  <p>The antenna's field pushes currents around in nearby metal <strong>without any contact</strong>. Those induced currents act back on the antenna:</p>
+  <div class="effects">
+    <div><div class="h">Detune</div><p>the antenna works best at the wrong frequency</p></div>
+    <div><div class="h">Reflect</div><p>signal is shadowed in some directions</p></div>
+    <div><div class="h">Absorb</div><p>energy is lost as heat in the metal</p></div>
+    <div><div class="h">Re-radiate</div><p>the metal becomes an unplanned second antenna</p></div>
+  </div>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 270" role="img" aria-label="Two panels. Left: on the open bench the antenna's field spreads freely. Right: with tape and a metal sheet nearby, tape stops contact but the field still reaches the metal, which carries induced currents and bends the field.">
+        <text x="20" y="24" class="t b">Open bench</text>
+        <text x="380" y="24" class="t b">Taped metal nearby</text>
+        <line x1="360" y1="12" x2="360" y2="258" class="grid"/>
+        <!-- left board -->
+        <rect x="30" y="112" width="140" height="46" rx="3" class="soft"/>
+        <rect x="22" y="124" width="12" height="22" class="box"/>
+        <text x="90" y="139" class="s muted" text-anchor="middle">ground copper</text>
+        <rect x="150" y="122" width="16" height="26" class="cap"/>
+        <text x="100" y="178" class="s">A1 · USB at left</text>
+        <text x="158" y="104" class="s acc-ink b" text-anchor="middle">antenna</text>
+        <path d="M178,110 a30,30 0 0 1 0,50" class="acc" stroke-width="1.6"/>
+        <path d="M196,92 a52,52 0 0 1 0,86" class="acc" stroke-width="1.4"/>
+        <path d="M216,74 a74,74 0 0 1 0,122" class="acc" stroke-width="1.2"/>
+        <path d="M238,56 a96,96 0 0 1 0,158" class="acc dashed" stroke-width="1.1"/>
+        <path d="M262,40 a118,118 0 0 1 0,190" class="acc dashed" stroke-width="1"/>
+        <text x="190" y="246" class="s muted" text-anchor="middle">field spreads out freely</text>
+        <!-- right board -->
+        <rect x="390" y="112" width="140" height="46" rx="3" class="soft"/>
+        <rect x="382" y="124" width="12" height="22" class="box"/>
+        <text x="450" y="139" class="s muted" text-anchor="middle">ground copper</text>
+        <rect x="510" y="122" width="16" height="26" class="cap"/>
+        <text x="518" y="104" class="s acc-ink b" text-anchor="middle">antenna</text>
+        <path d="M538,110 a30,30 0 0 1 0,50" class="acc" stroke-width="1.6"/>
+        <path d="M554,94 a46,46 0 0 1 0,82" class="acc" stroke-width="1.3"/>
+        <!-- tape + metal -->
+        <rect x="586" y="58" width="8" height="154" class="soft"/>
+        <rect x="596" y="58" width="16" height="154" class="warn-fill"/>
+        <text x="590" y="50" class="s muted" text-anchor="middle">tape</text>
+        <text x="618" y="50" class="s warn-ink b" text-anchor="start">metal</text>
+        <path d="M604,80 v26 m-4,-6 l4,6 l4,-6" class="warn-line" stroke-width="1.4"/>
+        <path d="M604,190 v-26 m-4,6 l4,-6 l4,6" class="warn-line" stroke-width="1.4"/>
+        <text x="622" y="134" class="s warn-ink">induced</text>
+        <text x="622" y="149" class="s warn-ink">current</text>
+        <path d="M572,78 q14,57 0,114" class="acc dashed" stroke-width="1.1"/>
+        <text x="500" y="246" class="s muted" text-anchor="middle">field still reaches it; contact never happens</text>
+      </svg>
+    </div>
+    <figcaption><strong>Tape stops a short circuit, not a field.</strong> Insulated metal is just as visible to the radio as bare metal. Conceptual drawing, not a keepout map or a real field plot.</figcaption>
+  </figure>
+
+  <div class="callout warn">
+    <span class="label">Your board already proved this</span>
+    <p>A1's chip antenna sits too close to its own ground copper, so much of the transmitter's output reflects back instead of radiating. Its setup hotspot was invisible at the default 20 dBm and appeared only once the transmit power was capped at 8.5 dBm. A1 has very little radio margin to begin with, so the enclosure must not take any more away.</p>
+  </div>
+
+  <h2><span class="num">2</span>Wavelength gives you scale, not rules</h2>
+  <pre>wavelength = speed of light / frequency
+           = 3.00×10⁸ m/s / 2.45×10⁹ Hz ≈ 0.122 m = 122 mm
+quarter wavelength ≈ 30.6 mm      half wavelength ≈ 61.2 mm</pre>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 230" role="img" aria-label="Drawn to scale at 4 pixels per millimetre: one Wi-Fi wavelength of 122 mm, with quarter and half marks, above the flat mock-up box of about 60 mm and board A1 of 22 mm.">
+        <line x1="40" y1="70" x2="528" y2="70" class="grid"/>
+        <path d="M40,70 C80.7,20 121.3,20 162,70 S243.3,120 284,70 S365.3,20 406,70 S487.3,120 528,70" class="acc" stroke-width="2"/>
+        <line x1="40" y1="16" x2="40" y2="200" class="grid dashed"/>
+        <line x1="162" y1="16" x2="162" y2="200" class="grid dashed"/>
+        <line x1="284" y1="16" x2="284" y2="200" class="grid dashed"/>
+        <line x1="528" y1="16" x2="528" y2="200" class="grid dashed"/>
+        <text x="101" y="14" class="s m" text-anchor="middle">λ/4 ≈ 30.6</text>
+        <text x="223" y="14" class="s m" text-anchor="middle">λ/2 ≈ 61.2</text>
+        <text x="406" y="14" class="s m" text-anchor="middle">λ ≈ 122 mm</text>
+        <rect x="40" y="128" width="240" height="40" rx="3" class="box"/>
+        <text x="160" y="153" class="s" text-anchor="middle">flat box A ≈ 60 mm</text>
+        <rect x="40" y="176" width="88" height="22" rx="2" class="cap"/>
+        <text x="84" y="191" class="s acc-ink b" text-anchor="middle">A1 22</text>
+        <text x="548" y="140" class="s">Everything in the</text>
+        <text x="548" y="156" class="s">device sits within</text>
+        <text x="548" y="172" class="s">half a wavelength:</text>
+        <text x="548" y="188" class="s b">the near field</text>
+      </svg>
+    </div>
+    <figcaption><strong>Drawn to scale (4 px = 1 mm).</strong> The whole pocket device is smaller than half a wavelength, so every part, wire and frame member is in the antenna's near field, where objects couple strongly even when they are not between the antenna and the router.</figcaption>
+  </figure>
+
+  <p>These numbers tell you how big the problem is. They do <strong>not</strong> mean “never use a 30 mm piece of brass.” Whether a piece of metal resonates depends on its shape, width, bends, material, how it couples to the board and what surrounds it, not on its length alone.</p>
+
+  <h2><span class="num">3</span>The 15 mm rule is a starting point</h2>
+  <p>Espressif, who make the ESP32-C3, recommend that a module's antenna stick out past the board it is mounted on. Where it can't, they ask for <strong>at least 15 mm of clearance</strong> around the antenna area with no copper, traces or parts.</p>
+  <p>That is good first-layout guidance for their own antenna design. It does not certify a SuperMini clone, and it does not promise good Wi-Fi beside a brass frame. For the mock-up it turns into three habits:</p>
+  <ul>
+    <li>Put <strong>A1's antenna end against an outside edge</strong>. This is rule 1 on the mock-up page.</li>
+    <li>Keep the speaker wires, the amplifier and the screen's cable away from that end.</li>
+    <li>Leave room to <strong>try more than one antenna position</strong> before anything becomes permanent.</li>
+  </ul>
+
+  <h2><span class="num">4</span>Nominal size isn't the same as clearance</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Word</th><th>Meaning</th></tr>
+      <tr><td><strong>Nominal</strong></td><td>the design size, the number on the drawing</td></tr>
+      <tr><td><strong>Tolerance</strong></td><td>how far a real part may differ from it</td></tr>
+      <tr><td><strong>Clearance</strong></td><td>the space left over; negative means the parts collide</td></tr>
+    </table>
+  </div>
+  <p>Example: an opening of <code>20.2 ± 0.2 mm</code> and a module of <code>20.0 ± 0.15 mm</code>.</p>
+  <pre>nominal clearance    = 20.2 − 20.0                     = +0.20 mm   looks fine
+worst-case clearance = (20.2 − 0.2) − (20.0 + 0.15)    = −0.15 mm   does not fit</pre>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 740 210" role="img" aria-label="Number line from 19.8 to 20.5 millimetres. The module can be 19.85 to 20.15 mm; the opening can be 20.0 to 20.4 mm. Nominal clearance is plus 0.20 mm, but the ranges overlap from 20.0 to 20.15 mm, so the worst case is minus 0.15 mm.">
+        <rect x="210" y="36" width="150" height="110" class="warn-fill" opacity=".55"/>
+        <rect x="60" y="54" width="300" height="24" rx="3" class="cap"/>
+        <text x="50" y="70" class="s b" text-anchor="end">module</text>
+        <line x1="210" y1="50" x2="210" y2="82" class="edge" stroke-width="2"/>
+        <rect x="210" y="104" width="400" height="24" rx="3" class="pass-fill"/>
+        <text x="50" y="120" class="s b" text-anchor="end">opening</text>
+        <line x1="410" y1="100" x2="410" y2="132" class="edge" stroke-width="2"/>
+        <path d="M210,24 H410 M210,19 v10 M410,19 v10" class="pass-line" stroke-width="1.4"/>
+        <text x="420" y="28" class="s pass-ink b">nominal clearance +0.20 mm</text>
+        <line x1="10" y1="160" x2="710" y2="160" class="edge"/>
+        <g class="s m" text-anchor="middle">
+          <line x1="10" y1="160" x2="10" y2="166" class="edge"/><text x="12" y="180">19.8</text>
+          <line x1="110" y1="160" x2="110" y2="166" class="edge"/><text x="110" y="180">19.9</text>
+          <line x1="210" y1="160" x2="210" y2="166" class="edge"/><text x="210" y="180">20.0</text>
+          <line x1="310" y1="160" x2="310" y2="166" class="edge"/><text x="310" y="180">20.1</text>
+          <line x1="410" y1="160" x2="410" y2="166" class="edge"/><text x="410" y="180">20.2</text>
+          <line x1="510" y1="160" x2="510" y2="166" class="edge"/><text x="510" y="180">20.3</text>
+          <line x1="610" y1="160" x2="610" y2="166" class="edge"/><text x="610" y="180">20.4</text>
+          <line x1="710" y1="160" x2="710" y2="166" class="edge"/><text x="706" y="180">20.5</text>
+        </g>
+        <text x="285" y="202" class="s warn-ink b" text-anchor="middle">overlap: worst case −0.15 mm</text>
+        <text x="720" y="202" class="s muted" text-anchor="end">mm · thick ticks = nominal</text>
+      </svg>
+    </div>
+    <figcaption><strong>The nominal drawing fits, the extremes do not.</strong> The shaded band is where a large module meets a small opening. Stacking parts adds more of these ranges together: board thickness, pin headers, tape, the lid. That sum is a <strong>tolerance stack</strong>, and it is why the stacked arrangement B carries more risk than flat arrangement A.</figcaption>
+  </figure>
+
+  <p>This is also why the mock-up includes things that are not board outlines: the <strong>USB plug body and its bend room</strong>, the button's travel, the mic hole and the speaker opening. Most first layouts fail on the USB plug or the antenna, not on whether the boards fit. Your caliper's digits do not tell you a part's tolerance either. Measure the real part, and measure more than once.</p>
+
+  <h2><span class="num">5</span>Radio is noisy, so compare one change at a time</h2>
+  <p>When you later test the brass frame, a single signal-strength reading (RSSI) proves almost nothing. Reflections in a room add and cancel, so moving the board a few centimetres can change the reading by several dB. A useful comparison looks like this:</p>
+  <ol class="steps">
+    <li><p>Fix the board on a non-metal stand. Record the router position, distance, channel, cable route and firmware.</p></li>
+    <li><p>Run several equal-length <strong>baseline</strong> tests with no metal nearby.</p></li>
+    <li><p>Change <strong>one thing</strong>, for example a brass piece at 5, 10, 15 and 30 mm, and repeat the same tests.</p></li>
+    <li><p>Compare the <strong>typical value and spread</strong>, plus dropped packets and reconnects, never just the best reading.</p></li>
+    <li><p>Re-run the baseline at the end. If it moved, the room changed and you need more runs.</p></li>
+  </ol>
+  <p>Write the expectation down first, so the test can prove it wrong: “Moving the antenna from 5 mm to 15 mm away from the nearest brass improves typical RSSI without more dropped packets.” That is a claim you can test. “15 mm guarantees good Wi-Fi” is not.</p>
+
+  <div class="callout">
+    <span class="label">What the paper mock-up can and cannot tell you</span>
+    <p>Cardboard checks <strong>space</strong>: fit, plug reach, openings, wire room. It says nothing about <strong>radio</strong>. Only a test of the real geometry, done as above, can.</p>
+  </div>
+
+  <h2>Check yourself</h2>
+  <details><summary>Tape separates A1 from a metal lid so they can't touch. Will Wi-Fi behave as it did on the open bench?</summary>
+    <p>No. Insulation stops direct contact, not the field. The lid can still detune and shadow the antenna, so only a controlled test with the lid in place answers it.</p></details>
+  <details><summary>Why doesn't a 30.6 mm quarter wavelength make every 30 mm brass bar an antenna?</summary>
+    <p>Resonance also depends on shape, width, bends, material, end effects, coupling, losses and surroundings. Length alone does not decide it.</p></details>
+  <details><summary>What does Espressif's 15 mm recommendation establish, and what doesn't it?</summary>
+    <p>It is the maker's starting layout guidance for its own antenna design. It does not certify a clone board or guarantee performance beside a metal frame.</p></details>
+  <details><summary>Nominal clearance is +0.2 mm. Can the parts still collide?</summary>
+    <p>Yes. If the opening comes out at its smallest and the part at its largest, the worst-case clearance can be negative, as in the example above.</p></details>
+  <details><summary>Name two things to record besides RSSI in a frame test.</summary>
+    <p>Dropped packets or retries, and disconnects with reconnect time. Latency or throughput also work.</p></details>
+
+  <h2>Read more</h2>
+  <ul>
+    <li><strong>Short version:</strong> <code>plan/concepts/14-fit-and-radio.md</code></li>
+    <li><strong>Deep version:</strong> <code>edu/fundamentals/11-rf-emc-antennas-and-metal-frame.md</code>. Read “The manufacturer's placement rule”, “RF performance is statistical” and “Layout hypotheses must be testable” closely. The battery, converter and frame-grounding parts apply to a portable version, which is out of scope for this USB prototype, so skim them.</li>
+    <li><strong>Next:</strong> the tolerance section of <code>edu/fundamentals/12-soldering-mechanics-insulation-tolerance.md</code>, the deeper version of section 4.</li>
+  </ul>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> Built from <code>plan/concepts/14-fit-and-radio.md</code> and <code>edu/fundamentals/11-rf-emc-antennas-and-metal-frame.md</code>. A1's 8.5 dBm transmit-power cap comes from <code>plan/FAST_TRACK_THEORY.md</code> Step 10. The 15 mm guidance is Espressif's <a href="https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32c3/pcb-layout-design.html" target="_blank" rel="noopener">ESP32-C3 PCB layout guidance</a>. Box and board sizes come from the cardboard mock-up page.</p>
+    <p><strong>What is and is not verified.</strong> This is theory. No radio test of any enclosure has been run. The field drawing is conceptual; the wavelength figure is to scale; the tolerance example uses illustrative numbers, not your parts' real tolerances. If this page and the repository differ, the repository wins.</p>
+  </div>
+</div>

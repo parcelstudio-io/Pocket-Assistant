@@ -1,38 +1,63 @@
-# 5 — White, silver, and black finish
+# White, silver, and black finish study
 
-The coherent palette is **satin-white main tube and guards (about 45%)**,
-**bare/satin-silver braces and hardware (about 35%)**, and **black face,
-controls, mesh, and boards (about 20%)**. White OLED pixels tie the face back
-to the structure. The finish must follow electrical/mechanical work, not hide
-defects.
+> **Status: provisional visual direction.** This is not a paint recipe,
+> purchase list, or release to coat the final frame.
 
-## Per-component treatment after dry-fit
+The intended palette is satin white for the dominant silhouette, silver for
+small structural accents, and black for the display field, controls, and
+acoustic details. Functional requirements take priority over the palette.
 
-| Part | Preferred native color | Safe treatment | Never coat/cover |
-| --- | --- | --- | --- |
-| 1.5 mm brass main tube | White | Fabricate and solder completely; clean/degrease; scuff; metal etch primer; thin satin-white coats. Test the complete system on scrap | Adhesive seats unless qualified for paint; clearance-critical surfaces |
-| 1.0 mm nickel-silver braces | Silver | Leave bare and polish gently; if brass fallback is used, prime/paint satin silver after all soldering | Solder joints before fabrication is complete |
-| OLED | White pixels, black PCB | Thin white PETG/ABS bezel; black removable edge tape/sleeve behind bezel | Glass, flex cable, components, connector, active pixels |
-| ESP32-C3 | Black PCB | Leave native; hide wiring behind black nonconductive guard | Ceramic antenna and its keepout, USB, BOOT/RESET, LEDs needed for debug, pads |
-| INMP441 | Black PCB | Black edge sleeve or guard; place behind a small black acoustic opening | Microphone port on either board face |
-| MAX98357A/regulator/charger | Black if available | Removable black guard or loose sleeve with ventilation and labeled test access | ICs that dissipate heat, adjustment/configuration pads, USB, charger LEDs |
-| Speaker | Silver/black native | Black acoustic cloth and a thin white/silver perimeter retainer | Diaphragm, sound port, moving surround |
-| Protected 16340 + holder | Hidden | White fish-paper/polycarbonate holder guard and a black removable cell door | Cell wrapper, terminals, protection end, polarity marks, labels needed for inspection |
-| Wires | Black secondary; white for regulated rail if labeled | Route in straight bundles; add tiny printed heat-shrink labels at ends | Do not rely on color alone for polarity |
-| Switch/button | Black | Leave black actuator visible in a silver/white opening | Contacts, moving gap |
+Read [Lesson 11](fundamentals/11-rf-emc-antennas-and-metal-frame.md) and
+[Lesson 12](fundamentals/12-soldering-mechanics-insulation-tolerance.md) before
+developing a finish. Current hardware and release status remain in the
+[material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md).
 
-## Best finish sequence
+## Functional boundaries
 
-1. Build and solder only the empty brass structure.
-2. Dry-fit exact-size dummy modules, correct collisions, and deburr.
-3. Clean all flux according to its data sheet; degrease without contaminating future joints.
-4. Try the complete primer/paint/clear system on scrap brass. Bend and scratch-test after full cure.
-5. Mask all planned glue/insulation seats and apply multiple thin coats outdoors/in a suitable spray area.
-6. Let the coating fully cure—not merely feel dry.
-7. Install nonconductive guards, then electronics; insert the removable protected cell last.
+| Area | Requirement |
+| --- | --- |
+| Conductive frame | Treat as conductive after finishing; isolate it from every net |
+| Guards and bezels | Prefer identified nonconductive material; preserve retention and service access |
+| Display and controls | Keep active area, labels, controls, indicators, and recovery access clear |
+| Microphone and speaker | Do not coat ports, diaphragms, surrounds, or required acoustic volume |
+| Antenna region | Keep the tested antenna space and repeat RF comparisons after finishing |
+| Connectors and test points | Mask contacts and preserve insertion, probe, and removal paths |
+| Cell area | No coating or adhesive on a cell, wrapper, contacts, or inspection/removal path |
+| Thermal surfaces | Do not cover a heat path without repeat temperature evidence |
 
-Bare nickel-silver rod gives the cleanest small silver accent. If it is unavailable, satin-silver paint on the empty brass fallback is predictable. Hand-tinning a large visible member is hard to make uniform and adds heat/flux; nickel/chrome electroplating is a specialist alternative completed before electronics.
+Paint is decoration and surface treatment, not electrical insulation. Design
+clearance and solid barriers independently:
 
-## RF and heat cautions
+```text
+ clearance
+ coated metal edge █████│<── measured air gap ──>│ live pad
 
-Avoid conductive paint, metallic foil, metal-filled putty, or a closed metal cover near the ESP32 antenna. Ordinary satin-silver paint may contain metallic pigment; keep it out of the antenna keepout and validate Wi-Fi range with the finished frame. Do not wrap the regulator/amplifier tightly in heat-shrink. Use a removable black guard with air space instead.
+ insulated pass-through
+ outside      conductive frame wall       inside
+ cable ─────[ qualified bushing ]──────── cable
+                  █████████
+```
+
+The coating is ignored when making an electrical-safety claim. A bushing,
+carrier, guard, spacing feature, or other separately qualified barrier must
+provide the protection.
+
+## Development sequence
+
+1. Identify the exact substrate, joining residues, candidate finish, and every
+   area that must remain bare. Follow the manufacturers' current technical and
+   safety data.
+2. Apply the full process to representative offcuts, keeping an untreated
+   control. Record preparation, batch, film, environment, and full cure.
+3. Test adhesion, scratching, bending near joints, cleaning compatibility, and
+   coating thickness. Qualify adhesives separately on the exact surface.
+4. Repeat the mechanical dry fit with coating thickness included.
+5. Finish only the empty structure, with electronics and stored-energy devices
+   outside the work area.
+6. After assembly, repeat isolation, RF, thermal, acoustic, mechanical, and
+   service-access comparisons against the unfinished baseline.
+
+Stop if the finish cracks, softens, traps residue, changes fit, blocks access,
+degrades radio/audio/thermal results, or obscures a required marking. Until
+coupon work and all applicable comparisons pass, the palette remains a visual
+study only.

@@ -1,12 +1,14 @@
 {
-  "schema_version": 1,
-  "verified_on": "2026-09-01",
+  "schema_version": 2,
+  "recorded_at_utc": "2026-09-07T19:50:46.996611+00:00",
+  "build_mode": "diagnostics",
+  "amplifier_enabled": false,
   "artifact": {
     "filename": "pocket-wall-e-c3-v2.4.0-idf-v6.0.2.bin",
     "build_path": "merged-binary.bin",
     "flash_offset": "0x0",
     "size_bytes": 3541630,
-    "sha256": "33c5d930d2ee013e7ab71fe7773a716e9ec1d0e74d76d7bd77c1d33b40c2c66a"
+    "sha256": "4b674d3be1e4350d79a379015c8ae611d1a1dfd2536fd99d20cf17a8682adfd9"
   },
   "target": {
     "chip": "esp32c3",
@@ -21,35 +23,34 @@
     "esp_idf_ref": "v6.0.2",
     "esp_idf_commit": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
     "dependencies_lock_sha256": "e264f3553b30d782aa111245ba77e02c62b4ab68b8fb7dbc4a3c4bbc2d7c54ad",
-    "effective_sdkconfig_sha256": "c47fd90537b79abcfa28dca42935c67faa6f57973f6c5d5762135bc2ee8f57af"
+    "effective_sdkconfig_sha256": "cbff5aac319e4e8fab5daa8959b60949e976c90250987940a831bc87b082f1fc"
   },
   "local_inputs": {
     "dependencies.lock": "e264f3553b30d782aa111245ba77e02c62b4ab68b8fb7dbc4a3c4bbc2d7c54ad",
     "partitions/pocket-ai-4m.csv": "d21e68f5e7e1994a371cc404dd8d5ec4ffd7e30e8beafba35e7c54385eaefc96",
-    "patches/xiaozhi-v2.4.0-pocket-wall-e-c3.patch": "9eea864003811edf66b987fb09f5c44716efe64f3d0f61446e5970f030e5359a",
-    "sdkconfig.defaults": "f7a3b672ba8d73cbb1d5238110ff06944fdc95acf8030d784d8242c847c424ba",
-    "src/boards/pocket-wall-e-c3/config.h": "cb52e8fded37903cc250137b8a2ed3f1e981d2137da71da6c91209810c46e33d",
+    "patches/xiaozhi-v2.4.0-pocket-wall-e-c3.patch": "dab593fba0cc72628df57ba3b117d284483a530607b9144454770052c0c1d8d3",
+    "scripts/build.sh": "03c52e3cd159c69472ec3e11451876c50a0c2b6166dd80340c2141733cdbaa29",
+    "scripts/prepare.sh": "b7e377eadc50feb34e84cbdc48fe5b28c84c049710766a898615d4522003b444",
+    "scripts/record_source_build.py": "869668e966b976e87670daff0406adf871701994e1b28271bd0bf8d083326977",
+    "scripts/verify_source_build.py": "f227f37ce7ce38072a14c7bdc6ede2100422304c25c79545bce96227f3419850",
+    "sdkconfig.defaults": "832e5ee276449f01300e09cbdffd9212c787a03f34ceb6211dc934a9f499f43a",
+    "src/boards/pocket-wall-e-c3/config.h": "8e9c1f306235805b76c4c74dc8fdeb33f589fa343b685cb18db942f8856626f8",
     "src/boards/pocket-wall-e-c3/config.json": "133c62812a2cd413d38dc12328de99945b905388f7e5519fd80829f3427261e8",
-    "src/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc": "f2a397e62733dbe6884c95a8cef923baac267e545cde5784e29bdbbfff59eba7",
+    "src/boards/pocket-wall-e-c3/pocket_wall_e_c3.cc": "c7991ffc9dc55f14e34b5c3490713a8fd46bc9b99a1154cc9be047182bdc8238",
     "versions.env": "478c0631ef03e7a21eb96b8698606cd030f0564d3c7ad78da68f645b819cf377"
   },
   "toolchain": {
-    "riscv32_esp_elf_gcc": "esp-15.2.0_20251204 / GCC 15.2.0",
-    "cmake": "4.0.3",
+    "riscv32_esp_elf_gcc": "riscv32-esp-elf-gcc (crosstool-NG esp-15.2.0_20251204) 15.2.0",
+    "cmake": "cmake version 4.0.3",
     "ninja": "1.12.1",
     "python": "3.14.4",
-    "idf_component_manager": "3.1.0",
-    "esptool": "5.3.1"
-  },
-  "application": {
-    "partition_size_bytes": 3080192,
-    "image_size_bytes": 2246192,
-    "free_bytes": 834000
+    "idf_component_manager": "3.1.2",
+    "esptool": "5.4.0"
   },
   "validation": {
     "clean_builds_compared": 2,
     "outputs_identical": true,
     "hardware_tested": false
   },
-  "note": "English-user finalization on the corrected-hardware source build: wake word wn9s_hiesp ('Hi, ESP') replaces the vendor image's Mandarin wn9s_nihaoxiaozhi (verified: generated_assets.bin contains hiesp x1, nihaoxiaozhi x0), display/prompts/portal set to en-US (CONFIG_LANGUAGE_EN_US). Retains 16 kHz duplex audio, mic on GPIO4, SSD1306 probe 0x3C->0x3D with headless fallback. Wiring built for the pinned vendor image instead requires mic SD on GPIO8, a 0x3C display, and answers to 'ni hao xiao zhi'. Artifact intentionally ignored; rebuild locally."
+  "note": "Reference for the offline USB diagnostic prototype. Two clean diagnostics builds on this host produced identical merged images; assistant mode also compiled and verified separately. Both supported modes keep the amplifier disabled. Host regression tests and flash dry-runs passed. No device was flashed and hardware, speaker output, cloud conversation, battery operation, and enclosure fit remain untested. Future local builds write their own truthful dist/source-build.json record."
 }

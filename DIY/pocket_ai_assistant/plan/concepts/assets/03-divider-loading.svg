@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+  <title id="title">Why a loaded voltage divider changes voltage</title>
+  <desc id="desc">On the left, a 3.3 volt divider with two 10 kilohm resistors produces 1.65 volts. On the right, a 10 kilohm load connects from the output to ground, in parallel with the lower resistor. The lower equivalent resistance is 5 kilohms and the output is 1.10 volts.</desc>
+  <rect width="800" height="420" rx="12" fill="white"/>
+  <g font-family="Arial, sans-serif" fill="#172b4d" font-size="19">
+    <text x="27" y="33" font-size="23" font-weight="bold">No significant load</text><text x="423" y="33" font-size="23" font-weight="bold">Add a load to GND</text>
+    <path d="M400 50V387" stroke="#d8e2ec"/>
+    <g fill="none" stroke="#172b4d" stroke-width="3"><path d="M146 82V108M146 160V232M146 284V320M146 193H301"/><rect x="126" y="108" width="40" height="52"/><rect x="126" y="232" width="40" height="52"/>
+      <path d="M538 82V108M538 160V232M538 284V320H733V284M538 193H733V232"/><rect x="518" y="108" width="40" height="52"/><rect x="518" y="232" width="40" height="52"/><rect x="713" y="232" width="40" height="52" stroke="#087f8c"/>
+    </g>
+    <g fill="#172b4d"><circle cx="146" cy="82" r="4"/><circle cx="538" cy="82" r="4"/><circle cx="146" cy="193" r="5"/><circle cx="538" cy="193" r="5"/><circle cx="538" cy="320" r="5"/><circle cx="146" cy="320" r="5"/></g>
+    <text x="91" y="70">Vin = 3.3 V</text><text x="483" y="70">Vin = 3.3 V</text>
+    <text x="177" y="141">R1: 10 kΩ</text><text x="570" y="141">R1: 10 kΩ</text>
+    <text x="28" y="254">R2</text><text x="28" y="281">10 kΩ</text>
+    <text x="433" y="254">R2</text><text x="433" y="281">10 kΩ</text>
+    <text x="602" y="254" fill="#087f8c">Load</text><text x="602" y="281" fill="#087f8c">10 kΩ</text>
+    <text x="182" y="181" fill="#1463ad">Vout = 1.65 V</text><text x="560" y="181" fill="#1463ad">Vout = 1.10 V</text>
+    <text x="83" y="347">GND = 0 V</text><text x="482" y="347">GND = 0 V</text>
+    <text x="27" y="381">Lower resistance = 10 kΩ</text><text x="423" y="381">Lower resistance = 10 kΩ ∥ 10 kΩ = 5 kΩ</text>
+    <text x="27" y="410" font-size="18">Vout is measured relative to GND. The source connects between Vin and GND (not drawn).</text>
+  </g>
+</svg>

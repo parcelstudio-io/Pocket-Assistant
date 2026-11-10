@@ -1,13 +1,42 @@
 # Pocket AI Assistant
 
+**First version complete, 2026-11-10,** at the builder's word. The build, battery attached, held its first spoken conversation on 2026-11-09; the character calls itself Nova. A silver rebuild in nickel silver or sterling would be the second version.
+
 This repository turns the [Huy Vector Pocket AI Assistant](https://www.huyvector.org/robots-kinetic/pocket-ai-assistant) reference build into a reviewable project with a pinned vendor image, safe host-side flashing tools, a source-buildable Xiaozhi board port, an audited bill of materials, and an assembly/test checklist.
+
+## Start here: one small step at a time
+
+Follow the [action-only fast track](plan/FAST_TRACK.md). It tells you exactly
+what to take out, what to connect, what command to run, and what result counts
+as a pass. Do one numbered step at a time; do not unpack the whole project.
+
+The first physical step needs one controller and a proven USB data cable. The
+controller order is recorded, but the planned cable purchase is not confirmed;
+the guide links the recorded candidate and shows how to test any cable you
+already own. It then adds the button, OLED, and microphone one at a time. The
+default source build is an **offline bench test**: it reports microphone levels
+over USB and tests the OLED without Wi-Fi, a cloud account, an amplifier, or a
+battery.
+
+Leave the battery, charger, external regulators, amplifier, and metal case off
+this first prototype. OLED/microphone power comes only from the controller's
+3.3 V output. Never connect an external power source to that rail while USB is
+connected.
+
+The [technical USB quickstart](docs/PROTOTYPE_QUICKSTART.md) remains the compact
+reference for experienced builders and troubleshooting. Engineering
+explanations moved out of the action guide into the
+[fast-track theory companion](plan/FAST_TRACK_THEORY.md). The
+[15-session daily plan](plan/DAILY_STUDY_AND_LAB_PLAN.md) is the deep track —
+full measurement labs, evidence discipline, and per-day material prep lists —
+worth returning to before any future battery, audio-power, or enclosure work.
 
 ## Choose a firmware path
 
 | Path | Use it when | What is reproducible |
 | --- | --- | --- |
-| Pinned vendor image | You want the creator's published behavior and face assets | The downloaded bytes are checked against a pinned size and SHA-256 before flashing |
-| Source build | You want editable firmware, auditable pins, or a different backend | The upstream Xiaozhi release, ESP-IDF SDK, board overlay, partition map, and build steps are pinned |
+| Corrected source — recommended | Offline prototype tests first; assistant mode later | Pinned upstream/SDK, checked overlay, and a manifest of the actual local build |
+| Pinned vendor image — historical | Investigating the creator's published behavior and face assets | Download integrity only; its GPIO8 microphone and 24 kHz audio are not the corrected prototype contract |
 
 These paths are deliberately separate. The creator published only a merged binary, not the custom `pocket-wall-e-c3` source or face assets. Inspection identifies it as a private Xiaozhi `2.4.0` build made with `ESP-IDF v5.5.2-dirty`. The editable port in [`firmware/`](firmware/) reconstructs the board against public [Xiaozhi v2.4.0](https://github.com/78/xiaozhi-esp32/releases/tag/v2.4.0) and its supported ESP-IDF v6.0.2 toolchain; it is not claimed to be byte-identical.
 
@@ -16,14 +45,18 @@ These paths are deliberately separate. The creator published only a merged binar
 ```text
 .
 ├── docs/
-│   ├── BUILD_GUIDE.md            video-correlated white/silver Rev A procedure
-│   ├── BOM.md                    legacy alternatives and tool audit
-│   └── WIRING_AND_ASSEMBLY.md    legacy/vendor-image wiring reference
+│   ├── FINAL_MATERIALS_FOR_REVIEW.md  current Phase 0 purchase authority
+│   ├── CLAUDE_R1_BUILD_PROPOSAL.md    archived compact-build proposal
+│   ├── MATERIALS.md              archived R1 order sheet; do not order from it
+│   ├── BUILD_GUIDE.md            video correlation; final assembly is held
+│   ├── WIRING_AND_ASSEMBLY.md    archived R1 power wiring; not build authority
+│   └── BOM.md                    historical creator-page ↔ R1 reconciliation
 ├── edu/
-│   ├── README.md                 course index and evidence boundary
-│   ├── 02_COMPONENTS_*.md        historical spec baseline (the purchasing list is docs/MATERIALS.md)
-│   ├── 03_HOW_IT_WORKS.md        corrected source-build wiring contract
-│   └── 04–06_*.md                assembly, finish, and acceptance checks
+│   ├── README.md                 course index and source-of-truth map
+│   ├── STUDY_PLAN.md             battery-free fifteen-session curriculum
+│   ├── 01-how-it-fits-together.md applied system and signal overview
+│   ├── 05_COLOR_AND_FINISH.md    provisional finish study
+│   └── fundamentals/             durable electronics lessons and references
 ├── firmware/
 │   ├── src/                      editable pocket-wall-e-c3 board overlay
 │   ├── scripts/                  prepare, build, and source-flash helpers
@@ -32,8 +65,11 @@ These paths are deliberately separate. The creator published only a merged binar
 ├── simulation/
 │   ├── diagram.json              partial ESP32-C3/OLED/button Wokwi fixture
 │   └── README.md                 simulation limits and lint command
+├── plan/
+│   ├── FAST_TRACK.md             action-only beginner build guide
+│   └── FAST_TRACK_THEORY.md      optional theory mapped to each build step
 └── tools/
-    ├── netcheck.py               firmware/net/power-rule contract checker
+    ├── netcheck.py               static checker; legacy power model withdrawn
     ├── pocket_ai_device.py       vendor-image fetch/verify/flash/monitor CLI
     ├── vendor-firmware.json      artifact provenance and integrity metadata
     └── tests/                    host-tool unit tests
@@ -43,25 +79,38 @@ A [partial Wokwi fixture](simulation/README.md) checks the corrected OLED and
 GPIO10 button diagram. It intentionally does not model the power or audio
 hardware.
 
-**Buy only from [docs/MATERIALS.md](docs/MATERIALS.md) — the purchasing
-list.** Then start with the [build course](edu/README.md) and the [Rev A
-wiring contract](edu/03_HOW_IT_WORKS.md); the
-[purchase-readiness review](docs/PURCHASE_READINESS.md) is superseded (see its
-banner). `docs/WIRING_AND_ASSEMBLY.md` is a
-legacy/vendor-image reference, not the Rev A build path. The educational
-course contains the corrected purchasing baseline, component explanations,
-finish plan, video-correlated assembly sequence, and physical acceptance
-tests. These guides intentionally change the video's battery construction:
-do **not** strip a lithium cell, solder to its can, or use an undocumented 1 A
-charger.
+Software setup can start without a new purchase. The first physical boot needs
+a proven data cable, and a fully bare controller/OLED/microphone set needs 26
+header pins; check the fast track before ordering or soldering anything. For a
+**later battery-powered assembly**,
+[docs/FINAL_MATERIALS_FOR_REVIEW.md](docs/FINAL_MATERIALS_FOR_REVIEW.md)
+records the proposed F0 hardware and its unresolved tests; it is not a prerequisite
+shopping list for the USB prototype. Do not connect the cell, cut brass, assemble
+that power chain, or pocket-carry it without completing the relevant tests.
+The former complete-cart decision is retained
+unchanged in [docs/CLAUDE_R1_BUILD_PROPOSAL.md](docs/CLAUDE_R1_BUILD_PROPOSAL.md)
+for review; [docs/MATERIALS.md](docs/MATERIALS.md),
+[docs/BUILD_GUIDE.md](docs/BUILD_GUIDE.md), and
+[docs/WIRING_AND_ASSEMBLY.md](docs/WIRING_AND_ASSEMBLY.md) describe that
+superseded R1 candidate and are not purchasing or assembly authority.
 
-## Flash the exact published image
+Use the [electronics course](edu/README.md) as a reference when a step introduces
+a new concept, not an entrance exam. Regardless of revision,
+do **not** strip a lithium cell, solder to its can, use the brass frame as a
+conductor, or charge an undocumented cell.
 
-For Phase 0, flash a bare SuperMini with its external 3.3 V/peripheral harness
-disconnected. Removing the cell alone does not isolate USB-driven 3.3 V from
-the regulator output and peripherals. Generic SuperMini clones also have
-varying VBUS/`5V` arrangements; do not connect USB to an assembled harness
-until the service-isolation design in the purchase-readiness review is closed.
+## Historical vendor-image workflow
+
+Skip this section for the beginner prototype. Use the corrected source below;
+a matching vendor checksum does not establish compatible microphone wiring or
+MAX98357A audio timing.
+
+For Phase 0, flash a bare SuperMini. An assembled service design is not yet
+released. Until the proposed supply and I2S/control isolation pass every
+source-state test, **unplug the pack and detach the external power and
+amplifier-signal harnesses before connecting the SuperMini USB-C**, and never
+connect both USB-C ports. Generic SuperMini clones have varying VBUS/`5V`
+arrangements, so the final solution cannot rely on an assumed clone diode.
 
 ```bash
 python3 -m venv .venv
@@ -85,12 +134,17 @@ Replace `/dev/ttyACM0` with the explicit port reported on your machine. The imag
 The source workflow fetches the pinned upstream repository into an ignored working directory, applies the local board files, checks the upstream commit, and builds with ESP-IDF v6.0.2:
 
 ```bash
-cd firmware
-./scripts/prepare.sh
-./scripts/build.sh
+firmware/scripts/setup.sh
+. firmware/.work/esp-idf/export.sh
+firmware/scripts/build.sh
 ```
 
-Read [`firmware/README.md`](firmware/README.md) before using the source-flash helper. It records the expected toolchain, generated output, pin assignments, and the differences from the opaque vendor image.
+Setup is needed once; activate `export.sh` again in each new terminal.
+`build.sh` defaults to offline diagnostics. Use `build.sh --assistant` only
+after those tests pass and you are ready to configure the third-party service.
+Read [`firmware/README.md`](firmware/README.md) before using the source-flash helper.
+It records the expected toolchain, generated output, pin assignments, and the
+differences from the opaque vendor image.
 
 ## Hardware contract
 
@@ -98,16 +152,29 @@ Read [`firmware/README.md`](firmware/README.md) before using the source-flash he
 | --- | --- | ---: |
 | OLED I2C | SDA / SCL | 21 / 20 |
 | Shared I2S clocks | WS / BCLK | 1 / 2 |
-| Microphone input | INMP441 SD | 4 |
+| Microphone input | I2S microphone data (#6049 ICS-43434 Phase 0 primary; INMP441 alternate) | 4 |
 | Amplifier output | MAX98357A DIN | 3 |
 | Optional external action button | active-low button | 10 |
 
-The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at address `0x3c` or `0x3d`, uses 16 kHz duplex audio, and puts INMP441 `SD` on GPIO4 with `L/R` grounded. The pinned creator binary instead requires `SD` on GPIO8 and OLED address `0x3c`. The amplifier is a MAX98357A; both audio modules share `WS` and `BCLK`. GPIO10 is the active-low application input, while the SuperMini's ROM BOOT button remains GPIO9.
+The corrected source build accepts a 0.96-inch 128×64 SSD1306 I2C module at address `0x3c` or `0x3d`, uses 16 kHz duplex audio, and puts the I2S microphone's data output on GPIO4 with its left-slot select grounded. The Phase 0 primary is the controlled Adafruit #6049 ICS-43434 (`SEL` → GND); INMP441 (`L/R` → GND) remains an alternate after its carrier pinout is checked. The pinned creator binary instead requires microphone data on GPIO8 and OLED address `0x3c`. Both audio modules share `WS` and `BCLK`. GPIO10 is the active-low application input, while the SuperMini's ROM BOOT button remains GPIO9.
 
 ## What has and has not been verified
 
 - The published binary's size, digest, merged-image markers, chip target, application metadata, and partition offsets were inspected and pinned.
 - The host CLI has unit tests and refuses an unverified image or implicit serial-port target.
-- The source overlay compiled successfully twice from clean, pinned inputs on the validation host; both merged images were identical. The size, digest, SDK/source commits, local-input hashes, effective configuration, and observed tool versions are recorded in [`firmware/source-build.json`](firmware/source-build.json).
-- No physical ESP32-C3 or assembled battery circuit was connected in this workspace. Final validation therefore requires the staged continuity, current-limited power, audio, display, Wi-Fi, and charging checks in the assembly guide.
-# Pocket-Assistant
+- Each successful source build records its exact inputs, effective configuration,
+  mode, and output digest in ignored `firmware/dist/source-build.json`. The
+  [checked-in reference record](firmware/source-build.json) describes one specific
+  build; neither a checksum nor successful compilation proves hardware operation.
+- The USB prototype was built and established `PASS 9` on 2026-09-20: two cold
+  starts without a reset loop, every button press logged, the OLED starting and
+  toggling, and speech microphone RMS roughly 4x the quiet floor with
+  `read_errors=0`. That is a bench result recorded by the builder, not an
+  automated one: no assembled battery circuit has been connected, the amplifier
+  stays disabled, and `firmware/source-build.json` still records
+  `hardware_tested: false` because that flag describes what the build workflow
+  verified, which remains nothing physical.
+- On 2026-09-21 the builder provisioned board `A1` onto Wi-Fi under the 8.5 dBm
+  transmit-power cap and received one remote response from the Xiaozhi backend
+  (`PASS 10C`). That is also a builder-reported bench result. The amplifier
+  stays disabled, so there is still no spoken output. Follow [Lesson 13's staged integration method](edu/fundamentals/13-debugging-integration-and-capstone.md), keep a separate [lab record](edu/fundamentals/reference/lab-record-template.md) for each article, and use the [current F0 promotion gates](docs/FINAL_MATERIALS_FOR_REVIEW.md#promotion-gates-before-claude-may-say-final-go) before any cell connection or pocket carry.

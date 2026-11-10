@@ -1,0 +1,361 @@
+<title>Why the Brass Build Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --w-red: #D1293D; --w-black: #2A2F35; --w-yellow: #D99A00; --w-green: #23914A; --w-blue: #2C6BD4; --w-white: #8E99A4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; } }
+  :root[data-theme="dark"] { --w-red: #FF6170; --w-black: #C4CBD2; --w-yellow: #F5C24A; --w-green: #5BD48A; --w-blue: #6FA3FF; --w-white: #EEF2F5; }
+  .sw { display: inline-block; width: 22px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+
+  /* Pocket AI reading page: ten short chapters, one diagram each, a software analogy per chapter. */
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --brass: #A07A1C; --brass-tint: #F6ECD2;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --brass: #E2B84E; --brass-tint: #2C2412;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --brass: #E2B84E; --brass-tint: #2C2412;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 820px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 48px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  h2 .when { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: .75em; margin-right: 8px; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; }
+  .road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+  .road > div { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .road > div.done { border-top-color: var(--pass); }
+  .road > div.now { border-top-color: var(--brass); background: var(--brass-tint); }
+  .road .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .road .h { font-weight: 700; margin-top: 2px; }
+  .road p { margin: 4px 0 0; max-width: none; color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) { .road { grid-template-columns: 1fr 1fr; } }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--accent-ink); }
+  .callout.warn .label { color: var(--warn); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; margin: 0 0 12px; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); margin: 0; }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps > li > * { min-width: 0; margin: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 18px 0 22px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; min-width: 600px; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .t { font-size: 13px; }
+  figure svg .s { font-size: 11.5px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .acc-ink { fill: var(--accent-ink); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .brass-ink { fill: var(--brass); }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .grid { stroke: var(--line); stroke-width: 1; fill: none; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .tube { stroke: var(--brass); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  figure svg .brass-fill { fill: var(--brass-tint); stroke: var(--brass); stroke-width: 1.4; }
+  figure svg .brass-solid { fill: var(--brass); }
+  figure svg .acc { stroke: var(--accent); fill: none; }
+  figure svg .acc-fill { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.4; }
+  figure svg .warn-line { stroke: var(--warn); fill: none; }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-line { stroke: var(--pass); fill: none; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .ink-fill { fill: currentColor; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  .stock { display: inline-block; font-size: 14px; background: var(--brass-tint); border: 1px solid var(--brass); border-radius: 6px; padding: 6px 10px; margin: 0 0 12px; max-width: 72ch; }
+  .stock strong { color: var(--brass); letter-spacing: .04em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  figure svg .solder { fill: var(--muted); }
+  .stage { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--brass); font-weight: 500; display: block; margin-bottom: 2px; }
+  .ch { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--brass); display: block; margin-bottom: 4px; }
+  .analogy { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 10px 14px; margin: 14px 0; max-width: 72ch; border-radius: 0 6px 6px 0; font-size: 14.5px; }
+  .analogy b { color: var(--accent-ink); }
+  .why { border-left: 3px solid var(--brass); background: var(--brass-tint); padding: 10px 14px; margin: 14px 0 28px; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .why .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--brass); }
+  .why ul { margin: 0; }
+  .toc { columns: 2; column-gap: 24px; max-width: 72ch; padding-left: 1.2em; font-size: 14.5px; }
+  @media (max-width: 560px) { .toc { columns: 1; } }
+  figure svg .wave { fill: none; stroke: currentColor; stroke-width: 2; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · reading for the brass wiring</div>
+    <h1>Why the brass build works</h1>
+    <p class="lede">Ten short chapters on the physics and engineering behind the rules in the Brass Wiring page: why two rails, why a resistor here and a capacitor there, why one corner stays empty, why two irons' worth of temperature. Written for a software engineer; each chapter has one picture and one analogy. About forty minutes, no bench needed.</p>
+  </header>
+
+  <h2>Chapters</h2>
+  <ol class="toc"><li><a href="#ch1">Everything is a loop</a></li><li><a href="#ch2">Volts, amps, ohms</a></li><li><a href="#ch3">Two voltages, one source</a></li><li><a href="#ch4">Pulls and defaults</a></li><li><a href="#ch5">Capacitors: the local cache</a></li><li><a href="#ch6">I²C: the slow bus</a></li><li><a href="#ch7">I²S: the fast bus, and frequency</a></li><li><a href="#ch8">The amplifier and the speaker</a></li><li><a href="#ch9">The antenna and the near field</a></li><li><a href="#ch10">Heat, solder and flux</a></li></ol>
+  <p>Every chapter ends with the rules it explains, so you can read it either way: concept first, or start from a rule you were wondering about.</p>
+  
+  <h2 id="ch1"><span class="ch">Chapter 1 of 10</span>Everything is a loop</h2>
+  <div class="analogy"><b>Analogy:</b> every call needs a return. A wire with no ground path is a function that never returns: nothing happens, and nothing tells you why.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 260" role="img" aria-label="A1 on the left, the screen on the right. Current leaves A1's 3V3 pin, flows through the screen, and returns to A1's GND pin. The outward path and the return path together make one closed loop. A second loop, the signal SDA, also returns through the same ground.">
+        <rect x="40" y="80" width="150" height="120" rx="8" class="box"/><text class="t b" x="115" y="130" text-anchor="middle">A1</text>
+ <rect x="530" y="80" width="150" height="120" rx="8" class="acc-fill"/><text class="t b acc-ink" x="605" y="130" text-anchor="middle">screen</text>
+ <path d="M190,105 H530" stroke="var(--w-red)" stroke-width="4"/><text class="s b" x="360" y="96" text-anchor="middle" fill="var(--w-red)">3V3 out</text>
+ <path d="M530,175 H190" stroke="var(--w-black)" stroke-width="4"/><text class="s b" x="360" y="196" text-anchor="middle" fill="var(--w-black)">GND back: the return</text>
+ <path d="M300,105 l-10,-7 v14 z M420,175 l10,-7 v14 z" class="ink-fill"/>
+ <path d="M190,140 H530" stroke="var(--w-blue)" stroke-width="2.5"/><text class="s" x="360" y="134" text-anchor="middle">SDA (a signal): its current also comes back on GND</text>
+ <text class="s muted" x="40" y="240">No return path, no current, no signal. Every wire in the device is half of a loop whose other half is the ground rail.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Electricity only moves in closed loops.</strong> That is the whole reason the device has one ground rail that every module touches: it is the shared return half of every loop, power and signal alike.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>one GND rail that every module taps</li><li>the thick ground rod for the amp: the biggest return current gets its own path</li><li>the meter check after each rod: a rail touching the frame makes the frame part of a loop</li></ul></div>
+  <h2 id="ch2"><span class="ch">Chapter 2 of 10</span>Volts, amps, ohms</h2>
+  <div class="analogy"><b>Analogy:</b> voltage is pressure, current is flow, resistance is pipe width. The rods are wide pipes; the resistors are deliberate pinholes.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 260" role="img" aria-label="Bar chart comparing resistance of 40 millimetres of conductor: 1 millimetre brass rod about 3 milliohms, 30 gauge copper wire about 14 milliohms, a 10 kilohm resistor off the chart at ten million milliohms. Below: with 0.3 amps flowing, the rod drops 1 millivolt and the wire 4 millivolts.">
+        <text class="t b" x="40" y="26">Resistance of a 40 mm run</text>
+ <rect x="60" y="60" width="14" height="24" class="brass-solid"/><text class="s" x="84" y="77">1 mm brass rod: ≈ 3 mΩ</text>
+ <rect x="60" y="100" width="62" height="24" fill="var(--w-red)"/><text class="s" x="132" y="117">30 AWG copper wire: ≈ 14 mΩ</text>
+ <rect x="60" y="140" width="640" height="24" class="warn-fill"/><text class="s warn-ink b" x="380" y="157" text-anchor="middle">a 10 kΩ resistor: 10 000 000 mΩ (bar cut off: it would be 50 km long at this scale)</text>
+ <text class="s" x="40" y="205">V = I × R. With A1's Wi-Fi bursts of about 0.3 A:   rod drop 0.3 × 0.003 ≈ 1 mV   ·   wire drop ≈ 4 mV   ·   either is nothing next to 3.3 V.</text>
+ <text class="s muted" x="40" y="235">The brass rod is a better conductor than the wire it replaces. The only thing that makes a rod worse than a wire is that it is bare.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Ohm's law, V = I × R, with this device's real numbers.</strong> Conductors are near zero, resistors are deliberately huge, and the drop across a rod is a thousandth of a volt. Rods are not a compromise electrically; they only need to be kept apart.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>bare rod is an excellent conductor; the spacing rules are the whole cost</li><li>resistor values are chosen for how much current they <em>leak</em> (V/R), not for the signal</li></ul></div>
+  <h2 id="ch3"><span class="ch">Chapter 3 of 10</span>Two voltages, one source</h2>
+  <div class="analogy"><b>Analogy:</b> 3.3 V and 5 V are two incompatible API versions. The regulator is the adapter; the amp speaks the old one natively.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 250" role="img" aria-label="USB supplies 5 volts into A1. Inside A1 a regulator drops it to 3.3 volts and burns the difference as heat; the 3.3 volt rail feeds the screen and the microphone. The amplifier takes 5 volts directly from A1's 5V pin. Every path returns on ground.">
+        <rect x="30" y="100" width="90" height="60" rx="6" class="soft"/><text class="s b" x="75" y="135" text-anchor="middle">USB 5 V</text>
+ <path d="M120,130 H200" stroke="var(--w-red)" stroke-width="5"/>
+ <rect x="200" y="60" width="200" height="140" rx="8" class="box"/><text class="t b" x="300" y="84" text-anchor="middle">A1</text>
+ <rect x="230" y="110" width="140" height="44" rx="4" class="warn-fill"/><text class="s b warn-ink" x="300" y="128" text-anchor="middle">regulator (LDO)</text><text class="s warn-ink" x="300" y="146" text-anchor="middle">5 V in → 3.3 V out, rest is heat</text>
+ <path d="M400,130 H520" stroke="var(--w-red)" stroke-width="3"/><text class="s b" x="460" y="122" text-anchor="middle" fill="var(--w-red)">3.3 V rail</text>
+ <rect x="520" y="60" width="170" height="40" rx="6" class="acc-fill"/><text class="s b acc-ink" x="605" y="85" text-anchor="middle">screen · 3.3 V only</text>
+ <rect x="520" y="110" width="170" height="40" rx="6" class="acc-fill"/><text class="s b acc-ink" x="605" y="135" text-anchor="middle">mic · 3.3 V only</text>
+ <path d="M520,80 H500 V130 M520,130 H500" stroke="var(--w-red)" stroke-width="3" fill="none"/>
+ <path d="M160,130 V215 H520" stroke="var(--w-red)" stroke-width="5" fill="none"/><text class="s b" x="340" y="236" text-anchor="middle" fill="var(--w-red)">5 V straight through to the amp: the one thick rod</text>
+ <rect x="520" y="195" width="170" height="40" rx="6" class="acc-fill"/><text class="s b acc-ink" x="605" y="220" text-anchor="middle">amp · wants 5 V</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two voltages, one source.</strong> The screen and mic chips are rated for 3.3 V and would be damaged at 5 V; the amplifier can swing a bigger signal from 5 V, which is the volume you heard. Hence the rule: 5 V goes to the amp and nowhere else.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>the 3V3 rail feeds the screen and mic; the single 5 V rod feeds the amp</li><li>the frame isn't powered, so it belongs to neither rail</li><li>one USB source means there is never a moment when one part is on and another off</li></ul></div>
+  <h2 id="ch4"><span class="ch">Chapter 4 of 10</span>Pulls and defaults</h2>
+  <div class="analogy"><b>Analogy:</b> a pull resistor is a default argument. The caller (the chip driver) can pass a value; if it doesn't, the default applies.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 250" role="img" aria-label="A tug of war on one wire. On the left, a 10 kilohm resistor to 3.3 volts pulls the wire up weakly. On the right, the chip's output driver, when active, pulls much harder and wins. When nothing drives, the weak pull sets the level. Below, a floating pin with no pull drifts anywhere between 0 and 3.3 volts.">
+        <text class="t b" x="40" y="26">A pull-up is a weak default a driver can override</text>
+ <line x1="60" y1="90" x2="660" y2="90" stroke="currentColor" stroke-width="3"/>
+ <rect x="150" y="40" width="14" height="36" rx="2" class="warn-fill"/><text class="s warn-ink b" x="172" y="56">10 kΩ to 3.3 V</text><text class="s warn-ink" x="172" y="70">weak: 0.33 mA at most</text>
+ <line x1="157" y1="40" x2="157" y2="24" stroke="var(--w-red)" stroke-width="3"/><line x1="157" y1="76" x2="157" y2="90" stroke="currentColor" stroke-width="2"/>
+ <rect x="470" y="104" width="120" height="40" rx="6" class="box"/><text class="s b" x="530" y="128" text-anchor="middle">chip driver</text>
+ <line x1="530" y1="90" x2="530" y2="104" stroke="currentColor" stroke-width="2"/>
+ <text class="s" x="600" y="118">strong: wins when</text><text class="s" x="600" y="133">it drives low or high</text>
+ <text class="s b pass-ink" x="60" y="118">nothing driving → wire reads HIGH (the default)</text>
+ <text class="t b" x="40" y="190">No pull at all: a floating pin</text>
+ <path d="M60,230 q20,-25 40,0 t40,10 t40,-20 t40,5 t40,15 t40,-25 t40,10 t40,-5 t40,20" class="wave" stroke="var(--warn)"/>
+ <text class="s warn-ink" x="430" y="212">reads random values: an uninitialised variable</text>
+      </svg>
+    </div>
+    <figcaption><strong>A digital input is a voltage measurement, and an unconnected pin measures noise.</strong> Pull resistors give every input a default. The three in this build: 10 kΩ holds GPIO2 high because A1 reads it during reset to choose how to boot; 100 kΩ keeps the mic's data line from floating between frames; the amp's SD pull-down keeps the amp off (below 0.08 V) until A1 is awake and drives it. The button uses A1's built-in pull-up.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>10 kΩ on GPIO2 (boot pin) to 3V3 rail</li><li>100 kΩ on the mic's data line to GND rail</li><li>the amp's SD pull-down to GND rail: the amp stays off through reset</li><li>button: A1's internal pull-up, so pressed = pulled to ground</li></ul></div>
+  <h2 id="ch5"><span class="ch">Chapter 5 of 10</span>Capacitors: the local cache</h2>
+  <div class="analogy"><b>Analogy:</b> the 220 µF is an L1 cache next to the CPU; the USB cable is main memory. Loud syllables are cache hits or they are stalls.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 250" role="img" aria-label="Top: a graph of the amplifier's current over time, mostly low with sharp spikes when a loud syllable plays. Bottom: the 220 microfarad capacitor beside the amp supplies the spike instantly, while the long path back through the rod, A1 and the USB cable supplies the average slowly. A small 100 nanofarad capacitor handles the fastest edges that the big one is too slow for.">
+        <text class="t b" x="40" y="26">What the amp asks for</text>
+ <line x1="60" y1="100" x2="340" y2="100" class="grid"/>
+ <path d="M60,96 H120 l6,-50 l6,50 H180 l5,-30 l5,30 H250 l6,-56 l6,56 H340" class="wave" stroke="var(--w-red)"/>
+ <text class="s muted" x="60" y="118">time →   spikes = loud syllables, a few milliseconds each</text>
+ <text class="t b" x="380" y="26">Who answers</text>
+ <rect x="380" y="46" width="300" height="42" rx="6" class="acc-fill"/><text class="s b acc-ink" x="530" y="64" text-anchor="middle">220 µF, right at the amp's pins</text><text class="s acc-ink" x="530" y="80" text-anchor="middle">a local reservoir: answers the spike in microseconds</text>
+ <rect x="380" y="98" width="300" height="42" rx="6" class="acc-fill"/><text class="s b acc-ink" x="530" y="116" text-anchor="middle">100 nF beside it</text><text class="s acc-ink" x="530" y="132" text-anchor="middle">tiny but fast: catches the sharpest edges</text>
+ <rect x="380" y="150" width="300" height="42" rx="6" class="soft"/><text class="s b" x="530" y="168" text-anchor="middle">USB cable → A1 → 5 V rod</text><text class="s" x="530" y="184" text-anchor="middle">refills the reservoir slowly, supplies the average</text>
+ <text class="s muted" x="40" y="230">Without the reservoir, each spike sags the 5 V line, the amp distorts and A1 can even reset.</text>
+      </svg>
+    </div>
+    <figcaption><strong>A capacitor is a small, instant battery.</strong> It cannot hold much, but it can deliver it in a microsecond. The long path from the USB port cannot. That is why the 220 µF sits with its legs right at the amp's VIN and GND, not somewhere convenient: the loop between reservoir and consumer must be short. It is also why the meter chirps across VIN and GND: the empty capacitor accepts a gulp of current, then stops.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>220 µF + 100 nF soldered with the shortest possible leads at the amp's VIN and GND</li><li>why the meter chirps, then stops, between VIN and GND</li></ul></div>
+  <h2 id="ch6"><span class="ch">Chapter 6 of 10</span>I²C: the slow bus</h2>
+  <div class="analogy"><b>Analogy:</b> a shared bus with device addresses, master-initiated, acknowledged per byte. Think a tiny, polite RPC over two wires.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 260" role="img" aria-label="Two traces over time. SCL is a steady clock. SDA carries bits that change only while SCL is low. The first byte is the address, 0x3C, so only the screen answers; it pulls SDA low for one bit to acknowledge.">
+        <text class="s b" x="40" y="50">SCL</text>
+ <path d="M80,70 H110 V40 H140 V70 H170 V40 H200 V70 H230 V40 H260 V70 H290 V40 H320 V70 H350 V40 H380 V70 H410 V40 H440 V70 H470 V40 H500 V70 H530 V40 H560 V70 H600" class="wave" stroke="var(--w-green)"/>
+ <text class="s b" x="40" y="130">SDA</text>
+ <path d="M80,150 H120 V120 H180 V150 H240 V120 H360 V150 H480 V120 H520 V150 H600" class="wave" stroke="var(--w-blue)"/>
+ <text class="s muted" x="110" y="176">0  1  1  1  1  0  0  (address 0x3C)  R/W   ACK</text>
+ <rect x="470" y="112" width="52" height="46" fill="none" stroke="var(--pass)" stroke-width="1.6" stroke-dasharray="4 3"/>
+ <text class="s pass-ink b" x="496" y="200" text-anchor="middle">the screen pulls</text><text class="s pass-ink b" x="496" y="214" text-anchor="middle">SDA low: “here”</text>
+ <text class="s" x="40" y="245">Bits change while the clock is low and are read while it is high. 100–400 thousand times a second: slow, by chip standards.</text>
+      </svg>
+    </div>
+    <figcaption><strong>I²C is a two-wire bus with addresses, like a tiny network.</strong> A1 is the only talker; it clocks SCL and puts the address 0x3C (or 0x3D) on SDA; the screen answers. Nobody drives the lines high: devices only pull them low, and resistors on the screen module pull them up (chapter 4 again). At a few hundred kilohertz, 30 mm of brass rod is electrically a perfect wire, so the rods can run wherever is tidy.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>two rods, SCL and SDA, to the screen, routed wherever is tidy</li><li>the pull-ups live on the screen module, so nothing extra is needed</li></ul></div>
+  <h2 id="ch7"><span class="ch">Chapter 7 of 10</span>I²S: the fast bus, and frequency</h2>
+  <div class="analogy"><b>Analogy:</b> a fixed-rate stream with a frame clock and a bit clock, like a PCM audio buffer on the wire.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 280" role="img" aria-label="Three traces. WS flips 16,000 times a second, marking left and right slots. BCLK ticks 32 times per slot, 1.024 million times a second. SD carries one 24-bit sample per slot; the microphone fills the left slot, which the firmware reads.">
+        <text class="s b" x="40" y="46">WS · 16 kHz</text>
+ <path d="M130,60 H360 V30 H590 V60 H600" class="wave" stroke="var(--w-yellow)"/>
+ <text class="s muted" x="245" y="80" text-anchor="middle">left slot: mic talks</text><text class="s muted" x="475" y="80" text-anchor="middle">right slot: empty</text>
+ <text class="s b" x="40" y="118">BCLK · 1.024 MHz</text>
+ <path d="M130,130 H137.3 V100 H144.6 V130 H151.9 V100 H159.2 V130 H166.5 V100 H173.8 V130 H181.1 V100 H188.4 V130 H195.7 V100 H203.0 V130 H210.3 V100 H217.6 V130 H224.89999999999998 V100 H232.2 V130 H239.5 V100 H246.8 V130 H254.1 V100 H261.4 V130 H268.7 V100 H276.0 V130 H283.29999999999995 V100 H290.6 V130 H297.9 V100 H305.2 V130 H312.5 V100 H319.79999999999995 V130 H327.1 V100 H334.4 V130 H341.7 V100 H349.0 V130 H356.29999999999995 V100 H363.6 V130 H370.9 V100 H378.2 V130 H385.5 V100 H392.8 V130 H400.09999999999997 V100 H407.4 V130 H414.7 V100 H422.0 V130 H429.3 V100 H436.59999999999997 V130 H443.9 V100 H451.2 V130 H458.5 V100 H465.8 V130 H473.09999999999997 V100 H480.4 V130 H487.7 V100 H495.0 V130 H502.3 V100 H509.59999999999997 V130 H516.9 V100 H524.2 V130 H531.5 V100 H538.8 V130 H546.0999999999999 V100 H553.4 V130 H560.7 V100 H568.0 V130 H575.3 V100 H582.5999999999999 V130 H589.9 V100 H597.2 V130" class="wave" stroke="var(--w-white)"/>
+ <text class="s muted" x="130" y="152">32 ticks per slot × 2 slots × 16 000 frames = 1 024 000 ticks a second</text>
+ <text class="s b" x="40" y="190">SD · data</text>
+ <path d="M130,205 H150 V180 H175 V205 H190 V180 H230 V205 H260 V180 H275 V205 H330 V180 H360 V205 H590" class="wave" stroke="var(--w-green)"/>
+ <text class="s muted" x="130" y="228">one 24-bit number per frame: how far the air pushed the diaphragm</text>
+ <text class="s" x="40" y="252">16 000 samples a second captures sound up to 8 kHz, which covers speech.</text><text class="s" x="40" y="268">The mic and the amp share WS and BCLK: one rod each, two taps.</text>
+      </svg>
+    </div>
+    <figcaption><strong>I²S is the same idea at a thousand times the speed, with a clock the firmware chose.</strong> A1 generates both clocks, so sharing them between mic and amp is natural: that is why those two rods have two taps. The mic's L/R pin wired to GND makes it speak in the left slot, the one the firmware reads; get that wrong and you see samples counting with min and max stuck at 0. At 1 MHz the wavelength is 300 m, so a 40 mm rod is still electrically short, but this is the fastest signal in the box, so it is the one to keep away from the antenna corner.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>WS and BCLK rods each have two taps: mic and amp share the clocks</li><li>the mic's L/R link to GND picks the left slot</li><li>these are the rods to keep away from the antenna corner</li></ul></div>
+  <h2 id="ch8"><span class="ch">Chapter 8 of 10</span>The amplifier and the speaker</h2>
+  <div class="analogy"><b>Analogy:</b> the bridge output is a differential signal; the speaker reads the difference, like a differential pair, so there is no ground reference to borrow.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 230" role="img" aria-label="The amplifier's two outputs swing in opposite directions around 2.5 volts; the speaker is connected between them and sees the difference. Neither output is at 0 volts, so neither is ground. Below, a table of the volume cap: cap 45 keeps 20 percent of full amplitude, 2.2 volts peak at the highest gain, under the speaker's 2.53 volt limit.">
+        <text class="t b" x="40" y="26">Bridge-tied load: the speaker hangs between two live outputs</text>
+ <line x1="60" y1="110" x2="400" y2="110" class="grid dashed"/><text class="s muted" x="404" y="114">2.5 V</text>
+ <path d="M60,110 q40,-40 80,0 t80,0 t80,0 t80,0" class="wave" stroke="var(--w-red)"/><text class="s b" x="66" y="76" fill="var(--w-red)">OUT+</text>
+ <path d="M60,110 q40,40 80,0 t80,0 t80,0 t80,0" class="wave" stroke="var(--w-blue)"/><text class="s b" x="66" y="156" fill="var(--w-blue)">OUT−</text>
+ <text class="s" x="60" y="186">the speaker sees OUT+ minus OUT−: twice the swing from one 5 V supply</text>
+ <text class="s warn-ink b" x="60" y="206">neither output ever sits at 0 V → neither may touch GND or the brass</text>
+ <rect x="470" y="60" width="220" height="150" rx="6" class="soft"/>
+ <text class="s b" x="580" y="82" text-anchor="middle">Volume cap (firmware)</text>
+ <text class="s m" x="490" y="104">cap   kept    peak @15 dB</text>
+ <text class="s m" x="490" y="124">15    2 %     0.24 V</text><text class="s m" x="490" y="142">30    9 %     0.98 V</text>
+ <text class="s m b" x="490" y="160">45   20 %     2.20 V  ✔</text><text class="s m" x="490" y="178">50   25 %     2.71 V  ✘</text>
+ <text class="s muted" x="490" y="200">speaker limit 2.53 V (0.8 W into 8 Ω)</text>
+      </svg>
+    </div>
+    <figcaption><strong>Class-D and the bridge.</strong> The amp switches its outputs at a few hundred kHz and the speaker's coil smooths that into sound. Driving the speaker between two outputs doubles the swing, which is why a 5 V part is loud, and why both speaker leads are live. The firmware squares the cap before applying it, so cap 45 passes only 20 % of full amplitude: 2.20 V peak even at the 15 dB gain your 100 kΩ GAIN resistor selects, under the speaker's 2.53 V rating.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>OUT+ and OUT− never touch GND, a rail or the frame</li><li>the 100 kΩ GAIN resistor to the GND rail = 15 dB</li><li>the volume cap stays at 45 unless the scope measures a higher one</li></ul></div>
+  <h2 id="ch9"><span class="ch">Chapter 9 of 10</span>The antenna and the near field</h2>
+  <div class="analogy"><b>Analogy:</b> nearby metal is a side effect you didn't declare: it changes the antenna's behaviour without any explicit connection.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 245" role="img" aria-label="Left: a ruler showing one Wi-Fi wavelength of 122 millimetres next to the 60 millimetre frame; the whole device fits inside half a wavelength, the near field. Right: the antenna's field reaching a brass rod nearby; the rod carries an induced current and detunes the antenna even without touching it.">
+        <text class="t b" x="40" y="26">The device is smaller than the wave it sends</text>
+ <path d="M40,90 C70,50 100,50 130,90 S190,130 220,90 S280,50 310,90 S370,130 400,90" class="wave" stroke="var(--accent)"/>
+ <text class="s m" x="220" y="36" text-anchor="middle">λ ≈ 122 mm at 2.45 GHz</text>
+ <rect x="40" y="110" width="177" height="30" rx="4" class="tube" stroke-width="3" fill="none"/><text class="s" x="128" y="130" text-anchor="middle">frame 60 mm</text>
+ <text class="s muted" x="40" y="166">Everything inside is in the near field, where objects couple to the antenna strongly.</text>
+ <rect x="470" y="110" width="110" height="36" rx="3" class="soft"/><rect x="565" y="116" width="14" height="24" class="cap"/><text class="s acc-ink b" x="572" y="104" text-anchor="middle">antenna</text>
+ <path d="M590,104 a24,24 0 0 1 0,48 M606,92 a40,40 0 0 1 0,72" class="acc" stroke-width="1.4"/>
+ <line x1="640" y1="70" x2="640" y2="190" stroke="var(--brass)" stroke-width="5"/>
+ <path d="M640,96 v22 m-4,-5 l4,5 l4,-5" class="warn-line" stroke-width="1.5"/>
+ <text class="s warn-ink b" x="652" y="128">induced</text><text class="s warn-ink" x="652" y="142">current</text>
+ <text class="s muted" x="470" y="186">A rod 5 mm away detunes the antenna.</text>
+ <text class="s" x="40" y="215">Metal near the antenna absorbs, reflects or re-tunes it. A1's antenna already sits too close to its own copper: it only worked</text>
+ <text class="s" x="40" y="231">once its power was capped at 8.5 dBm. So the back-left corner stays empty, and the frame is never made the ground.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Why a corner of the box stays empty.</strong> At 2.4 GHz the antenna's field fills the whole frame, and any conductor in it becomes part of the antenna. Grounding the frame would wrap the antenna in a ground plane; running a rail past it would add a parasitic element. The last step of the build, comparing Wi-Fi inside the frame with the open bench, is the only real test; the clearance rules just give it the best chance.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>the back-left corner stays empty with nothing above it</li><li>the frame is never ground</li><li>the fast I²S rods stay on the other side of the box</li></ul></div>
+  <h2 id="ch10"><span class="ch">Chapter 10 of 10</span>Heat, solder and flux</h2>
+  <div class="analogy"><b>Analogy:</b> two environments with separate tooling. Brass tip and acid flux are prod-only ops tools; they never run against the dev boards.</div>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 720 235" role="img" aria-label="A temperature scale from 150 to 450 degrees Celsius. Marks: 63/37 solder melts and freezes at 183. Electronics joints at 330 to 350. Brass frame joints at 370 to 400. A chip's pin can stand about 260 for ten seconds, which is why module joints take one to two seconds.">
+        <line x1="60" y1="100" x2="660" y2="100" stroke="currentColor" stroke-width="2"/>
+ <line x1="60" y1="94" x2="60" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="60" y="124" text-anchor="middle">150</text><line x1="160" y1="94" x2="160" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="160" y="124" text-anchor="middle">200</text><line x1="260" y1="94" x2="260" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="260" y="124" text-anchor="middle">250</text><line x1="360" y1="94" x2="360" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="360" y="124" text-anchor="middle">300</text><line x1="460" y1="94" x2="460" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="460" y="124" text-anchor="middle">350</text><line x1="560" y1="94" x2="560" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="560" y="124" text-anchor="middle">400</text><line x1="660" y1="94" x2="660" y2="106" stroke="currentColor" stroke-width="1.2"/><text class="s m muted" x="660" y="124" text-anchor="middle">450</text>
+ <line x1="126" y1="60" x2="126" y2="100" stroke="var(--pass)" stroke-width="3"/><text class="s b pass-ink" x="126" y="52" text-anchor="middle">183 °C: 63/37 melts and freezes</text>
+ <rect x="420" y="70" width="40" height="30" class="acc-fill"/><text class="s b acc-ink" x="440" y="150" text-anchor="middle">330–350</text><text class="s acc-ink" x="440" y="164" text-anchor="middle">module pins</text>
+ <rect x="500" y="70" width="60" height="30" class="brass-fill"/><text class="s b brass-ink" x="530" y="150" text-anchor="middle">370–400</text><text class="s brass-ink" x="530" y="164" text-anchor="middle">brass frame</text>
+ <line x1="280" y1="80" x2="280" y2="100" stroke="var(--warn)" stroke-width="3"/><text class="s warn-ink b" x="280" y="72" text-anchor="middle">260: a chip pin's limit, ~10 s</text>
+ <text class="s" x="40" y="205">The iron runs far above the solder's melting point because the joint must reach 183 °C quickly, before heat soaks into the part.</text>
+ <text class="s" x="40" y="221">Brass is a thick heat sink, so it gets the hotter tip and the hotter setting; a module pin gets 1–2 seconds and no more.</text>
+      </svg>
+    </div>
+    <figcaption><strong>Soldering is a race between the joint and the part.</strong> 63/37 is a eutectic alloy: it goes from solid to liquid at one temperature, 183 °C, with no pasty range, so joints that cool undisturbed come out shiny. Flux strips the oxide that stops solder wetting metal. The Harris flux does that with an acid strong enough for brass, and its residue conducts and corrodes, which is why it never comes near a module: a few microamps of leakage on an I²S line is a fault you would never find.</figcaption>
+  </figure>
+  <div class="why"><span class="label">In the brass build, this is why</span><ul><li>brass joints: 370–400 °C, acid flux, then wash</li><li>module joints: 330–350 °C, Chip Quik flux, 1–2 s, electronics tip</li><li>wash the frame before any part comes near it</li></ul></div>
+
+  <h2>Check yourself</h2>
+  <details><summary>Why does the meter chirp between VIN and GND, then go quiet?</summary><p>The empty 220 µF capacitor takes a gulp of current and looks like a short for a moment; once charged it stops. A steady tone would be a real short.</p></details><details><summary>Why can't I just ground the brass frame like the video?</summary><p>Both speaker outputs are live, the 5 V rod is live, and a grounded cage next to the antenna acts as a ground plane. One accidental touch becomes a short, and Wi-Fi gets worse.</p></details><details><summary>Why is a 1 mm brass rod fine for a 1 MHz clock?</summary><p>At 1 MHz the wavelength is 300 m; a 40 mm rod is electrically a dot. It only matters that it stays clear of other rods and the antenna.</p></details><details><summary>Why 10 kΩ and not 100 Ω for the pull-up?</summary><p>The chip's driver must be able to override it, and a 100 Ω pull-up would waste 33 mA whenever the line is low. 10 kΩ wastes 0.33 mA and still wins against noise.</p></details><details><summary>Why does the frame get a hotter iron than the chips?</summary><p>Brass is a big heat sink; the joint must reach 183 °C fast. A chip pin can take about 260 °C for ten seconds, so module joints are quick and cooler.</p></details>
+
+  <h2>Parts mentioned</h2>
+  <div class="scrollx">
+    <table class="t">
+      <tr><th>Product you bought</th><th>In this reading</th><th>Link</th></tr>
+      <tr><td>K&amp;S #9861 1.0 mm brass rod</td><td>chapters 2, 9</td><td><a href="https://www.amazon.com/dp/B005WPB7YG" target="_blank" rel="noopener">B005WPB7YG</a></td></tr>
+      <tr><td>LuminologyPro resistor kit</td><td>chapter 4, 8 (10 kΩ, 100 kΩ, pull-down, GAIN)</td><td><a href="https://www.amazon.com/dp/B0F4P352BB" target="_blank" rel="noopener">B0F4P352BB</a></td></tr>
+      <tr><td>ALLECIN electrolytic kit (220 µF) and BOJACK ceramic kit (100 nF)</td><td>chapter 5</td><td>owned · no link recorded</td></tr>
+      <tr><td>Hosyond SSD1306 OLED</td><td>chapter 6</td><td><a href="https://www.amazon.com/dp/B09T6SJBV5" target="_blank" rel="noopener">B09T6SJBV5</a></td></tr>
+      <tr><td>AITRIP INMP441 microphone</td><td>chapter 7</td><td><a href="https://www.amazon.com/dp/B092HWW4RS" target="_blank" rel="noopener">B092HWW4RS</a></td></tr>
+      <tr><td>HiLetgo MAX98357A amplifier · Same Sky CES-20134-088PM speaker</td><td>chapter 8</td><td><a href="https://www.amazon.com/dp/B0CDWXZZCH" target="_blank" rel="noopener">B0CDWXZZCH</a> · <a href="https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309" target="_blank" rel="noopener">DigiKey</a></td></tr>
+      <tr><td>Meshnology ESP32-C3 SuperMini</td><td>chapters 3, 4, 9</td><td><a href="https://www.amazon.com/dp/B0F888JQ91" target="_blank" rel="noopener">B0F888JQ91</a></td></tr>
+      <tr><td>MAIYUM 63/37 solder · Harris SCLF4 flux · Chip Quik CQ4LF pen</td><td>chapter 10</td><td><a href="https://www.amazon.com/dp/B076QF1Y85" target="_blank" rel="noopener">B076QF1Y85</a> · <a href="https://www.amazon.com/dp/B0015DWPV8" target="_blank" rel="noopener">B0015DWPV8</a> · owned</td></tr>
+    </table>
+  </div>
+
+  <h2>Read deeper</h2>
+  <ul>
+    <li>Short notes: <code>plan/concepts/</code> 01–04 (charge, Ohm, series/parallel, capacitors), 08 (I²C), 09 (I²S), 10 (amplifiers), 13 (power integrity), 14 (fit and radio).</li>
+    <li>Full lessons: <code>edu/fundamentals/</code> 06 (power integrity and decoupling), 07 (GPIO and boot straps), 08, 09, 10, 11 (RF), 12 (soldering).</li>
+    <li>The illustrated pages: <a href="https://claude.ai/artifact/6Gq54mQuRLi62GummDYyUx" target="_blank" rel="noopener">Fit and Radio</a> and <a href="https://claude.ai/artifact/8fmiKrS74xgLZqA3zFEXDC" target="_blank" rel="noopener">Fast Track Theory</a>.</li>
+  </ul>
+
+  <div class="evidence">
+    <p><strong>Sources.</strong> The device-specific numbers come from the project: the 1.024 MHz bit clock, the 0.08 V shutdown level, the squared volume cap and the 2.53 V speaker limit from <code>plan/FAST_TRACK.md</code> and <code>plan/FAST_TRACK_THEORY.md</code>; the 8.5 dBm cap and antenna notes from <code>docs/INVENTORY.md</code>. Brass resistivity about 6.4 × 10⁻⁸ Ω·m and 30 AWG copper at 0.34 Ω/m are handbook values; 183 °C is the 63/37 eutectic point; the 260 °C / 10 s figure is a typical soldering rating for a through-hole part, not from your parts' datasheets.</p>
+    <p><strong>What is and is not verified.</strong> This is theory tied to your build's numbers. Nothing here replaces the tests in the build pages; the Wi-Fi comparison at the end is the only proof the antenna chapter gets.</p>
+  </div>
+</div>

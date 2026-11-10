@@ -1,63 +1,62 @@
 # Pocket Assistant electronics course
 
-This is a beginner-first path into the physics and electrical engineering used
-by the pocket assistant. It assumes comfortable arithmetic and simple algebra,
-but no electronics background and no calculus.
+This directory teaches the electrical-engineering ideas needed to reason about
+the Pocket Assistant and provides a small set of project-specific guides. It
+assumes arithmetic and basic algebra, but no prior electronics experience.
 
-Start with the [foundations course](fundamentals/README.md). It teaches the
-ideas independently of whichever exact marketplace parts eventually pass
-qualification:
+Start with the [action-only fast track](../plan/FAST_TRACK.md) to boot the
+controller and test the button, OLED, and microphone one part at a time. The
+[USB prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) is the compact
+technical reference. The [daily study and lab plan](../plan/DAILY_STUDY_AND_LAB_PLAN.md)
+adds 2–3 hour sessions around that work. Read the relevant
+[foundations lesson](fundamentals/README.md) as each circuit becomes useful;
+you do not need to finish the course before starting. Keep these references
+nearby:
 
-1. [Safety, evidence, and the learning path](fundamentals/00-safety-evidence-and-course-map.md)
-2. [Charge, voltage, current, resistance, power, energy, and heat](fundamentals/01-units-charge-voltage-current-power-energy-heat.md)
-3. [DC circuits: nodes, loops, Ohm's law, and Kirchhoff's laws](fundamentals/02-dc-circuits-ohm-kirchhoff-series-parallel.md)
-4. [Components: resistors, capacitors, inductors, diodes, MOSFETs, and converters](fundamentals/03-components-rc-diodes-mosfets-converters.md)
-5. [Boards, schematics, datasheets, footprints, and connectors](fundamentals/04-boards-schematics-datasheets-and-connectors.md)
-6. [Measurement and debugging tools](fundamentals/05-measurement-dmm-supply-scope-logic-analyzer.md)
-7. [Li-ion power, voltage sag, decoupling, UVLO, and heat](fundamentals/06-li-ion-power-integrity-decoupling-uvlo-thermal.md)
-8. [Digital logic, GPIO, pull resistors, and boot straps](fundamentals/07-digital-logic-gpio-pullups-boot-straps.md)
-9. [I2C and the OLED](fundamentals/08-i2c-and-the-oled.md)
-10. [I2S, sampling, and digital audio](fundamentals/09-i2s-sampling-and-digital-audio.md)
-11. [Class-D amplifiers, BTL outputs, speakers, and acoustics](fundamentals/10-class-d-btl-speakers-and-acoustics.md)
-12. [RF, EMC, antennas, and the metal frame](fundamentals/11-rf-emc-antennas-and-metal-frame.md)
-13. [Soldering, mechanics, insulation, and tolerances](fundamentals/12-soldering-mechanics-insulation-tolerance.md)
-14. [Systematic debugging and the capstone](fundamentals/13-debugging-integration-and-capstone.md)
+- [equation sheet](fundamentals/reference/equations.md);
+- [glossary](fundamentals/reference/glossary.md); and
+- [lab record template](fundamentals/reference/lab-record-template.md).
 
-Keep the [glossary](fundamentals/reference/glossary.md),
-[equation sheet](fundamentals/reference/equations.md), and
-[project map](fundamentals/reference/project-map.md) open as references.
+Every lesson of the course, the project overview, the theory companion, the
+Step 10 bench guide, and the current study plan are also published as
+illustrated three-page web pages; the
+[index of published learning pages](ARTIFACTS.md) holds the links. The
+Markdown here remains the authority.
 
-## Applied project notes
+## Project-specific guides
 
-The remaining files in this directory apply those concepts to the current
-prototype. They are engineering notes, not a second fundamentals course:
+- [Pocket Assistant project overview](01-how-it-fits-together.md) — system
+  boundary, corrected-source logical contract, and lesson navigation.
+- [White, silver, and black finish study](05_COLOR_AND_FINISH.md) — provisional
+  visual direction and the tests required before a finish is adopted.
 
-- [System overview](01-how-it-fits-together.md)
-- [Software and evidence tools](01_SOFTWARE_AND_VERIFICATION.md)
-- [Component rationale](02-components.md)
-- [Power and battery notes](03-power-and-battery.md)
-- [Current signal contract](03_HOW_IT_WORKS.md)
-- [I2S and audio](04-audio.md)
-- [Assembly sequence](04_ASSEMBLY_STEP_BY_STEP.md)
-- [I2C display and ESP32-C3 pins](05-display-and-pins.md)
-- [Color and finish](05_COLOR_AND_FINISH.md)
-- [Radio and frame](06-radio-and-frame.md)
-- [Acceptance-test worksheet](06_ACCEPTANCE_TESTS.md)
-- [Power-chain worksheet](07-the-power-chain.md)
+Project-specific component tables, power recipes, assembly instructions, and
+acceptance worksheets are intentionally not duplicated here. Their status
+changes as candidates are reviewed.
 
-Shopping tables and assembly release status belong in `docs/`. A marketplace
-listing, a passing static script, or a CAD cuboid is not proof that a physical
-device is safe or functional. The present design remains a qualification
-prototype until the exact hardware passes its recorded release gates.
+## Where truth lives
 
-## Evidence boundary
+| Question | Source |
+| --- | --- |
+| Durable theory and safe technique | [Foundations course](fundamentals/README.md) |
+| First USB prototype, owned-part wiring, and offline diagnostics | [Prototype quickstart](../docs/PROTOTYPE_QUICKSTART.md) |
+| Firmware pins, rates, and build identity | [Firmware README](../firmware/README.md), [`config.h`](../firmware/src/boards/pocket-wall-e-c3/config.h), and [source-build manifest](../firmware/source-build.json) |
+| Current candidates, purchase authority, and promotion gates | [Current material decision](../docs/FINAL_MATERIALS_FOR_REVIEW.md) |
+| Results from a physical article | A completed [lab record](fundamentals/reference/lab-record-template.md) |
 
-The source has compiled reproducibly and host-side tests exist, but the build
-manifest records `hardware_tested: false`. No statement in this course means
-that the complete battery, power, audio, radio, or mechanical assembly has
-been physically accepted.
+A marketplace listing, successful compile, static check, or CAD model is not
+physical acceptance. The manifest still records `hardware_tested: false`,
+which describes the build workflow, not the bench: the USB prototype itself
+was built and passed its cold-start gate on 2026-09-20, and completed one
+cloud round trip on 2026-09-21. Everything past that — amplifier, battery,
+enclosure — remains unbuilt and unqualified.
 
-Do not reproduce the video's exposed-cell construction. Keep lithium cells
-out of the early labs. Never strip, solder, heat, puncture, or deliberately
-short a cell. The metal frame is structure, not a conductor, and neither
-bridge-amplifier speaker lead is ground.
+## Safety boundary
+
+Keep lithium cells out of early labs. Never strip, solder, heat, puncture, or
+deliberately short a cell. Use a current-limited bench supply and follow the
+current material decision before introducing stored energy.
+
+Treat the metal frame as conductive and isolate it from every electrical net.
+It is never a circuit conductor or return path. Neither bridge-amplifier
+speaker lead is ground.

@@ -1,0 +1,439 @@
+<title>Build Hour Wednesday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F5F7; --surface: #FFFFFF; --ink: #16202A; --muted: #5B6B7A; --line: #D3DAE1;
+    --accent: #0B7285; --accent-ink: #085B6B; --accent-tint: #E1F2F5;
+    --warn: #9A5B00; --warn-tint: #FFF3DB; --pass: #1E7B3E; --pass-tint: #E4F4E9;
+    --code-bg: #EAEFF3; --figure-bg: #FAFBFC;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+      --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+      --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+      --code-bg: #0B1014; --figure-bg: #121A1F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1519; --surface: #161E24; --ink: #E4EAEF; --muted: #98A7B4; --line: #2A363F;
+    --accent: #4FC3D1; --accent-ink: #7AD6E1; --accent-tint: #10292F;
+    --warn: #F0B14A; --warn-tint: #2C2310; --pass: #5FCB7E; --pass-tint: #112A1A;
+    --code-bg: #0B1014; --figure-bg: #121A1F;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 800px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 20px; }
+  header.top { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: clamp(28px, 5vw, 36px); line-height: 1.12; margin: 0; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 62ch; margin: 0; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 44px 0 12px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  p { max-width: 68ch; margin: 0 0 12px; }
+  ul { max-width: 68ch; padding-left: 1.25em; margin: 0 0 12px; }
+  li { margin-bottom: 5px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; max-width: 100%; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  a { color: var(--accent-ink); }
+  .callout { border-left: 3px solid var(--line); background: var(--surface); padding: 12px 16px; margin: 16px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-tint); }
+  .callout .label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; color: var(--warn); }
+  .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 8px; }
+  .track > div { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--pass); border-radius: 6px; padding: 10px 12px; font-size: 14px; }
+  .track .name { font-weight: 700; color: var(--pass); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .track p { margin: 4px 0 0; max-width: none; }
+  @media (max-width: 560px) { .track { grid-template-columns: 1fr; } }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  table.t th, table.t td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.t th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-top: none; }
+  table.t td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .scrollx { overflow-x: auto; }
+  ol.steps { list-style: none; padding: 0; counter-reset: step; max-width: 72ch; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  ol.steps > li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps > li::before { content: counter(step); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--muted); padding-top: 2px; text-align: right; }
+  ol.steps[start="3"] { counter-reset: step 2; }
+  ol.steps[start="4"] { counter-reset: step 3; }
+  ol.steps[start="5"] { counter-reset: step 4; }
+  ol.steps[start="6"] { counter-reset: step 5; }
+  ol.steps[start="9"] { counter-reset: step 8; }
+  ol.steps[start="10"] { counter-reset: step 9; }
+  ol.steps > li::before { grid-column: 1; grid-row: 1; }
+  ol.steps > li > * { grid-column: 2; min-width: 0; }
+  ol.steps > li > :first-child { margin-top: 0; }
+  ol.steps > li > :last-child { margin-bottom: 0; }
+  .gate { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; background: var(--pass-tint); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); border-radius: 8px; padding: 14px 16px; margin: 18px 0; max-width: 72ch; }
+  .gate input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--pass); cursor: pointer; }
+  .gate .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--pass); margin-bottom: 2px; }
+  .gate label { cursor: pointer; }
+  .gate p { margin: 0; }
+  figure { margin: 20px 0 24px; background: var(--figure-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; }
+  figure .scroll { overflow-x: auto; }
+  figure svg { display: block; height: auto; color: var(--ink); font-family: var(--sans); }
+  figure svg text { fill: currentColor; }
+  figure svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  figure svg .soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+  figure svg .cap { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.6; }
+  figure svg .cap-ink { fill: var(--accent-ink); }
+  figure svg .accent-stroke { stroke: var(--accent); }
+  figure svg .warn-stroke { stroke: var(--warn); }
+  figure svg .warn-ink { fill: var(--warn); }
+  figure svg .warn-fill { fill: var(--warn-tint); stroke: var(--warn); stroke-width: 1.2; }
+  figure svg .pass-fill { fill: var(--pass-tint); stroke: var(--pass); stroke-width: 1.2; }
+  figure svg .pass-ink { fill: var(--pass); }
+  figure svg .muted { fill: var(--muted); }
+  figure svg .edge { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  figure svg .thick { stroke-width: 2.2; }
+  figure svg .dashed { stroke-dasharray: 4 4; }
+  figure svg .t { font-size: 12px; }
+  figure svg .s { font-size: 11px; }
+  figure svg .b { font-weight: 600; }
+  figure svg .m { font-family: var(--mono); }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+  figcaption strong { color: var(--ink); font-weight: 600; }
+  .evidence { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .evidence p { max-width: 72ch; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Pocket AI Assistant · build hour · Wednesday 23 September</div>
+    <h1>One hour: read A1's Wi-Fi, check the 5V pin</h1>
+    <p class="lede">Both checks below were already run and recorded on 22 September: A1’s saved Wi-Fi, and whether USB reaches its 5V pin directly. The Step 10 lab record is skipped by builder decision, so this page is now a reference for how each check was done, not a to-do list.</p>
+  </header>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 800 150" style="min-width: 640px; width: 100%;" role="img" aria-label="Timeline of the hour. Minutes 0 to 5 restore the bench. Minutes 5 to 20 are the Wi-Fi credential check with USB plugged into the computer. Minutes 20 to 35 are the 5V-pin check with the cable in the board only. Minutes 35 to 50 are writing the Step 10 record, with no USB needed. Minutes 50 to 60 log and clean up.">
+        <text class="t b" x="40" y="24">Wednesday 23 · build hour</text>
+        <rect class="soft" x="40" y="40" width="60" height="40" rx="3"/><text class="s" x="70" y="64" text-anchor="middle">restore</text>
+        <rect class="cap" x="100" y="40" width="180" height="40" rx="3"/><text class="s b cap-ink" x="190" y="64" text-anchor="middle">Wi-Fi check · done 22 Sep</text>
+        <rect class="pass-fill" x="280" y="40" width="180" height="40" rx="3"/><text class="s b pass-ink" x="370" y="64" text-anchor="middle">5V-pin check · done</text>
+        <rect class="soft" x="460" y="40" width="180" height="40" rx="3"/><text class="s b muted" x="550" y="64" text-anchor="middle">Step 10 record — skipped</text>
+        <rect class="soft" x="640" y="40" width="120" height="40" rx="3"/><text class="s" x="700" y="64" text-anchor="middle">log, clean</text>
+        <text class="s m muted" x="40" y="98" text-anchor="middle">0:00</text>
+        <text class="s m muted" x="100" y="98" text-anchor="middle">0:05</text>
+        <text class="s m muted" x="280" y="98" text-anchor="middle">0:20</text>
+        <text class="s m muted" x="460" y="98" text-anchor="middle">0:35</text>
+        <text class="s m muted" x="640" y="98" text-anchor="middle">0:50</text>
+        <text class="s m muted" x="760" y="98" text-anchor="middle">1:00</text>
+        <text class="s cap-ink" x="190" y="126" text-anchor="middle">USB in the computer</text>
+        <text class="s pass-ink" x="370" y="126" text-anchor="middle">cable in the board only</text>
+        <text class="s muted" x="550" y="126" text-anchor="middle">no USB needed</text>
+      </svg>
+    </div>
+    <figcaption><strong>The cable decided the order.</strong> The flash read needed A1 connected to the computer; the meter check needed the computer end free, so nothing was powered. Both are done; the Step 10 record that would have come last is skipped.</figcaption>
+  </figure>
+
+  <div class="callout warn">
+    <span class="label">Before you start</span>
+    <ul>
+      <li>Cells and charger are in another room. The bench supply stays unplugged; nothing today needs it.</li>
+      <li>You need A1 on its breadboard with its USB cable, the computer, the multimeter, the lab record template, and your phone camera. A spare bare SuperMini is optional.</li>
+      <li>Close any serial monitor that is still open, or the flash read cannot reach the port.</li>
+    </ul>
+  </div>
+
+  <h2>0:05 · What A1 holds in flash</h2>
+  <div class="callout" style="border-left-color: var(--pass); background: var(--pass-tint);"><span class="label" style="color: var(--pass);">Already done, 22 September</span><p>Claude ran this check on A1 (MAC ending <code>09:30</code>): <strong>one saved network, password set</strong>, and no stored power setting, so the 8.5 dBm cap comes from the firmware. The network name is in the chat, not on this page. Re-run it tomorrow if you want to see it yourself; otherwise use these 15 minutes for the Step 10 record.</p></div>
+  <p>Your Wi-Fi name and password live in a small settings area of flash called NVS, at address <code>0x9000</code>. A short script in the repository copies that area to a temporary file, lists the saved network with the password hidden, and deletes the copy, because the file holds the password in plain text.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 860 210" style="min-width: 690px; width: 100%;" role="img" aria-label="Data flow of the credential check. A1's flash settings area at 0x9000 is copied by esptool read-flash into a file that contains the password in plain text. nvs_tool turns the file into JSON rows in the wifi namespace. A one-line filter prints the network name and hides the password. The last command deletes the file.">
+        <defs><marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+        <rect class="box" x="20" y="50" width="140" height="62" rx="5"/>
+        <text class="t b" x="90" y="72" text-anchor="middle">A1's flash</text>
+        <text class="s m" x="90" y="88" text-anchor="middle">NVS · 0x9000</text>
+        <text class="s muted" x="90" y="103" text-anchor="middle">16 KB of settings</text>
+        <rect class="warn-fill" x="240" y="50" width="140" height="62" rx="5"/>
+        <text class="t b m" x="310" y="72" text-anchor="middle">a1-nvs.bin</text>
+        <text class="s warn-ink b" x="310" y="88" text-anchor="middle">password in</text>
+        <text class="s warn-ink b" x="310" y="103" text-anchor="middle">plain text</text>
+        <rect class="box" x="460" y="50" width="140" height="62" rx="5"/>
+        <text class="t b" x="530" y="72" text-anchor="middle">JSON rows</text>
+        <text class="s muted" x="530" y="88" text-anchor="middle">namespace</text>
+        <text class="s m" x="530" y="103" text-anchor="middle">wifi</text>
+        <rect class="pass-fill" x="680" y="50" width="160" height="62" rx="5"/>
+        <text class="t b" x="760" y="72" text-anchor="middle">your screen</text>
+        <text class="s m" x="760" y="88" text-anchor="middle">ssid = guest</text>
+        <text class="s m" x="760" y="103" text-anchor="middle">password = hidden</text>
+        <line class="edge" x1="160" y1="81" x2="240" y2="81" marker-end="url(#arA)"/>
+        <line class="edge" x1="380" y1="81" x2="460" y2="81" marker-end="url(#arA)"/>
+        <line class="edge" x1="600" y1="81" x2="680" y2="81" marker-end="url(#arA)"/>
+        <text class="s m" x="200" y="40" text-anchor="middle">read-flash</text>
+        <text class="s m" x="420" y="40" text-anchor="middle">nvs_tool</text>
+        <text class="s m" x="640" y="40" text-anchor="middle">filter</text>
+        <path class="edge" d="M310 112 V150" marker-end="url(#arA)"/>
+        <text class="s muted" x="320" y="136">automatic</text>
+        <rect class="soft" x="240" y="150" width="140" height="44" rx="5"/>
+        <text class="s b" x="310" y="170" text-anchor="middle">copy deleted</text>
+        <text class="s muted" x="310" y="185" text-anchor="middle">even if a step fails</text>
+      </svg>
+    </div>
+    <figcaption><strong>Read, filter, delete.</strong> Only the read touches the board, and it only reads. The amber box is the one moment the password sits on your disk in plain text, which is why the script deletes that copy on its way out, even after an error.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><p>Plug A1 into the computer and find its port. It was <code>/dev/ttyACM0</code> on 22 September; use whatever this prints.</p>
+<pre><code>ls /dev/ttyACM*</code></pre></li>
+    <li><p>Run the check with that port:</p>
+<pre><code>. firmware/.work/esp-idf/export.sh
+python tools/saved_wifi.py --port /dev/ttyACM0</code></pre></li>
+    <li><p>Expect <code>ssid = </code> your guest network and <code>password = &lt;hidden, set&gt;</code>. A1 reboots once after the read; that is normal. Copy the output into the record.</p></li>
+    <li><p>Note for the record: these credentials are cleared on Sunday 27, when the diagnostics build goes on for PASS 11A. That is expected.</p></li>
+  </ol>
+
+  <h2>0:20 · Does USB reach the 5V pin directly?</h2>
+  <div class="callout" style="border-left-color: var(--pass); background: var(--pass-tint);"><span class="label" style="color: var(--pass);">Done, 22 September</span><p>You measured it on A1: 0.001 V and 0.002 V, beeping loudly in both directions, so <strong>the 5V pin is wired straight to USB VBUS, with no diode</strong>. On Sunday the amplifier gets the full USB voltage. It also means anything touching the 5V pin is touching the computer's USB supply, so no other source ever goes there while USB is in. Record it as <code>VBUS-01</code>.</p></div>
+  <p>On Sunday the amplifier takes its power from A1's 5V pin. SuperMini clones differ: some wire the USB supply straight to that pin, others put a diode in between. A diode lowers the amplifier's supply by a few tenths of a volt and stops the pin from feeding power back into USB. The meter's diode mode answers which one A1 has, with nothing powered.</p>
+
+  <h3 style="font-size:17px;margin:24px 0 8px;">A · Set up the cable</h3>
+  <p>Your USB cable has two different ends. The small oval <strong>USB-C</strong> end stays plugged into A1. The big rectangular <strong>USB-A</strong> end is the one that normally goes into the computer: today it stays out, lying on the bench, so nothing is powered.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 860 220" style="min-width: 690px; width: 100%;" role="img" aria-label="A1 on its breadboard with the small USB-C end of the cable plugged into it. The cable runs to the large USB-A end, which lies free on the bench. The computer is drawn separately with a dashed gap and the words not plugged in.">
+        <rect class="soft" x="20" y="40" width="230" height="130" rx="6"/>
+        <rect class="box" x="60" y="70" width="140" height="70" rx="4"/>
+        <text class="t b" x="130" y="102" text-anchor="middle">A1</text>
+        <text class="s muted" x="130" y="118" text-anchor="middle">SuperMini</text>
+        <rect class="cap" x="196" y="93" width="18" height="24" rx="4"/>
+        <text class="s muted" x="135" y="190" text-anchor="middle">A1 on its breadboard</text>
+        <text class="s cap-ink b" x="205" y="84" text-anchor="middle">USB-C</text>
+        <path class="edge thick" d="M214 105 C 300 105, 330 150, 420 150 S 500 105, 520 105"/>
+        <text class="s muted" x="350" y="176" text-anchor="middle">the cable</text>
+        <rect class="box" x="520" y="88" width="70" height="34" rx="6"/>
+        <rect class="cap" x="590" y="93" width="54" height="24" rx="2"/>
+        <text class="s cap-ink b" x="617" y="84" text-anchor="middle">USB-A</text>
+        <text class="s b" x="582" y="146" text-anchor="middle">free on the bench</text>
+        <line class="edge dashed warn-stroke" x1="652" y1="105" x2="720" y2="105"/>
+        <text class="s warn-ink b" x="686" y="97" text-anchor="middle">✕</text>
+        <rect class="box" x="720" y="70" width="120" height="70" rx="6"/>
+        <text class="t b" x="780" y="102" text-anchor="middle">computer</text>
+        <text class="s warn-ink b" x="780" y="160" text-anchor="middle">not plugged in</text>
+      </svg>
+    </div>
+    <figcaption><strong>One end in, one end out.</strong> The cable still connects the plug's contacts to A1 through its wires, which is what the meter uses. With the big end out of the computer, nothing has power.</figcaption>
+  </figure>
+
+  <ol class="steps" start="5">
+    <li><p>Unplug the big USB-A end from the computer. Leave the small USB-C end in A1. Tape the USB-A plug to the bench with a strip of Kapton so it cannot roll, with the open side of the plug facing you.</p></li>
+  </ol>
+
+  <h3 style="font-size:17px;margin:24px 0 8px;">B · Find which outer contact is VBUS</h3>
+  <p>Look into the open end of the USB-A plug. Inside the metal shell is a plastic tongue, and on it are four flat gold contacts. The two in the middle carry data and don't matter today. The two at the <strong>outer edges</strong> carry power: one is <strong>VBUS</strong>, the 5 V supply, and the other is <strong>GND</strong>. Which side is which depends on how you hold the plug, so the meter decides instead of a picture.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 860 230" style="min-width: 690px; width: 100%;" role="img" aria-label="Left, the USB-A plug seen face on: a metal shell, a plastic tongue filling the lower half, and four gold contacts on the tongue. The two outer contacts are highlighted as the power pair, VBUS and GND. The two inner contacts are data. Right, the tongue seen from above: the two outer contacts reach closer to the tip than the inner ones.">
+        <text class="t b" x="200" y="24" text-anchor="middle">Looking into the plug</text>
+        <rect class="box thick" x="60" y="44" width="280" height="110" rx="6"/>
+        <rect class="soft" x="76" y="104" width="248" height="38" rx="2"/>
+        <text class="s muted" x="200" y="128" text-anchor="middle">plastic tongue</text>
+        <rect class="cap" x="92" y="94" width="34" height="10" rx="1"/>
+        <rect class="soft" x="152" y="94" width="34" height="10" rx="1"/>
+        <rect class="soft" x="214" y="94" width="34" height="10" rx="1"/>
+        <rect class="cap" x="274" y="94" width="34" height="10" rx="1"/>
+        <text class="s muted" x="200" y="64" text-anchor="middle">metal shell, empty space above the tongue</text>
+        <text class="s cap-ink b" x="109" y="176" text-anchor="middle">outer</text>
+        <text class="s muted" x="169" y="176" text-anchor="middle">inner</text>
+        <text class="s muted" x="231" y="176" text-anchor="middle">inner</text>
+        <text class="s cap-ink b" x="291" y="176" text-anchor="middle">outer</text>
+        <text class="s cap-ink b" x="200" y="200" text-anchor="middle">outer pair: VBUS and GND, in some order</text>
+        <text class="s muted" x="200" y="216" text-anchor="middle">inner pair: data, not used today</text>
+        <line class="edge dashed" x1="430" y1="20" x2="430" y2="220"/>
+        <text class="t b" x="650" y="24" text-anchor="middle">The tongue seen from above</text>
+        <rect class="soft" x="490" y="50" width="320" height="130" rx="4"/>
+        <rect class="cap" x="500" y="64" width="300" height="12" rx="1"/>
+        <rect class="soft" x="530" y="94" width="270" height="12" rx="1"/>
+        <rect class="soft" x="530" y="124" width="270" height="12" rx="1"/>
+        <rect class="cap" x="500" y="154" width="300" height="12" rx="1"/>
+        <text class="s b" x="480" y="118" text-anchor="end">tip</text>
+        <text class="s cap-ink" x="650" y="200" text-anchor="middle">the outer two reach closer to the tip,</text>
+        <text class="s cap-ink" x="650" y="215" text-anchor="middle">so power connects before data when plugged in</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two outer contacts, one question.</strong> You only ever probe the two outer contacts. They are also slightly longer, which is a second way to tell them from the data pair.</figcaption>
+  </figure>
+
+  <p>The trick: inside the cable, the GND contact is joined by a wire straight to A1's GND. So with the meter in continuity mode, the GND contact beeps against A1's GND and the VBUS contact does not.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 900 330" style="min-width: 720px; width: 100%;" role="img" aria-label="Two tries side by side. Try 1: the meter is in continuity mode, the black probe on A1's GND rail and the red probe on one outer contact. A GND wire inside the cable joins that contact to the rail, so the meter gives a steady tone and the contact is GND. Try 2: the red probe moves to the other outer contact. A VBUS wire inside the cable leads to A1's VBUS, which reaches GND only through the board's input capacitor, so the meter stays silent or chirps once. That contact is VBUS.">
+        <text class="t b" x="220" y="16" text-anchor="middle">Try 1 · red on one outer contact</text>
+        <rect class="box" x="30" y="50" width="150" height="74" rx="5"/>
+        <rect class="soft" x="40" y="90" width="130" height="26" rx="2"/>
+        <rect class="cap" x="46" y="82" width="16" height="8"/>
+        <rect class="soft" x="80" y="82" width="16" height="8"/>
+        <rect class="soft" x="114" y="82" width="16" height="8"/>
+        <rect class="soft" x="148" y="82" width="16" height="8"/>
+        <rect class="box" x="260" y="56" width="140" height="94" rx="8"/>
+        <text class="s b" x="330" y="74" text-anchor="middle">continuity mode</text>
+        <rect class="pass-fill" x="274" y="84" width="112" height="28" rx="3"/>
+        <text class="t b m pass-ink" x="330" y="103" text-anchor="middle">0.0 Ω · beep</text>
+        <text class="s pass-ink b" x="330" y="134" text-anchor="middle">steady tone</text>
+        <path class="edge accent-stroke thick" d="M260 100 H230 V40 H54 V82"/>
+        <text class="s cap-ink b" x="142" y="33" text-anchor="middle">red probe</text>
+        <line class="edge thick" x1="330" y1="150" x2="330" y2="250"/>
+        <text class="s b" x="340" y="206">black probe</text>
+        <path class="edge dashed" d="M54 124 V250"/>
+        <text class="s muted" x="64" y="186">GND wire inside the cable</text>
+        <rect class="soft" x="40" y="250" width="380" height="12" rx="2"/>
+        <text class="s" x="230" y="280" text-anchor="middle">A1's GND rail, verified in Step 6</text>
+        <text class="s b pass-ink" x="230" y="308" text-anchor="middle">steady tone: this outer contact is GND</text>
+
+        <line class="edge dashed" x1="450" y1="10" x2="450" y2="320"/>
+
+        <text class="t b" x="680" y="16" text-anchor="middle">Try 2 · red on the other outer contact</text>
+        <rect class="box" x="490" y="50" width="150" height="74" rx="5"/>
+        <rect class="soft" x="500" y="90" width="130" height="26" rx="2"/>
+        <rect class="soft" x="506" y="82" width="16" height="8"/>
+        <rect class="soft" x="540" y="82" width="16" height="8"/>
+        <rect class="soft" x="574" y="82" width="16" height="8"/>
+        <rect class="cap" x="608" y="82" width="16" height="8"/>
+        <rect class="box" x="720" y="56" width="140" height="94" rx="8"/>
+        <text class="s b" x="790" y="74" text-anchor="middle">continuity mode</text>
+        <rect class="soft" x="734" y="84" width="112" height="28" rx="3"/>
+        <text class="t b m" x="790" y="103" text-anchor="middle">OL</text>
+        <text class="s b" x="790" y="134" text-anchor="middle">silent, or one chirp</text>
+        <path class="edge accent-stroke thick" d="M720 100 H690 V40 H616 V82"/>
+        <text class="s cap-ink b" x="653" y="33" text-anchor="middle">red probe</text>
+        <line class="edge thick" x1="790" y1="150" x2="790" y2="250"/>
+        <text class="s b" x="800" y="206">black probe</text>
+        <path class="edge dashed" d="M616 124 V180"/>
+        <text class="s muted" x="626" y="168">VBUS wire in the cable</text>
+        <rect class="soft" x="560" y="180" width="140" height="28" rx="3"/>
+        <text class="s" x="630" y="198" text-anchor="middle">A1's VBUS, inside</text>
+        <line class="edge" x1="630" y1="208" x2="630" y2="224"/>
+        <line class="edge thick" x1="620" y1="224" x2="640" y2="224"/>
+        <line class="edge thick" x1="620" y1="230" x2="640" y2="230"/>
+        <line class="edge" x1="630" y1="230" x2="630" y2="250"/>
+        <text class="s muted" x="648" y="232">input capacitor</text>
+        <rect class="soft" x="500" y="250" width="380" height="12" rx="2"/>
+        <text class="s" x="690" y="280" text-anchor="middle">the same GND rail</text>
+        <text class="s b cap-ink" x="690" y="302" text-anchor="middle">no steady tone: this outer contact is VBUS</text>
+        <text class="s muted" x="690" y="318" text-anchor="middle">a single chirp is the capacitor filling, as in Step 5</text>
+      </svg>
+    </div>
+    <figcaption><strong>The cable's GND wire makes the beep.</strong> Keep the black probe on A1's GND the whole time and move only the red probe between the two outer contacts. The one with a steady tone is GND. The other is VBUS, even if it chirps once, because a chirp that stops is a capacitor charging, not a connection.</figcaption>
+  </figure>
+
+  <ol class="steps" start="6">
+    <li><p>Turn the meter's dial to continuity, the setting with the sound-wave symbol. Touch the two probe tips together: it should beep. Push a spare jumper into A1's GND rail on the breadboard and clip or hold the <strong>black</strong> probe on its free end.</p></li>
+    <li><p>Touch the <strong>red</strong> probe tip to one outer contact inside the plug, pressing it flat against the gold. Don't let the tip touch two contacts at once. Listen: a steady tone means that contact is <strong>GND</strong>.</p></li>
+    <li><p>Move the red tip to the other outer contact. No steady tone, or one short chirp that stops, means that contact is <strong>VBUS</strong>. Put a small Kapton flag on the plug's shell on the VBUS side so you don't have to find it again.</p></li>
+  </ol>
+
+  <h3 style="font-size:17px;margin:24px 0 8px;">C · Measure VBUS to the 5V pin, both ways</h3>
+  <p>Now the question itself: is VBUS wired straight to A1's 5V pin, or through a diode? A diode lets current through one way only, so you read once each way and compare.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 900 290" style="min-width: 720px; width: 100%;" role="img" aria-label="The meter is in diode mode. Reading 1: the red probe touches the flagged VBUS contact in the USB-A plug and the black probe touches a jumper pushed into the same breadboard strip as A1's 5V pin. Reading 2 swaps the probes. Between the plug and the pin, inside A1, the path is either direct or through a diode.">
+        <text class="t b" x="450" y="16" text-anchor="middle">Reading 1: red on VBUS, black on the 5V pin</text>
+        <rect class="box" x="30" y="60" width="150" height="74" rx="5"/>
+        <rect class="soft" x="40" y="100" width="130" height="26" rx="2"/>
+        <rect class="cap" x="46" y="92" width="16" height="8"/>
+        <rect class="soft" x="80" y="92" width="16" height="8"/>
+        <rect class="soft" x="114" y="92" width="16" height="8"/>
+        <rect class="soft" x="148" y="92" width="16" height="8"/>
+        <rect class="cap" x="36" y="142" width="40" height="16" rx="2"/>
+        <text class="s b cap-ink" x="56" y="154" text-anchor="middle">VBUS</text>
+        <text class="s muted" x="86" y="154">your Kapton flag</text>
+        <rect class="box" x="330" y="60" width="170" height="110" rx="8"/>
+        <text class="s b" x="415" y="80" text-anchor="middle">diode mode</text>
+        <rect class="soft" x="344" y="92" width="142" height="30" rx="3"/>
+        <text class="t b m" x="415" y="112" text-anchor="middle">?.??? V</text>
+        <text class="s muted" x="415" y="148" text-anchor="middle">write it down</text>
+        <path class="edge accent-stroke thick" d="M330 110 H290 V44 H54 V92"/>
+        <text class="s cap-ink b" x="170" y="37" text-anchor="middle">red probe</text>
+        <path class="edge thick" d="M415 170 V236 H598"/>
+        <text class="s b" x="500" y="228" text-anchor="middle">black probe</text>
+        <circle cx="604" cy="236" r="5" fill="currentColor"/>
+        <line class="edge thick" x1="604" y1="236" x2="690" y2="208"/>
+        <text class="s muted" x="640" y="262" text-anchor="middle">jumper</text>
+        <rect class="soft" x="672" y="160" width="36" height="96" rx="3"/>
+        <text class="s muted" x="690" y="274" text-anchor="middle">5V pin's strip</text>
+        <rect class="box" x="650" y="60" width="220" height="92" rx="5"/>
+        <text class="t b" x="760" y="84" text-anchor="middle">A1</text>
+        <rect class="warn-fill" x="706" y="96" width="112" height="24" rx="3"/>
+        <text class="s b warn-ink" x="762" y="112" text-anchor="middle">direct or diode?</text>
+        <rect class="box" x="684" y="152" width="12" height="12"/>
+        <text class="s m b" x="704" y="140">5V</text>
+        <text class="s muted" x="760" y="186">read the pin name</text>
+        <text class="s muted" x="760" y="200">on A1's silkscreen</text>
+      </svg>
+    </div>
+    <figcaption><strong>Two probe points, then swap.</strong> A jumper pushed into the same five-hole strip as A1's 5V pin gives the black probe something easy to hold. For reading 2, put the red probe on the jumper and the black probe on the VBUS contact.</figcaption>
+  </figure>
+
+  <ol class="steps" start="9">
+    <li><p>Turn the dial to diode mode, the diode symbol, a triangle with a bar. Push a spare jumper into the same breadboard strip as A1's pin labelled <code>5V</code> on its silkscreen.</p></li>
+    <li><p><strong>Reading 1:</strong> red probe on the flagged VBUS contact, black probe on that jumper. Write down the number, or <code>OL</code> if it shows that.</p></li>
+    <li><p><strong>Reading 2:</strong> swap them, red on the jumper and black on VBUS. Write it down.</p></li>
+    <li><p>Find your pair of readings in the table below, and photograph the meter with A1 in the frame.</p></li>
+  </ol>
+
+  <div class="scrollx">
+  <table class="t">
+    <tr><th>Red on VBUS, black on 5V</th><th>Leads swapped</th><th>What A1 has</th><th>What it means on Sunday</th></tr>
+    <tr><td class="n">near 0, beeps</td><td class="n">near 0, beeps</td><td><strong>a direct link · your result</strong></td><td>the amplifier gets the full USB voltage, close to 5 V</td></tr>
+    <tr><td class="n">about 0.2–0.4 V</td><td class="n">OL</td><td>a diode from USB to the 5V pin</td><td>the amplifier gets 5 V minus that drop, still well within its range</td></tr>
+    <tr><td class="n">OL</td><td class="n">about 0.2–0.4 V, or OL</td><td>something unexpected</td><td>stop and photograph the board; don't wire the amplifier until it is understood</td></tr>
+  </table>
+  </div>
+  <p class="adv" style="font-size:13.5px;color:var(--muted)">The 0.2–0.4 V range is a typical Schottky diode reading on a meter's diode test, labelled <code>TYPICAL</code>, not a limit.</p>
+
+  <h2>0:35 · Step 10 record — skipped</h2>
+  <p>The builder decided on 2026-09-22 to skip a formal lab record for Step 10. PASS 10C stands as builder-observed evidence; the ID below is reserved and marked skipped so a later reader does not mistake the gap for an unrecorded step.</p>
+<pre><code>test ID:           STEP10-01
+status:            SKIPPED — builder decision, 2026-09-22
+note:              PASS 10C (A1 joined Wi-Fi, answered one spoken
+                   question) stands as builder-observed. No formal
+                   lab record was written for it; this ID is
+                   reserved and marked skipped rather than filled in.
+
+test ID:           VBUS-01
+board:             A1 / spare (photo attached)
+red VBUS, black 5V: ______        swapped: ______
+meaning:           direct / diode / unexpected</code></pre>
+
+  <h2>0:50 · Log and clean up</h2>
+  <ul>
+    <li>Save the flash-check output, the meter photo and both records in one folder for today.</li>
+    <li>Leave A1 on its breadboard, unplugged. Put the meter's red lead back in the V/Ω jack.</li>
+    <li>Write tomorrow's first action: start the capped assistant build in the background before Thursday's radio survey.</li>
+  </ul>
+
+  <div class="gate">
+    <input type="checkbox" id="gate-wed">
+    <label for="gate-wed">
+      <div class="name">End of the hour</div>
+      <p>You know A1 still holds its guest network, you know USB reaches its 5V pin directly with no diode, and <code>VBUS-01</code> is written. <code>STEP10-01</code> is marked skipped by builder decision.</p>
+    </label>
+  </div>
+
+  <div class="evidence">
+    <p><strong>Source and authority.</strong> Built from the Wednesday 23 build hour in the week plan, Step 10 and Step 11 of <code>plan/FAST_TRACK.md</code>, and the lab record template, as of 2026-09-22. If this page and the repository differ, the repository wins.</p>
+    <p><strong>What is and is not verified.</strong> The credential-check commands were tested on 21 September against synthetic flash images, not A1. The diode-mode readings are typical values, not measurements of your board. The checkbox is remembered only in this browser.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var box = document.getElementById("gate-wed");
+    if (!box) return;
+    try { box.checked = window.localStorage.getItem("pocket-build-wed23") === "1"; } catch (e) {}
+    box.addEventListener("change", function () {
+      try { window.localStorage.setItem("pocket-build-wed23", box.checked ? "1" : "0"); } catch (e) {}
+    });
+  })();
+</script>
+

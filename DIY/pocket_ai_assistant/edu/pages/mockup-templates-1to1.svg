@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="120mm" viewBox="0 0 180 120">
+<rect x="0" y="0" width="180" height="120" fill="#fff"/>
+<rect x="10" y="16" width="18" height="22" fill="none" stroke="#000" stroke-width="0.3"/>
+<rect x="14.5" y="14.3" width="9" height="4.2" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="19" y="17.6" font-size="1.8" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">USB-C</text>
+<rect x="11" y="35" width="16" height="3" fill="#ddd" stroke="#000" stroke-width="0.2"/>
+<text x="19" y="37.2" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">antenna</text>
+<text x="19" y="43" font-size="2.6" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">A1 22 × 18</text>
+<text x="19" y="46" font-size="1.9" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">socket sticks out 1.7</text>
+<rect x="38" y="12" width="27" height="27" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="46.0" cy="14" r="0.6" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="49.5" cy="14" r="0.6" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="53.0" cy="14" r="0.6" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="56.5" cy="14" r="0.6" fill="none" stroke="#000" stroke-width="0.3"/>
+<rect x="40.65" y="17" width="21.7" height="10.9" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="1 0.8"/>
+<text x="51.5" y="23" font-size="1.8" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">lit area ≈21.7 × 10.9</text>
+<text x="51.5" y="25.4" font-size="1.6" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">(measure yours)</text>
+<text x="51.5" y="43" font-size="2.6" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">OLED 27 × 27</text>
+<circle cx="84" cy="25.5" r="6.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="81" cy="21.3" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/><circle cx="81" cy="29.7" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="84" cy="21.3" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/><circle cx="84" cy="29.7" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="87" cy="21.3" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/><circle cx="87" cy="29.7" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="84" cy="25.5" r="0.7" fill="#000"/>
+<text x="84" y="43" font-size="2.6" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">mic Ø13</text>
+<text x="84" y="46" font-size="1.9" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">hole: centre, side away from can</text>
+<rect x="102" y="12" width="17" height="17" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="14.0" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="16.2" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="18.4" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="20.6" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="22.8" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="25.0" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="104" cy="27.200000000000003" r="0.5" fill="none" stroke="#000" stroke-width="0.3"/>
+<rect x="113" y="16" width="6" height="9" fill="#eee" stroke="#000" stroke-width="0.2"/>
+<text x="116" y="21.3" font-size="1.7" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">+ −</text>
+<text x="110.5" y="43" font-size="2.6" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">amplifier 17 × 17</text>
+<text x="110.5" y="46" font-size="1.9" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">terminal block on this edge</text>
+<path d="M140,12 v4 h5 v-4 a2.5,2.5 0 0 0 -5,0 z" fill="none" stroke="#000" stroke-width="0.3"/>
+<path d="M140,33 v-4 h5 v4 a2.5,2.5 0 0 1 -5,0 z" fill="none" stroke="#000" stroke-width="0.3"/>
+<rect x="135" y="16" width="20" height="13" rx="1" fill="none" stroke="#000" stroke-width="0.3"/>
+<circle cx="142.5" cy="13.2" r="1" fill="none" stroke="#000" stroke-width="0.3"/><circle cx="142.5" cy="31.8" r="1" fill="none" stroke="#000" stroke-width="0.3"/>
+<path d="M155,21.5 h5 M155,23.5 h5" fill="none" stroke="#000" stroke-width="0.35"/>
+<text x="161" y="23" font-size="1.7" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">wires</text>
+<text x="145" y="43" font-size="2.6" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">speaker 20 × 13</text>
+<text x="145" y="46" font-size="1.9" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">21 across the flanges</text>
+<rect x="10" y="58" width="5" height="5" fill="none" stroke="#000" stroke-width="0.3"/><circle cx="12.5" cy="60.5" r="1.6" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="12.5" y="68" font-size="2.4" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">button 5 × 5</text>
+<rect x="30" y="57" width="12" height="6.5" rx="1" fill="none" stroke="#000" stroke-width="0.25" stroke-dasharray="1 0.8"/>
+<text x="36" y="68" font-size="2.4" text-anchor="middle" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">your USB plug</text>
+<text x="36" y="71" font-size="1.9" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">redraw at your W × H</text>
+<line x1="10" y1="95" x2="60" y2="95" stroke="#000" stroke-width="0.4"/>
+<line x1="10" y1="93.5" x2="10" y2="96.5" stroke="#000" stroke-width="0.3"/>
+<text x="10" y="100" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">0</text>
+<line x1="20" y1="93.5" x2="20" y2="96.5" stroke="#000" stroke-width="0.3"/>
+<text x="20" y="100" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">10</text>
+<line x1="30" y1="93.5" x2="30" y2="96.5" stroke="#000" stroke-width="0.3"/>
+<text x="30" y="100" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">20</text>
+<line x1="40" y1="93.5" x2="40" y2="96.5" stroke="#000" stroke-width="0.3"/>
+<text x="40" y="100" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">30</text>
+<line x1="50" y1="93.5" x2="50" y2="96.5" stroke="#000" stroke-width="0.3"/>
+<text x="50" y="100" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">40</text>
+<line x1="60" y1="93.5" x2="60" y2="96.5" stroke="#000" stroke-width="0.3"/>
+<text x="60" y="100" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">50</text>
+<text x="10" y="90" font-size="2.4" text-anchor="start" font-weight="700" font-family="Helvetica, Arial, sans-serif" fill="#000">SCALE CHECK: this bar must measure exactly 50 mm on paper. If not, reprint at 100 % / Actual size.</text>
+<rect x="80" y="55" width="10" height="10" fill="none" stroke="#000" stroke-width="0.3"/>
+<text x="85" y="69" font-size="2" text-anchor="middle" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">10 mm square</text>
+<text x="10" y="110" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">Pocket AI mock-up templates, 1:1, from the builder's caliper measurements of 2026-09-28. Cut on the solid lines.</text>
+<text x="10" y="113.5" font-size="2.2" text-anchor="start" font-weight="400" font-family="Helvetica, Arial, sans-serif" fill="#000">Dashed = still to measure (lit area, USB plug). Heights are not shown: tallest part is the amplifier, 18 mm with pins.</text>
+</svg>
