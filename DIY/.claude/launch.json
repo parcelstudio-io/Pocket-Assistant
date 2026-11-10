@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "webcam-snap",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "webcam_snap/app.py"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "xs-drone-pages",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "/tmp/claude-1000/-home-jaewoo-jang-Desktop-Projects-DIY/0459747f-2781-45ab-9e59-b8134906efa4/scratchpad/serve_utf8.py",
+        "8791",
+        "xs_drone/docs/pages"
+      ],
+      "port": 8791
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+.claude/settings.local.json
+cyber_clock_v2/bench/wifi.local.toml
+
+# Python caches
+__pycache__/
+*.pyc
