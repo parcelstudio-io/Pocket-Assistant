@@ -25,7 +25,7 @@ behind it: [voice-physics.md](voice-physics.md), web version [XS Drone Voice Phy
 **More lift, 2026-11-10.** The builder asked for all three features together (voice, a tilting camera, rangers all round) with
 the fewest changes, and for brass and ivory. Drawn below as the lift revision: 7 × 20 mm motors on 40 mm props, a brass ladder with
 50 mm axles and 7 mm collars, a 1.5 g tilt servo, five rangers behind an I2C multiplexer; about 54 g. **Approved 2026-11-10**
-("that sounds good with me, let's build it"); the parts went into the Amazon cart the same night, and step two is
+("that sounds good with me, let's build it"); the Amazon lines were ordered the same night, and step two is
 [lift-physics.md](lift-physics.md), web version [XS Drone Lift Physics](https://claude.ai/artifact/F5seCFLabQZ1cQ4Vtj1Yyx).
 
 ## Battery: nothing owned fits, buy the whoop pack
@@ -79,11 +79,11 @@ build, with its role:
 | Cree XP-G2 stars, 4 (one order of four, not six) | flashlight emitter, three spare | Nov 2, picked up |
 | uxcell 1 mm × 300 mm rod, 20 | frame rails, axles and bars | Nov 4–5, picked up |
 | [PAM8403 class-D amplifier board](https://www.amazon.com/dp/B0DYYX8DF9), 5-pack | the speaker's amplifier; one fitted, four spare (added 2026-11-09) | ordered 2026-11-09 (114-4918612-8872205, $5.59), arriving Thu 11-12 |
-| [7 × 20 mm coreless motors, 4-pack with JST 1.25 leads](https://www.amazon.com/dp/B0DJ17L348) (the [SpeedyFPV pack](https://www.amazon.com/dp/B0CCHXNKDG) and [BetaFPV 17500KV](https://betafpv.com/products/7x20mm-coreless-brushed-motors-for-beta75) are the alternatives) | lift revision: the four motors; the 615s become spares | in the cart 2026-11-10, $13.83, 3 left |
+| [7 × 20 mm coreless motors, 4-pack with JST 1.25 leads](https://www.amazon.com/dp/B0DJ17L348) (the [SpeedyFPV pack](https://www.amazon.com/dp/B0CCHXNKDG) and [BetaFPV 17500KV](https://betafpv.com/products/7x20mm-coreless-brushed-motors-for-beta75) are the alternatives) | lift revision: the four motors; the 615s become spares | ordered 2026-11-10 (114-3814610-9158651, $15.06 with tax), arriving Thu 11-12 |
 | [HQ Prop 40 mm four-blade, grey polycarbonate, 1 mm, set of four](https://www.tinywhoop.com/products/hq-prop-40mm-4-blade-props-grey-1mm-shaft) ×2 | lift revision: one set flying, one spare; grey for the palette (white sold out everywhere; the Gemfan clear grey and red pack was dropped as ugly against the brass) | in the tinywhoop.com cart 2026-11-10, $3.49 a set, guest checkout |
-| [TCA9548A I2C multiplexer, Adafruit](https://www.amazon.com/dp/B017C09ETS) | lift revision: five rangers on one bus, no pin | in the cart 2026-11-10, $9.13 from 3DMakerWorld, free delivery |
-| [TOF400C VL53L1X boards, AITRIP 2-pack](https://www.amazon.com/dp/B09LCHPTNM), ×2 | lift revision: left, right and rear rangers, black, one spare (replaces the Pimoroni at the cart: $43 each) | in the cart 2026-11-10 |
-| [AGFRC 1.5 g linear servo, pair](https://www.amazon.com/dp/B07L3N5C4S) | lift revision: the camera's tilt; one fitted, one spare | in the cart 2026-11-10, $17.99 |
+| [TCA9548A I2C multiplexer, Adafruit](https://www.amazon.com/dp/B017C09ETS) | lift revision: five rangers on one bus, no pin | ordered 2026-11-10 (114-0717964-5329021, $9.13), arriving Thu 11-12 |
+| [TOF400C VL53L1X boards, AITRIP 2-pack](https://www.amazon.com/dp/B09LCHPTNM), ×2 | lift revision: left, right and rear rangers, black, one spare (replaces the Pimoroni at the cart: $43 each) | ordered 2026-11-10 (114-0717964-5329021, $29.98), arriving Thu 11-12 |
+| [AGFRC 1.5 g linear servo, pair](https://www.amazon.com/dp/B07L3N5C4S) | lift revision: the camera's tilt; one fitted, one spare | ordered 2026-11-10 (114-0717964-5329021, $17.99), arriving Thu 11-12 |
 
 Owned already: 1.5 mm coupons for the collars, resistor kit, 220 µF capacitors, 26 AWG silicone wire,
 Kapton, heat-shrink, flux, iron, saw, bench supply, meter, Adafruit charger; and since 2026-11-09 one of the two spare
@@ -286,7 +286,7 @@ Drawn on the wiring sheet and in the views above; approved the same day ("let's 
   rangers (TOF400C boards); silver cans. Green shows only at the nose (the forward ranger); the down ranger and the amplifier hide under the pan and
   hood. Brass and ivory-white first, grey and black second, as asked on 2026-11-10. Nothing painted or covered.
 - **To buy, six lines**: the motors, the props, the multiplexer, two 2-packs of TOF400C rangers, one servo pair, and the amplifier.
-  Nothing for the frame. Links in the buy list above; in the builder's Amazon cart on 2026-11-10 except the amplifier, ordered on 11-09, and the props, in the tinywhoop.com cart.
+  Nothing for the frame. Links in the buy list above; ordered on 2026-11-10 (the amplifier on 11-09), all arriving Thu 11-12; the grey props wait in the tinywhoop.com cart.
 - **Firmware.** Added to the list: the multiplexer's channel select before each ranger read (one byte), the side and rear rangers at
   10 to 15 Hz with the rear field at 20°, the servo on LEDC at 50 Hz, the 75 % thrust cap, a PID retune for the heavier craft,
   and the 128× microphone clock from the physics page.

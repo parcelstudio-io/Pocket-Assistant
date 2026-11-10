@@ -478,14 +478,14 @@ def numbers():
 
 
 PARTS = [
-    ("lift from disc as much as motor", "7 × 20 mm coreless motors, 4-pack with JST 1.25 leads, in the cart", "https://www.amazon.com/dp/B0DJ17L348"),
+    ("lift from disc as much as motor", "7 × 20 mm coreless motors, 4-pack with JST 1.25 leads, ordered 2026-11-10", "https://www.amazon.com/dp/B0DJ17L348"),
     ("the 40 mm disc, grey polycarbonate", "HQ Prop 40 mm four-blade, 1 mm shaft, two sets in the tinywhoop.com cart", "https://www.tinywhoop.com/products/hq-prop-40mm-4-blade-props-grey-1mm-shaft"),
     ("7.5 A and 70 mΩ: the cap at 75 %", "the 250 mAh 30C flight packs on hand", "https://www.amazon.com/dp/B0FCMLVCN2"),
     ("half the stiffness, rosin flux, brown with time", "K&S 1.0 mm brass rod on hand", "https://www.amazon.com/dp/B005WPB7YG"),
     ("the four collars", "K&S 1.5 mm brass rod on hand", "https://www.amazon.com/dp/B01C6LUO5Q"),
-    ("9 mm of stroke, 6 used, 30° each way", "AGFRC 1.5 g linear servo pair, in the cart", "https://www.amazon.com/dp/B07L3N5C4S"),
-    ("eight switches, one byte, no pins", "Adafruit TCA9548A multiplexer, in the cart", "https://www.amazon.com/dp/B017C09ETS"),
-    ("27° cones that never meet a disc", "TOF400C VL53L1X boards, AITRIP 2-pack ×2, in the cart", "https://www.amazon.com/dp/B09LCHPTNM"),
+    ("9 mm of stroke, 6 used, 30° each way", "AGFRC 1.5 g linear servo pair, ordered 2026-11-10", "https://www.amazon.com/dp/B07L3N5C4S"),
+    ("eight switches, one byte, no pins", "Adafruit TCA9548A multiplexer, ordered 2026-11-10", "https://www.amazon.com/dp/B017C09ETS"),
+    ("27° cones that never meet a disc", "TOF400C VL53L1X boards, AITRIP 2-pack ×2, ordered 2026-11-10", "https://www.amazon.com/dp/B09LCHPTNM"),
     ("the cutting sheet for the brass", "the frame jig, regenerated for 50 mm axles and 7 mm collars", JIG_PAGE),
 ]
 
