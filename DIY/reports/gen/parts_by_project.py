@@ -144,7 +144,7 @@ PROJECTS = [
         "FedEx and the Pololu rangers by USPS, both at the front desk on 11-02, the same day as the four "
         "flashlight emitters. The frame rod came in two boxes on 11-04 and 11-05. Still in the mail: motors, "
         "propellers, the regulators and the motion sensor; the controller lands by 11-11. Added 2026-11-09 for the voice build: "
-        "a speaker from Pip's stock and an amplifier board, ordered 11-09 (arriving 11-12). The lift revision was approved 2026-11-10 and its five lines went into the builder's Amazon cart that night: 7 × 20 mm motors, 40 mm Gemfan props, an I2C multiplexer, two 2-packs of black rangers, a tilt servo; the frame goes to owned brass rod.",
+        "a speaker from Pip's stock and an amplifier board, ordered 11-09 (arriving 11-12). The lift revision was approved 2026-11-10 and its Amazon lines were ordered that night (arriving 11-12): 7 × 20 mm motors, an I2C multiplexer, two 2-packs of black rangers, a tilt servo; the grey 40 mm props wait in the tinywhoop.com cart; the frame goes to owned brass rod.",
         [
             ("1", "controller with camera and microphone", amz("B0C69FFVHH"),
              "Amazon 114-5295722-2709061, 2026-10-27", XIAO_11, "The drone's own board."),
@@ -201,19 +201,19 @@ PROJECTS = [
              "Amazon 114-4918612-8872205, 2026-11-09, $5.59 (B0DYYX8DF9, the version without the volume knob)", "in transit · arriving Thu 2026-11-12 (Orders page, read 2026-11-10)",
              "Under the pan at the nose, hidden as bought. Four spare."),
             ("4", "7 × 20 mm coreless motors, 4-pack with JST 1.25 leads", amz("B0DJ17L348"),
-             "in the builder's Amazon cart 2026-11-10 (B0DJ17L348, $13.83, 3 left)", "in the cart · lift revision approved 2026-11-10; the checkout is the builder's",
+             "Amazon 114-3814610-9158651, 2026-11-10, $15.06 with tax", "in transit · arriving Thu 2026-11-12 (Orders page, read 2026-11-10)",
              "In place of the 615s, which become spares. SpeedyFPV B0CCHXNKDG and BetaFPV's 17500KV are the alternatives."),
             ("4 of 8 (two sets)", "HQ Prop 40 mm four-blade props, grey polycarbonate, 1 mm, set of four", "https://www.tinywhoop.com/products/hq-prop-40mm-4-blade-props-grey-1mm-shaft",
              "in the builder's tinywhoop.com cart 2026-11-10 ($3.49 a set; guest checkout)", "in the cart · lift revision",
              "One set flying, one spare; grey for the palette. White props were sold out everywhere 11-10; the Gemfan clear grey and red pack was dropped from the Amazon cart as ugly against the brass. Black ABS at the same shop is the fallback."),
             ("1", "TCA9548A I2C multiplexer, Adafruit", amz("B017C09ETS"),
-             "in the builder's Amazon cart 2026-11-10 ($9.13 from 3DMakerWorld, free delivery)", "in the cart · lift revision",
+             "Amazon 114-0717964-5329021, 2026-11-10, $9.13 (3DMakerWorld)", "in transit · arriving Thu 2026-11-12 (Orders page, read 2026-11-10)",
              "Black, across the hood; the five rangers on one bus, one channel each, no pin."),
             ("3 of 4 (two 2-packs)", "TOF400C VL53L1X ranger boards, AITRIP 2-pack, black", amz("B09LCHPTNM"),
-             "in the builder's Amazon cart 2026-11-10 ($14.99 a pack)", "in the cart · lift revision",
+             "Amazon 114-0717964-5329021, 2026-11-10, $14.99 a pack", "in transit · arriving Thu 2026-11-12 (Orders page, read 2026-11-10)",
              "Left and right low beside the rails, back behind the tail bar; one spare. The Pimoroni board drawn first was $43 each on Amazon."),
             ("1 of 2", "AGFRC 1.5 g linear servo, pair", amz("B07L3N5C4S"),
-             "in the builder's Amazon cart 2026-11-10 ($17.99)", "in the cart · lift revision",
+             "Amazon 114-0717964-5329021, 2026-11-10, $17.99", "in transit · arriving Thu 2026-11-12 (Orders page, read 2026-11-10)",
              "The camera's tilt, ±30° on a 6 mm lever; one spare."),
             ("1", "USB-C LiPo charger, for the flight packs", ada(4410),
              "Adafruit 2026-09-01", "on hand", "Pip's held part, shared."),
