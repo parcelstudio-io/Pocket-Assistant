@@ -1,0 +1,427 @@
+<title>Sphere Motion Study</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{--bg:#EDEBE7;--paper:#FFFFFF;--ink:#16181C;--ink-2:#5A6068;--line:#CFCBC4;--brass:#8F6114;--brass-hi:#C79A3C;--brass-soft:#F2E6D2;
+--signal:#0E5F7A;--signal-soft:#D9EAF1;--blk:#1E2024;--blk-lo:#0B0C0E;--chrome:#C9CDD3;--px:#F4F4F0;--white:#F6F5F1;--glass:#0B0C0E;--desk:#D8D3CA;
+--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--display:"Archivo","Helvetica Neue",Arial,sans-serif;--body:"Public Sans","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161A;--paper:#1D2026;--ink:#E8E6E2;--ink-2:#9BA3AC;--line:#333841;--brass:#D69A4E;--brass-hi:#EFC07A;--brass-soft:#3A2C18;
+--signal:#5BB8D4;--signal-soft:#15323D;--blk:#2A2D33;--blk-lo:#15171A;--chrome:#B8BDC4;--white:#ECEAE4;--glass:#060708;--desk:#2A2E35;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161A;--paper:#1D2026;--ink:#E8E6E2;--ink-2:#9BA3AC;--line:#333841;--brass:#D69A4E;--brass-hi:#EFC07A;--brass-soft:#3A2C18;
+--signal:#5BB8D4;--signal-soft:#15323D;--blk:#2A2D33;--blk-lo:#15171A;--chrome:#B8BDC4;--white:#ECEAE4;--glass:#060708;--desk:#2A2E35;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:980px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px))}
+h1{font-family:var(--display);font-size:clamp(28px,5vw,40px);font-weight:900;letter-spacing:-.015em;line-height:1.1;margin:0}
+h2{font-family:var(--display);font-size:20px;font-weight:700;margin:28px 0 8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);margin-top:8px;line-height:1.5}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:14px;margin-bottom:14px}
+p{max-width:72ch;margin:10px 0}
+.stage{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:16px 0 10px;touch-action:none}
+canvas{display:block;width:100%;height:auto}
+.hud{position:absolute;left:12px;top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-2);line-height:1.5;pointer-events:none}
+.hud b{color:var(--ink);font-weight:700}
+.hint{position:absolute;right:12px;bottom:10px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);pointer-events:none;text-align:right}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 4px}
+button{font-family:var(--display);font-weight:700;font-size:14px;padding:8px 14px;border-radius:6px;border:1px solid var(--brass);background:var(--brass-soft);color:var(--brass);cursor:pointer}
+button.primary{background:var(--brass);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+label{font-family:var(--mono);font-size:12px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+input[type=range]{width:120px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.kpis div{background:var(--brass-soft);border:1px solid var(--brass);border-radius:6px;padding:10px 12px;min-width:0}
+.kpis b{display:block;font-family:var(--display);font-size:22px;font-weight:900;color:var(--brass)}
+.kpis span{font-size:12.5px;color:var(--ink-2)}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ul{max-width:72ch;padding-left:22px}
+li{margin:6px 0}
+.note{background:var(--signal-soft);border:1px solid var(--signal);border-radius:5px;padding:12px 16px;margin:16px 0;max-width:none}
+.note .lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);font-weight:700;margin-bottom:4px}
+hr{border:0;border-top:3px solid var(--brass);margin:40px 0 0}
+.bare .masthead,.bare .bar,.bare h2,.bare ul,.bare .kpis,.bare .note,.bare hr,.bare p,.bare .hint{display:none}
+.bare .wrap{padding:0;max-width:none}
+.bare .stage{margin:0;border:0;border-radius:0}
+</style>
+<div class="wrap">
+<div class="masthead">
+  <div class="eyebrow">Pocket AI Sphere &middot; motion study &middot; before Rev C, 2026-11-10</div>
+  <h1>How the sphere will move</h1>
+  <div class="sub">The 70 mm sphere on its brass fork: the eyes slide first, the sphere turns when they reach the edge. Drag the white marker (that is you); or play the demo. The geometry is the Rev C layout to scale; the servo speeds are the FS0307's figures. Hand-written page, not generated.</div>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="c" width="1120" height="700"></canvas>
+  <div class="hud" id="hud"></div>
+  <div class="hint">drag the marker · drag empty space to orbit the view</div>
+</div>
+<div class="bar">
+  <button class="primary" id="demo">Play the demo</button>
+  <button id="rec">Record a 24 s video</button>
+  <button id="centre">Centre</button>
+  <label>view <input type="range" id="az" min="-90" max="90" value="28"></label>
+  <label>height <input type="range" id="el" min="-10" max="60" value="12"></label>
+  <label><input type="checkbox" id="fov" checked> show the camera's cone</label>
+</div>
+<p id="recnote" class="sub"></p>
+
+<div class="kpis">
+<div><b>±60°</b><span>pan, the fork turning on the coaster</span></div>
+<div><b>±25°</b><span>tilt, the sphere nodding on its hinge</span></div>
+<div><b>66° × 50°</b><span>what the camera sees; the eyes slide inside this</span></div>
+<div><b>0.1 s / 60°</b><span>the servos' speed, eased in the firmware</span></div>
+</div>
+
+<h2>What you are looking at</h2>
+<ul>
+<li><strong>Eyes first.</strong> While you are inside the camera's cone, only the pupils move: the firmware draws them where it sees your face. Nothing mechanical happens.</li>
+<li><strong>Then the sphere.</strong> When you drift past about 18° off the sphere's axis, the eyes are near the edge of the glass. That is the cue: the sphere turns to put you back in the middle, and the eyes slide back to centre as it does. A short pause before each turn keeps it from twitching.</li>
+<li><strong>Two axes, two servos.</strong> Pan is the fork turning on the servo in the coaster. Tilt is the sphere nodding on the servo that forms its right hinge. Both are sub-micro servos; the sphere's weight hangs below the tilt axis, so it levels itself when the power is off.</li>
+<li><strong>Limits.</strong> Pan stops at ±60° (the wires inside the left tine twist no further), tilt at ±25°. Beyond that the eyes just look as far as they can.</li>
+<li><strong>Blinks</strong> are the only motion that is not tracking.</li>
+</ul>
+
+<div class="note"><span class="lbl">Not decided by this page</span>
+<p>Whether the face detection runs on the XIAO or on the desktop server, the exact dead band and pause, and the servo easing curve. The page uses 18°, 0.15 s and a critically damped slew capped at the servos' rated speed. The stand's height and the fork's tube size come from the Rev C drawing, not from here.</p></div>
+<hr>
+</div>
+
+<script>
+(() => {
+// ----------------------------------------------------------------- numbers (mm, degrees); the Rev C layout
+const R = 35, TOP_R = 22, TOP_Y = Math.sqrt(R*R - TOP_R*TOP_R);
+const SCREEN = {x:16.5, y0:-22, y1:14, z0:15, z1:17, glass:20, gy0:-14, gy1:14, gx:14};
+const XIAO = {x:10.5, y0:6, y1:24, z0:6, z1:15, lensY:19.5};
+const TRAY = {x:21.5, y0:-27, y1:-13, z0:-12, z1:6};
+const CELL = {y:-18.6, z:-3, r:8.3, x:17};
+const SPK = {x0:-12, x1:8, y0:-10.3, y1:-5.4, z0:-9.5, z1:3.5};
+const HINGE = {x0:17.7, x1:35, y0:-6.5, y1:13.5, z:4.15};      // the tilt servo in the ring at the right pole
+const STUB = 41;                                               // the left axle stub reaches x = -41
+const FORK = {x:39, bar:-44, tube:4};                          // 4 mm tube U, tines at x = ±39, bar at y = -44
+const PAN = {x0:-12.5, x1:7.5, z:4.15, y0:-66, y1:-48.7, horn0:-48.7, horn1:-46};
+const COASTER = {r:37.5, y0:-74, y1:-66};
+const AHT = {x:12.7, y0:24, y1:25.6, z0:-20, z1:-2};
+const LIM = {pan:60, tilt:25};
+const FOV = {h:33, v:25};                                      // half-angles of the camera's cone
+const DEAD = 18, PAUSE = 0.15, VMAX = 600;                     // deg off-axis before a turn, s of pause, deg/s servo cap
+const KP = 7;                                                  // 1/s, the slew's stiffness
+
+// ----------------------------------------------------------------- canvas and colours
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let C = {};
+if (new URLSearchParams(location.search).has('light')) document.documentElement.setAttribute('data-theme','light');
+function readColours(){ for (const k of ['paper','ink','ink-2','line','brass','brass-hi','blk','blk-lo','chrome','px','white','glass','desk','signal']) C[k] = css('--'+k); }
+readColours();
+if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColours);
+
+// ----------------------------------------------------------------- the view (same maths as the build page's View)
+let AZ = 28, EL = 12, S = 3.6;                                  // px per mm
+const OX = W*0.52, OY = H*0.44;
+let cam = {};
+function setCam(){
+  const az = AZ*Math.PI/180, el = EL*Math.PI/180;
+  const c = [Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el)];
+  const up = [0,1,0];
+  const r = norm(cross(up, c)), u = norm(cross(c, r));
+  cam = {c, r, u, light: norm([-0.35, 0.6, 0.72])};
+}
+const dot = (a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross = (a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+const norm = (v)=>{const l=Math.hypot(v[0],v[1],v[2])||1; return [v[0]/l,v[1]/l,v[2]/l];};
+const P = (p)=>[OX + S*dot(p,cam.r), OY - S*dot(p,cam.u)];
+const depth = (p)=>dot(p,cam.c);
+
+// transforms: sphere parts get tilt (about x) then pan (about y); fork parts get pan only
+let pan = 0, tilt = 0;
+function rotX(p, a){const c=Math.cos(a), s=Math.sin(a); return [p[0], p[1]*c - p[2]*s, p[1]*s + p[2]*c];}
+function rotY(p, a){const c=Math.cos(a), s=Math.sin(a); return [p[0]*c + p[2]*s, p[1], -p[0]*s + p[2]*c];}
+const T_SPH = (p)=>rotY(rotX(p, tilt*Math.PI/180), pan*Math.PI/180);
+const T_FORK = (p)=>rotY(p, pan*Math.PI/180);
+const T_ID = (p)=>p;
+
+// ----------------------------------------------------------------- drawing primitives into a depth-sorted list
+let els = [];
+function add(d, f){ els.push({d, f}); }
+function brightness(hex, k){
+  // hex colour × k (0.5..1.2)
+  const m = hex.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (!m) return hex;
+  const f = (h)=>Math.max(0, Math.min(255, Math.round(parseInt(h,16)*k)));
+  return `rgb(${f(m[1])},${f(m[2])},${f(m[3])})`;
+}
+function poly(pts2, fill, stroke, lw){
+  ctx.beginPath(); pts2.forEach((p,i)=> i? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1])); ctx.closePath();
+  if (fill){ ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = lw||1; ctx.lineJoin='round'; ctx.stroke(); }
+}
+function box(T, x0,x1,y0,y1,z0,z1, base, stroke, lift){
+  const faces = [[[0,0,1],[[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]],[[0,0,-1],[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]]],
+                 [[1,0,0],[[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]]],[[-1,0,0],[[x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1]]],
+                 [[0,1,0],[[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]]],[[0,-1,0],[[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]]]];
+  const cen = T([(x0+x1)/2,(y0+y1)/2,(z0+z1)/2]);
+  const nT = (n)=>{const o=T([0,0,0]), q=T(n); return norm([q[0]-o[0],q[1]-o[1],q[2]-o[2]]);};
+  const drawn = [];
+  for (const [n, pts] of faces){
+    const nw = nT(n); if (dot(nw, cam.c) <= 1e-6) continue;
+    const k = 0.62 + 0.38*Math.max(0, dot(nw, cam.light));
+    drawn.push({pts: pts.map(p=>P(T(p))), k});
+  }
+  add(depth(cen)+(lift||0), ()=>{ for (const f of drawn) poly(f.pts, brightness(base, f.k), stroke, 1); });
+}
+function flat(T, pts3, fill, lift){
+  const cen = pts3.reduce((a,p)=>[a[0]+p[0]/pts3.length,a[1]+p[1]/pts3.length,a[2]+p[2]/pts3.length],[0,0,0]);
+  const pts = pts3.map(p=>P(T(p)));
+  add(depth(T(cen))+(lift||0), ()=>poly(pts, fill, null));
+}
+function seg3(T, a, b, w, col, fade, lift){
+  const A = T(a), B = T(b); const d = (depth(A)+depth(B))/2;
+  let k = 1, op = 1;
+  if (fade){ k = 0.55 + 0.45*(d + R)/(2*R); op = 0.45 + 0.55*k; }
+  const pa = P(A), pb = P(B);
+  add(d+(lift||0), ()=>{ ctx.globalAlpha = op; ctx.strokeStyle = col; ctx.lineWidth = w*S*k/3.2*1.0; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(pa[0],pa[1]); ctx.lineTo(pb[0],pb[1]); ctx.stroke(); ctx.globalAlpha = 1; });
+}
+function ring3(T, center, radius, e1, e2, w, col, n, skip){
+  // skip: [a0,a1] angles (deg) to leave out
+  n = n||72; const pts = [];
+  for (let i=0;i<n;i++){ const t = 2*Math.PI*i/n; pts.push([center[0]+radius*(Math.cos(t)*e1[0]+Math.sin(t)*e2[0]), center[1]+radius*(Math.cos(t)*e1[1]+Math.sin(t)*e2[1]), center[2]+radius*(Math.cos(t)*e1[2]+Math.sin(t)*e2[2]), t*180/Math.PI]); }
+  for (let i=0;i<n;i++){ const a = pts[i], b = pts[(i+1)%n];
+    if (skip && skip(a[3])) continue;
+    seg3(T, a, b, w, col, true); }
+}
+function hull(pts){
+  pts = pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  if (pts.length<3) return pts;
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lo=[]; for (const p of pts){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p); }
+  const up=[]; for (const p of pts.slice().reverse()){ while(up.length>=2 && cr(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p); }
+  return lo.slice(0,-1).concat(up.slice(0,-1));
+}
+function cyl(T, c0, c1, radius, base, stroke, lift){
+  const axis = norm([c1[0]-c0[0],c1[1]-c0[1],c1[2]-c0[2]]);
+  const a = Math.abs(axis[1])<0.9 ? [0,1,0] : [1,0,0];
+  const e1 = norm(cross(axis,a)), e2 = cross(axis,e1);
+  const ring = (c)=>{const o=[]; for(let k=0;k<24;k++){const t=2*Math.PI*k/24; o.push([c[0]+radius*(Math.cos(t)*e1[0]+Math.sin(t)*e2[0]), c[1]+radius*(Math.cos(t)*e1[1]+Math.sin(t)*e2[1]), c[2]+radius*(Math.cos(t)*e1[2]+Math.sin(t)*e2[2])]);} return o;};
+  const b = ring(c0).map(p=>P(T(p))), t = ring(c1).map(p=>P(T(p)));
+  const h = hull(b.concat(t));
+  const cen = T([(c0[0]+c1[0])/2,(c0[1]+c1[1])/2,(c0[2]+c1[2])/2]);
+  const axw = (()=>{const o=T([0,0,0]), q=T(axis); return [q[0]-o[0],q[1]-o[1],q[2]-o[2]];})();
+  const cap = dot(axw, cam.c) > 0 ? t : b;
+  add(depth(cen)+(lift||0), ()=>{ poly(h, base, stroke, 1); poly(cap, brightness(base,1.1), stroke, 1); });
+}
+
+// ----------------------------------------------------------------- the eyes and the tracking state
+let gaze = {x:0, y:0};           // -1..1 inside the glass
+let target = {yaw:0, pitch:0};   // where you are, degrees off the fork's forward axis (world)
+let goal = {pan:0, tilt:0};      // where the servos are heading
+let pauseT = {pan:0, tilt:0}, moving = {pan:false, tilt:false};
+let blink = 0, nextBlink = 3;
+
+function step(dt){
+  // what the camera sees: your angle relative to the sphere's own axis
+  const ey = target.yaw - pan, ep = target.pitch - tilt;
+  gaze.x = Math.max(-1, Math.min(1, ey / FOV.h));
+  gaze.y = Math.max(-1, Math.min(1, ep / FOV.v));
+  // the head follows when the eyes are near the edge, after a short pause
+  for (const [ax, err, lim, key] of [['pan', ey, LIM.pan, 'yaw'], ['tilt', ep, LIM.tilt, 'pitch']]){
+    const tgt = Math.max(-lim, Math.min(lim, target[key]));
+    const cur = ax==='pan'? pan : tilt;
+    if (moving[ax]){ goal[ax] = tgt; if (Math.abs(tgt - cur) < 1.5) moving[ax] = false; }
+    else if (Math.abs(err) > DEAD && Math.abs(tgt - cur) > 2){ pauseT[ax] += dt; if (pauseT[ax] >= PAUSE){ moving[ax] = true; goal[ax] = tgt; pauseT[ax] = 0; } }
+    else pauseT[ax] = 0;
+  }
+  // servo slew: critically damped approach capped at the rated speed
+  for (const ax of ['pan','tilt']){
+    const cur = ax==='pan'? pan : tilt; const e = goal[ax] - cur;
+    let v = e * KP; v = Math.max(-VMAX, Math.min(VMAX, v));
+    const nv = cur + v*dt;
+    if (ax==='pan') pan = nv; else tilt = nv;
+  }
+  // blinks
+  nextBlink -= dt; if (nextBlink <= 0){ blink = 0.14; nextBlink = 2.5 + Math.random()*3; }
+  if (blink > 0) blink -= dt;
+}
+
+// ----------------------------------------------------------------- the scene
+function build(){
+  els = [];
+  // desk shadow and coaster (static)
+  const sh=[]; for(let k=0;k<48;k++){const t=2*Math.PI*k/48; sh.push(P([44*Math.cos(t), COASTER.y0-0.3, 44*Math.sin(t)]));}
+  add(-999, ()=>{ poly(sh, 'rgba(0,0,0,0.08)', null); });
+  cyl(T_ID, [0,COASTER.y0,0], [0,COASTER.y1,0], COASTER.r, C['brass-hi'], C.brass, -500);
+  // pan servo on the coaster and its horn
+  box(T_ID, PAN.x0, PAN.x1, PAN.y0, PAN.y1, -PAN.z, PAN.z, C.blk, C['blk-lo']);
+  cyl(T_ID, [0,PAN.horn0,0], [0,PAN.horn1,0], 3.5, C['blk-lo'], C['blk-lo']);
+  // the fork: 4 mm tube U, panning
+  const tw = FORK.tube;
+  seg3(T_FORK, [-FORK.x, FORK.bar, 0], [FORK.x, FORK.bar, 0], tw, C.brass, false);
+  seg3(T_FORK, [-FORK.x, FORK.bar, 0], [-FORK.x, 0, 0], tw, C.brass, false);
+  seg3(T_FORK, [FORK.x, FORK.bar, 0], [FORK.x, 0, 0], tw, C.brass, false);
+  cyl(T_FORK, [-FORK.x-2.5, 0, 0], [-FORK.x+2.5, 0, 0], 2.6, C['brass-hi'], C.brass);   // the left bushing
+  cyl(T_FORK, [FORK.x-2.5, 0, 0], [FORK.x+2.5, 0, 0], 2.6, C['brass-hi'], C.brass);      // the right collar on the horn
+  // the sphere: rings (the vertical ring leaves a gap for the hinge servo at the right pole)
+  const hingeA0 = Math.atan2(HINGE.y0, Math.sqrt(R*R-HINGE.y0*HINGE.y0))*180/Math.PI, hingeA1 = Math.atan2(HINGE.y1, Math.sqrt(R*R-HINGE.y1*HINGE.y1))*180/Math.PI;
+  ring3(T_SPH, [0,0,0], R, [1,0,0], [0,1,0], 3.2, C.brass, 96, (t)=> t < hingeA1 || t > 360 + hingeA0);   // the gap is the hinge servo
+  ring3(T_SPH, [0,TOP_Y,0], TOP_R, [1,0,0], [0,0,1], 3.2, C.brass, 72);
+  ring3(T_SPH, [0,-TOP_Y,0], TOP_R, [1,0,0], [0,0,1], 3.2, C.brass, 72);
+  // posts and ties
+  const PX = 11.5, PZ = 13;
+  for (const x of [-PX, PX]){ seg3(T_SPH, [x,-TOP_Y,PZ], [x,XIAO.y1,PZ], 2.0, C.brass, true); }
+  // hinge servo (tilt) in the ring at the right pole, horn out to the fork
+  box(T_SPH, HINGE.x0, HINGE.x1, HINGE.y0, HINGE.y1, -HINGE.z, HINGE.z, C.blk, C['blk-lo']);
+  cyl(T_SPH, [HINGE.x1,0,0], [HINGE.x1+3,0,0], 3.2, C['blk-lo'], C['blk-lo']);
+  // left axle stub
+  seg3(T_SPH, [-R,0,0], [-STUB,0,0], 1.8, C.brass, false);
+  // screen module, glass, eyes
+  box(T_SPH, -SCREEN.x, SCREEN.x, SCREEN.y0, SCREEN.y1, SCREEN.z0, SCREEN.z1, C.blk, C['blk-lo']);
+  box(T_SPH, -SCREEN.gx, SCREEN.gx, SCREEN.gy0, SCREEN.gy1, SCREEN.z1, SCREEN.glass, C.glass, C['blk-lo'], 0.5);
+  const ex = gaze.x*5.5, ey = gaze.y*5.5, bl = blink>0 ? 0.12 : 1;
+  for (const cx of [-6.5, 6.5]){
+    const w = 4.2, h = 5.2*bl; const zc = SCREEN.glass+0.05;
+    flat(T_SPH, [[cx+ex-w, ey-h, zc],[cx+ex+w, ey-h, zc],[cx+ex+w, ey+h, zc],[cx+ex-w, ey+h, zc]], C.px, 4);
+  }
+  // XIAO stack behind the screen's upper half, lens over the top edge, mic dot
+  box(T_SPH, -XIAO.x, XIAO.x, XIAO.y0, XIAO.y1, XIAO.z0, XIAO.z1, C.blk, C['blk-lo']);
+  box(T_SPH, -4, 4, XIAO.lensY-4, XIAO.lensY+4, XIAO.z1, XIAO.z1+1.8, C['blk-lo'], C['blk-lo'], 0.03);
+  cyl(T_SPH, [0,XIAO.lensY,XIAO.z1+1.8], [0,XIAO.lensY,XIAO.z1+2.6], 2.2, C.glass, C['blk-lo'], 0.05);
+  cyl(T_SPH, [7.5,XIAO.lensY-2,XIAO.z1], [7.5,XIAO.lensY-2,XIAO.z1+0.3], 0.6, C.glass, C['blk-lo'], 0.04);
+  box(T_SPH, -XIAO.x-2, -XIAO.x, 10, 14, XIAO.z0+0.5, XIAO.z0+3.5, C.chrome, C['blk-lo'], 0.03);  // USB-C
+  // tray, cell, speaker, AHT20, button, toggle lever
+  box(T_SPH, -TRAY.x, TRAY.x, TRAY.y0, TRAY.y0+1.5, TRAY.z0, TRAY.z1, C.blk, C['blk-lo']);
+  for (const x of [-TRAY.x, TRAY.x-2]) box(T_SPH, x, x+2, TRAY.y0, TRAY.y1, TRAY.z0, TRAY.z1, C.blk, C['blk-lo']);
+  for (const z of [TRAY.z0, TRAY.z1-1.2]) box(T_SPH, -TRAY.x, TRAY.x, TRAY.y0, TRAY.y1-4, z, z+1.2, C.blk, C['blk-lo']);
+  cyl(T_SPH, [-CELL.x,CELL.y,CELL.z], [CELL.x,CELL.y,CELL.z], CELL.r, '#161718', C['blk-lo']);
+  cyl(T_SPH, [CELL.x-3.5,CELL.y,CELL.z], [CELL.x-0.5,CELL.y,CELL.z], CELL.r+0.1, '#D9A400', C['blk-lo'], 0.05);
+  box(T_SPH, SPK.x0, SPK.x1, SPK.y0, SPK.y1, SPK.z0, SPK.z1, C.blk, C['blk-lo'], 0.06);
+  box(T_SPH, -AHT.x, AHT.x, AHT.y0, AHT.y1, AHT.z0, AHT.z1, C.blk, C['blk-lo']);
+  cyl(T_SPH, [0,TOP_Y,TOP_R-1], [0,TOP_Y+3.5,TOP_R-1], 2.5, C.white, C['ink-2'], 0.05);          // button cap on the top ring
+  cyl(T_SPH, [16.5,-17,10.5], [26,-15.5,10.5], 1.2, C.chrome, C['blk-lo'], 0.05);               // toggle lever
+  // the camera's cone, in the sphere's frame
+  if (document.getElementById('fov').checked){
+    const L = 58, th = Math.tan(FOV.h*Math.PI/180)*L, tv = Math.tan(FOV.v*Math.PI/180)*L;
+    const apex = [0, XIAO.lensY, XIAO.z1+2.6];
+    const corners = [[-th, XIAO.lensY-tv, L],[th, XIAO.lensY-tv, L],[th, XIAO.lensY+tv, L],[-th, XIAO.lensY+tv, L]];
+    const cs = corners.map(c=>P(T_SPH(c))), ap = P(T_SPH(apex));
+    add(60, ()=>{ ctx.globalAlpha=0.35; ctx.strokeStyle = C.signal; ctx.lineWidth = 1; ctx.setLineDash([4,4]); for (const c of cs){ ctx.beginPath(); ctx.moveTo(ap[0],ap[1]); ctx.lineTo(c[0],c[1]); ctx.stroke(); } poly(cs, null, C.signal, 1); ctx.setLineDash([]); ctx.globalAlpha=1; });
+  }
+  els.sort((a,b)=>a.d-b.d);
+}
+
+// the "you" marker: your direction, drawn on a far plane in front of the fork's forward axis (world frame)
+const YOU_D = 72;
+function youPoint(){ const y = target.yaw*Math.PI/180, p = target.pitch*Math.PI/180; return [YOU_D*Math.sin(y)*Math.cos(p), XIAO.lensY + YOU_D*Math.sin(p), YOU_D*Math.cos(y)*Math.cos(p)]; }
+
+function draw(){
+  setCam(); build();
+  ctx.clearRect(0,0,W,H);
+  for (const e of els) e.f();
+  // you
+  const yp = P(youPoint()), lp = P(T_SPH([0, XIAO.lensY, XIAO.z1+2.6]));
+  ctx.save(); ctx.globalAlpha = 0.45; ctx.setLineDash([3,5]); ctx.strokeStyle = C['ink-2']; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(lp[0], lp[1]); ctx.lineTo(yp[0], yp[1]); ctx.stroke(); ctx.restore();
+  ctx.beginPath(); ctx.arc(yp[0], yp[1], 11, 0, 2*Math.PI); ctx.fillStyle = C.white; ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(yp[0]-3.5, yp[1]-2, 1.6, 0, 2*Math.PI); ctx.arc(yp[0]+3.5, yp[1]-2, 1.6, 0, 2*Math.PI); ctx.fillStyle = C.ink; ctx.fill();
+  ctx.beginPath(); ctx.arc(yp[0], yp[1]+2, 4, 0.15*Math.PI, 0.85*Math.PI); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.font = '11px ' + css('--mono'); ctx.fillStyle = C['ink-2']; ctx.textAlign='center'; ctx.fillText('you', yp[0], yp[1]+26);
+  // top-view inset: the pan and the cone from above
+  const ix = W-190, iy = 24, iw = 170, ih = 150, cx = ix+iw/2, cy = iy+ih*0.66, k = 1.2;
+  ctx.fillStyle = C.paper; ctx.strokeStyle = C.line; ctx.lineWidth=1; ctx.fillRect(ix,iy,iw,ih); ctx.strokeRect(ix,iy,iw,ih);
+  ctx.font = '700 11px ' + css('--mono'); ctx.fillStyle = C['ink-2']; ctx.textAlign='left'; ctx.fillText('FROM ABOVE', ix+8, iy+14);
+  const pr = pan*Math.PI/180, yr = target.yaw*Math.PI/180;
+  // cone
+  ctx.globalAlpha = 0.25; ctx.fillStyle = C.signal; ctx.beginPath(); ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, 75, -Math.PI/2 - pr - FOV.h*Math.PI/180, -Math.PI/2 - pr + FOV.h*Math.PI/180); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+  // fork
+  ctx.strokeStyle = C.brass; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx - FORK.x*k*Math.cos(pr), cy - FORK.x*k*Math.sin(pr)); ctx.lineTo(cx + FORK.x*k*Math.cos(pr), cy + FORK.x*k*Math.sin(pr)); ctx.stroke();
+  // sphere
+  ctx.beginPath(); ctx.arc(cx, cy, R*k, 0, 2*Math.PI); ctx.strokeStyle = C.brass; ctx.lineWidth = 2.5; ctx.stroke();
+  // face direction
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R*k*Math.sin(pr), cy - R*k*Math.cos(pr)); ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.stroke();
+  // you
+  const yd = 68; ctx.beginPath(); ctx.arc(cx + yd*Math.sin(yr), cy - yd*Math.cos(yr), 5, 0, 2*Math.PI); ctx.fillStyle = C.white; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.fill(); ctx.stroke();
+  // pan limits
+  for (const sgn of [-1,1]){ const a = sgn*LIM.pan*Math.PI/180; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 78*Math.sin(a), cy - 78*Math.cos(a)); ctx.strokeStyle = C.line; ctx.setLineDash([3,3]); ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]); }
+  document.getElementById('hud').innerHTML = `pan <b>${pan.toFixed(0).padStart(4)}°</b> → ${goal.pan.toFixed(0)}°<br>tilt <b>${tilt.toFixed(0).padStart(4)}°</b> → ${goal.tilt.toFixed(0)}°<br>eyes <b>${(gaze.x*100).toFixed(0).padStart(5)}%</b> across, <b>${(gaze.y*100).toFixed(0).padStart(4)}%</b> up<br>you at ${target.yaw.toFixed(0)}°, ${target.pitch.toFixed(0)}°`;
+}
+
+// ----------------------------------------------------------------- the demo path: where you go over 24 s
+const PATH = [[0,0,0],[2,0,0],[3.2,10,0],[5,10,0],[6.5,40,5],[9,40,5],[10.5,-20,20],[12.5,-45,0],[15,-45,0],[16.5,0,-20],[18.5,25,-5],[20.5,0,0],[24,0,0]];
+function pathAt(t){ for (let i=0;i<PATH.length-1;i++){ const a=PATH[i], b=PATH[i+1]; if (t>=a[0] && t<=b[0]){ const u=(t-a[0])/(b[0]-a[0]||1), s=u*u*(3-2*u); return [a[1]+(b[1]-a[1])*s, a[2]+(b[2]-a[2])*s]; } } return [0,0]; }
+let demoT = -1, recorder = null;
+
+// ----------------------------------------------------------------- interaction
+const stage = document.getElementById('stage');
+let drag = null;
+function toCanvas(ev){ const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left)*W/r.width, (ev.clientY - r.top)*H/r.height]; }
+function setTargetFromCanvas(pt){
+  // invert the projection on the far plane: solve for yaw/pitch so that P(youPoint()) ≈ pt (small iterations)
+  let yaw = target.yaw, pitch = target.pitch;
+  for (let i=0;i<12;i++){
+    target.yaw = yaw; target.pitch = pitch;
+    const p0 = P(youPoint());
+    target.yaw = yaw+1; const px = P(youPoint()); target.yaw = yaw; target.pitch = pitch+1; const py = P(youPoint()); target.pitch = pitch;
+    const a = px[0]-p0[0], b = py[0]-p0[0], c = px[1]-p0[1], d = py[1]-p0[1], det = a*d-b*c || 1e-6;
+    const dx = pt[0]-p0[0], dy = pt[1]-p0[1];
+    yaw += ( d*dx - b*dy)/det; pitch += (-c*dx + a*dy)/det;
+    yaw = Math.max(-80, Math.min(80, yaw)); pitch = Math.max(-40, Math.min(45, pitch));
+  }
+  target.yaw = yaw; target.pitch = pitch;
+}
+stage.addEventListener('pointerdown', (ev)=>{
+  const pt = toCanvas(ev); const yp = P(youPoint());
+  if (Math.hypot(pt[0]-yp[0], pt[1]-yp[1]) < 26){ drag = {kind:'you'}; demoT = -1; }
+  else drag = {kind:'orbit', x:pt[0], y:pt[1], az:AZ, el:EL};
+  stage.setPointerCapture(ev.pointerId);
+});
+stage.addEventListener('pointermove', (ev)=>{
+  if (!drag) return; const pt = toCanvas(ev);
+  if (drag.kind==='you') setTargetFromCanvas(pt);
+  else { AZ = Math.max(-90, Math.min(90, drag.az + (pt[0]-drag.x)*0.25)); EL = Math.max(-10, Math.min(60, drag.el + (pt[1]-drag.y)*0.25)); document.getElementById('az').value = AZ; document.getElementById('el').value = EL; }
+});
+stage.addEventListener('pointerup', ()=>{ drag = null; });
+document.getElementById('az').addEventListener('input', (e)=>{ AZ = +e.target.value; });
+document.getElementById('el').addEventListener('input', (e)=>{ EL = +e.target.value; });
+document.getElementById('centre').addEventListener('click', ()=>{ target = {yaw:0, pitch:0}; demoT = -1; });
+document.getElementById('demo').addEventListener('click', ()=>{ demoT = 0; });
+document.getElementById('rec').addEventListener('click', ()=>{
+  const note = document.getElementById('recnote');
+  if (!window.MediaRecorder || !cv.captureStream){ note.textContent = 'This browser cannot record a canvas; use the demo instead.'; return; }
+  const stream = cv.captureStream(30);
+  const type = ['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported(t)) || '';
+  recorder = new MediaRecorder(stream, type? {mimeType:type, videoBitsPerSecond: 6e6} : undefined);
+  const chunks = [];
+  recorder.ondataavailable = (e)=>{ if (e.data.size) chunks.push(e.data); };
+  recorder.onstop = async ()=>{
+    const blob = new Blob(chunks, {type: recorder.mimeType||'video/webm'});
+    const name = 'pocket-ai-sphere-motion.' + ((recorder.mimeType||'').includes('mp4')?'mp4':'webm');
+    const dl = (window.claude && claude.use) ? await claude.use('downloads') : null;
+    try {
+      if (dl){ await dl.save({filename: name, data: blob}); note.textContent = 'Saved ' + name + '.'; }
+      else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); note.textContent = 'Saved ' + name + ' to your downloads.'; }
+    } catch (e){ note.textContent = (e && e.code === 'declined') ? 'Not saved.' : 'Could not save the video here (' + (e && e.code || 'unavailable') + ').'; }
+    document.getElementById('rec').disabled = false; recorder = null; };
+  document.getElementById('rec').disabled = true; note.textContent = 'Recording the 24 s demo…';
+  pan = 0; tilt = 0; goal = {pan:0, tilt:0}; target = {yaw:0, pitch:0}; demoT = 0;
+  recorder.start(200);
+});
+
+// still-frame mode for rendering outside a browser session: ?t=seconds
+const q = new URLSearchParams(location.search);
+if (q.has('bare')) document.body.classList.add('bare');
+if (q.has('t')){
+  const tEnd = +q.get('t'); if (q.has('az')) AZ = +q.get('az'); if (q.has('el')) EL = +q.get('el');
+  pan = 0; tilt = 0; goal = {pan:0, tilt:0};
+  for (let t = 0; t < tEnd; t += 1/60){ const [y,p] = pathAt(t); target.yaw = y; target.pitch = p; nextBlink = 99; step(1/60); }
+  blink = (tEnd % 7 > 3.0 && tEnd % 7 < 3.14) ? 0.1 : 0;
+  draw();
+} else {
+  let last = performance.now();
+  function loop(now){
+    const dt = Math.min(0.05, (now-last)/1000); last = now;
+    if (demoT >= 0){ demoT += dt; const [y,p] = pathAt(demoT); target.yaw = y; target.pitch = p; if (demoT > 24){ demoT = -1; if (recorder && recorder.state==='recording') recorder.stop(); } }
+    step(dt); draw(); requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+})();
+</script>

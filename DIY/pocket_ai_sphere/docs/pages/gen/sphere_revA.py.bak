@@ -1,0 +1,555 @@
+#!/usr/bin/env python3
+"""Pocket AI Sphere: geometry, parts, pins and tests in one place.
+
+Writes docs/pages/sphere.html (the published page) and docs/DESIGN.md (the record).
+Coordinates in mm: x right, y up, z toward the viewer (the face). Origin at the
+sphere's centre. Run from anywhere: python3 docs/pages/gen/sphere.py
+"""
+import math, os, re, html
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+PAGES = os.path.dirname(HERE)
+DOCS = os.path.dirname(PAGES)
+
+R = 35.0            # sphere radius: 70 mm, a tennis ball is 67
+LAT = 22.0          # latitude rings at y = +-22
+LAT_R = math.sqrt(R*R - LAT*LAT)      # 27.2
+BASE_R = 22.0; BASE_Y = -math.sqrt(R*R-BASE_R*BASE_R)   # -27.2: the sphere stands on this ring, the holder rests in it
+PLATE_Z = 18.0; PLATE_X = 13.5; PLATE_Y0, PLATE_Y1 = -18.0, 28.0
+FREQ = 2            # geodesic frequency: 2 = the Las Vegas look (120 struts), 1 = a plain icosahedron (30)
+
+def geodesic(freq=FREQ, radius=R):
+    """Class-I icosahedral geodesic: returns (vertices, edges) on a sphere, one triangular face
+    at the bottom (so it stands on three hubs) and the matching face at the top."""
+    phi = (1+5**0.5)/2
+    V = []
+    for a in (-1, 1):
+        for b in (-phi, phi):
+            V += [(0, a, b), (a, b, 0), (b, 0, a)]
+    V = [tuple(x/ (1+phi*phi)**0.5 for x in v) for v in V]
+    # faces: triples of mutually adjacent vertices (edge length 2/sqrt(1+phi^2))
+    import itertools
+    d_edge = 2/(1+phi*phi)**0.5
+    def dist(a, b): return math.sqrt(sum((x-y)**2 for x, y in zip(a, b)))
+    faces = [f for f in itertools.combinations(range(12), 3)
+             if all(abs(dist(V[i], V[j])-d_edge) < 1e-6 for i, j in itertools.combinations(f, 2))]
+    pts = {}; edges = set()
+    def key(p): return tuple(round(x, 6) for x in p)
+    def add(p):
+        k = key(p)
+        if k not in pts: pts[k] = len(pts)
+        return pts[k]
+    def nrm(p):
+        l = math.sqrt(sum(x*x for x in p)); return tuple(x/l for x in p)
+    for f in faces:
+        A, B, C = (V[i] for i in f)
+        # subdivide the face into freq^2 triangles
+        grid = {}
+        for i in range(freq+1):
+            for j in range(freq+1-i):
+                k = freq-i-j
+                p = nrm(tuple((i*A[t]+j*B[t]+k*C[t])/freq for t in range(3)))
+                grid[(i, j)] = add(p)
+        for i in range(freq):
+            for j in range(freq-i):
+                a, b, c = grid[(i, j)], grid[(i+1, j)], grid[(i, j+1)]
+                for e in ((a, b), (b, c), (c, a)): edges.add(tuple(sorted(e)))
+                if j < freq-i-1:
+                    d = grid[(i+1, j+1)]
+                    for e in ((b, d), (d, c)): edges.add(tuple(sorted(e)))
+    verts = [None]*len(pts)
+    for k, i in pts.items(): verts[i] = k
+    # orient: the centroid of face 0 points straight down
+    A, B, C = (V[i] for i in faces[0])
+    n = nrm(tuple(A[t]+B[t]+C[t] for t in range(3)))
+    # rotation taking n to (0,-1,0): axis = n x target
+    tgt = (0, -1, 0); ax = cross(n, tgt); sa = math.sqrt(sum(x*x for x in ax)); ca = dot(n, tgt)
+    def rot(p):
+        if sa < 1e-9: return p if ca > 0 else (p[0], -p[1], p[2])
+        k = tuple(x/sa for x in ax)
+        kp = cross(k, p); kd = dot(k, p)
+        return tuple(p[t]*ca + kp[t]*sa + k[t]*kd*(1-ca) for t in range(3))
+    verts = [tuple(radius*x for x in rot(v)) for v in verts]
+    # yaw so that a hub sits at the front equator-ish: rotate so the vertex nearest to +z at y~0 faces front
+    best = max(verts, key=lambda v: v[2] - abs(v[1]))
+    yaw = math.atan2(best[0], best[2])
+    cy, sy = math.cos(-yaw), math.sin(-yaw)
+    verts = [(v[0]*cy + v[2]*sy, v[1], -v[0]*sy + v[2]*cy) for v in verts]
+    return verts, sorted(edges)
+
+def strut_lengths():
+    ls = {}
+    for a, b in GEO_E:
+        l = round(math.dist(GEO_V[a], GEO_V[b]), 1); ls[l] = ls.get(l, 0)+1
+    return sorted(ls.items())
+
+# ------------------------------------------------------------------ projection
+def norm(v):
+    l = math.sqrt(sum(a*a for a in v)); return tuple(a/l for a in v)
+def cross(a, b): return (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0])
+def dot(a, b): return sum(x*y for x, y in zip(a, b))
+GEO_V, GEO_E = geodesic()
+
+class View:
+    def __init__(self, az, el, S, W, H, ox=None, oy=None):
+        az, el = math.radians(az), math.radians(el)
+        self.c = (math.sin(az)*math.cos(el), math.sin(el), math.cos(az)*math.cos(el))
+        up = (0, 1, 0) if abs(el) < math.radians(80) else (0, 0, -1)
+        self.r = norm(cross(up, self.c)); self.u = norm(cross(self.c, self.r))
+        self.S, self.W, self.H = S, W, H
+        self.ox = W/2 if ox is None else ox; self.oy = H/2 if oy is None else oy
+        self.light = norm((-0.35, 0.6, 0.72))
+        self.els = []
+    def P(self, p): return (self.ox + self.S*dot(p, self.r), self.oy - self.S*dot(p, self.u))
+    def depth(self, p): return dot(p, self.c)
+    def add(self, d, s): self.els.append((d, s))
+    @staticmethod
+    def fmt(pts): return " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+
+    def seg(self, a, b, w, col, dfade=True, dlift=0.0):
+        pa, pb = self.P(a), self.P(b); d = (self.depth(a)+self.depth(b))/2
+        k = 1.0
+        if dfade:
+            k = 0.55 + 0.45*(d + R)/(2*R)        # back rods thinner and paler
+        op = 0.45 + 0.55*k if dfade else 1
+        self.add(d+dlift, f'<line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" '
+                 f'stroke="{col}" stroke-width="{w*k:.2f}" stroke-opacity="{op:.2f}" stroke-linecap="round"/>')
+    def polyline3(self, pts, w, col, closed=True, dlift=0.0):
+        n = len(pts)
+        for i in range(n if closed else n-1):
+            self.seg(pts[i], pts[(i+1) % n], w, col, dlift=dlift)
+    def shade(self, nrm, base):
+        k = 0.6 + 0.4*max(0.0, dot(norm(nrm), self.light))
+        return f'fill="{base}" style="filter:brightness({k:.2f})"'
+    def box(self, x0, x1, y0, y1, z0, z1, base="var(--paper)", stroke="var(--ink)", w=1.1, dlift=0.0, op=1.0):
+        faces = [((0, 0, 1), [(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)]),
+                 ((0, 0, -1), [(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0)]),
+                 ((1, 0, 0), [(x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1)]),
+                 ((-1, 0, 0), [(x0, y0, z0), (x0, y1, z0), (x0, y1, z1), (x0, y0, z1)]),
+                 ((0, 1, 0), [(x0, y1, z0), (x1, y1, z0), (x1, y1, z1), (x0, y1, z1)]),
+                 ((0, -1, 0), [(x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1)])]
+        cen = ((x0+x1)/2, (y0+y1)/2, (z0+z1)/2)
+        g = []
+        for nrm, pts in faces:
+            if dot(nrm, self.c) > 1e-6:
+                g.append(f'<polygon points="{self.fmt([self.P(p) for p in pts])}" {self.shade(nrm, base)} '
+                         f'fill-opacity="{op}" stroke="{stroke}" stroke-width="{w}" stroke-linejoin="round"/>')
+        if not g:   # edge-on: draw the outline
+            pts = faces[0][1]
+            g.append(f'<polygon points="{self.fmt([self.P(p) for p in pts])}" fill="none" stroke="{stroke}" stroke-width="{w}"/>')
+        self.add(self.depth(cen)+dlift, "".join(g))
+    def flat(self, pts3, fill, stroke="none", w=0, dlift=0.0, op=1.0):
+        cen = tuple(sum(p[i] for p in pts3)/len(pts3) for i in range(3))
+        self.add(self.depth(cen)+dlift, f'<polygon points="{self.fmt([self.P(p) for p in pts3])}" fill="{fill}" '
+                 f'fill-opacity="{op}" stroke="{stroke}" stroke-width="{w}" stroke-linejoin="round"/>')
+    @staticmethod
+    def hull(pts):
+        pts = sorted(set(pts))
+        if len(pts) < 3: return pts
+        def cr(o, a, b): return (a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0])
+        lo = []
+        for p in pts:
+            while len(lo) >= 2 and cr(lo[-2], lo[-1], p) <= 0: lo.pop()
+            lo.append(p)
+        up = []
+        for p in reversed(pts):
+            while len(up) >= 2 and cr(up[-2], up[-1], p) <= 0: up.pop()
+            up.append(p)
+        return lo[:-1]+up[:-1]
+    def cylinder(self, c0, c1, radius, base, stroke, n=28, dlift=0.0):
+        """cylinder from centre c0 to centre c1"""
+        axis = norm(tuple(c1[i]-c0[i] for i in range(3)))
+        a = (0, 1, 0) if abs(axis[1]) < 0.9 else (1, 0, 0)
+        e1 = norm(cross(axis, a)); e2 = cross(axis, e1)
+        def ring(c): return [tuple(c[i] + radius*(math.cos(t)*e1[i] + math.sin(t)*e2[i]) for i in range(3))
+                             for t in [2*math.pi*k/n for k in range(n)]]
+        b, t = ring(c0), ring(c1)
+        pb = [self.P(p) for p in b]; pt = [self.P(p) for p in t]
+        h = self.hull([(round(x, 2), round(y, 2)) for x, y in pb+pt])
+        cen = tuple((c0[i]+c1[i])/2 for i in range(3))
+        cap = pt if dot(axis, self.c) > 0 else pb
+        self.add(self.depth(cen)+dlift, f'<polygon points="{self.fmt(h)}" fill="{base}" stroke="{stroke}" stroke-width="1.1" stroke-linejoin="round"/>'
+                 f'<polygon points="{self.fmt(cap)}" fill="{base}" style="filter:brightness(1.08)" stroke="{stroke}" stroke-width="1.1"/>')
+
+    def render(self, caption, labels=(), aria=""):
+        self.els.sort(key=lambda e: e[0])
+        out = [f'<svg viewBox="0 0 {self.W} {self.H}" role="img" aria-label="{html.escape(aria or caption)}">']
+        out.append(f'<text x="18" y="24" font-size="13.5" font-weight="700" fill="var(--ink)">{html.escape(caption)}</text>')
+        for d, s in self.els: out.append(s)
+        # border labels with leaders
+        for side in ("left", "right"):
+            items = sorted([(self.P(p3)[1], p3, t) for sd, p3, t in labels
+                            if (self.P(p3)[0] < self.ox) == (side == "left")])
+            n = len(items)
+            if not n: continue
+            top, bot = 70, self.H-30
+            step = (bot-top)/max(1, n-1)
+            for i, (py, p3, t) in enumerate(items):
+                x, y = self.P(p3); ys = top + i*step if n > 1 else (top+bot)/2
+                xs = 232 if side == "left" else self.W-232
+                xe = 242 if side == "left" else self.W-242
+                out.append(f'<path d="M{x:.1f},{y:.1f} L{xe:.1f},{ys:.1f} L{xs:.1f},{ys:.1f}" fill="none" stroke="var(--ink-2)" stroke-width="0.9"/>'
+                           f'<circle cx="{x:.1f}" cy="{y:.1f}" r="2.3" fill="var(--ink-2)"/>')
+                anchor = "end" if side == "left" else "start"
+                tx = xs-5 if side == "left" else xs+5
+                out.append(f'<text x="{tx}" y="{ys+4:.1f}" font-size="12" text-anchor="{anchor}" fill="var(--ink)">{html.escape(t)}</text>')
+        out.append('</svg>')
+        return "\n".join(out)
+
+# ------------------------------------------------------------------ the model
+ROD = "var(--brass)"; THIN = "var(--brass)"
+def circle_pts(center, radius, e1, e2, n=72):
+    return [tuple(center[i] + radius*(math.cos(t)*e1[i] + math.sin(t)*e2[i]) for i in range(3))
+            for t in [2*math.pi*k/n for k in range(n)]]
+S2 = math.sqrt(0.5)
+
+def build(v, wiring_hint=False):
+    # silhouette for context
+    sil = [v.P(p) for p in circle_pts((0, 0, 0), R, v.r, v.u, 90)]
+    v.add(-99, f'<polygon points="{v.fmt(sil)}" fill="var(--paper)" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>')
+    sh = [v.P(p) for p in circle_pts((0, -35.5, 0), 26, (1, 0, 0), (0, 0, 1), 48)]
+    v.add(-98, f'<polygon points="{v.fmt(sh)}" fill="var(--ink)" fill-opacity="0.08"/>')
+    # three rings of 1.5 mm rod: equator, side meridian (over the top, left to right), base ring
+    v.polyline3(circle_pts((0, 0, 0), R, (1, 0, 0), (0, 0, 1)), 3.2, ROD)         # equator
+    v.polyline3(circle_pts((0, 0, 0), R, (1, 0, 0), (0, 1, 0)), 3.2, ROD)         # side meridian, plane z = 0
+    v.polyline3(circle_pts((0, BASE_Y, 0), BASE_R, (1, 0, 0), (0, 0, 1)), 3.2, ROD)  # base ring
+    # two 1.0 mm posts, base ring to equator, at the front: the screen and the XIAO hang on these
+    zb = math.sqrt(BASE_R**2 - PLATE_X**2)     # 17.4: where the base ring passes x = +-13.5
+    ze = math.sqrt(R**2 - PLATE_X**2)          # 32.3: where the equator passes x = +-13.5
+    for x in (-PLATE_X, PLATE_X):
+        v.seg((x, BASE_Y, zb), (x, PLATE_Y1, PLATE_Z), 2.0, THIN)
+        v.seg((x, 0, PLATE_Z), (x, 0, ze), 2.0, THIN)   # short tie to the equator
+    # OLED module 27 x 27 x 4, glass toward the viewer
+    v.box(-13.5, 13.5, -18, 9, 14, 18, base="var(--signal-soft)", stroke="var(--signal)")
+    v.flat([(-12, -13, 18.05), (12, -13, 18.05), (12, 2, 18.05), (-12, 2, 18.05)], "#101216", dlift=1.0)
+    for ex in (-5.5, 5.5):   # eyes
+        v.flat([(ex-3.2, -9.5, 18.1), (ex+3.2, -9.5, 18.1), (ex+3.2, -1.5, 18.1), (ex-3.2, -1.5, 18.1)], "#F4F4F0", dlift=4.0)
+    # XIAO ESP32-S3 Sense, landscape, camera on its outer face
+    v.box(-10.5, 10.5, 10, 28, 9, 18, base="var(--ok-soft)", stroke="var(--ok)")
+    v.box(-4, 4, 15, 23, 18, 20.5, base="#2A2D33", stroke="#101216", dlift=0.03)     # camera module
+    v.cylinder((0, 19, 20.5), (0, 19, 22), 2.2, "var(--ink-2)", "var(--ink)", dlift=0.05)  # lens
+    v.box(10.5, 12.5, 15, 19, 11, 16, base="var(--ink-2)", stroke="var(--ink)", dlift=0.03) # USB-C on the right
+    # cell holder tray and the NL169 cell lying left-right, low: the ballast
+    v.box(-21.5, 21.5, -27, -24.5, -7, 7, base="var(--paper)", stroke="var(--ink-2)")
+    for x in (-21.5, 19.5):
+        v.box(x, x+2, -27, -13, -7, 7, base="var(--paper)", stroke="var(--ink-2)")
+    v.cylinder((-17, -20, 0), (17, -20, 0), 8.3, "#C9CCD1", "#5A6068")
+    # speaker taped under the holder, firing down through the base ring
+    v.box(-10, 10, -32, -27.1, -6.5, 6.5, base="var(--paper)", stroke="var(--ink)")
+    for x in (-6, -2, 2, 6):
+        v.seg((x, -32.1, -5), (x, -32.1, 5), 0.8, "var(--ink-2)", dfade=False, dlift=0.02)
+    # amplifier standing at the back
+    v.box(-9, 9, -26, -8, -11, -8, base="var(--ok-soft)", stroke="var(--ok)")
+    v.cylinder((14, -24, -10), (14, -16, -10), 4, "var(--ink-2)", "var(--ink)")              # 220 uF
+    # AHT20 flat at the top, behind the XIAO, under the pole where the meridians cross
+    v.box(-12.7, 12.7, 29, 31, -9, 8.8, base="var(--ok-soft)", stroke="var(--ok)")
+    for x in (-10, 10):   # its two outer header pads solder to the meridian above it
+        v.seg((x, 31, 0), (x, math.sqrt(R*R-x*x), 0), 1.6, THIN)
+    # toggle switch at the back of the equator, lever out through the cage
+    v.box(-4, 4, -5, 5, -34, -27, base="var(--ink-2)", stroke="var(--ink)")
+    v.cylinder((0, 0, -34), (0, 3, -42), 1.2, "var(--ink-2)", "var(--ink)")
+    # action button on the right of the equator
+    v.box(28, 33, -3, 3, -3, 3, base="var(--paper)", stroke="var(--ink)")
+    v.cylinder((33, 0, 0), (36.5, 0, 0), 1.7, "var(--ink-2)", "var(--ink)")
+
+def make_views():
+    out = {}
+    v = View(14, 16, 5.2, 960, 640)
+    build(v)
+    out["hero"] = v.render("The sphere from the front right. 70 mm across; 5.2 px per mm.",
+        labels=[("", (-13.5, -4, 18), "0.96\" OLED, the face"),
+                ("", (0, 19, 22), "camera lens, over the eyes"),
+                ("", (19, -20, 0), "NL169 cell, low, in the base ring"),
+                ("", (-10, -29, 6), "speaker taped under the holder"),
+                ("", (-BASE_R, BASE_Y, 0), "base ring, 44 mm: it stands on this"),
+                ("", (-12.7, 30, 0), "AHT20 hung from the side ring"),
+                ("", (12.5, 17, 13), "USB-C on the right"),
+                ("", (36.5, 0, 0), "action button"),
+                ("", (0, 3, -40), "power toggle, back"),
+                ("", (R*0.7, 0, R*0.7), "equator, 1.5 mm rod"),
+                ("", (0, R, 0), "side ring, 1.5 mm rod"),
+                ("", (PLATE_X, -8, PLATE_Z), "two 1.0 mm posts carry the face"),
+                ("", (9, -12, -9), "amp on the holder's back")],
+        aria="Three-quarter view of the three-ring brass sphere with the OLED face, camera, cell, speaker, amp, sensor, switch and button in place")
+    v = View(0, 0, 4.2, 440, 400); build(v)
+    out["front"] = v.render("From the front: the face in the open window.")
+    v = View(90, 0, 4.2, 440, 400); build(v)
+    out["side"] = v.render("From the right: front to back, screen, cell, amp.")
+    v = View(0, 89, 4.2, 440, 400); build(v)
+    out["top"] = v.render("From above: the side ring over the sensor.")
+    return out
+
+# ------------------------------------------------------------------ the data
+INV = "../../pocket_ai_assistant/docs/INVENTORY.md"
+CINV = "../../cyber_clock_v2/docs/INVENTORY.md"
+PARTS = [  # (qty, part, link text, url, status, why)
+    ("1", "Seeed XIAO ESP32-S3 Sense", "owned x3, Amazon B0C69FFVHH", "https://www.amazon.com/dp/B0C69FFVHH", "owned",
+     "The brain, the camera and the microphone. Three are owned: two from the 2026-10-27 order and one from 2026-10-28. One goes to the camera tower, one to the drone, and this is the third (confirmed 2026-10-30)."),
+    ("1", "Hosyond SSD1306 0.96\" OLED, white", "owned x5", INV, "owned",
+     "The face. I2C 0x3C on D4/D5. Read the silkscreen for the pin order before wiring."),
+    ("1", "Adafruit AHT20 temperature + humidity, STEMMA QT, #4566", "owned x4 spare", CINV, "owned",
+     "The weather sensor. I2C 0x38 on the same bus as the OLED. Lives at the top of the sphere in moving air, away from the XIAO's heat. Wire its four header pads; the QT sockets stay empty."),
+    ("1", "HiLetgo MAX98357A amplifier", "owned x3", INV, "owned",
+     "Runs from the cell. SD held low by R1 until firmware raises it; GAIN open (9 dB); volume cap 65."),
+    ("1", "Same Sky CES-20134-088PM speaker", "owned x8", INV, "owned",
+     "Sealed 20 x 13 x 4.9 mm. Fires down through the bottom triangle. Neither lead to ground."),
+    ("1", "Nitecore NL169 16340, protected", "owned x6", CINV, "owned",
+     "The cell and the ballast: it lies across the bottom so the sphere sits upright on its three bottom hubs."),
+    ("1", "ACEIRMC 16340 / CR123A holder with leads", "owned x10, Amazon B0CRGK889F", "https://www.amazon.com/dp/B0CRGK889F", "owned",
+     "Bought 2026-10-27 for the camera tower (pack of 10). 43 x 18 x 14 mm; fits across the sphere at y = -16."),
+    ("1", "Ferwooh MTS-102 toggle switch", "owned x20, Amazon B0CZ6XZ2P9", "https://www.amazon.com/dp/B0CZ6XZ2P9", "owned",
+     "Power switch in the cell's + lead, mounted on a cross-rod at the back of the equator with the lever poking out between the rods."),
+    ("1", "QTEATAK tactile button", "owned x420", INV, "owned", "The action button, on the right of the equator."),
+    ("1 + 1 + 2", "R1 4.7 kΩ; 220 µF; 10 µF + 100 nF", "LuminologyPro, ALLECIN, BOJACK kits", INV, "owned",
+     "R1 amp SD pull-down; 220 µF on BAT+ at the amp; 10 µF + 100 nF at the OLED's VCC."),
+    ("3 rods", "K&S #9862 1.5 mm solid brass rod, 300 mm", "owned x5", INV, "owned",
+     "One rod per ring: equator (220 mm), side ring (220 mm), base ring (138 mm). Solid rod bends to these radii without kinking; the 1.5 mm tube would."),
+    ("1 rod", "K&S #9861 1.0 mm brass rod, 300 mm", "owned x10 minus the first build's use", INV, "owned",
+     "The two front posts (about 50 mm each) and the AHT20's two hanger stubs. Everything else inside is tape, the parts' own pins and 30 AWG wire."),
+    ("", "26 AWG / 30 AWG silicone wire, Kapton, fish paper, white heat-shrink", "owned", INV, "owned",
+     "26 AWG for BAT+ and GND; 30 AWG only where a rod cannot go; Kapton on every module back that faces brass; fish paper around the cell."),
+    ("1", "External 16340 charger (Nitecore UI1 or XTAR VC2)", "optional, about $10-15", "https://www.amazon.com/s?k=nitecore+ui1", "optional",
+     "Two hours per cell instead of the XIAO's 10-20 h trickle. Not needed to build or run."),
+]
+
+PINS = [  # header, gpio, net, job
+    ("D0", 1, "BCLK", "amp BCLK"), ("D1", 2, "LRC", "amp LRC"), ("D2", 3, "DIN", "amp DIN"),
+    ("D3", 4, "AMP_SD", "amp SD, R1 4.7 kΩ to GND"),
+    ("D4", 5, "SDA", "OLED SDA and AHT20 SDA"), ("D5", 6, "SCL", "OLED SCL and AHT20 SCL"),
+    ("D6", 43, "", "spare (UART0 TX, leave free)"), ("D7", 44, "BTN", "action button to GND, internal pull-up"),
+    ("D8 / D9 / D10", "7 / 8 / 9", "", "spare; the SD slot's SPI, leave free"),
+    ("3V3", "", "3V3", "OLED VCC, AHT20 VIN"), ("BAT+ pad", "", "BAT+", "from the switch; also the amp VIN and the 220 µF"),
+    ("BAT- pad", "", "GND", "the holder's - lead, the star point"),
+]
+
+CUTS = [  # piece, stock, length, how
+    ("Equator ring", "1.5 mm rod", "220 mm", "Bend around a 66 mm can, lap-join the ends 8 mm, file flush. Mark left, right, front and back."),
+    ("Side ring", "1.5 mm rod", "220 mm", "Same size. It crosses the equator at left and right and runs over the top and under the bottom, so the front stays open."),
+    ("Base ring", "1.5 mm rod", "138 mm", "22 mm radius, around a 42 mm jar. It sits at y = -27 touching the side ring at its two low points; the sphere stands on it and the cell holder rests in it."),
+    ("Front posts x2", "1.0 mm rod", "50 mm each", "From the base ring up to y = 28 at x = +-13.5, 18 mm in front of the centre, with a 14 mm tie to the equator. The OLED's and the XIAO's header pins solder to them."),
+    ("AHT20 hangers x2", "1.0 mm rod", "5 mm each", "From the top of the side ring down to the sensor's two outer pads."),
+]
+
+TESTS = [  # (step, what, pass)
+    ("1 · XIAO alone", "USB-C to the laptop. Flash Seeed's CameraWebServer example (XIAO ESP32S3 Sense board, PSRAM on). Join its Wi-Fi page.",
+     "Live video in the browser. Camera, Wi-Fi, PSRAM and the USB port proven."),
+    ("2 · Microphone", "Flash Seeed's PDM record example; speak at the board.", "A waveform that follows your voice in the serial plotter."),
+    ("3 · OLED", "Breadboard: OLED VCC-3V3, GND-GND, SDA-D4, SCL-D5. I2C scan, then a text sketch.",
+     "Scan shows 0x3C; text on the glass."),
+    ("4 · AHT20 on the same bus", "Add the AHT20's VIN/GND/SDA/SCL pads to the same four lines. Scan, then read.",
+     "Scan shows 0x38 and 0x3C; room temperature; humidity jumps when you breathe on it."),
+    ("5 · Amp + speaker", "Amp VIN-3V3 (bench only), GND, BCLK-D0, LRC-D1, DIN-D2, SD-D3 with R1 to GND; speaker on OUT+/OUT-. Play a 440 Hz tone at volume 65.",
+     "A clean tone; silence while SD is low. Nothing else wired to the speaker."),
+    ("6 · Button", "D7 to GND through the button; internal pull-up in the sketch.", "A press prints once, no bounce after a 30 ms debounce."),
+    ("7 · Cell", "Meter the holder: + lead to the button top, 3.6-4.2 V. Switch in the + lead, then to the XIAO BAT+ pad; - lead to BAT-. Unplug USB.",
+     "Boots from the cell. Meter in series: 110-250 mA awake, under 5 mA in deep sleep. Then plug USB in with the switch OFF: it still boots, nothing warm."),
+    ("8 · All together on the breadboard", "Everything from 1-7 at once for an hour, camera streaming.", "No brownout, no reboot, XIAO warm not hot. Only now bend brass."),
+]
+
+BUILD = [
+    "Bench-test every part first (the eight steps). Nothing goes into brass untested.",
+    "Bend the three 1.5 mm rings and lap-join each. Check the two big ones on a 70 mm circle drawn with a compass.",
+    "Solder the side ring into the equator at left and right (the two crossings), then the base ring to the bottom of the side ring. Harris acid flux, then baking soda, then IPA, as on the first frame. Five joints in all.",
+    "Set it on the table: it must stand still. Put the cell holder in the base ring and check it self-rights.",
+    "Solder the two front posts, base ring to equator. Try the OLED and the XIAO against them with Kapton on their backs; nothing is wired yet.",
+    "Tape and tie: holder into the base ring (two zip ties), speaker taped under it, amp taped to its back, switch and button hot-glued to the equator at the back and right, AHT20 on its two hangers.",
+    "Wire from the back forward: cell holder leads to the switch and the star; BAT+ to the amp and the XIAO pad; then the bare-rod I2C and I2S runs; then the button. Meter frame-to-every-net before the cell goes in.",
+    "First power-up on USB with the switch OFF, then on the cell. Run the test-8 sketch again inside the sphere.",
+]
+
+MASS = [("Cell + holder", 23), ("XIAO ESP32-S3 Sense", 8), ("OLED", 5), ("Speaker", 3.5), ("Amp + 220 µF", 3),
+        ("AHT20", 1.5), ("Switch + button", 4), ("1.5 mm rod, 3 rings, 580 mm", 8.7), ("1.0 mm rod, posts and hangers", 0.8)]
+
+# ------------------------------------------------------------------ writers
+def tbl(headers, rows, cls=""):
+    h = "".join(f"<th>{c}</th>" for c in headers)
+    b = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
+    return f'<div class="tw"><table class="{cls}"><tr>{h}</tr>{b}</table></div>'
+
+def write_html(views):
+    link = lambda text, url: f'<a href="{html.escape(url)}">{html.escape(text)}</a>'
+    parts_rows = []
+    for qty, part, where, url, status, why in PARTS:
+        badge = {"TO BUY": '<span class="badge buy">to buy</span>', "owned": '<span class="badge own">owned</span>',
+                 "optional": '<span class="badge opt">optional</span>'}[status]
+        parts_rows.append((qty, f"{html.escape(part)}<br>{badge}", link(where, url), html.escape(why)))
+    total = sum(m for _, m in MASS)
+    css = open(os.path.join(HERE, "style.css")).read()
+    page = f'''<title>Pocket AI Sphere</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>{css}</style>
+<div class="wrap">
+<div class="masthead">
+  <div class="eyebrow">Pocket AI &middot; third build &middot; concept 2026-10-29</div>
+  <h1>A Pocket AI in a brass sphere</h1>
+  <div class="sub">Same assistant as the first Pocket AI, plus a camera and a weather sensor, in three brass rings. Paper only: nothing bought, bent, soldered or flashed. Source: <code>pocket_ai_sphere/docs/DESIGN.md</code>, drawn by <code>docs/pages/gen/sphere.py</code>.</div>
+</div>
+
+<p>Three rings and two posts. An equator and a side ring of 1.5&nbsp;mm brass rod cross at left and right, so the front and back are open; a smaller base ring under them is what it stands on and what the cell holder rests in. Two thin posts at the front carry the screen and the XIAO. That is the whole frame: five solder joints. Inside, the heavy cell lies low as ballast so it self-rights, the lens looks out over the eyes through the open front, the sensor hangs from the top of the side ring in moving air, and the speaker is taped under the holder firing down through the base ring. Everything else is tape, ties and the parts' own pins.</p>
+
+<figure>{views["hero"]}
+<figcaption>Brass is the frame, boxes are parts. The face sits in the open front between the two posts, the cell is the floor. Rods at the back are drawn paler.</figcaption></figure>
+
+<div class="grid3">
+<figure>{views["front"]}</figure>
+<figure>{views["side"]}</figure>
+<figure>{views["top"]}</figure>
+</div>
+
+<div class="kpis">
+<div><b>70 mm</b><span>diameter; a tennis ball is 67</span></div>
+<div><b>{total:.0f} g</b><span>estimated, cell in</span></div>
+<div><b>3 rings</b><span>plus two posts; five solder joints</span></div>
+<div><b>0 to buy</b><span>every part is owned</span></div>
+</div>
+
+<h2>Why these numbers</h2>
+<ul>
+<li><strong>70 mm</strong> is the smallest sphere that takes a 27 mm screen and a 21 mm XIAO stacked on one flat plate 18 mm forward of the centre, with the 43 mm cell holder lying across the bottom. At 60 mm the holder's corners hit the rings.</li>
+<li><strong>One 300 mm rod per ring.</strong> A 70 mm circle is 220 mm around, so each big ring is one rod with an 80 mm offcut and no splice in view; the base ring is a third rod.</li>
+<li><strong>The side ring, not a front one,</strong> is the trick. A ring that runs left-over-top-right-under-bottom never crosses the face or the camera, and the equator passes behind the screen's top edge. So the front is clear glass with nothing in front of it.</li>
+<li><strong>Two posts do all the mounting.</strong> The OLED's four header pins and the XIAO's outer header pins solder to the posts, which is how the camera tower mounts its head too. No plate, no cradles.</li>
+<li><strong>Cell at y = −20</strong> puts a third of the mass 20 mm below the centre, sitting in the 44 mm base ring; that is what brings it back upright when you press the button.</li>
+<li><strong>Sensor at the top, screen heat at the front.</strong> The AHT20 reads air, not the XIAO, because it sits 20 mm behind and above the stack with open rods around it. Expect it to read 1–2 °C high after an hour of streaming; the firmware subtracts a measured offset.</li>
+</ul>
+
+<h2>Parts</h2>
+<p>Everything but the controller is already in the drawers. Owned quantities come from the two inventories; the XIAO link is the listing bought twice before.</p>
+{tbl(["Qty", "Part", "Where", "Why, and what to check"], parts_rows, "parts")}
+
+<h2>Pin map</h2>
+<p>The camera tower's map with the motor pins freed and the AHT20 added to the I2C bus. The firmware plan is shared with that build.</p>
+{tbl(["Header", "GPIO", "Net", "Job"], [(h, str(g), f"<code>{n}</code>" if n else "", j) for h, g, n, j in PINS])}
+<div class="note warn"><span class="lbl">Carried over, unchanged</span>
+<ul>
+<li>The cell is the only source. Nothing into the XIAO's <code>5V</code> pin; only the holder on the BAT pads.</li>
+<li>Amp off until firmware raises SD; volume cap 65; GAIN open.</li>
+<li>Neither speaker lead is ground. No GND wire, no scope ground.</li>
+<li>The brass is not a conductor: meter frame-to-every-net before the cell goes in, and after every solder session.</li>
+<li>Never solder to the cell; never charge it below 0 °C; watch the first charge.</li>
+</ul></div>
+
+<h2>Frame cut list</h2>
+{tbl(["Piece", "Stock", "Length", "How"], CUTS)}
+<div class="note tip"><span class="lbl">Bending a true ring</span>
+<p>Wrap the 1.5 mm rod one full turn around a 66 mm can (a 12 oz drink can); it springs back to about 70 mm. Overlap the ends 8 mm side by side, solder the lap, file it round, and put the joint where the base ring will cover it. Check against a 70 mm circle drawn with a compass. The base ring wraps around a 42 mm jar.</p></div>
+
+<h2>Test every part before any brass</h2>
+<p>Eight breadboard steps, each with a pass line. They use Seeed's own examples, so no firmware has to exist yet. Do them in order; each adds one part to the last.</p>
+{tbl(["Step", "Do", "Pass when"], TESTS, "tests")}
+
+<h2>Build order</h2>
+<ol>{"".join(f"<li>{html.escape(s)}</li>" for s in BUILD)}</ol>
+
+<h2>Mass and run time</h2>
+{tbl(["Part", "g"], [(p, f"{m:g}") for p, m in MASS] + [("<strong>Total</strong>", f"<strong>{total:.0f}</strong>")])}
+<p>About 250 mA from the cell with the camera streaming and the assistant talking, so roughly 3.5 h on the 950 mAh NL169; about 7 h idle on Wi-Fi; days asleep. Same budget as the camera tower, minus the motor.</p>
+
+<h2>What could go wrong</h2>
+<ul>
+<li><strong>Two rings meeting at a right angle</strong> is the only fiddly joint: hold the side ring upright in the equator with two clothes pegs on a cardboard disc, tack one crossing, check square, tack the other.</li>
+<li><strong>Wi-Fi.</strong> Three rods with 35 mm gaps are no cage at 2.4 GHz; just point the XIAO's antenna end at the open front, not at the equator.</li>
+<li><strong>The posts carry everything in front.</strong> Solder the OLED pins to them at two points each and the XIAO at two; one point each and the face will twist.</li>
+<li><strong>It rolls.</strong> Knocked off its base ring, a sphere rolls; the low cell brings it back upright. Test the self-righting with the cell in before wiring.</li>
+</ul>
+<hr>
+</div>
+'''
+    open(os.path.join(PAGES, "sphere.html"), "w").write(page)
+
+def write_md(views_written):
+    def md_tbl(headers, rows):
+        out = ["| " + " | ".join(headers) + " |", "| " + " | ".join("---" for _ in headers) + " |"]
+        for r in rows: out.append("| " + " | ".join(str(c).replace("|", "\\|") for c in r) + " |")
+        return "\n".join(out)
+    total = sum(m for _, m in MASS)
+    parts_rows = [(q, p, f"[{w}]({u})", s, why) for q, p, w, u, s, why in PARTS]
+    md = f'''# Pocket AI Sphere: design record
+
+**Concept, 2026-10-29. Paper only: nothing bought, bent, soldered or flashed.**
+Generated by `pages/gen/sphere.py`; edit the script, not this file. The drawings are on the
+published page (`pages/sphere.html`, see `ARTIFACTS.md`).
+
+## What it is
+
+The third Pocket AI: the same assistant as the first build (screen, microphone, amplifier and
+speaker, one button, Wi-Fi to the local server), plus the camera of the second build and a
+weather sensor, in a 70 mm sphere of three brass rings instead of a box or a tower.
+
+Three rings of 1.5 mm K&S #9862 rod: an equator and a side ring (left, over the top, right, under
+the bottom) crossing at left and right so the front stays open, and a 44 mm base ring at
+y = −27 that the sphere stands on and the cell holder rests in. Two 1.0 mm posts at the front
+(x = ±13.5, z = 18) carry the OLED and the XIAO by their header pins. Five frame joints.
+Inside: the two posts at z = 18 carry the OLED (y −18..9) below the XIAO ESP32-S3 Sense
+(y 10..28, landscape, camera on its outer face); the NL169 cell lies across the bottom in its
+holder resting in the base ring at y = −20 as ballast; the speaker is taped under it at y = −30 firing down through the base ring; the amplifier is taped
+to the holder's back (z = −10); the AHT20 hangs flat from the top of the side ring (y = 30) in open
+air; the toggle switch is glued to the back of the equator with its lever out; the action button
+to the right of the equator.
+
+Coordinates: origin at the centre, x right, y up, z toward the face. Radius 35.
+
+## Why these numbers
+
+- 70 mm is the smallest sphere that takes the 27 mm screen and the 21 mm XIAO on one plate
+  18 mm forward of the centre with the 43 mm holder across the bottom; at 60 mm the holder's
+  corners hit the rings.
+- One 300 mm rod per big ring (220 mm around, 80 mm offcut); the base ring is a third rod.
+- A side ring instead of a front one never crosses the face or the lens; the front is clear.
+- Two posts do all the mounting: the OLED's and the XIAO's header pins solder to them.
+- Cell at y = −20 in the 44 mm base ring puts a third of the mass low; it self-rights.
+- The AHT20 sits 20 mm behind and above the XIAO with open rods around it; expect 1–2 °C of
+  self-heating offset after an hour of streaming, subtracted in firmware.
+
+## Parts
+
+{md_tbl(["Qty", "Part", "Where", "Status", "Why, and what to check"], parts_rows)}
+
+## Pin map
+
+{md_tbl(["Header", "GPIO", "Net", "Job"], [(h, g, f"`{n}`" if n else "", j) for h, g, n, j in PINS])}
+
+Carried over unchanged from the first two builds: the cell is the only source and nothing feeds
+the `5V` pin; the amp is off until firmware raises SD, cap 65, GAIN open; neither speaker lead
+is ground; the brass is not a conductor (meter frame-to-every-net before the cell goes in);
+never solder to or cold-charge the cell.
+
+## Frame cut list
+
+{md_tbl(["Piece", "Stock", "Length", "How"], CUTS)}
+
+Bending: one turn of 1.5 mm rod around a 66 mm drink can (springs back to about 70 mm), lap the
+ends 8 mm, solder, file round, hide the joint under the base ring. Base ring around a 42 mm jar.
+
+## Test every part before any brass
+
+{md_tbl(["Step", "Do", "Pass when"], TESTS)}
+
+## Build order
+
+{chr(10).join(f"{i+1}. {s}" for i, s in enumerate(BUILD))}
+
+## Mass and run time
+
+{md_tbl(["Part", "g"], [(p, f"{m:g}") for p, m in MASS] + [("**Total**", f"**{total:.0f}**")])}
+
+About 250 mA with the camera streaming and the assistant talking: roughly 3.5 h on the NL169;
+about 7 h idle on Wi-Fi.
+
+## Risks
+
+- The two big rings meet at a right angle at left and right: peg the side ring upright on a
+  cardboard disc, tack one crossing, check square, tack the other.
+- Wi-Fi: three rods with 35 mm gaps are no cage at 2.4 GHz; point the antenna at the open front.
+- Solder each board to the posts at two points, or the face twists.
+- A sphere rolls when knocked off its ring; the low cell brings it back. Test self-righting with
+  the cell in before wiring.
+'''
+    open(os.path.join(DOCS, "DESIGN.md"), "w").write(md)
+
+if __name__ == "__main__":
+    views = make_views()
+    write_html(views)
+    write_md(True)
+    print("wrote", os.path.join(PAGES, "sphere.html"), "and", os.path.join(DOCS, "DESIGN.md"))
