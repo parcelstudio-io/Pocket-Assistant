@@ -1,0 +1,409 @@
+<title>Cyber Dawn Form</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@90,500;90,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column of scale drawings, each followed by its numbered key. Paper-white ground, brass as the one literal hue. */
+:root{
+  --bg:#f6f4ef; --fg:#1d1b18; --muted:#6b665d; --rule:#d9d4c9; --card:#fbfaf7;
+  --pod:#262320; --podcut:#e9e5dc; --glass:rgba(70,78,92,.38); --part:#c9c2b2;
+  --pcb:#5a8a7a; --bat:#b7b3a4; --spk:#8d8779; --brass:#b8924c; --brass2:#7e5f28;
+  --amber:#ffb347; --oled:#0b0b0b; --link:#2a5d8f;
+  --display:"Archivo",system-ui,sans-serif; --body:"Source Sans 3",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#16171a; --fg:#ebe7df; --muted:#a09a8e; --rule:#33363c; --card:#1d1f23;
+  --pod:#0d0d0f; --podcut:#2a2d33; --glass:rgba(150,160,180,.3); --part:#4a4d55;
+  --pcb:#5f9c88; --bat:#5a5d66; --spk:#6a6c72; --brass:#c9a35c; --brass2:#8f6e33;
+  --amber:#ffb347; --oled:#000; --link:#8ab6e0; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#16171a; --fg:#ebe7df; --muted:#a09a8e; --rule:#33363c; --card:#1d1f23;
+  --pod:#0d0d0f; --podcut:#2a2d33; --glass:rgba(150,160,180,.3); --part:#4a4d55;
+  --pcb:#5f9c88; --bat:#5a5d66; --spk:#6a6c72; --brass:#c9a35c; --brass2:#8f6e33;
+  --amber:#ffb347; --oled:#000; --link:#8ab6e0; color-scheme:dark }
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--body);padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;display:grid;gap:40px}
+h1{font:700 34px/1.1 var(--display);margin:0 0 8px;text-wrap:balance;letter-spacing:-.01em}
+h2{font:700 21px/1.2 var(--display);margin:0 0 10px;text-wrap:balance}
+p{max-width:65ch;margin:0 0 10px}
+.lede{color:var(--muted);max-width:70ch}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+a{color:var(--link)}
+figure{margin:0;display:grid;gap:12px}
+.plate{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:14px;overflow-x:auto}
+svg{display:block;max-width:100%;height:auto;margin:0 auto;font-family:var(--mono);font-size:12px;fill:currentColor}
+figcaption{font-size:14px;color:var(--muted);max-width:70ch}
+.key{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 22px;font-size:15px}
+.key li{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;min-width:0}
+.key b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--fg);color:var(--bg);font:600 12px var(--mono)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td:first-child{white-space:nowrap}
+.n{font-variant-numeric:tabular-nums}
+.callout{font-size:12px;font-weight:600}
+@media print{body{background:#fff;color:#000}.plate{border-color:#999}a{color:#000;text-decoration:none}}
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">Cyber Dawn · Rev B compact form · drawn to scale 2026-10-31 · sunrise lamp added 2026-11-05</div>
+  <h1>What the clock will look like</h1>
+  <p class="lede">The clock is now a block of 82 × 52 × 68 mm, half the width of the first drawing, with the owned 2.42 inch OLED as most of its face. A warm LED filament in the lid fades up before the alarm, like a sunrise. It charges over USB-C and carries one 16340 cell as a backup; the solar panel is gone from the design and stays in the drawer for another project. Every part is drawn at its datasheet size, so what fits here fits on the bench. Nothing is built yet. Wiring is not drawn; that lives on the <a href="https://claude.ai/artifact/MAVx3cG5NvhQyC9HFfHNpQ">wiring sheet</a>, and the reasoning is in COMPACT_DESIGN.md.</p>
+</header>
+
+<!-- ===================== FRONT ===================== -->
+<figure>
+  <div class="eyebrow">1 · Front, from the pillow</div>
+  <div class="plate">
+  <svg viewBox="0 0 420 262" role="img" aria-label="Front view of the compact clock: an 82 by 52 mm black block whose whole front is smoked acrylic with the 60 by 37 mm OLED picture centred in it, the encoder knob and snooze button showing above the lid, and two brass cradle legs rising at the sides from the table.">
+    <defs>
+      <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker>
+    </defs>
+    <!-- lid-top items seen above the body -->
+    <rect x="94" y="34" width="48" height="6" rx="2" fill="var(--part)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="254" y="25" width="60" height="15" rx="4" fill="var(--pod)" stroke="var(--part)" stroke-width="1.5"/>
+    <line x1="284" y1="27" x2="284" y2="34" stroke="var(--part)" stroke-width="2"/>
+    <!-- body -->
+    <rect x="80" y="40" width="246" height="156" rx="5" fill="var(--pod)"/>
+    <!-- sunrise lamp: the filament in the lid's front slot, seen edge-on, 40 mm -->
+    <line x1="143" y1="40.5" x2="263" y2="40.5" stroke="var(--amber)" stroke-width="3" stroke-linecap="round"/>
+    <!-- acrylic, whole face -->
+    <rect x="83" y="43" width="240" height="150" rx="3" fill="var(--glass)" stroke="currentColor" stroke-opacity=".5"/>
+    <!-- module outline -->
+    <rect x="95" y="53.5" width="216" height="129" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="4 3"/>
+    <!-- active area 60 x 37 -->
+    <rect x="113" y="62.5" width="180" height="111" fill="var(--oled)"/>
+    <text x="203" y="118" text-anchor="middle" font-size="46" font-weight="500" fill="var(--amber)">06:42</text>
+    <text x="286" y="78" text-anchor="end" font-size="11" fill="var(--amber)">78%</text>
+    <line x1="128" y1="136" x2="278" y2="136" stroke="var(--amber)" stroke-width="1" stroke-opacity=".7"/>
+    <text x="120" y="162" font-size="11" fill="var(--amber)" fill-opacity=".8">alarm 07:00</text>
+    <text x="286" y="162" text-anchor="end" font-size="11" fill="var(--amber)" fill-opacity=".8">TUE</text>
+    <!-- brass cradle, front U -->
+    <path d="M86 150 V204 Q86 209 91 209 H315 Q320 209 320 204 V150" fill="none" stroke="var(--brass2)" stroke-width="11"/>
+    <path d="M86 150 V204 Q86 209 91 209 H315 Q320 209 320 204 V150" fill="none" stroke="var(--brass)" stroke-width="9"/>
+    <line x1="60" y1="213.5" x2="346" y2="213.5" stroke="currentColor" stroke-width="1.5"/>
+    <!-- callouts -->
+    <g class="callout">
+      <line x1="60" y1="118" x2="112" y2="118" stroke="currentColor"/>
+      <circle cx="50" cy="118" r="10" fill="var(--fg)"/><text x="50" y="122" text-anchor="middle" fill="var(--bg)">1</text>
+      <line x1="346" y1="60" x2="324" y2="60" stroke="currentColor"/>
+      <circle cx="356" cy="60" r="10" fill="var(--fg)"/><text x="356" y="64" text-anchor="middle" fill="var(--bg)">2</text>
+      <line x1="118" y1="18" x2="118" y2="33" stroke="currentColor"/>
+      <circle cx="118" cy="10" r="10" fill="var(--fg)"/><text x="118" y="14" text-anchor="middle" fill="var(--bg)">3</text>
+      <line x1="284" y1="12" x2="284" y2="24" stroke="currentColor"/>
+      <circle cx="284" cy="10" r="10" fill="var(--fg)"/><text x="284" y="14" text-anchor="middle" fill="var(--bg)">4</text>
+      <line x1="60" y1="190" x2="85" y2="190" stroke="currentColor"/>
+      <circle cx="50" cy="190" r="10" fill="var(--fg)"/><text x="50" y="194" text-anchor="middle" fill="var(--bg)">5</text>
+      <line x1="203" y1="18" x2="203" y2="37" stroke="currentColor"/>
+      <circle cx="203" cy="10" r="10" fill="var(--fg)"/><text x="203" y="14" text-anchor="middle" fill="var(--bg)">7</text>
+      <line x1="346" y1="200" x2="324" y2="200" stroke="currentColor"/>
+      <circle cx="356" cy="200" r="10" fill="var(--fg)"/><text x="356" y="204" text-anchor="middle" fill="var(--bg)">6</text>
+    </g>
+    <!-- dimensions -->
+    <g stroke="currentColor" stroke-opacity=".6">
+      <line x1="80" y1="240" x2="326" y2="240" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <line x1="80" y1="232" x2="80" y2="248"/><line x1="326" y1="232" x2="326" y2="248"/>
+      <line x1="392" y1="40" x2="392" y2="196" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <line x1="384" y1="40" x2="400" y2="40"/><line x1="384" y1="196" x2="400" y2="196"/>
+    </g>
+    <text x="203" y="256" text-anchor="middle" font-size="11" fill="var(--muted)">82 mm</text>
+    <text x="392" y="118" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(-90 392 118)">52 mm</text>
+  </svg>
+  </div>
+  <ol class="key">
+    <li><b>1</b><span>The <a href="https://www.adafruit.com/product/2719">OLED display</a>, 60 × 37 mm of pixels, 1 mm behind the glass. The dashed line is the 72 × 43 mm module, which is three quarters of the face.</span></li>
+    <li><b>2</b><span>One piece of 3 mm smoked acrylic, the full 82 × 52 mm front. Off pixels disappear into it at night.</span></li>
+    <li><b>3</b><span>The <a href="https://www.adafruit.com/product/1505">snooze button</a> on the lid, rear left. Sixteen millimetres, the biggest thing on top, hit without looking.</span></li>
+    <li><b>4</b><span><a href="https://www.adafruit.com/product/6310">Rotary encoder</a> on the lid, rear right, 20 mm clear cap over its LED. Turn to set, press to confirm, long-press and turn to dismiss.</span></li>
+    <li><b>5</b><span>Printed black body. The speaker fires down through its floor.</span></li>
+    <li><b>6</b><span>Front brass cradle, 3 mm tube from the <a href="https://www.amazon.com/dp/B0F2FKLC2N">brass tube set</a>, one of two. They lift the body 3 mm for the sound and tilt the face 8° toward the pillow.</span></li>
+    <li><b>7</b><span>The sunrise lamp: an <a href="https://www.amazon.com/dp/B0FR35BGYL">LED filament</a>, 38 mm of 2200 K light in a slot along the lid's front edge. One warm line above the screen that fades up over the half hour before the alarm.</span></li>
+  </ol>
+  <figcaption>Scale 3 px per mm. The hand-wave sensor is on the lid, not the front, so a hand over the clock wakes the face.</figcaption>
+</figure>
+
+<!-- ===================== SIDE ===================== -->
+<figure>
+  <div class="eyebrow">2 · Side, cut through the middle</div>
+  <div class="plate">
+  <svg viewBox="0 0 420 262" role="img" aria-label="Side section of the compact clock: the acrylic and OLED at the front, then a 44 mm main zone with the speaker flat on the floor firing down, the controller board lying on it, and the cell and amplifier in the top layer, then an 8 mm rear zone where the charger board stands with its USB-C through the rear panel. Two brass tubes under the body rest on the table.">
+    <defs>
+      <marker id="ah2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker>
+    </defs>
+    <!-- floor -->
+    <line x1="70" y1="205" x2="330" y2="205" stroke="currentColor" stroke-width="1.5"/>
+    <!-- body section -->
+    <rect x="90" y="40" width="204" height="156" fill="var(--podcut)" stroke="currentColor"/>
+    <!-- zone dividers -->
+    <line x1="132" y1="46" x2="132" y2="190" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"/>
+    <line x1="264" y1="46" x2="264" y2="190" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"/>
+    <!-- floor slot -->
+    <rect x="150" y="190" width="60" height="6" fill="var(--podcut)"/>
+    <line x1="150" y1="193" x2="210" y2="193" stroke="currentColor" stroke-dasharray="3 3"/>
+    <!-- sunrise lamp: 2 mm slot in the lid, 5 mm in from the front -->
+    <rect x="105" y="40" width="6" height="6" fill="var(--amber)" stroke="currentColor" stroke-opacity=".5"/>
+    <!-- acrylic and OLED -->
+    <rect x="90" y="40" width="9" height="156" fill="var(--glass)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="102" y="53" width="7" height="129" fill="var(--pcb)"/>
+    <rect x="109" y="110" width="18" height="14" fill="var(--pcb)" fill-opacity=".5"/>
+    <!-- speaker -->
+    <rect x="136" y="139" width="90" height="51" rx="2" fill="var(--spk)" stroke="currentColor" stroke-opacity=".5"/>
+    <g stroke="currentColor" stroke-opacity=".7">
+      <line x1="165" y1="191" x2="165" y2="202" marker-end="url(#ah2)"/>
+      <line x1="180" y1="191" x2="180" y2="202" marker-end="url(#ah2)"/>
+      <line x1="195" y1="191" x2="195" y2="202" marker-end="url(#ah2)"/>
+    </g>
+    <!-- controller on the speaker -->
+    <rect x="140" y="133" width="76" height="5" fill="var(--pcb)"/>
+    <rect x="146" y="105" width="8" height="28" fill="var(--pcb)" fill-opacity=".6"/>
+    <rect x="202" y="105" width="8" height="28" fill="var(--pcb)" fill-opacity=".6"/>
+    <!-- top layer: cell (front row), amplifier (rear row) -->
+    <circle cx="159" cy="77.5" r="25.5" fill="var(--bat)" stroke="currentColor" stroke-opacity=".5"/>
+    <text x="159" y="81" text-anchor="middle" font-size="10">16340</text>
+    <rect x="198" y="46" width="60" height="6" fill="var(--pcb)"/>
+    <!-- knob above lid (rear row, right side, beside the cut) -->
+    <rect x="197" y="25" width="60" height="15" rx="4" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="3 2"/>
+    <!-- rear zone: charger standing, USB-C through the panel -->
+    <rect x="270" y="60" width="14" height="108" fill="var(--pcb)"/>
+    <rect x="286" y="70" width="12" height="12" fill="var(--pcb)"/>
+    <g stroke="currentColor" stroke-opacity=".5">
+      <line x1="288" y1="120" x2="294" y2="120"/><line x1="288" y1="128" x2="294" y2="128"/><line x1="288" y1="136" x2="294" y2="136"/><line x1="288" y1="144" x2="294" y2="144"/>
+    </g>
+    <!-- cradles -->
+    <circle cx="150" cy="200.5" r="4.5" fill="var(--brass)" stroke="var(--brass2)" stroke-width="1.5"/>
+    <circle cx="250" cy="200.5" r="4.5" fill="var(--brass)" stroke="var(--brass2)" stroke-width="1.5"/>
+    <!-- zone labels -->
+    <text x="115" y="34" text-anchor="middle" font-size="10" fill="var(--muted)">head 11</text>
+    <text x="198" y="34" text-anchor="middle" font-size="10" fill="var(--muted)">main 44</text>
+    <text x="278" y="34" text-anchor="middle" font-size="10" fill="var(--muted)">rear 8</text>
+    <text x="84" y="214" text-anchor="end" font-size="10" fill="var(--muted)">front</text>
+    <text x="300" y="214" font-size="10" fill="var(--muted)">rear</text>
+    <!-- callouts -->
+    <g class="callout">
+      <line x1="60" y1="100" x2="101" y2="100" stroke="currentColor"/>
+      <circle cx="50" cy="100" r="10" fill="var(--fg)"/><text x="50" y="104" text-anchor="middle" fill="var(--bg)">1</text>
+      <line x1="60" y1="43" x2="104" y2="43" stroke="currentColor"/>
+      <circle cx="50" cy="43" r="10" fill="var(--fg)"/><text x="50" y="47" text-anchor="middle" fill="var(--bg)">10</text>
+      <line x1="60" y1="165" x2="135" y2="165" stroke="currentColor"/>
+      <circle cx="50" cy="165" r="10" fill="var(--fg)"/><text x="50" y="169" text-anchor="middle" fill="var(--bg)">2</text>
+      <line x1="60" y1="232" x2="165" y2="232" stroke="currentColor"/><line x1="165" y1="232" x2="165" y2="206" stroke="currentColor"/>
+      <circle cx="50" cy="232" r="10" fill="var(--fg)"/><text x="50" y="236" text-anchor="middle" fill="var(--bg)">3</text>
+      <line x1="238" y1="120" x2="212" y2="120" stroke="currentColor"/>
+      <circle cx="248" cy="120" r="10" fill="var(--fg)"/><text x="248" y="124" text-anchor="middle" fill="var(--bg)">4</text>
+      <line x1="159" y1="10" x2="159" y2="52" stroke="currentColor"/>
+      <circle cx="159" cy="10" r="10" fill="var(--fg)" /><text x="159" y="14" text-anchor="middle" fill="var(--bg)">5</text>
+      <line x1="228" y1="70" x2="228" y2="53" stroke="currentColor"/>
+      <circle cx="228" cy="80" r="10" fill="var(--fg)"/><text x="228" y="84" text-anchor="middle" fill="var(--bg)">6</text>
+      <line x1="340" y1="76" x2="299" y2="76" stroke="currentColor"/>
+      <circle cx="350" cy="76" r="10" fill="var(--fg)"/><text x="350" y="80" text-anchor="middle" fill="var(--bg)">7</text>
+      <line x1="340" y1="132" x2="296" y2="132" stroke="currentColor"/>
+      <circle cx="350" cy="132" r="10" fill="var(--fg)"/><text x="350" y="136" text-anchor="middle" fill="var(--bg)">8</text>
+      <line x1="250" y1="232" x2="250" y2="206" stroke="currentColor"/>
+      <circle cx="250" cy="242" r="10" fill="var(--fg)"/><text x="250" y="246" text-anchor="middle" fill="var(--bg)">9</text>
+    </g>
+    <!-- dimensions -->
+    <g stroke="currentColor" stroke-opacity=".6">
+      <line x1="90" y1="252" x2="294" y2="252" marker-start="url(#ah2)" marker-end="url(#ah2)"/>
+      <line x1="392" y1="40" x2="392" y2="196" marker-start="url(#ah2)" marker-end="url(#ah2)"/>
+    </g>
+    <text x="192" y="248" text-anchor="middle" font-size="11" fill="var(--muted)">68 mm</text>
+    <text x="392" y="118" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(-90 392 118)">52 mm</text>
+  </svg>
+  </div>
+  <ol class="key">
+    <li><b>1</b><span>The acrylic, then the <a href="https://www.adafruit.com/product/2719">OLED display</a> and its ribbon in the 11 mm head.</span></li>
+    <li><b>2</b><span>One <a href="https://www.adafruit.com/product/1669">speaker</a> of the pair, 70 × 30 × 17 mm sealed box, flat on the floor with its cone over the slot.</span></li>
+    <li><b>3</b><span>The sound leaves through the floor slot into the 3 mm gap the cradles make, so the alarm comes off the table.</span></li>
+    <li><b>4</b><span>The <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894">controller board</a> lying on a foam pad on the speaker, its two USB ports reaching the right wall through a cutout for flashing.</span></li>
+    <li><b>5</b><span>The Nitecore 16340 cell in its <a href="https://www.amazon.com/dp/B0CRGK889F">holder</a>, lying across the width in the front of the top layer. Lift the lid to swap it.</span></li>
+    <li><b>6</b><span>The <a href="https://www.adafruit.com/product/3006">amplifier</a>, flat under the lid in the rear row, two short leads down to the speaker. The dashed cap is the encoder knob, which sits to the right of this cut.</span></li>
+    <li><b>7</b><span>The <a href="https://www.adafruit.com/product/6106">charger board</a> standing in the rear zone with its own USB-C port through the rear panel. This is the only charging port. Its solar input is left empty.</span></li>
+    <li><b>8</b><span>Vent slots in the removable rear panel, in front of the <a href="https://www.adafruit.com/product/4566">temperature and humidity sensor</a>. The panel comes off for the clock's coin cell.</span></li>
+    <li><b>9</b><span>Rear brass cradle. Together the two tubes set the 8° tilt: the rear one is bent 9 mm taller than the front.</span></li>
+    <li><b>10</b><span>The <a href="https://www.amazon.com/dp/B0FR35BGYL">LED filament</a> in its 40 × 2 mm slot, inside the lid's 2 mm, so it costs no height. Its resistors and <a href="https://www.digikey.com/en/products/detail/evvo/AO3400A-EV/26221089">MOSFET switch</a> ride heat-shrunk on its leads.</span></li>
+  </ol>
+  <figcaption>The cut is down the middle, which runs through the lamp's slot. The proximity sensor (left of the cell), the snooze button and the knob (left and right of the amplifier) are not in it; figure 3 has them.</figcaption>
+</figure>
+
+<!-- ===================== PLAN, LID OFF ===================== -->
+<figure>
+  <div class="eyebrow">3 · From above, lid off</div>
+  <div class="plate">
+  <svg viewBox="0 0 440 300" role="img" aria-label="Plan of the compact clock with the lid off: the OLED strip across the front, the speaker and controller dashed below the top layer, and in the top layer the proximity sensor and cell holder in the front row and the snooze button, amplifier and encoder in the rear row. In the rear zone the charger board and four small sensor boards stand side by side. The arm switch is on the left wall and the controller's USB ports reach the right wall.">
+    <defs>
+      <marker id="ah3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker>
+      <pattern id="slot" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-opacity=".35"/></pattern>
+    </defs>
+    <!-- body -->
+    <rect x="90" y="40" width="246" height="204" rx="4" fill="var(--podcut)" stroke="currentColor"/>
+    <!-- zone dividers: rear 46-70, main 70-202, head 202-238 -->
+    <line x1="96" y1="70" x2="330" y2="70" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"/>
+    <line x1="96" y1="202" x2="330" y2="202" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"/>
+    <!-- head: acrylic front wall, OLED module strip -->
+    <rect x="90" y="235" width="246" height="9" fill="var(--glass)"/>
+    <rect x="105" y="206" width="216" height="8" fill="var(--pcb)"/>
+    <!-- lower layer, dashed: speaker and controller -->
+    <rect x="108" y="112" width="210" height="90" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="5 3"/>
+    <rect x="130" y="130" width="140" height="48" rx="24" fill="url(#slot)" stroke="currentColor" stroke-opacity=".3"/>
+    <rect x="110" y="118" width="207" height="76" rx="2" fill="none" stroke="var(--pcb)" stroke-dasharray="5 3"/>
+    <!-- top layer, front row: proximity, cell holder -->
+    <rect x="102" y="148" width="75" height="54" rx="2" fill="var(--pcb)" stroke="currentColor" stroke-opacity=".5"/>
+    <circle cx="139" cy="175" r="7" fill="var(--glass)" stroke="currentColor" stroke-opacity=".6"/>
+    <rect x="183" y="148" width="129" height="54" rx="3" fill="var(--bat)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="196" y="150" width="102" height="50" rx="25" fill="none" stroke="currentColor" stroke-opacity=".5"/>
+    <text x="247" y="179" text-anchor="middle" font-size="10">16340 · 950 mAh</text>
+    <!-- top layer, rear row: snooze, amp, encoder -->
+    <circle cx="126" cy="100" r="24" fill="var(--part)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="160" y="72" width="75" height="60" rx="2" fill="var(--pcb)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="240" y="72" width="75" height="75" rx="2" fill="var(--pcb)" stroke="currentColor" stroke-opacity=".5"/>
+    <circle cx="277.5" cy="109.5" r="30" fill="var(--pod)" stroke="var(--part)" stroke-width="1.5"/>
+    <circle cx="277.5" cy="109.5" r="24" fill="none" stroke="var(--amber)" stroke-opacity=".55"/>
+    <!-- rear zone: charger + 2x2 grid standing -->
+    <rect x="98" y="50" width="75" height="14" fill="var(--pcb)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="177" y="50" width="75" height="14" fill="var(--pcb)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="255" y="50" width="75" height="14" fill="var(--pcb)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="122" y="40" width="27" height="6" fill="var(--pcb)"/>
+    <!-- the lamp's slot, in the lid above (dashed) -->
+    <rect x="153" y="223" width="120" height="6" rx="1" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="4 2"/>
+    <!-- walls: arm switch left, USB cutout right -->
+    <rect x="86" y="80" width="8" height="36" rx="2" fill="var(--part)" stroke="currentColor" stroke-opacity=".5"/>
+    <rect x="88" y="84" width="4" height="12" fill="var(--pod)"/>
+    <rect x="330" y="122" width="8" height="40" fill="var(--bg)" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="2 2"/>
+    <!-- labels -->
+    <text x="72" y="56" text-anchor="end" font-size="10" fill="var(--muted)">rear</text>
+    <text x="72" y="240" text-anchor="end" font-size="10" fill="var(--muted)">front</text>
+    <!-- callouts: numbers inside large parts, leaders for small -->
+    <g class="callout">
+      <circle cx="114" cy="160" r="10" fill="var(--fg)"/><text x="114" y="164" text-anchor="middle" fill="var(--bg)">1</text>
+      <circle cx="196" cy="160" r="10" fill="var(--fg)"/><text x="196" y="164" text-anchor="middle" fill="var(--bg)">2</text>
+      <circle cx="126" cy="100" r="10" fill="var(--fg)"/><text x="126" y="104" text-anchor="middle" fill="var(--bg)">3</text>
+      <circle cx="172" cy="84" r="10" fill="var(--fg)"/><text x="172" y="88" text-anchor="middle" fill="var(--bg)">4</text>
+      <circle cx="252" cy="84" r="10" fill="var(--fg)"/><text x="252" y="88" text-anchor="middle" fill="var(--bg)">5</text>
+      <line x1="135" y1="20" x2="135" y2="49" stroke="currentColor"/>
+      <circle cx="135" cy="12" r="10" fill="var(--fg)"/><text x="135" y="16" text-anchor="middle" fill="var(--bg)">6</text>
+      <line x1="214" y1="30" x2="214" y2="49" stroke="currentColor"/>
+      <circle cx="214" cy="20" r="10" fill="var(--fg)"/><text x="214" y="24" text-anchor="middle" fill="var(--bg)">7</text>
+      <line x1="292" y1="30" x2="292" y2="49" stroke="currentColor"/>
+      <circle cx="292" cy="20" r="10" fill="var(--fg)"/><text x="292" y="24" text-anchor="middle" fill="var(--bg)">8</text>
+      <line x1="60" y1="98" x2="85" y2="98" stroke="currentColor"/>
+      <circle cx="50" cy="98" r="10" fill="var(--fg)"/><text x="50" y="102" text-anchor="middle" fill="var(--bg)">9</text>
+      <line x1="364" y1="142" x2="339" y2="142" stroke="currentColor"/>
+      <circle cx="374" cy="142" r="10" fill="var(--fg)"/><text x="374" y="146" text-anchor="middle" fill="var(--bg)">10</text>
+      <line x1="364" y1="186" x2="319" y2="186" stroke="currentColor"/>
+      <circle cx="374" cy="186" r="10" fill="var(--fg)"/><text x="374" y="190" text-anchor="middle" fill="var(--bg)">11</text>
+      <line x1="364" y1="226" x2="274" y2="226" stroke="currentColor"/>
+      <circle cx="374" cy="226" r="10" fill="var(--fg)"/><text x="374" y="230" text-anchor="middle" fill="var(--bg)">12</text>
+    </g>
+    <!-- dimensions -->
+    <g stroke="currentColor" stroke-opacity=".6">
+      <line x1="90" y1="276" x2="336" y2="276" marker-start="url(#ah3)" marker-end="url(#ah3)"/>
+      <line x1="412" y1="40" x2="412" y2="244" marker-start="url(#ah3)" marker-end="url(#ah3)"/>
+    </g>
+    <text x="213" y="292" text-anchor="middle" font-size="11" fill="var(--muted)">82 mm</text>
+    <text x="426" y="142" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(-90 426 142)">68 mm</text>
+  </svg>
+  </div>
+  <ol class="key">
+    <li><b>1</b><span><a href="https://www.adafruit.com/product/4161">Proximity and light sensor</a>, flat under a 5 mm hole in the lid, looking up. A hand over the clock wakes the face; room light sets its contrast.</span></li>
+    <li><b>2</b><span>Cell <a href="https://www.amazon.com/dp/B0CRGK889F">holder</a> with one Nitecore 16340, 43 × 18 mm, lying across the front of the top layer.</span></li>
+    <li><b>3</b><span><a href="https://www.adafruit.com/product/1505">Snooze button</a>, through the lid, its 24 mm body hanging into the rear row.</span></li>
+    <li><b>4</b><span><a href="https://www.adafruit.com/product/3006">Amplifier</a>, flat, directly above the speaker's terminals.</span></li>
+    <li><b>5</b><span><a href="https://www.adafruit.com/product/6310">Rotary encoder</a> board under the lid, knob outside. At 25 × 25 mm it sets the depth of the main zone.</span></li>
+    <li><b>6</b><span><a href="https://www.adafruit.com/product/6106">Charger board</a> standing against the rear panel, USB-C port through it. Its 500 mA jumper is set for the 950 mAh cell.</span></li>
+    <li><b>7</b><span><a href="https://www.adafruit.com/product/5580">Fuel gauge</a> and <a href="https://www.adafruit.com/product/5188">real-time clock</a>, standing one above the other, the clock's coin cell toward the panel.</span></li>
+    <li><b>8</b><span><a href="https://www.adafruit.com/product/2809">Accelerometer</a> and <a href="https://www.adafruit.com/product/4566">temperature and humidity sensor</a>, standing one above the other behind the vent slots.</span></li>
+    <li><b>9</b><span><a href="https://www.adafruit.com/product/805">Arm switch</a> on the left wall, high, where a thumb finds it from the pillow side.</span></li>
+    <li><b>10</b><span>Cutout in the right wall for the controller's two USB ports. Flash and watch logs without opening the box.</span></li>
+    <li><b>11</b><span>Dashed below: the <a href="https://www.adafruit.com/product/1669">speaker</a> (hatched cone over the floor slot) and the <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894">controller board</a> on it.</span></li>
+    <li><b>12</b><span>Dashed in amber: the lamp's 40 × 2 mm slot in the lid above, 5 mm in from the front edge. The light sensor is a few millimetres away, so the firmware ignores its reading while the lamp is lit.</span></li>
+  </ol>
+  <figcaption>Fit on paper: rear zone 77 of 78 mm wide, main zone 44 of 44 mm deep, stack 50 of 52 mm tall. Zero margin in depth, so the encoder board gets measured before the body is printed.</figcaption>
+</figure>
+
+<!-- ===================== REAR ===================== -->
+<figure>
+  <div class="eyebrow">4 · Rear panel</div>
+  <div class="plate">
+  <svg viewBox="0 0 420 230" role="img" aria-label="Rear view of the compact clock: a removable panel with the charger's USB-C port on the left, a coin-cell access hole in the middle, vent slots on the right, and the arm switch visible edge-on at the left wall.">
+    <rect x="80" y="40" width="246" height="156" rx="5" fill="var(--pod)"/>
+    <rect x="86" y="46" width="234" height="144" rx="3" fill="none" stroke="var(--part)" stroke-opacity=".6"/>
+    <circle cx="92" cy="52" r="2.5" fill="var(--part)"/><circle cx="314" cy="52" r="2.5" fill="var(--part)"/>
+    <circle cx="92" cy="184" r="2.5" fill="var(--part)"/><circle cx="314" cy="184" r="2.5" fill="var(--part)"/>
+    <!-- USB-C -->
+    <rect x="122" y="100" width="27" height="12" rx="5" fill="var(--bg)" stroke="var(--part)"/>
+    <!-- coin cell access -->
+    <circle cx="214" cy="96" r="14" fill="none" stroke="var(--part)" stroke-dasharray="3 2"/>
+    <!-- vents -->
+    <g stroke="var(--part)" stroke-width="2">
+      <line x1="262" y1="118" x2="310" y2="118"/><line x1="262" y1="128" x2="310" y2="128"/><line x1="262" y1="138" x2="310" y2="138"/><line x1="262" y1="148" x2="310" y2="148"/>
+    </g>
+    <!-- arm switch edge-on at left wall (rear view: left wall is on the right side) -->
+    <rect x="318" y="60" width="8" height="24" rx="2" fill="var(--part)"/>
+    <!-- cradle legs -->
+    <path d="M86 150 V204 Q86 209 91 209 H315 Q320 209 320 204 V150" fill="none" stroke="var(--brass)" stroke-width="9"/>
+    <line x1="60" y1="213.5" x2="346" y2="213.5" stroke="currentColor" stroke-width="1.5"/>
+    <g class="callout">
+      <line x1="60" y1="106" x2="121" y2="106" stroke="currentColor"/>
+      <circle cx="50" cy="106" r="10" fill="var(--fg)"/><text x="50" y="110" text-anchor="middle" fill="var(--bg)">1</text>
+      <line x1="214" y1="20" x2="214" y2="81" stroke="currentColor"/>
+      <circle cx="214" cy="12" r="10" fill="var(--fg)"/><text x="214" y="16" text-anchor="middle" fill="var(--bg)">2</text>
+      <line x1="346" y1="133" x2="311" y2="133" stroke="currentColor"/>
+      <circle cx="356" cy="133" r="10" fill="var(--fg)"/><text x="356" y="137" text-anchor="middle" fill="var(--bg)">3</text>
+      <line x1="346" y1="72" x2="327" y2="72" stroke="currentColor"/>
+      <circle cx="356" cy="72" r="10" fill="var(--fg)"/><text x="356" y="76" text-anchor="middle" fill="var(--bg)">4</text>
+    </g>
+  </svg>
+  </div>
+  <ol class="key">
+    <li><b>1</b><span>USB-C. The <a href="https://www.adafruit.com/product/6106">charger board</a>'s own port, the only cable the clock ever needs. Any phone charger.</span></li>
+    <li><b>2</b><span>Coin-cell hole, or simply take the panel off: four screws. The <a href="https://www.amazon.com/dp/B0D8T4C5PK">coin cell</a> in the real-time clock lasts years.</span></li>
+    <li><b>3</b><span>Vent slots over the temperature and humidity sensor so it reads the room, not the box.</span></li>
+    <li><b>4</b><span>The <a href="https://www.adafruit.com/product/805">arm switch</a>, seen edge-on on the left wall.</span></li>
+  </ol>
+  <figcaption>Nothing solar remains on the back. The panel's jack is gone; the charger's solar input is simply not wired.</figcaption>
+</figure>
+
+<!-- ===================== OLD VS NEW ===================== -->
+<figure>
+  <div class="eyebrow">5 · Rev A against Rev B, same scale, same screen</div>
+  <div class="plate">
+  <svg viewBox="0 0 520 180" role="img" aria-label="The first 165 by 92 mm body drawn as a dashed outline beside the new 82 by 52 mm body, both with the same 60 by 37 mm OLED picture: the picture was a quarter of the old face and is half of the new one.">
+    <!-- Rev A, 1.3 px/mm: 214.5 x 119.6 -->
+    <rect x="30" y="40" width="214" height="120" rx="4" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="5 3"/>
+    <rect x="98" y="62" width="78" height="48" fill="var(--oled)"/>
+    <text x="137" y="94" text-anchor="middle" font-size="20" fill="var(--amber)">06:42</text>
+    <text x="137" y="174" text-anchor="middle" font-size="11">Rev A · 165 × 92 mm · picture 15 % of the face</text>
+    <!-- Rev B: 106.6 x 67.6 -->
+    <rect x="330" y="92" width="107" height="68" rx="3" fill="var(--pod)"/>
+    <rect x="344" y="102" width="78" height="48" fill="var(--oled)"/>
+    <text x="383" y="134" text-anchor="middle" font-size="20" fill="var(--amber)">06:42</text>
+    <text x="383" y="174" text-anchor="middle" font-size="11">Rev B · 82 × 52 mm · picture 52 %</text>
+  </svg>
+  </div>
+  <figcaption>Scale 1.3 px per mm. The digits are the same physical size in both; what changed is how much box surrounds them.</figcaption>
+</figure>
+
+<!-- ===================== NUMBERS ===================== -->
+<section>
+  <h2>The sizes the drawing is built from</h2>
+  <table>
+    <thead><tr><th>Part</th><th>Size, mm</th><th>Where it lives</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://www.adafruit.com/product/2719">OLED display</a></td><td class="n">72 × 43 module, 60 × 37 picture</td><td>head, behind the acrylic</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/1669">Speaker</a></td><td class="n">70 × 30 × 17</td><td>main, floor, cone down</td></tr>
+      <tr><td><a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894">Controller board</a></td><td class="n">69 × 25.5, 12 tall with headers</td><td>main, on the speaker</td></tr>
+      <tr><td>Nitecore 16340 cell in its <a href="https://www.amazon.com/dp/B0CRGK889F">holder</a></td><td class="n">cell 34 × 17 Ø; holder 43 × 18 × 14</td><td>main, top layer, front right</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/4161">Proximity and light sensor</a></td><td class="n">25 × 18</td><td>main, top layer, front left, under the lid hole</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/1505">Snooze button</a></td><td class="n">16 mm hole, 24 mm body</td><td>lid, rear left</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/3006">Amplifier</a></td><td class="n">25 × 20</td><td>main, top layer, rear centre</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/6310">Rotary encoder</a></td><td class="n">25 × 25 board, 20 mm cap</td><td>lid, rear right</td></tr>
+      <tr><td><a href="https://www.amazon.com/dp/B0FR35BGYL">LED filament</a>, the sunrise lamp</td><td class="n">38 × 1.6 strip in a 40 × 2 slot</td><td>lid, front edge, centred, 5 mm in</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/6106">Charger board</a></td><td class="n">36 × 25</td><td>rear zone, standing, port through the panel</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/5580">Fuel gauge</a>, <a href="https://www.adafruit.com/product/5188">real-time clock</a>, <a href="https://www.adafruit.com/product/2809">accelerometer</a>, <a href="https://www.adafruit.com/product/4566">temperature and humidity sensor</a></td><td class="n">25 × 18 each</td><td>rear zone, standing, 2 × 2</td></tr>
+      <tr><td><a href="https://www.adafruit.com/product/805">Arm switch</a></td><td class="n">12 × 8 slide</td><td>left wall, high</td></tr>
+      <tr><td>Two brass cradles, 3 mm tube from the <a href="https://www.amazon.com/dp/B0F2FKLC2N">brass tube set</a></td><td class="n">about 150 mm of tube each</td><td>under the body</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:12px">Owned and now unused by this design: the 5 W <a href="https://www.adafruit.com/product/5367">solar panel</a>, the <a href="https://www.adafruit.com/product/4287">DC jack adapter</a>, the <a href="https://www.adafruit.com/product/368">DC jack to screw terminals</a>, the <a href="https://www.adafruit.com/product/6069">panel-mount USB-C extension</a>, and the <a href="https://www.adafruit.com/product/353">6600 mAh battery</a>. They stay in the inventory as stock for other projects.</p>
+</section>
+</main>

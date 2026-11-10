@@ -1,0 +1,53 @@
+# Clock SQW -> GPIO4, bench/circuitpython/sqw_test.py, CircuitPython 10.3.1 on the DevKitC, 2026-11-04
+
+## Run 1: pin floating (no pull of any kind)
+control 0x1c  status 0x08
+1) idle, internal pull-down: LOW  -> NO pull-up (or wrong pad)
+2) 1 Hz square wave: 33 falling edges in 3 s (expect 3)      <- noise on a floating line
+3) alarm set for :49 (now :44), GPIO4 = 0
+   GPIO4 went LOW after 0.00 s, A1F=0                        <- false: low before the alarm was due
+
+## Run 2: internal ~45 kOhm pull-up borrowed
+1) idle, internal pull-down: LOW  -> NO pull-up (or wrong pad)
+2) 1 Hz square wave: 3 falling edges in 3 s (expect 3)
+3) alarm set for :08 (now :03), GPIO4 = 1
+   GPIO4 went LOW after 4.30 s, A1F=1
+   flag cleared, GPIO4 = 1 (expect 1)
+done, control restored to 0x1c
+
+Verdict: the SQW wire reaches GPIO4 and Alarm 1 works. The 10 kOhm SQW-to-3V3 pull-up is missing.
+
+## Run 3: after the builder fitted the 10 kOhm
+Same as run 2: pull-down check reads LOW; square wave and alarm pass only on the internal pull-up.
+Release check (drive GPIO4 low 2 ms, release, read 1 ms later, 20 tries):
+  no internal pull: high 0/20     <- a 10 kOhm to 3V3 would pull it high in microseconds
+  idle 200 ms, no internal pull: LOW
+Verdict: the resistor is not on the SQW/GPIO4 node, or its far leg is not at 3V3.
+
+## Run 4: builder re-fitted the 10 kOhm (far leg to a 3V3 pin)
+control 0x1c  status 0x88   <- OSF set: the clock lost all power since run 3; time reset to 2000-01-01 00:01
+1) idle, internal pull-down: HIGH  -> external pull-up present
+2) 1 Hz square wave: 0 falling edges in 3 s (expect 3)
+3) alarm did NOT pull GPIO4 low
+Release check: high 20/20 with no pull and with pull-down -> pull-up is good.
+Clock ticks over I2C (00:01:14 -> 00:01:17 in 2.5 s), yet in 1 Hz mode GPIO4 only ever reads high.
+Verdict: pull-up fixed; the SQW wire no longer reaches the GPIO4/resistor node (moved while rewiring).
+
+## Run 5: builder reseated the SQW wire
+Same as run 4: pull-up good, clock ticking (00:03:03 -> 00:03:05, no power loss since run 4),
+0 pulses in 1 Hz mode, alarm never pulls GPIO4 low. Not the 32K pad either (32 kHz would show both levels).
+Verdict: the clock's SQW output still doesn't reach GPIO4. Physical: wrong pad (RST would look exactly like this), wrong column, or a bad joint.
+
+## Run 6: rewired correctly (SQW and GPIO4 on one node, 10 kOhm from that node to 3V3)
+Runs 4-5 had SQW tied straight to 3V3 and the resistor between 3V3 and GPIO4; the clock's output fought the supply for ~8 s per run.
+1) idle, internal pull-down: HIGH  -> external pull-up present
+2) 1 Hz square wave: 3 falling edges in 3 s (expect 3)
+3) alarm set for :32 (now :27), GPIO4 = 1
+   GPIO4 went LOW after 4.21 s, A1F=1
+   flag cleared, GPIO4 = 1 (expect 1)
+Release check: high 20/20 with no pull and with pull-down.
+PASS. Clock output undamaged. Still open: OSF set and time reads 2000-01-01; needs the coin cell and the time written.
+
+## 2026-11-05: time written
+UTC from the NTP-synced desktop written at a second boundary; read back 2026-11-05 08:06:33, equal to host UTC.
+Lost-power flag cleared (status 0x88 -> 0x08). Coin cell still to confirm before unplugging.

@@ -1,0 +1,203 @@
+<title>Solar Cell Steps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EDEBE7; --paper:#FFFFFF; --ink:#16181C; --ink-2:#5A6068; --line:#CFCBC4;
+  --brass:#8F6114; --brass-soft:#F2E6D2; --signal:#0E5F7A; --signal-soft:#D9EAF1;
+  --ok:#2A6340; --ok-soft:#D9EADF; --warn:#98351E; --warn-soft:#F7E1D9; --sun:#C98A00;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+    --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+    --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14; --sun:#F2B23A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+  --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+  --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14; --sun:#F2B23A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+h1,h2{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,6vw,44px);font-weight:900;letter-spacing:-0.015em}
+h2{font-size:20px;font-weight:700}
+p{margin:10px 0;max-width:68ch}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:10px}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin:18px 0}
+.step .n{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--brass)}
+.step p{margin:6px 0;font-size:16px}
+.step svg{width:100%;height:auto;display:block;font-family:var(--body)}
+.step.wide{grid-template-columns:1fr}
+@media (max-width:640px){.step{grid-template-columns:1fr}}
+.key{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:14px;color:var(--ink-2);margin:14px 0}
+.key span{display:inline-flex;align-items:center;gap:7px}
+hr{border:0;border-top:3px solid var(--brass);margin:40px 0 0}
+.note{background:var(--brass-soft);border-left:4px solid var(--brass);border-radius:4px;padding:10px 14px;margin:16px 0;font-size:15px}
+.note .d{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--brass)}
+</style>
+<div class="wrap">
+<div class="masthead">
+  <div class="eyebrow">Cyber Dawn &middot; how the solar panel works</div>
+  <h1>A solar cell, one step at a time</h1>
+  <div class="sub">Five pictures, short sentences. Dots are electrons. Rings are holes. The yellow arrow is light.</div>
+</div>
+
+<div class="note"><span class="d">NOTE &middot; 2026-10-31</span><br>
+Teaching page, kept. Cyber Dawn dropped solar on 2026-10-31 (Rev B: USB-C charging, one 16340 cell); the 5 W panel is owned stock for another project. Step 5 still describes the <a href="https://www.adafruit.com/product/6106">charger board</a> in use, with the board's own USB-C port in place of the panel.</div>
+
+<div class="key">
+  <span><svg width="18" height="18"><circle cx="9" cy="9" r="5" fill="var(--signal)"/></svg> electron (carries charge)</span>
+  <span><svg width="18" height="18"><circle cx="9" cy="9" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/></svg> hole (an empty spot)</span>
+  <span><svg width="26" height="18"><line x1="2" y1="9" x2="20" y2="9" stroke="var(--sun)" stroke-width="3"/><polygon points="18,4 25,9 18,14" fill="var(--sun)"/></svg> light</span>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 240" role="img" aria-label="Two silicon layers with a thin boundary between them">
+    <rect x="40" y="40" width="340" height="70" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <rect x="40" y="130" width="340" height="70" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/>
+    <rect x="40" y="110" width="340" height="20" fill="var(--brass-soft)" stroke="var(--brass)"/>
+    <text x="52" y="62" font-size="13" font-weight="700" fill="var(--ink)">Top layer: a few spare electrons</text>
+    <text x="52" y="190" font-size="13" font-weight="700" fill="var(--ink)">Bottom layer: a few empty spots</text>
+    <text x="52" y="124" font-size="12" font-weight="700" fill="var(--brass)">the seam, where the layers touch: a one-way ramp</text>
+    <g fill="var(--signal)"><circle cx="90" cy="88" r="5"/><circle cx="170" cy="92" r="5"/><circle cx="250" cy="86" r="5"/><circle cx="330" cy="90" r="5"/></g>
+    <g fill="none" stroke="var(--warn)" stroke-width="2"><circle cx="110" cy="152" r="5"/><circle cx="200" cy="156" r="5"/><circle cx="290" cy="150" r="5"/><circle cx="350" cy="158" r="5"/></g>
+    <text x="40" y="226" font-size="12" fill="var(--ink-2)">A slice of the panel, edge on. Thinner than a hair.</text>
+  </svg>
+  <div><div class="n">STEP 1</div><h2>Two layers, one boundary</h2>
+<p>A solar cell is a thin slab of silicon. It is made in two layers.</p>
+<p>The top layer has a few spare electrons. The bottom layer has a few empty spots. An empty spot is called a hole.</p>
+<p>When the cell is made, the layers are joined. Right at the seam, a few electrons fall into holes on the other side. That happens once and then stops.</p>
+<p>It leaves a thin strip at the seam with plus charge on top and minus charge below. That makes a built-in electric push. The push is permanent. Think of it as a one-way ramp: it shoves electrons up and holes down.</p></div>
+</div>
+
+<div class="step wide">
+<svg viewBox="0 0 900 290" role="img" aria-label="Zoom into the seam: before joining, the first instant when the nearest electrons drop into holes, and the frozen charged strip that results"><g transform="translate(10,0)"><text x="0" y="16" font-size="13" font-weight="700" fill="var(--ink)">1. Before: the layers just touching</text><rect x="0" y="28" width="270" height="110" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/><rect x="0" y="142" width="270" height="110" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/><line x1="0" y1="140" x2="270" y2="140" stroke="var(--brass)" stroke-width="2" stroke-dasharray="4 3"/><text x="268" y="136" font-size="10" font-weight="700" text-anchor="end" fill="var(--brass)">the seam</text><text x="4" y="42" font-size="10" fill="var(--ink-2)">top layer</text><text x="4" y="250" font-size="10" fill="var(--ink-2)">bottom layer</text><circle cx="45" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="60" r="5" fill="var(--signal)"/><circle cx="45" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="102" r="5" fill="var(--signal)"/><circle cx="45" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="180" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="45" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="135" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="60" r="5" fill="var(--signal)"/><circle cx="135" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="102" r="5" fill="var(--signal)"/><circle cx="135" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="180" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="135" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="225" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="60" r="5" fill="var(--signal)"/><circle cx="225" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="102" r="5" fill="var(--signal)"/><circle cx="225" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="180" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="225" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><text x="60" y="275" font-size="11" fill="var(--ink-2)">spare electrons next to atoms; empty spots below</text></g><g transform="translate(315,0)"><text x="0" y="16" font-size="13" font-weight="700" fill="var(--ink)">2. The first instant after joining</text><rect x="0" y="28" width="270" height="110" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/><rect x="0" y="142" width="270" height="110" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/><line x1="0" y1="140" x2="270" y2="140" stroke="var(--brass)" stroke-width="2" stroke-dasharray="4 3"/><text x="268" y="136" font-size="10" font-weight="700" text-anchor="end" fill="var(--brass)">the seam</text><text x="4" y="42" font-size="10" fill="var(--ink-2)">top layer</text><text x="4" y="250" font-size="10" fill="var(--ink-2)">bottom layer</text><circle cx="45" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="60" r="5" fill="var(--signal)"/><circle cx="45" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="45" y="116" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">+</text><circle cx="45" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="45" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">&minus;</text><circle cx="61" cy="180" r="5" fill="var(--signal)"/><line x1="61" y1="108" x2="61" y2="168" stroke="var(--signal)" stroke-width="2.5"/><polygon points="55,164 61,176 67,164" fill="var(--signal)"/><circle cx="45" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="135" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="60" r="5" fill="var(--signal)"/><circle cx="135" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="102" r="5" fill="var(--signal)"/><circle cx="135" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="180" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="135" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="225" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="60" r="5" fill="var(--signal)"/><circle cx="225" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="225" y="116" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">+</text><circle cx="225" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="225" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">&minus;</text><circle cx="241" cy="180" r="5" fill="var(--signal)"/><line x1="241" y1="108" x2="241" y2="168" stroke="var(--signal)" stroke-width="2.5"/><polygon points="235,164 241,176 247,164" fill="var(--signal)"/><circle cx="225" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><text x="10" y="275" font-size="11" fill="var(--ink-2)">an electron beside an empty spot drops in, like a ball into a dip</text></g><g transform="translate(620,0)"><text x="0" y="16" font-size="13" font-weight="700" fill="var(--ink)">3. Ever after: a frozen strip</text><rect x="0" y="28" width="270" height="110" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/><rect x="0" y="142" width="270" height="110" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/><line x1="0" y1="140" x2="270" y2="140" stroke="var(--brass)" stroke-width="2" stroke-dasharray="4 3"/><text x="268" y="136" font-size="10" font-weight="700" text-anchor="end" fill="var(--brass)">the seam</text><text x="4" y="42" font-size="10" fill="var(--ink-2)">top layer</text><text x="4" y="250" font-size="10" fill="var(--ink-2)">bottom layer</text><rect x="0" y="96" width="270" height="90" fill="var(--brass-soft)" fill-opacity="0.7"/><circle cx="45" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="60" r="5" fill="var(--signal)"/><circle cx="45" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="45" y="116" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">+</text><circle cx="45" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="45" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">&minus;</text><circle cx="61" cy="180" r="5" fill="var(--signal)"/><circle cx="45" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="61" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="135" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="60" r="5" fill="var(--signal)"/><circle cx="135" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="135" y="116" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">+</text><circle cx="135" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="135" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">&minus;</text><circle cx="151" cy="180" r="5" fill="var(--signal)"/><circle cx="135" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="151" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><circle cx="225" cy="70" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="60" r="5" fill="var(--signal)"/><circle cx="225" cy="112" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="225" y="116" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">+</text><circle cx="225" cy="170" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="225" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">&minus;</text><circle cx="241" cy="180" r="5" fill="var(--signal)"/><circle cx="225" cy="215" r="12" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.5"/><circle cx="241" cy="225" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/><line x1="258" y1="104" x2="258" y2="172" stroke="var(--brass)" stroke-width="3"/><polygon points="251,168 258,182 265,168" fill="var(--brass)"/><text x="150" y="92" font-size="11" font-weight="700" fill="var(--brass)">the push, frozen in</text><line x1="90" y1="66" x2="90" y2="96" stroke="var(--signal)" stroke-width="2" stroke-dasharray="3 3"/><line x1="84" y1="98" x2="96" y2="110" stroke="var(--warn)" stroke-width="2.5"/><line x1="96" y1="98" x2="84" y2="110" stroke="var(--warn)" stroke-width="2.5"/><text x="6" y="275" font-size="11" fill="var(--ink-2)">the minus row below now repels the next electron: it stops</text></g></svg>
+<div><div class="n">ZOOM ON STEP 1</div><h2>Why a few electrons cross the seam, and why they stop</h2>
+<p>The seam is the dashed line: the surface where the top layer and the bottom layer touch. Zoom in on it. Each grey circle is one atom. In the top layer a few atoms carry a spare electron, drawn as a blue dot beside them. In the bottom layer a few atoms are missing one, drawn as a red ring: an empty spot.</p>
+<p><strong>Why they cross.</strong> An electron is happiest sitting in a spot, not loose beside an atom. When the layers touch, an electron next to the seam has an empty spot right across from it. It drops in, like a ball rolling into a dip in the floor. Only the electrons nearest the seam can do this; the ones further up are too far away.</p>
+<p><strong>What it leaves behind.</strong> The atom that lost its electron is now one short, so it is positive. The atom that gained one is now one over, so it is negative. A thin strip forms: a row of plus on the top side of the seam, a row of minus on the bottom side.</p>
+<p><strong>Why it stops.</strong> Like charges repel. The minus row below now pushes away any further electron that tries to come down, and the plus row above pulls it back. After the first few crossings the repulsion wins and no more electrons make it. The strip is frozen, and so is the push across it. That push is the ramp in Step 3.</p>
+</div>
+</div>
+<div class="step">
+  <svg viewBox="0 0 420 240" role="img" aria-label="A light packet arrives and knocks one electron loose, leaving a hole">
+    <rect x="40" y="40" width="340" height="70" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <rect x="40" y="130" width="340" height="70" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/>
+    <rect x="40" y="110" width="340" height="20" fill="var(--brass-soft)" stroke="var(--brass)"/>
+    <line x1="120" y1="8" x2="196" y2="112" stroke="var(--sun)" stroke-width="4"/>
+    <polygon points="186,104 202,122 206,100" fill="var(--sun)"/>
+    <text x="206" y="30" font-size="12" font-weight="700" fill="var(--sun)">a packet of light</text>
+    <circle cx="210" cy="124" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <circle cx="232" cy="98" r="5" fill="var(--signal)"/>
+    <line x1="214" y1="118" x2="226" y2="104" stroke="var(--ink-2)" stroke-width="1.5"/>
+    <text x="244" y="90" font-size="12" fill="var(--ink)">electron knocked free</text>
+    <text x="222" y="150" font-size="12" fill="var(--ink)">the spot it left: a new hole</text>
+    <text x="40" y="226" font-size="12" fill="var(--ink-2)">One packet frees one electron. Sunlight brings trillions a second.</text>
+  </svg>
+  <div><div class="n">STEP 2</div><h2>Light knocks an electron loose</h2>
+<p>Light comes in tiny packets of energy.</p>
+<p>When a packet hits the silicon near the seam, it kicks one electron out of its place.</p>
+<p>Now there is a free electron. The spot it came from is a new hole.</p>
+<p>On its own this is useless. The electron would fall back into the hole, and the energy would turn into a little heat.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 240" role="img" aria-label="The boundary pushes the electron up and the hole down; charge piles up on the two faces">
+    <rect x="40" y="40" width="340" height="70" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <rect x="40" y="130" width="340" height="70" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/>
+    <rect x="40" y="110" width="340" height="20" fill="var(--brass-soft)" stroke="var(--brass)"/>
+    <circle cx="210" cy="118" r="5" fill="var(--signal)"/>
+    <line x1="210" y1="110" x2="210" y2="66" stroke="var(--signal)" stroke-width="2.5"/>
+    <polygon points="204,70 210,58 216,70" fill="var(--signal)"/>
+    <circle cx="240" cy="122" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <line x1="240" y1="130" x2="240" y2="174" stroke="var(--warn)" stroke-width="2.5"/>
+    <polygon points="234,170 240,182 246,170" fill="var(--warn)"/>
+    <text x="222" y="56" font-size="12" fill="var(--signal)">electrons collect on the top face</text>
+    <text x="236" y="196" font-size="12" fill="var(--warn)">holes collect on the bottom face</text>
+    <text x="52" y="60" font-size="12" font-weight="700" fill="var(--ink)">&minus; &minus; &minus; &minus;</text>
+    <text x="52" y="192" font-size="12" font-weight="700" fill="var(--ink)">+ + + +</text>
+    <text x="40" y="226" font-size="12" fill="var(--ink-2)">No wire yet: the two faces just sit at about 0.5 V apart and wait.</text>
+  </svg>
+  <div><div class="n">STEP 3</div><h2>The ramp sorts them</h2>
+<p>This is the trick that makes the cell work.</p>
+<p>The built-in push at the seam grabs the free electron and shoves it up into the top layer. It shoves the hole down into the bottom layer. They are pulled apart before they can rejoin.</p>
+<p>Sunlight does this trillions of times a second. The top face of the cell fills with extra electrons. The bottom face fills with holes.</p>
+<p>The two faces are now about half a volt apart, like a weak battery. But nothing flows yet. There is nowhere to go.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 240" role="img" aria-label="A wire joins the top face to the bottom face through a lamp; electrons flow around the loop">
+    <rect x="40" y="70" width="220" height="50" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <rect x="40" y="135" width="220" height="50" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/>
+    <rect x="40" y="120" width="220" height="15" fill="var(--brass-soft)" stroke="var(--brass)"/>
+    <line x1="60" y1="20" x2="110" y2="70" stroke="var(--sun)" stroke-width="4"/><polygon points="102,64 116,76 118,58" fill="var(--sun)"/>
+    <line x1="130" y1="20" x2="180" y2="70" stroke="var(--sun)" stroke-width="4"/><polygon points="172,64 186,76 188,58" fill="var(--sun)"/>
+    <!-- wire loop: top face -> right -> lamp -> down -> bottom face -->
+    <path d="M260,78 L340,78 L340,100" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="340" cy="118" r="18" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M328,106 L352,130 M352,106 L328,130" stroke="var(--ink)" stroke-width="2"/>
+    <path d="M340,136 L340,178 L260,178" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <text x="362" y="122" font-size="12" fill="var(--ink)">your clock</text>
+    <!-- electrons moving along the wire -->
+    <g fill="var(--signal)"><circle cx="290" cy="78" r="4.5"/><circle cx="340" cy="92" r="4.5"/><circle cx="340" cy="160" r="4.5"/><circle cx="296" cy="178" r="4.5"/></g>
+    <polygon points="300,72 312,78 300,84" fill="var(--signal)"/>
+    <polygon points="306,172 294,178 306,184" fill="var(--signal)"/>
+    <circle cx="120" cy="160" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <circle cx="200" cy="160" r="5" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <text x="196" y="62" font-size="11" fill="var(--signal)">out the top wire</text>
+    <text x="48" y="205" font-size="11" fill="var(--warn)">back in at the bottom, into a hole</text>
+    <text x="40" y="228" font-size="12" fill="var(--ink-2)">A loop. The electrons go round and round; only light is used up.</text>
+  </svg>
+  <div><div class="n">STEP 4</div><h2>Close the loop and it flows</h2>
+<p>Connect a wire from the top face, through your clock, to the bottom face.</p>
+<p>Now the crowded electrons on top have a way out. They go up the wire, through the clock, and back in at the bottom. There, each one drops into a waiting hole.</p>
+<p>That is a current. It keeps going as long as light keeps freeing electrons and the ramp keeps sorting them.</p>
+<p>The same electrons go round and round. The cell never runs out of them. The only thing used up is the light. Cover the panel and it stops at once.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 240" role="img" aria-label="Ten cells in a row feed a charger board, which feeds the battery; the charger blocks the path back at night">
+    <g stroke="var(--line)">
+      <rect x="30" y="60" width="26" height="40" fill="var(--signal-soft)"/><rect x="60" y="60" width="26" height="40" fill="var(--signal-soft)"/><rect x="90" y="60" width="26" height="40" fill="var(--signal-soft)"/><rect x="120" y="60" width="26" height="40" fill="var(--signal-soft)"/><rect x="150" y="60" width="26" height="40" fill="var(--signal-soft)"/>
+    </g>
+    <text x="30" y="50" font-size="12" font-weight="700" fill="var(--ink)">10 cells end to end = 6 V panel</text>
+    <text x="60" y="118" font-size="11" fill="var(--ink-2)">0.6 + 0.6 + 0.6 ...</text>
+    <line x1="176" y1="80" x2="226" y2="80" stroke="var(--ink)" stroke-width="2.5"/>
+    <polygon points="218,74 230,80 218,86" fill="var(--ink)"/>
+    <rect x="232" y="56" width="80" height="48" rx="4" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+    <text x="272" y="76" font-size="12" font-weight="700" text-anchor="middle" fill="var(--brass)">charger</text>
+    <text x="272" y="92" font-size="11" text-anchor="middle" fill="var(--brass)">board</text>
+    <line x1="312" y1="80" x2="356" y2="80" stroke="var(--ink)" stroke-width="2.5"/>
+    <polygon points="348,74 360,80 348,86" fill="var(--ink)"/>
+    <rect x="364" y="62" width="40" height="36" rx="3" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/>
+    <rect x="404" y="72" width="6" height="16" fill="var(--ok)"/>
+    <text x="384" y="84" font-size="11" font-weight="700" text-anchor="middle" fill="var(--ok)">3.7 V</text>
+    <text x="330" y="50" font-size="12" font-weight="700" fill="var(--ink)">cell</text>
+    <!-- night: blocked return -->
+    <path d="M384,104 L384,160 L272,160 L272,112" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="5 4"/>
+    <line x1="262" y1="148" x2="282" y2="172" stroke="var(--warn)" stroke-width="3"/>
+    <line x1="282" y1="148" x2="262" y2="172" stroke="var(--warn)" stroke-width="3"/>
+    <text x="30" y="196" font-size="12" fill="var(--warn)">At night the charger blocks the way back (dashed path).</text>
+    <text x="30" y="150" font-size="12" fill="var(--ink)">The panel pushes at 6 V, harder than</text>
+    <text x="30" y="166" font-size="12" fill="var(--ink)">the cell's 3.7 V, so current goes in.</text>
+    <text x="30" y="228" font-size="12" fill="var(--ink-2)">Cyber Dawn: 5 W panel, charger board, one Li-ion cell.</text>
+  </svg>
+  <div><div class="n">STEP 5</div><h2>Into the battery</h2>
+<p>One cell gives only half a volt. So a panel is ten cells wired end to end. That adds up to 6 V.</p>
+<p>The battery sits at 3.7 V. The panel pushes harder, so current is forced into the battery. Forcing current backwards through a battery is what charging is.</p>
+<p>The charger board sits in between. It keeps the push at a level the cell can take. And at night, when the panel makes nothing, it closes the path so the battery cannot drain back out through the dark panel.</p></div>
+</div>
+
+<p>So, does the panel run out of electrons? No. They never leave the loop. Light lifts them, they roll down through your clock, and they come home to be lifted again. The panel is a pump, not a tank. The battery is the tank.</p>
+<p>One more thing to be clear about. The push at the seam is an electric field, not a magnetic one. No magnets are involved. And the cell's own electrons only shuffle once, at the seam, when the cell is made. After that nothing moves until light arrives.</p>
+<hr>
+</div>

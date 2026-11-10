@@ -1,0 +1,149 @@
+<title>Cyber Dawn Power</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EDEBE7; --paper:#FFFFFF; --ink:#16181C; --ink-2:#5A6068; --line:#CFCBC4;
+  --brass:#8F6114; --brass-soft:#F2E6D2; --signal:#0E5F7A; --signal-soft:#D9EAF1;
+  --ok:#2A6340; --ok-soft:#D9EADF; --warn:#98351E; --warn-soft:#F7E1D9;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+    --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+    --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+  --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+  --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 72px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,6vw,46px);font-weight:900;letter-spacing:-0.015em}
+h2{font-size:clamp(20px,3vw,26px);font-weight:700;margin:0}
+h3{font-size:17px;font-weight:700;margin:0 0 6px;font-family:var(--display);
+   text-transform:uppercase;letter-spacing:.09em;color:var(--brass);font-size:12.5px}
+p{margin:10px 0;max-width:70ch}
+ul,ol{max-width:70ch;padding-left:22px;margin:10px 0}
+li{margin:7px 0}
+a{color:var(--signal)}
+code{font-family:var(--mono);font-size:.88em;background:var(--signal-soft);padding:1.5px 5px;border-radius:3px;white-space:nowrap}
+pre{font-family:var(--mono);font-size:13px;line-height:1.55;background:var(--paper);border:1px solid var(--line);
+    padding:12px 14px;overflow-x:auto;border-radius:5px;margin:10px 0}
+pre code{background:none;padding:0;white-space:pre}
+strong{font-weight:700}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.5}
+.day{background:var(--paper);border:1px solid var(--line);border-radius:6px;margin:26px 0;overflow:hidden}
+.dayhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+         padding:14px 20px;border-bottom:1px solid var(--line);border-left:6px solid var(--brass)}
+.daynum{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--brass);white-space:nowrap}
+.badge{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;
+       background:var(--brass-soft);color:var(--brass);padding:3px 9px;border-radius:999px;margin-left:auto;white-space:nowrap}
+.daybody{padding:4px 20px 20px}
+.block{margin-top:18px}
+.block ol,.block ul{margin-top:6px}
+.done{background:var(--ok-soft);border:1px solid var(--ok);border-radius:5px;padding:12px 16px;margin-top:18px}
+.done h3{color:var(--ok)}
+.done p,.done ul{max-width:none;margin:4px 0}
+.trouble{background:var(--paper);border:1px dashed var(--line);border-radius:5px;padding:12px 16px;margin-top:14px}
+.trouble h3{color:var(--ink-2)}
+.note{padding:13px 17px;margin:18px 0;border-radius:5px;max-width:none}
+.note p{max-width:none;margin:5px 0}
+.note .lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.warn .lbl{color:var(--warn)}
+.tip{background:var(--signal-soft);border:1px solid var(--signal)}
+.tip .lbl{color:var(--signal)}
+.kit{background:var(--brass-soft);border:1px solid var(--brass)}
+.kit .lbl{color:var(--brass)}
+figure{margin:22px 0;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:11px;max-width:70ch;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:14px 0}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+td.m,th.m{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 18px;font-size:15px;margin:16px 0;
+       border:1px solid var(--line);border-radius:5px;background:var(--paper);overflow:hidden}
+.sched>div{padding:9px 14px;border-bottom:1px solid var(--line)}
+.sched>div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);font-size:13px;color:var(--brass);font-weight:700;white-space:nowrap}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:6px;width:15px;height:15px;border:2px solid var(--brass);border-radius:3px}
+hr{border:0;border-top:3px solid var(--brass);margin:44px 0 0}
+@media (max-width:520px){.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}.badge{margin-left:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>figure.sheet{padding:8px} figure.sheet svg{width:100%;height:auto} .wrap{max-width:1100px}</style>
+<div class="wrap">
+<div class="masthead"><div class="eyebrow">Cyber Dawn &middot; Rev B power wiring</div>
+<h1>The power path, and why</h1>
+<div class="sub">One 16340 cell, the charger board, the fuel gauge and the USB-C port on one sheet, an outline of each group, and the owned parts it is built from. Rev B 2026-10-31: solar removed, compact body, 16340 cell. Updated 2026-11-08: the sunrise lamp tap at the cell.<br>Signals are unchanged from the <strong>Phase 1 sheet</strong>; pin numbers are <code>firmware/main/include/board_pins.h</code>; the decisions are <code>docs/COMPACT_DESIGN.md</code>; the reasoning is <code>docs/REVIEW.md</code> §2.1, §4 and §8.2.</div></div>
+<div class="note"><span class="lbl">The diagram is its own page</span><p>The one-sheet drawing is published separately as <strong>Cyber Dawn Power Sheet</strong> and printed as <code>docs/pages/print/cyber-dawn-power-sheet.pdf</code>, one landscape Letter page. This page is the explanation, printed portrait as <code>cyber-dawn-power-notes.pdf</code>.</p></div>
+
+<h2>What this wiring is</h2>
+<p>Phase 1 ran the clock from the <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894" target="_blank" rel="noopener">controller</a>'s USB socket. This sheet replaces that one cable with a power path: one Nitecore 16340 cell in the owned <a href="https://www.amazon.com/dp/B0CRGK889F" target="_blank" rel="noopener">16340 holder</a>, a <a href="https://www.adafruit.com/product/6106" target="_blank" rel="noopener">charger board</a> fed over USB-C through its own port, a <a href="https://www.adafruit.com/product/5580" target="_blank" rel="noopener">fuel gauge</a> the firmware reads, and a 5 V boost that feeds the controller. The signals on the Phase 1 sheet do not change. The only wire that moves is the amp's 5 V, and it moves nowhere: the controller's 5V pin is now fed instead of feeding. One wire from that sheet lands here: the sunrise lamp's + lead, soldered into the cell's red-lead splice at the holder (added 2026-11-05, finding 7).</p>
+<p>Rev B 2026-10-31: solar removed, compact body, 16340 cell. The clock is a USB-C appliance; the cell rides through unplugs and keeps the alarm armed. It is not there to run the clock for days.</p>
+<p>Five groups, built in the order below. Each one can be checked before the next goes on.</p>
+
+<div class="note warn"><span class="lbl">Three rules the whole sheet obeys</span>
+<p><strong>One source into the <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894" target="_blank" rel="noopener">controller</a> at a time.</strong> Espressif's user guide lists the USB ports, the 5V pin and the 3V3 pin as three mutually exclusive ways to power the board. With the charger's 5 V plugged into the 5V pin, both USB sockets stay empty. To flash firmware, pull the 5 V JST first, then plug USB. That JST pair is on the sheet for exactly this reason.</p>
+<p><strong>The cell has one home.</strong> In the clock it reaches the fuel gauge, the gauge the charger, and the lamp's 15 Ω at the splice. Never the controller, never the Pocket AI's <a href="https://www.adafruit.com/product/4410" target="_blank" rel="noopener">charger board</a>, never a second charger at the same time. A cell may go into an external Nitecore charger, but only after it comes out of the holder. Two chargers on one cell fight, and a cell does not win that fight.</p>
+<p><strong>The boost starts light.</strong> The boost converter on the charger board stalls if the load asks for more than about 200 mA the instant it comes up. The controller alone is fine. Firmware keeps the OLED, the radio and the amp off until the rail is up, then turns them on one at a time. This is a firmware requirement, not a caution.</p>
+</div>
+
+<h2>1 · Cell, holder, pigtail, gauge, charger</h2>
+<p><strong>What.</strong> One Nitecore 16340 cell in the <a href="https://www.amazon.com/dp/B0CRGK889F" target="_blank" rel="noopener">16340 holder</a>. The holder's red and black leads solder to the two wires of an owned <a href="https://www.amazon.com/dp/B0F6T4LKDG" target="_blank" rel="noopener">JST-PH pigtail</a> (from the daier 20-pair JST-PH 2.0 cable set of the Amazon order of 2026-09-02), heat-shrink over each joint, and the pigtail's plug goes into either JST port on the <a href="https://www.adafruit.com/product/5580" target="_blank" rel="noopener">fuel gauge</a>. The gauge's other JST port to the <a href="https://www.adafruit.com/product/6106" target="_blank" rel="noopener">charger board</a>'s BAT port, with a JST-PH pair. The two gauge ports are the same net, so the cell's current passes straight through; the gauge only watches the voltage.</p>
+<p><strong>Why the gauge sits in the middle.</strong> The fuel gauge estimates state of charge from the cell voltage and its own model, and the firmware reads it over I²C at 0x36 for the battery gauge on the display and the alarm reserve. Its INT pin pulls low when the charge drops below a threshold the firmware sets; it goes to GPIO39, which is polled on wake and is not a wake source. It has a 10 kΩ pull-up on the board, so no resistor.</p>
+<p><strong>Why nothing else touches the cell.</strong> The protection circuit in the cell's button top handles over-charge, over-discharge and short circuit. The charger handles the charge profile. Everything else the clock draws comes out of the charger's 5 V terminal block; the lamp is the one exception, by design.</p>
+<p><strong>The lamp tap.</strong> The sunrise lamp's + wire is soldered into the same joint as the holder's red lead, before the gauge: from there it runs through 15 Ω to the <a href="https://www.amazon.com/dp/B0FR35BGYL" target="_blank" rel="noopener">LED filament</a>, and the filament's other end through the <a href="https://www.digikey.com/en/products/detail/evvo/AO3400A-EV/26221089" target="_blank" rel="noopener">MOSFET</a> on GPIO40 to ground, drawn whole on this power sheet (bottom left) and on the Phase 1 sheet §6. The 10 kΩ from gate to ground holds the lamp off while the controller boots. It draws up to 0.1 A on a full cell and about 0.06 A at 3.7 V. That current cannot come from the 5 V boost, which is rated 1 A and already peaks near 0.93 A during an alarm; the cell allows 2 A, so the lamp takes it straight from the cell and the boost budget is unchanged. The gauge watches the cell's voltage, not its current, so it reads the same. Plugged in, the charger holds the cell node up and the lamp runs either way. Firmware reads the cell voltage from the gauge and scales the lamp's duty so a sunrise looks the same on any charge.</p>
+<p><strong>What to check.</strong> The holder's leads, with a cell in, before they meet the pigtail: red must read positive against black. That is the one polarity on this sheet that no supplier guarantees. Red on the pigtail then lands on the + pad of the gauge and the charger; if the pigtail's own colours disagree, swap the pins in the housing.</p>
+
+<h2>2 · The charger, set up for one 16340 cell</h2>
+<p><strong>What it does.</strong> The <a href="https://www.adafruit.com/product/6106" target="_blank" rel="noopener">charger board</a> takes 5 V from USB-C, charges the cell to 4.20 V, and runs the load from the input first so the cell is not cycled while power is present. The boost makes 5 V at up to 1 A from whichever is available, input or cell.</p>
+<p><strong>The jumper.</strong> Cut the charge-rate jumper on the back. It ships closed, which puts the board's two current-set resistors in parallel for 1 A; cut, one resistor remains and the charge current is 500 mA (verified 2026-10-31 against the board's schematic). The cell is 950 mAh, so 500 mA is about 0.5 C; 1 A would be about 1 C, and Nitecore publishes no maximum charge current for the cell. 500 mA is the gentle choice and it costs nothing in time that matters.</p>
+<p><strong>The 6 h timer.</strong> The charger chip stops charging after six hours without a break and latches a fault: red F and orange C both on, cleared only by unplugging and replugging the input. At 500 mA into 950 mAh the constant-current half takes about 1.5 h and the taper about an hour: full from empty in about 2.5 h, so the timer is never reached. It was a real concern with the 6600 mAh pack of the earlier plan; with one cell it is not.</p>
+<p><strong>The profile.</strong> Protected 16340s terminate at 4.20 V, the same ceiling the charger holds for any Li-ion cell, so nothing on the board changes but the jumper. The EN pad disables the boost; leave it open so 5 V is always on.</p>
+<p><strong>The solar input.</strong> VIN and G stay empty. The 5 W solar panel is owned stock for another project, and nothing lands on those pads.</p>
+<p><strong>The LEDs.</strong> Orange C: charging. Green: 5 V out is live; it lights as soon as a cell is in, because the boost runs from the cell with EN open. Red F alone: a recoverable fault (the chip too hot, a short on the 5 V side); it clears itself. Red F and orange C together: a latched fault (the 6 h timer, battery over-current); unplug and replug USB-C. A low or empty cell is not a fault: below 3.0 V the charger pre-charges it gently. If F keeps lighting, pull the cell and check it in the external Nitecore charger.</p>
+
+<h2>3 · USB-C through the rear panel</h2>
+<p><strong>What.</strong> A USB-C cable from an owned 2 A wall adapter, through a cutout in the rear panel, into the charger board's own USB-C port. The charger stands against the rear panel with its port in the cutout, so the port on the outside of the clock is the charger's.</p>
+<p><strong>Why not an extension.</strong> The panel-mount USB-C extension of the earlier plan is owned and unused: the compact body puts the charger at the rear panel, so there is nothing to extend.</p>
+<p><strong>Why not the controller's socket.</strong> The <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894" target="_blank" rel="noopener">controller</a>'s USB would power the controller only, bypassing the charger, and would fight the boost on the 5V pin. The clock has one way in, and the charger decides.</p>
+<p><strong>Why 2 A.</strong> The charger chip caps what it takes from USB at 1.1 A, charging and load together, so the adapter never sees more; anything rated 1.5 A or above covers it, and the owned 2 A adapter does. Inside that cap the load comes first: during an alarm, charging pauses and the cell may briefly add current (the chip's supplement mode), which is by design. A laptop port gives 0.5 A and the symptom is a slow charge and a resetting controller, which looks exactly like a wiring fault.</p>
+
+<h2>4 · The 5 V lane, and the disconnect</h2>
+<p><strong>What.</strong> The charger's terminal block + and − to a JST-PH pair, then on to the <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894" target="_blank" rel="noopener">controller</a>'s 5V and GND pins. The <a href="https://www.adafruit.com/product/3006" target="_blank" rel="noopener">amp</a>'s VIN taps the same lane; its 220 µF and 100 nF stay at its pins.</p>
+<p><strong>Why a JST in the middle.</strong> It is the switch. Flashing firmware means the controller's USB goes in, and the user guide says that and the 5V pin are mutually exclusive. Pull the JST, flash, replug. The slide switch you own is rated for logic, not for an amp's 0.9 A peaks, so the plug pair does the job instead.</p>
+<p><strong>Why the amp is unchanged.</strong> On the Phase 1 sheet the amp took 5 V from the controller's 5V pin, which was the USB input. Now that pin is fed by the boost, so the amp is on the boost too. The 6 dB gain strap from Phase 1 is what keeps the amp's peaks inside the boost's 1 A; do not remove it.</p>
+<p><strong>What the controller sees.</strong> 5 V from the boost into the board's linear regulator, 3.3 V out. Two conversions in series are about 59 percent efficient to the 3.3 V loads, which is why one 3.4 Wh cell is roughly 10 h with the face lit and far longer with it dark. The controller's regulator is an 800 mA low-dropout part (per the board's schematic, not the 1.1 V-dropout part the earlier notes assumed), so the 5 V rail can sag to about 3.7 V before the 3.3 V rail follows; that is the brownout threshold to scope in Phase 4, and it matters only while the clock is unplugged and the boost runs from the cell.</p>
+
+<h2>5 · The gauge on the chain</h2>
+<p><strong>What.</strong> One <a href="https://www.adafruit.com/product/4210" target="_blank" rel="noopener">QT cable</a> from the <a href="https://www.adafruit.com/product/5580" target="_blank" rel="noopener">fuel gauge</a>'s STEMMA QT to any free port in the Phase 1 chain. That brings 3V3, GND, SDA and SCL. The gauge's VIN pin needs nothing: the chain powers it.</p>
+<p><strong>Why GPIO41 is empty.</strong> The pin map reserved GPIO41 for the charger's status line, but the <a href="https://www.adafruit.com/product/6106" target="_blank" rel="noopener">charger board</a> does not break out STAT1 or STAT2; it only has LEDs. The firmware reads charging versus discharging from the gauge's charge-rate register instead, which gives the same answer and a number with it.</p>
+
+<h2>Before power, with the meter</h2>
+<p>Only what the meter rule allows: polarity, isolation, and a pin order nobody published. No metering of supplier specs.</p>
+<ul class="check">
+<li>Holder leads, cell in, before the pigtail: red positive against black. Reversed, stop and re-seat the cell.</li>
+<li>Pigtail plug against the gauge's + and − pads: red on +. If the pigtail's colours disagree with the housing, swap the pins.</li>
+<li><a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894" target="_blank" rel="noopener">Controller</a> 5V pin to its GND pin, before the JST goes in: no beep.</li>
+<li>Both brass cradles to the 5 V lane, to GND and to the cell leads: open.</li>
+<li>Both controller USB sockets: empty.</li>
+<li>Then, in order: cell in, USB-C in, green LED, JST to the controller, boot.</li>
+</ul>
+
+<h2 id="parts">The parts on this sheet</h2><p>Everything on the Rev B sheet is owned; nothing is bought for it. Links go to the exact product in <code>docs/INVENTORY.md</code>; parts with no link had no listing recorded at purchase.</p><h3>Wired in Rev B, all owned</h3><div class="tw"><table><tr><th>Product</th><th>Where it goes</th><th>Check</th></tr><tr><td>Nitecore 16340 cell, 3.6 V 950 mAh, protected</td><td>The battery. One cell in the holder; five spares in the drawer.</td><td>Protected button-top, 2 A continuous, terminates at 4.20 V. Owned ×6 from the Pocket AI; no listing recorded.</td></tr><tr><td><a href="https://www.amazon.com/dp/B0CRGK889F" target="_blank" rel="noopener">16340 holder with leads</a></td><td>Holds the cell, top layer, front right. Its red and black leads solder to the pigtail.</td><td>10-pack from the Amazon order of 2026-10-27. Meter the leads with a cell in before they meet anything.</td></tr><tr><td><a href="https://www.amazon.com/dp/B0F6T4LKDG" target="_blank" rel="noopener">JST-PH 2.0 mm pigtail pairs, 20</a></td><td>The plug into the gauge, and the hard disconnect in the 5 V lane.</td><td>20-pair male and female cable set, daier set, Amazon order of 2026-09-02; 18 pairs spare after this clock and the satellite.</td></tr><tr><td><a href="https://www.adafruit.com/product/6106" target="_blank" rel="noopener">Charger board with 5 V boost</a></td><td>Takes USB-C, charges the cell at 500 mA, makes the 5 V the controller runs on.</td><td>Jumper on the back cut for 500 mA (closed as shipped = 1 A). The solar / DC input stays empty.</td></tr><tr><td><a href="https://www.adafruit.com/product/5580" target="_blank" rel="noopener">Fuel gauge</a></td><td>Sits between cell and charger; reports % and volts on I²C 0x36.</td><td>Two JST ports on the same net. One QT cable to the chain.</td></tr><tr><td>USB-C wall adapter, 2 A or more, and a USB-C cable</td><td>Into the charger's own port through the rear panel cutout.</td><td>Owned. A laptop port's 0.5 A gives a slow charge and a resetting controller.</td></tr><tr><td><a href="https://www.amazon.com/dp/B0FR35BGYL" target="_blank" rel="noopener">Sunrise lamp: 15 Ω, LED filament, MOSFET on GPIO40</a></td><td>Its + wire joins the cell's red-lead splice at the holder; the rest of the lamp is on the Phase 1 sheet §6.</td><td>Owned: the filament ten-pack, the DigiKey MOSFETs, the resistor kit. Added 2026-11-05.</td></tr><tr><td>22 AWG or 26 AWG silicone wire</td><td>Only the short holder-to-pigtail splice on this sheet; the rest is plugs and the terminal block.</td><td>TUOFENG 26 AWG owned; nothing on this sheet carries more than the boost's 1 A.</td></tr><tr><td>220 µF (ALLECIN kit) and 100 nF (BOJACK kit)</td><td>At the amp's VIN and GND, as on the Phase 1 sheet.</td><td>Owned.</td></tr><tr><td>Multimeter</td><td>The polarity and isolation checks below, nothing else.</td><td>KAIWEETS TRMS, owned.</td></tr></table></div><h3>Owned, not used in Rev B</h3><p>The <a href="https://www.adafruit.com/product/5367" target="_blank" rel="noopener">5 W solar panel</a>, <a href="https://www.adafruit.com/product/4287" target="_blank" rel="noopener">DC jack adapter</a>, <a href="https://www.adafruit.com/product/368" target="_blank" rel="noopener">DC jack to screw terminals</a>, <a href="https://www.adafruit.com/product/6069" target="_blank" rel="noopener">panel-mount USB-C extension</a>, <a href="https://www.adafruit.com/product/353" target="_blank" rel="noopener">6600 mAh battery</a>, <a href="https://www.amazon.com/dp/B09G2S88Q3" target="_blank" rel="noopener">1200 mAh battery</a>. All six stay in <code>docs/INVENTORY.md</code> as stock for another project. None is wired, and the charger's solar input is left empty.</p>
+<hr><p class="sub">Built by <code>docs/pages/gen/power_wiring.py</code> from the repository documents named above. Nothing on this page has been built; the charger and gauge behaviour is from Adafruit's guides and the TI datasheet, not from hardware.</p>
+</div>

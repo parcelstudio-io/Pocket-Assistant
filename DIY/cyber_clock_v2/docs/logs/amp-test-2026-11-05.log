@@ -1,0 +1,15 @@
+# Amplifier, bench/circuitpython/tone_test.py, CircuitPython 10.3.1 on the DevKitC, 2026-11-05
+# No speaker fitted yet.
+
+1) SD after release: from low high 0/20, from high high 0/20
+   pulled LOW: 10 kOhm pull-down fitted on SD (wins over the board's 1 MOhm)
+2) tone on for 2 s   <- nothing to hear without a speaker
+done, amp off
+
+Verdict: GPIO17 is held low by something strong (the 10 kOhm pull-down, or a short to GND).
+The amp's power and I2S lines cannot be seen from the controller; the speaker is the test.
+
+## Speaker fitted (one of the stereo pair, plug cut off, soldered to OUT+/OUT-)
+tone_test.py: 440 Hz for 2 s, ran clean.
+say_test.py: gpt-oss:20b line rendered by Kokoro (af_heart), 16 kHz 16-bit WAV, 4.7 s, played from CIRCUITPY.
+Builder: "it's working well." PASS: amp, I2S wiring (BCLK 14, LRC 15, DIN 16), SD on GPIO17, speaker.

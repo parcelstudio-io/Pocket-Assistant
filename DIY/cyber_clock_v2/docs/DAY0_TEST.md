@@ -355,3 +355,59 @@ proximity to 289, light 919 → 3 lux covered, all six tilt directions. `dashboa
 (clock, light/prox, tilt, knob + last button on the OLED, 5 min): builder reports the
 button names appeared on the glass, including which ones is unconfirmed; the serial
 log recorded no press. 220 µF stripe confirmed on pin 1. Board unplugged 04:12.
+
+**Display + speaker re-check 2026-11-07 21:36.** Board replugged on its USB port at 21:31 with
+`code.py` (the chain monitor) running, nothing rewired since 04:12. `bench/circuitpython/speak_show.py`
+run from the REPL: the OLED lit with the title, a live local clock and the date (the clock chip keeps
+UTC; the glass shows −5 h), the amp's SD wire read low when released (pull-down seen), then
+`say_check.wav` played through the amp and speaker in 10.9 s. The line (11.1 s, 16 kHz) was
+rendered on the computer with Kokoro `af_heart` by `bench/render_say.py` and scaled ×2 to the level
+of the earlier files. Builder: "It's working." Serial log `logs/speak-show-2026-11-07.log`. The
+script then keeps the clock on the glass for 10 min and returns to the REPL.
+
+**Battery path first check 2026-11-08 19:00.** The builder wired the cell holder, fuel gauge and
+charger board. `bench/circuitpython/gauge_read.py` scanned the chain: clock, encoder, proximity,
+accelerometer and humidity answered (0x68 0x49 0x60 0x18 0x38); **the fuel gauge (0x36) did not**.
+The gauge chip is powered from the cell side, so the first suspects are the cell's path to the gauge
+(cell seated, holder pins soldered, plug fully home, polarity), then its QT cable. Display and a
+spoken status line (Kokoro, 8.4 s) both ran. Charging not yet confirmed. `bench/render_say.py`
+had lost its code body; restored and now levels each line itself.
+
+**Battery path working 2026-11-08 20:20.** Root causes of the evening's 0 V cells: with the
+charger's USB-C out, its boost started from the cell straight into the whole controller (the
+terminal block was wired to the 5V pin) and stalled, tripping the cell's protection; once, the
+wall USB-C went into the controller instead of the charger, so the cell carried the clock. The
+first cell read 0 V (tripped or defective, not yet woken); the second, charged on the charger
+board, reached 4.1 V. Rule kept from the power sheet: USB-C into the **charger** first, then the
+5 V link. `code.py` is now a startup show (clock + one spoken line on every power-up; the old
+chain monitor is `chain_monitor.py`). Builder confirmed the clock and speech on charger power
+alone. GPIO39 (gauge alert) reads its pull-up. **Still open:** the fuel gauge does not answer at
+0x36; the cell goes straight to the charger, so the gauge has no battery behind it.
+
+## Gauge live and Wi-Fi console set up 2026-11-09 00:15
+
+- The fuel gauge answers at 0x36 now that the cell runs through it. Cell 4.19 V, full; the gauge
+  shows about 107 % (its model is not yet learned) and a drain of about 16 %/h, so the cell was
+  carrying the clock, not charging.
+- `diag.py` (bench/circuitpython, on CIRCUITPY) prints one line per check: Wi-Fi, snooze, arm,
+  gauge alert, all six chain parts, battery, clock, climate, proximity, tilt. Every part answered.
+- `settings.toml` on CIRCUITPY turns on CircuitPython's web workflow on Jw-wifi (2.4 GHz). The
+  Wi-Fi password is a placeholder until the builder types it in; the console password is in
+  `bench/wifi.local.toml`, which git ignores. `bench/wifi_repl.py` runs diag over Wi-Fi.
+- 00:20: the builder added the Wi-Fi password. After a reset the board joined Jw-wifi (2.4 GHz,
+  channel 1, WPA2) at 192.168.1.184, RSSI -21 dBm. `python3 bench/wifi_repl.py` ran diag over
+  Wi-Fi: every part ok, cell 4.19 V, still discharging about 17 %/h, then restarted the clock.
+  `circuitpython.local` resolves to the board.
+
+## Polarity fault found 2026-11-09 01:15, build assembled 02:10
+
+- Every cell trip of 11-08/09 traced to the cable from the fuel gauge to the charger: the builder found
+  the black wire landing on the charger's + mark and swapped the wires. After the swap a 3.3 V cell
+  powered the charger alone (green LED on, no USB-C) and charged normally (3.74 to 3.88 V).
+- Booting on the cell alone still dips the power: the board sat in safe mode, "Power dipped". A reset
+  over USB cleared it; every part answered over Wi-Fi at 02:04.
+- Log of the first USB-C pull (cell 4.18 to 4.06 V, then silent): docs/logs/usbc-pull-2026-11-09.log.
+- The builder left the sunrise lamp out of the build. Assembled 02:10.
+- Written: bench/circuitpython/safemode.py (reset after a power dip, at most 5 in a row) and a counter
+  reset in code.py. Neither is on the board yet. docs/USER_MANUAL.md written; the alarm program is
+  not, so snooze, alarm setting and dismiss do nothing yet.

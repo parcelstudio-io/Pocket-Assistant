@@ -1,0 +1,37 @@
+category,tier,qty,part,order_code,supplier,url,unit_usd,extended_usd,availability_checked_2026_09_23,notes
+controller,core,1,Controller board with 8MB flash and 8MB PSRAM,ESP32-S3-DEVKITC-1-N8R8,DigiKey,https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894,15.00,15.00,check cart,Approximate price; baseline Wi-Fi/BLE controller; three bought 2026-10-28
+display,core,1,2.42 inch 128x64 monochrome OLED display,2719,Adafruit,https://www.adafruit.com/product/2719,39.95,39.95,in stock,Use 4-wire SPI; verify driver revision received
+time,core,1,Real-time clock STEMMA QT,5188,Adafruit,https://www.adafruit.com/product/5188,13.95,13.95,in stock,Connect INT/SQW to wake-capable GPIO
+time,core,1,Coin cell 3V lithium 10-pack,B0D8T4C5PK,PKCELL via Amazon,https://www.amazon.com/dp/B0D8T4C5PK,,,bought 2026-10-26 price not recorded,Non-rechargeable clock backup; a Panasonic single from DigiKey is about 1.13
+audio,core,1,I2S 3W mono amplifier,3006,Adafruit,https://www.adafruit.com/product/3006,5.95,5.95,in stock,Bridge-tied output; neither speaker lead is ground; the build uses the owned HiLetgo amplifier instead (see ORDER_SHEET.md)
+audio,core,1,Stereo enclosed speaker pair 4 ohm 3W,1669,Adafruit,https://www.adafruit.com/product/1669,7.50,7.50,in stock,Prototype alarm speaker; bought as the pair 2026-10-19 because the mono speaker was out of stock; use one
+input,core,1,Rotary encoder with I2C adapter,6310,Adafruit,https://www.adafruit.com/product/6310,13.95,13.95,in stock,Pre-soldered encoder variant
+input,core,1,16mm momentary snooze button,1505,Adafruit,https://www.adafruit.com/product/1505,0.95,0.95,in stock,The lid button in Rev B; owned x2
+input,core,1,Mini slide arm switch,805,Adafruit,https://www.adafruit.com/product/805,0.95,0.95,in stock,Alarm arm input not hard power; the build uses an owned Chanzon slide switch (see ORDER_SHEET.md)
+sensor,core,1,Proximity and light sensor,4161,Adafruit,https://www.adafruit.com/product/4161,5.95,5.95,in stock,Presence wake and display contrast
+sensor,core,1,Accelerometer,2809,Adafruit,https://www.adafruit.com/product/2809,4.95,4.95,in stock,Optional flip-to-focus and tap wake
+sensor,core,1,Temperature and humidity sensor,4566,Adafruit,https://www.adafruit.com/product/4566,4.50,4.50,in stock,Mount away from heat sources
+prototype,core,1,Half-size solder-in proto board,1609,Adafruit,https://www.adafruit.com/product/1609,4.50,4.50,in stock,Soldered functional prototype; dropped 2026-10-19 in favour of owned breadboards
+cable,core,4,100mm QT cable,4210,Adafruit,https://www.adafruit.com/product/4210,0.95,3.80,in stock,I2C modules
+cable,core,1,QT-to-header cable,4209,Adafruit,https://www.adafruit.com/product/4209,0.95,0.95,in stock,Bridge from the controller headers to the I2C chain
+consumable,core,1,Passives MOSFET headers insulated wire and heat-shrink,ALLOWANCE,DigiKey,https://www.digikey.com/en/products/filter/prototyping-fabrication-products/636,12.00,12.00,allowance,Final values selected during schematic capture
+power,battery,1,Solar charger board with 5V boost,6106,Adafruit,https://www.adafruit.com/product/6106,8.95,8.95,in stock,owned 2026-10-26; in Rev B: its own USB-C port charges through the rear panel; solar input empty; jumper 500 mA; the six-hour timer no longer matters with a 950 mAh cell
+battery,battery,1,Protected 3.7V 6600mAh battery,353,Adafruit,https://www.adafruit.com/product/353,24.50,24.50,in stock,owned 2026-10-26; owned not used in Rev B: too large for the compact body and never suited the six-hour timer on USB; held for another project
+power,battery,1,Fuel gauge,5580,Adafruit,https://www.adafruit.com/product/5580,5.95,5.95,in stock,owned 2026-10-26; in Rev B on the battery lead between the holder pigtail and the charger BAT port
+battery,battery,1,Nitecore 16340 cell 3.6V 950mAh protected,NL169,Nitecore (owned x6 from the Pocket AI build),,,,owned; date and price not recorded,Rev B battery; 2A discharge limit; 4.20V termination; about 3.4Wh; one in the holder and five spares
+battery,battery,1,16340 holder with leads,B0CRGK889F,ACEIRMC via Amazon,https://www.amazon.com/dp/B0CRGK889F,,,bought 2026-10-27 price not recorded,owned (10-pack); Rev B; 43x18x14mm; meter lead polarity before the cell goes in
+battery,battery,1,JST-PH 2.0mm pigtail pair,,Amazon (listing not re-linked),,,,bought 2026-09-02 price not recorded,owned (20-pair set); Rev B; holder leads to the fuel gauge plug; meter polarity not wire colour
+battery,battery,1,Protected 3.7V 1200mAh battery,B09G2S88Q3,EEMB via Amazon,https://www.amazon.com/dp/B09G2S88Q3,,,bought 2026-10-26 price not recorded,owned not used in Rev B; was the Phase 4 bench pack
+cable,battery,1,Panel-mount USB-C extension,6069,Adafruit,https://www.adafruit.com/product/6069,4.50,4.50,in stock,owned 2026-10-26; owned not used in Rev B: the charger board's own port reaches the rear panel through a cutout
+solar,solar,1,5W nominal 6V ETFE solar panel,5367,Adafruit,https://www.adafruit.com/product/5367,34.95,34.95,in stock,owned 2026-10-26; owned not used in Rev B: solar removed 2026-10-31; 148x223x4mm; held for another project
+solar,solar,1,3.5x1.1mm barrel to bare-wire panel lead,W045,Voltaic Systems,https://voltaicsystems.com/W045/,3.50,3.50,check cart,Panel-to-charger prototype lead; not bought
+solar,solar,1,DC jack adapter 3.5x1.1mm to 5.5x2.1mm,4287,Adafruit,https://www.adafruit.com/product/4287,1.50,1.50,in stock,owned 2026-10-26; owned not used in Rev B: solar removed 2026-10-31
+solar,solar,1,DC jack to screw terminals 2.1mm,368,Adafruit,https://www.adafruit.com/product/368,2.00,2.00,in stock,owned 2026-10-26; owned not used in Rev B: solar removed 2026-10-31; nothing goes to the charger board VIN and G
+controller,alternative,1,Wi-Fi and Bluetooth Feather board with Classic Bluetooth,5400,Adafruit,https://www.adafruit.com/product/5400,19.95,19.95,in stock,SoundDock A2DP variant only; replaces baseline MCU
+input,alternative,1,Plain rotary encoder with push switch,377,Adafruit,https://www.adafruit.com/product/377,4.50,4.50,in stock,Budget replacement for the rotary encoder with I2C adapter
+display,alternative,1,3.12 inch 256x64 wide OLED display,NHD-3.12-25664UMB3,Newhaven via Mouser,https://www.mouser.com/ProductDetail/Newhaven-Display/NHD-3.12-25664UMB3,40.06,40.06,check cart,Higher power and integration effort; replaces baseline display
+sensor,optional,1,CO2 sensor breakout,5190,Adafruit,https://www.adafruit.com/product/5190,49.95,49.95,in stock,True CO2 upgrade; do not call an estimated eCO2 a direct measurement
+mechanical,quote,1,20 AWG solid bare copper wire,20AWG,WesBell,https://wesbellwireandcable.com/products/electrical-wire/bare-copper-cable/solid-bare-copper-20/,,,check quote,Decoration or structure only; use insulated electrical wire
+mechanical,quote,1,Round brass tube set 2-7mm OD 0.5mm wall,B0F2FKLC2N,M METERXITY via Amazon,https://www.amazon.com/dp/B0F2FKLC2N,,,bought 2026-10-26 price not recorded,owned; one tube per size; Rev B uses the 3mm tube for two U cradles under the body
+mechanical,quote,1,3mm smoked gray acrylic front 82x52mm,CUSTOM,SendCutSend,https://sendcutsend.com/materials/acrylic/,,,quote after the bench fit check,to buy; the whole Rev B face; cut after the fit check in COMPACT_DESIGN.md
+mechanical,quote,1,Black PETG or ASA enclosure material,CUSTOM,Printed Solid,https://www.printedsolid.com/collections/1-75mm-petg?page=2,,,check cart,to print; the Rev B 82x52x68mm body lid and rear panel; owned filament if any

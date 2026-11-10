@@ -1,0 +1,288 @@
+<title>Charging From Sun</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EDEBE7; --paper:#FFFFFF; --ink:#16181C; --ink-2:#5A6068; --line:#CFCBC4;
+  --brass:#8F6114; --brass-soft:#F2E6D2; --signal:#0E5F7A; --signal-soft:#D9EAF1;
+  --ok:#2A6340; --ok-soft:#D9EADF; --warn:#98351E; --warn-soft:#F7E1D9; --sun:#C98A00;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+    --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+    --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14; --sun:#F2B23A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+  --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+  --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14; --sun:#F2B23A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+h1,h2{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,6vw,44px);font-weight:900;letter-spacing:-0.015em}
+h2{font-size:20px;font-weight:700}
+p{margin:10px 0;max-width:68ch}
+a{color:var(--signal)}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:10px}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin:18px 0}
+.step.wide{grid-template-columns:1fr}
+.step .n{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--brass)}
+.step p{margin:6px 0;font-size:16px}
+.step svg{width:100%;height:auto;display:block;font-family:var(--body)}
+@media (max-width:640px){.step{grid-template-columns:1fr}}
+.key{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:14px;color:var(--ink-2);margin:14px 0}
+.key span{display:inline-flex;align-items:center;gap:7px}
+hr{border:0;border-top:3px solid var(--brass);margin:40px 0 0}
+.note{background:var(--brass-soft);border-left:4px solid var(--brass);border-radius:4px;padding:10px 14px;margin:16px 0;font-size:15px}
+.note .d{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--brass)}
+</style>
+<div class="wrap">
+<div class="masthead">
+  <div class="eyebrow">Cyber Dawn &middot; how the panel charges the cell</div>
+  <h1>Charging a cell from the sun</h1>
+  <div class="sub">Eight pictures: four for the day, two for the night, the two curves, and open versus shorted. Follows <a href="https://claude.ai/artifact/LuakCxw3tTGNbeLkv9Z1pY">Solar Cell Steps</a>. Blue dots are electrons, green dots are lithium ions.</div>
+</div>
+
+<div class="note"><span class="d">NOTE &middot; 2026-10-31</span><br>
+Teaching page, kept. Cyber Dawn dropped solar on 2026-10-31 (Rev B: the clock charges over USB-C and runs on one 16340 cell between unplugs; the 5 W panel is owned stock for another project). Pictures 4 to 6 and the two curves still describe the <a href="https://www.adafruit.com/product/6106">charger board</a> in use: the same current limit, 4.2 V stop and night-time hand-over, with the board's own USB-C port in place of the panel. 500 mA is the charger jumper setting for the 16340 cell.</div>
+
+<p>First, the question itself. Yes, current flows through the battery while it charges. Electrons go in at one end and out at the other, at the same rate, the whole time. The battery does not fill up with electrons. It fills up with moved lithium. The pictures show how.</p>
+
+<div class="step">
+  <svg viewBox="0 0 420 250" role="img" aria-label="One loop: panel, charger board, cell, and back; electrons go in one end of the cell and out the other">
+    <rect x="20" y="90" width="80" height="70" rx="4" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <text x="60" y="120" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">panel</text>
+    <text x="60" y="136" font-size="11" text-anchor="middle" fill="var(--ink-2)">6 V</text>
+    <text x="28" y="86" font-size="11" fill="var(--ink)">&minus;</text><text x="28" y="174" font-size="11" fill="var(--ink)">+</text>
+    <rect x="160" y="90" width="90" height="70" rx="4" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+    <text x="205" y="120" font-size="12" font-weight="700" text-anchor="middle" fill="var(--brass)">charger</text>
+    <text x="205" y="136" font-size="11" text-anchor="middle" fill="var(--brass)">board</text>
+    <rect x="320" y="90" width="70" height="70" rx="4" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/>
+    <text x="355" y="120" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ok)">cell</text>
+    <text x="355" y="136" font-size="11" text-anchor="middle" fill="var(--ok)">3.7 V</text>
+    <text x="326" y="86" font-size="11" fill="var(--ink)">&minus;</text><text x="326" y="174" font-size="11" fill="var(--ink)">+</text>
+    <!-- top wire: panel - -> charger -> cell - -->
+    <path d="M60,90 L60,50 L355,50 L355,90" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M205,50 L205,90" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <!-- bottom wire: cell + -> charger -> panel + -->
+    <path d="M355,160 L355,200 L60,200 L60,160" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M205,160 L205,200" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <!-- electrons and direction -->
+    <g fill="var(--signal)"><circle cx="120" cy="50" r="4.5"/><circle cx="290" cy="50" r="4.5"/><circle cx="290" cy="200" r="4.5"/><circle cx="120" cy="200" r="4.5"/></g>
+    <polygon points="134,44 146,50 134,56" fill="var(--signal)"/>
+    <polygon points="276,194 264,200 276,206" fill="var(--signal)"/>
+    <text x="150" y="38" font-size="11" fill="var(--signal)">electrons in at the cell's minus end</text>
+    <text x="110" y="222" font-size="11" fill="var(--signal)">and out at its plus end, back to the panel</text>
+    <text x="20" y="244" font-size="12" fill="var(--ink-2)">Same number in as out. The cell never gains electrons.</text>
+  </svg>
+  <div><div class="n">PICTURE 1</div><h2>It is still one loop</h2>
+  <p>The cell has two wires, like everything else. Electrons from the panel go in at the cell's minus end and come out at its plus end. From there they go back to the panel.</p>
+  <p>Nothing has only one wire, so nothing can fill up with electrons. What goes in comes out. Charging happens inside the cell, while the electrons pass through.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 250" role="img" aria-label="Inside the cell: two plates and a separator; electrons arrive at the left plate and lithium ions cross to join them">
+    <rect x="40" y="50" width="110" height="150" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <rect x="270" y="50" width="110" height="150" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/>
+    <rect x="195" y="50" width="30" height="150" fill="var(--paper)" stroke="var(--line)" stroke-dasharray="3 3"/>
+    <text x="95" y="68" font-size="11" font-weight="700" text-anchor="middle" fill="var(--ink)">minus plate</text>
+    <text x="325" y="68" font-size="11" font-weight="700" text-anchor="middle" fill="var(--ink)">plus plate</text>
+    <text x="210" y="68" font-size="10" text-anchor="middle" fill="var(--ink-2)">wall</text>
+    <text x="95" y="215" font-size="10" text-anchor="middle" fill="var(--ink-2)">(graphite)</text>
+    <text x="325" y="215" font-size="10" text-anchor="middle" fill="var(--ink-2)">(lithium oxide)</text>
+    <!-- wires -->
+    <line x1="95" y1="50" x2="95" y2="14" stroke="var(--ink)" stroke-width="2.5"/>
+    <line x1="325" y1="50" x2="325" y2="14" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="95" cy="22" r="4.5" fill="var(--signal)"/><polygon points="89,34 95,46 101,34" fill="var(--signal)"/>
+    <circle cx="325" cy="34" r="4.5" fill="var(--signal)"/><polygon points="319,26 325,14 331,26" fill="var(--signal)"/>
+    <text x="106" y="24" font-size="10" fill="var(--signal)">electrons in</text>
+    <text x="246" y="24" font-size="10" fill="var(--signal)">electrons out</text>
+    <!-- lithium ions moving left -->
+    <g fill="var(--ok)"><circle cx="300" cy="90" r="5"/><circle cx="300" cy="130" r="5"/><circle cx="300" cy="170" r="5"/></g>
+    <g fill="var(--ok)"><circle cx="110" cy="100" r="5"/><circle cx="110" cy="150" r="5"/></g>
+    <line x1="290" y1="110" x2="160" y2="110" stroke="var(--ok)" stroke-width="2.5"/><polygon points="166,104 154,110 166,116" fill="var(--ok)"/>
+    <text x="226" y="104" font-size="10" text-anchor="middle" fill="var(--ok)">Li+ crosses</text>
+    <text x="40" y="244" font-size="12" fill="var(--ink-2)">The wall passes lithium ions but not electrons.</text>
+  </svg>
+  <div><div class="n">PICTURE 2</div><h2>Inside: lithium moves, electrons pass</h2>
+  <p>A lithium cell is two plates with a thin wall between them. The wall lets lithium ions through but blocks electrons.</p>
+  <p>When the panel pushes electrons into the minus plate, that plate becomes more negative. Lithium ions are positive, so they are pulled across the wall to join the electrons and park in the graphite. To keep things balanced, an electron leaves the plus plate for every ion that leaves it. That is the electron coming out of the other wire.</p>
+  <p>Lithium parked in graphite is like a lifted weight. It wants to go back. That wish is the stored energy. At night it goes back, and pushes electrons through your clock on the way.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 250" role="img" aria-label="Voltages as water levels: the panel is higher than the cell, so current flows into the cell; the charger limits the flow">
+    <!-- three tanks: panel 6V, charger output 4.2 max, cell 3.7 -->
+    <rect x="30" y="40" width="80" height="170" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <rect x="32" y="60" width="76" height="148" fill="var(--signal-soft)"/>
+    <text x="70" y="30" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">panel 6 V</text>
+    <rect x="310" y="40" width="80" height="170" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <rect x="312" y="118" width="76" height="90" fill="var(--ok-soft)"/>
+    <line x1="312" y1="104" x2="388" y2="104" stroke="var(--ok)" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="350" y="30" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">cell 3.7 V</text>
+    <text x="350" y="98" font-size="10" text-anchor="middle" fill="var(--ok)">full = 4.2 V</text>
+    <!-- pipe with a valve -->
+    <path d="M110,70 L170,70 L170,112 L310,112" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <rect x="200" y="96" width="60" height="32" rx="4" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+    <text x="230" y="116" font-size="11" font-weight="700" text-anchor="middle" fill="var(--brass)">valve</text>
+    <polygon points="282,106 294,112 282,118" fill="var(--signal)"/>
+    <text x="128" y="190" font-size="11" fill="var(--ink)">high level pushes into low;</text>
+    <text x="128" y="206" font-size="11" fill="var(--ink)">the charger is the valve</text>
+    <text x="30" y="244" font-size="12" fill="var(--ink-2)">Voltage is a level. Current flows from high to low, never up.</text>
+  </svg>
+  <div><div class="n">PICTURE 3</div><h2>Why it flows into the cell at all</h2>
+  <p>Voltage is a level, like water in a tank. Current only flows from a higher level to a lower one.</p>
+  <p>The panel sits at about 6 V. The cell sits at 3.7 V, rising to 4.2 V when full. The panel is higher, so it pushes current into the cell. If you tried it the other way round, a 3.7 V panel into a 4.2 V cell, nothing would flow.</p>
+  <p>But a bare pipe would be too much. The charger board is the valve on it.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 250" role="img" aria-label="The charger board's three jobs: limit the current, stop at 4.2 volts, block the path at night; and a side output to the clock">
+    <rect x="130" y="30" width="160" height="190" rx="6" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+    <text x="210" y="52" font-size="12" font-weight="700" text-anchor="middle" fill="var(--brass)">charger board</text>
+    <!-- in from panel -->
+    <line x1="20" y1="110" x2="130" y2="110" stroke="var(--ink)" stroke-width="2.5"/>
+    <polygon points="118,104 130,110 118,116" fill="var(--ink)"/>
+    <text x="20" y="100" font-size="11" fill="var(--ink)">from panel, 6 V</text>
+    <!-- out to cell -->
+    <line x1="290" y1="110" x2="400" y2="110" stroke="var(--ink)" stroke-width="2.5"/>
+    <polygon points="388,104 400,110 388,116" fill="var(--ink)"/>
+    <text x="300" y="100" font-size="11" fill="var(--ink)">to cell, 4.2 V max</text>
+    <!-- out to clock -->
+    <line x1="290" y1="180" x2="400" y2="180" stroke="var(--ink)" stroke-width="2.5"/>
+    <polygon points="388,174 400,180 388,186" fill="var(--ink)"/>
+    <text x="300" y="170" font-size="11" fill="var(--ink)">to the clock</text>
+    <!-- three jobs -->
+    <rect x="145" y="70" width="130" height="26" rx="3" fill="var(--paper)" stroke="var(--line)"/>
+    <text x="210" y="87" font-size="11" text-anchor="middle" fill="var(--ink)">1 &middot; limit the current</text>
+    <rect x="145" y="104" width="130" height="26" rx="3" fill="var(--paper)" stroke="var(--line)"/>
+    <text x="210" y="121" font-size="11" text-anchor="middle" fill="var(--ink)">2 &middot; stop at 4.2 V</text>
+    <rect x="145" y="138" width="130" height="26" rx="3" fill="var(--paper)" stroke="var(--line)"/>
+    <text x="210" y="155" font-size="11" text-anchor="middle" fill="var(--ink)">3 &middot; one-way at night</text>
+    <rect x="145" y="172" width="130" height="26" rx="3" fill="var(--paper)" stroke="var(--line)"/>
+    <text x="210" y="189" font-size="11" text-anchor="middle" fill="var(--ink)">4 &middot; feed the clock too</text>
+    <text x="20" y="244" font-size="12" fill="var(--ink-2)">In the dark the panel drops below the cell; job 3 shuts the door.</text>
+  </svg>
+  <div><div class="n">PICTURE 4</div><h2>What the charger board does</h2>
+  <p>Four jobs. It limits the current so the cell charges gently, about 500 mA for your cell. It stops raising the level at 4.2 V, because a lithium cell above that is unsafe. It shuts the path at night, when the panel's level falls below the cell's, so the cell cannot drain backwards into the dark panel. And it feeds the clock directly at the same time, so the clock runs from the sun by day and from the cell by night.</p>
+  <p>That is the whole chain. Light frees electrons in the panel. The panel's higher level pushes them around the loop. The charger meters them. They pass through the cell and move lithium as they go. The moved lithium is the stored energy. The electrons come home.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 250" role="img" aria-label="At night the panel is dark and blocked; the cell drives electrons through the charger board to the clock and back">
+    <rect x="20" y="90" width="80" height="70" rx="4" fill="var(--line)" fill-opacity="0.5" stroke="var(--line)"/>
+    <text x="60" y="120" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink-2)">panel</text>
+    <text x="60" y="136" font-size="11" text-anchor="middle" fill="var(--ink-2)">dark, 0 V</text>
+    <rect x="160" y="90" width="90" height="70" rx="4" fill="var(--brass-soft)" stroke="var(--brass)" stroke-width="2"/>
+    <text x="205" y="120" font-size="12" font-weight="700" text-anchor="middle" fill="var(--brass)">charger</text>
+    <text x="205" y="136" font-size="11" text-anchor="middle" fill="var(--brass)">board</text>
+    <rect x="320" y="90" width="70" height="70" rx="4" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/>
+    <text x="355" y="120" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ok)">cell</text>
+    <text x="355" y="136" font-size="11" text-anchor="middle" fill="var(--ok)">4.2 V, full</text>
+    <text x="326" y="86" font-size="11" fill="var(--ink)">&minus;</text><text x="326" y="174" font-size="11" fill="var(--ink)">+</text>
+    <!-- panel side blocked -->
+    <path d="M60,90 L60,50 L130,50" fill="none" stroke="var(--line)" stroke-width="2.5"/>
+    <path d="M60,160 L60,200 L130,200" fill="none" stroke="var(--line)" stroke-width="2.5"/>
+    <line x1="136" y1="42" x2="150" y2="58" stroke="var(--warn)" stroke-width="2.5"/><line x1="150" y1="42" x2="136" y2="58" stroke="var(--warn)" stroke-width="2.5"/>
+    <line x1="136" y1="192" x2="150" y2="208" stroke="var(--warn)" stroke-width="2.5"/><line x1="150" y1="192" x2="136" y2="208" stroke="var(--warn)" stroke-width="2.5"/>
+    <text x="66" y="40" font-size="10" fill="var(--warn)">door shut</text>
+    <!-- clock on the charger's output, loop with the cell: cell - -> up -> clock -> charger -> cell + -->
+    <path d="M355,90 L355,50 L205,50 L205,90" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M355,160 L355,200 L205,200 L205,160" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="280" cy="50" r="18" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M268,38 L292,62 M292,38 L268,62" stroke="var(--ink)" stroke-width="2"/>
+    <text x="280" y="24" font-size="11" text-anchor="middle" fill="var(--ink)">your clock</text>
+    <g fill="var(--signal)"><circle cx="330" cy="50" r="4.5"/><circle cx="230" cy="50" r="4.5"/><circle cx="240" cy="200" r="4.5"/><circle cx="320" cy="200" r="4.5"/></g>
+    <polygon points="318,44 306,50 318,56" fill="var(--signal)"/>
+    <polygon points="296,194 308,200 296,206" fill="var(--signal)"/>
+    <text x="96" y="224" font-size="11" fill="var(--signal)">out of the minus end, through the clock, in at the plus end</text>
+    <text x="20" y="244" font-size="12" fill="var(--ink-2)">Same loop, opposite direction. The cell is the pump now.</text>
+  </svg>
+  <div><div class="n">PICTURE 5</div><h2>Night: the cell takes over</h2>
+  <p>When the light goes, the panel's level drops to nothing and the charger shuts the door to it. The panel is out of the picture until morning.</p>
+  <p>Now the cell is the highest level in the system, so it pushes. Electrons leave its minus end, go through the charger board's output, through the clock, and come back in at the plus end. It is the same loop as the day, run backwards, with the cell as the pump instead of the sun.</p>
+  <p>The charger board does not do anything clever here. Its output is simply wired to the cell, so the clock sees the cell's voltage, which is what it runs on.</p></div>
+</div>
+
+<div class="step">
+  <svg viewBox="0 0 420 250" role="img" aria-label="Inside the cell at night: lithium ions cross back to the plus plate, and for each one an electron leaves the minus plate, goes through the clock, and arrives at the plus plate">
+    <rect x="40" y="50" width="110" height="150" rx="3" fill="var(--signal-soft)" stroke="var(--line)"/>
+    <rect x="270" y="50" width="110" height="150" rx="3" fill="var(--warn-soft)" stroke="var(--line)"/>
+    <rect x="195" y="50" width="30" height="150" fill="var(--paper)" stroke="var(--line)" stroke-dasharray="3 3"/>
+    <text x="95" y="68" font-size="11" font-weight="700" text-anchor="middle" fill="var(--ink)">minus plate</text>
+    <text x="325" y="68" font-size="11" font-weight="700" text-anchor="middle" fill="var(--ink)">plus plate</text>
+    <text x="210" y="68" font-size="10" text-anchor="middle" fill="var(--ink-2)">wall</text>
+    <!-- outside loop with the clock over the top -->
+    <path d="M95,50 L95,22 L325,22 L325,50" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="210" cy="22" r="14" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M200,12 L220,32 M220,12 L200,32" stroke="var(--ink)" stroke-width="2"/>
+    <text x="240" y="14" font-size="10" fill="var(--ink)">clock</text>
+    <circle cx="140" cy="22" r="4.5" fill="var(--signal)"/><polygon points="152,16 164,22 152,28" fill="var(--signal)"/>
+    <circle cx="270" cy="22" r="4.5" fill="var(--signal)"/><polygon points="282,16 294,22 282,28" fill="var(--signal)"/>
+    <text x="100" y="42" font-size="10" fill="var(--signal)">electron leaves</text>
+    <text x="332" y="42" font-size="10" fill="var(--signal)">electron arrives</text>
+    <!-- ions going back right -->
+    <g fill="var(--ok)"><circle cx="110" cy="100" r="5"/><circle cx="300" cy="150" r="5"/><circle cx="300" cy="180" r="5"/></g>
+    <line x1="125" y1="120" x2="258" y2="120" stroke="var(--ok)" stroke-width="2.5"/><polygon points="254,114 266,120 254,126" fill="var(--ok)"/>
+    <text x="192" y="114" font-size="10" text-anchor="middle" fill="var(--ok)">Li+ goes home</text>
+    <text x="40" y="244" font-size="12" fill="var(--ink-2)">One ion back across the wall = one electron round the outside.</text>
+  </svg>
+  <div><div class="n">PICTURE 6</div><h2>Inside at night: the lithium goes home</h2>
+  <p>The lithium parked in the graphite wants the snug spots in the oxide plate back. One by one the ions cross the wall to the plus plate.</p>
+  <p>But the oxide can only take an ion back if it also gets an electron back, and electrons cannot cross the wall. So for each ion that goes home, one electron has to go the long way: out of the minus plate, through the wire, through the clock, and into the plus plate. The lithium's wish to go home is what pushes that electron around the loop. That push is the 3.7 V.</p>
+  <p>When the last lithium has gone home, the wish is gone, the push is gone, and the cell is flat. Then the sun comes up, the panel's level rises above the cell's, and Pictures 1 to 4 start again.</p></div>
+</div>
+
+<div class="step wide">
+  <svg viewBox="0 0 900 290" role="img" aria-label="Two charts: the panel's current against voltage with its knee at the maximum power point, and the cell's charge curve with constant current then constant voltage">
+    <!-- left: panel I-V curve -->
+    <text x="20" y="20" font-size="13" font-weight="700" fill="var(--ink)">The panel: current against voltage</text>
+    <line x1="60" y1="240" x2="400" y2="240" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="60" y1="240" x2="60" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
+    <text x="400" y="262" font-size="11" text-anchor="end" fill="var(--ink-2)">voltage across the panel</text>
+    <text x="20" y="40" font-size="11" fill="var(--ink-2)">current</text>
+    <path d="M60,70 L250,74 C300,78 330,100 345,140 C360,180 370,215 380,240" fill="none" stroke="var(--signal)" stroke-width="3"/>
+    <circle cx="340" cy="128" r="5" fill="var(--sun)" stroke="var(--ink)"/>
+    <text x="348" y="118" font-size="11" fill="var(--ink)">the knee: about 6 V, 0.8 A</text>
+    <text x="348" y="132" font-size="11" fill="var(--ink)">most power is here (5 W)</text>
+    <text x="64" y="64" font-size="11" fill="var(--signal)">shorted: 0.9 A, no voltage</text>
+    <text x="300" y="256" font-size="11" fill="var(--signal)">open: 7 V, no current</text>
+    <path d="M60,160 L250,163 C300,166 330,180 345,205 C360,222 370,232 380,240" fill="none" stroke="var(--signal)" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="64" y="154" font-size="11" fill="var(--ink-2)">half the light: half the current, same voltage</text>
+    <!-- right: Li-ion CC/CV charge -->
+    <text x="470" y="20" font-size="13" font-weight="700" fill="var(--ink)">The cell: a charge from empty to full</text>
+    <line x1="510" y1="240" x2="880" y2="240" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="510" y1="240" x2="510" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
+    <text x="880" y="262" font-size="11" text-anchor="end" fill="var(--ink-2)">time, about 3 h</text>
+    <path d="M510,170 C560,120 640,100 700,92 L860,92" fill="none" stroke="var(--ok)" stroke-width="3"/>
+    <text x="560" y="76" font-size="11" fill="var(--ok)">voltage: 3.0 V climbing to 4.2 V, then held</text>
+    <path d="M510,120 L700,120 C740,122 780,170 860,228" fill="none" stroke="var(--signal)" stroke-width="3"/>
+    <text x="600" y="142" font-size="11" fill="var(--signal)">current: held at 500 mA, then tapers</text>
+    <line x1="700" y1="60" x2="700" y2="240" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="600" y="44" font-size="11" text-anchor="middle" fill="var(--ink-2)">constant current</text>
+    <text x="790" y="44" font-size="11" text-anchor="middle" fill="var(--ink-2)">constant voltage</text>
+    <text x="862" y="222" font-size="10" text-anchor="end" fill="var(--ink-2)">done at 50 mA</text>
+  </svg>
+  <div><div class="n">THE TWO CURVES</div><h2>Current against voltage</h2>
+  <p><strong>The panel</strong> is not a fixed source. Short its wires and it gives its full current, about 0.9 A for your panel, at zero volts. Leave the wires open and it sits at about 7 V giving no current. In between the curve is flat and then drops at a knee. The knee, about 6 V and 0.8 A, is where volts times amps is biggest: the 5 W on the label. A good charger pulls the panel to its knee. Less light moves the whole curve down (less current) but barely left (same voltage), which is why a shaded panel still shows 6 V on a meter and still cannot run anything.</p>
+  <p><strong>The cell</strong> is charged in two stages, and the charger board switches between them on its own. First, constant current: the board pushes a fixed 500 mA in while the cell's voltage climbs from about 3.0 V to 4.2 V. That is most of the charge. Then, constant voltage: the board holds 4.2 V and the cell takes less and less current as it fills, tapering from 500 mA down. When the current falls to about a tenth of the setting, around 50 mA, the board calls it full and stops. Never let a lithium cell past 4.2 V; the taper is how it is filled safely.</p></div>
+</div>
+<div class="step wide">
+<svg viewBox="0 0 900 282" role="img" aria-label="Three ways to connect a panel: open wires give 7 volts and no current; a bare wire across them gives 0.9 amps and no voltage; a clock in the loop gives 6 volts and 0.8 amps"><g transform="translate(10,0)"><text x="0" y="18" font-size="13" font-weight="700" fill="var(--ink)">Open: wires not connected</text><rect x="20" y="60" width="100" height="70" rx="4" fill="var(--signal-soft)" stroke="var(--line)"/><text x="70" y="100" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">panel</text><text x="28" y="56" font-size="11" fill="var(--ink)">&minus;</text><text x="28" y="146" font-size="11" fill="var(--ink)">+</text><line x1="70" y1="60" x2="70" y2="36" stroke="var(--ink)" stroke-width="2.5"/><line x1="70" y1="130" x2="70" y2="154" stroke="var(--ink)" stroke-width="2.5"/><line x1="70" y1="36" x2="150" y2="36" stroke="var(--ink)" stroke-width="2.5"/><line x1="70" y1="154" x2="150" y2="154" stroke="var(--ink)" stroke-width="2.5"/><text x="160" y="40" font-size="11" fill="var(--ink-2)">nothing here</text><text x="160" y="158" font-size="11" fill="var(--ink-2)">nothing here</text><text x="160" y="100" font-size="11" fill="var(--signal)">the gap: no path,</text><text x="160" y="114" font-size="11" fill="var(--signal)">no flow</text><rect x="20" y="186" width="240" height="46" rx="4" fill="var(--paper)" stroke="var(--line)"/><text x="30" y="205" font-size="12" fill="var(--ink)">meter across the wires: <tspan font-weight="700">about 7 V</tspan></text><text x="30" y="223" font-size="12" fill="var(--ink)">meter in the wire: <tspan font-weight="700">0 A</tspan></text><text x="0" y="256" font-size="11" fill="var(--ink-2)">Full light, nowhere to go.</text><text x="0" y="270" font-size="11" fill="var(--ink-2)">The faces pile up charge and wait.</text></g><g transform="translate(310,0)"><text x="0" y="18" font-size="13" font-weight="700" fill="var(--ink)">Shorted: a bare wire across</text><rect x="20" y="60" width="100" height="70" rx="4" fill="var(--signal-soft)" stroke="var(--line)"/><text x="70" y="100" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">panel</text><text x="28" y="56" font-size="11" fill="var(--ink)">&minus;</text><text x="28" y="146" font-size="11" fill="var(--ink)">+</text><line x1="70" y1="60" x2="70" y2="36" stroke="var(--ink)" stroke-width="2.5"/><line x1="70" y1="130" x2="70" y2="154" stroke="var(--ink)" stroke-width="2.5"/><path d="M70,36 L200,36 L200,154 L70,154" fill="none" stroke="var(--ink)" stroke-width="2.5"/><g fill="var(--signal)"><circle cx="130" cy="36" r="4.5"/><circle cx="200" cy="80" r="4.5"/><circle cx="200" cy="120" r="4.5"/><circle cx="140" cy="154" r="4.5"/></g><polygon points="150,30 162,36 150,42" fill="var(--signal)"/><polygon points="126,148 114,154 126,160" fill="var(--signal)"/><text x="210" y="100" font-size="11" fill="var(--signal)">bare wire,</text><text x="210" y="114" font-size="11" fill="var(--signal)">nothing to push</text><text x="210" y="128" font-size="11" fill="var(--signal)">against</text><rect x="20" y="186" width="240" height="46" rx="4" fill="var(--paper)" stroke="var(--line)"/><text x="30" y="205" font-size="12" fill="var(--ink)">meter across the wires: <tspan font-weight="700">about 0 V</tspan></text><text x="30" y="223" font-size="12" fill="var(--ink)">meter in the wire: <tspan font-weight="700">about 0.9 A</tspan></text><text x="0" y="256" font-size="11" fill="var(--ink-2)">Every freed electron flows at once.</text><text x="0" y="270" font-size="11" fill="var(--ink-2)">Safe for a panel: light sets the current.</text></g><g transform="translate(610,0)"><text x="0" y="18" font-size="13" font-weight="700" fill="var(--ink)">Working: the clock in the loop</text><rect x="20" y="60" width="100" height="70" rx="4" fill="var(--signal-soft)" stroke="var(--line)"/><text x="70" y="100" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">panel</text><text x="28" y="56" font-size="11" fill="var(--ink)">&minus;</text><text x="28" y="146" font-size="11" fill="var(--ink)">+</text><line x1="70" y1="60" x2="70" y2="36" stroke="var(--ink)" stroke-width="2.5"/><line x1="70" y1="130" x2="70" y2="154" stroke="var(--ink)" stroke-width="2.5"/><path d="M70,36 L200,36 L200,70" fill="none" stroke="var(--ink)" stroke-width="2.5"/><path d="M200,120 L200,154 L70,154" fill="none" stroke="var(--ink)" stroke-width="2.5"/><circle cx="200" cy="95" r="22" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/><path d="M186,81 L214,109 M214,81 L186,109" stroke="var(--ink)" stroke-width="2"/><text x="228" y="99" font-size="11" fill="var(--ink)">clock</text><g fill="var(--signal)"><circle cx="130" cy="36" r="4.5"/><circle cx="140" cy="154" r="4.5"/></g><polygon points="150,30 162,36 150,42" fill="var(--signal)"/><polygon points="126,148 114,154 126,160" fill="var(--signal)"/><rect x="20" y="186" width="240" height="46" rx="4" fill="var(--paper)" stroke="var(--line)"/><text x="30" y="205" font-size="12" fill="var(--ink)">meter across the wires: <tspan font-weight="700">about 6 V</tspan></text><text x="30" y="223" font-size="12" fill="var(--ink)">meter in the wire: <tspan font-weight="700">about 0.8 A</tspan></text><text x="0" y="256" font-size="11" fill="var(--ink-2)">The clock resists a little, so the faces</text><text x="0" y="270" font-size="11" fill="var(--ink-2)">stay charged while current flows: 5 W.</text></g></svg>
+<div><div class="n">WHAT SHORTING LOOKS LIKE</div><h2>Open, shorted, working</h2>
+<p><strong>Open</strong> means the two wires touch nothing. The panel is lit, electrons pile up on one face and holes on the other, and the meter across the wires reads the full 7 V. But no loop, so no current.</p>
+<p><strong>Shorted</strong> means a bare wire joins the two wires directly, with nothing in between. Now every electron that light frees runs straight around and back in, with nothing to push against, so the voltage collapses to about zero and the current is as high as the light allows, about 0.9 A. Unlike a shorted battery, this does not hurt a panel: the light sets how many electrons there are, and the wire just lets them all go.</p>
+<p><strong>Working</strong> means something is in the loop that resists a little, like the clock. The flow is nearly as big, about 0.8 A, but the faces stay charged at about 6 V because the clock holds the electrons back. The knee on the curve is this point: the most volts times amps the panel can give.</p>
+</div>
+</div>
+<hr>
+</div>

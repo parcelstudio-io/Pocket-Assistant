@@ -1,0 +1,318 @@
+<title>Cyber Dawn Day Zero</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EDEBE7; --paper:#FFFFFF; --ink:#16181C; --ink-2:#5A6068; --line:#CFCBC4;
+  --brass:#8F6114; --brass-soft:#F2E6D2; --signal:#0E5F7A; --signal-soft:#D9EAF1;
+  --ok:#2A6340; --ok-soft:#D9EADF; --warn:#98351E; --warn-soft:#F7E1D9;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+    --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+    --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+  --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+  --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,6vw,46px);font-weight:900;letter-spacing:-0.015em}
+h2{font-size:clamp(20px,3vw,26px);font-weight:700;margin:0}
+h3{font-size:17px;font-weight:700;margin:0 0 6px;font-family:var(--display);
+   text-transform:uppercase;letter-spacing:.09em;color:var(--brass);font-size:12.5px}
+p{margin:10px 0;max-width:70ch}
+ul,ol{max-width:70ch;padding-left:22px;margin:10px 0}
+li{margin:7px 0}
+a{color:var(--signal)}
+code{font-family:var(--mono);font-size:.88em;background:var(--signal-soft);padding:1.5px 5px;border-radius:3px;white-space:nowrap}
+pre{font-family:var(--mono);font-size:13px;line-height:1.55;background:var(--paper);border:1px solid var(--line);
+    padding:12px 14px;overflow-x:auto;border-radius:5px;margin:10px 0}
+pre code{background:none;padding:0;white-space:pre}
+strong{font-weight:700}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.5}
+.day{background:var(--paper);border:1px solid var(--line);border-radius:6px;margin:26px 0;overflow:hidden}
+.dayhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+         padding:14px 20px;border-bottom:1px solid var(--line);border-left:6px solid var(--brass)}
+.daynum{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--brass);white-space:nowrap}
+.badge{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;
+       background:var(--brass-soft);color:var(--brass);padding:3px 9px;border-radius:999px;margin-left:auto;white-space:nowrap}
+.daybody{padding:4px 20px 20px}
+.block{margin-top:18px}
+.block ol,.block ul{margin-top:6px}
+.done{background:var(--ok-soft);border:1px solid var(--ok);border-radius:5px;padding:12px 16px;margin-top:18px}
+.done h3{color:var(--ok)}
+.done p,.done ul{max-width:none;margin:4px 0}
+.trouble{background:var(--paper);border:1px dashed var(--line);border-radius:5px;padding:12px 16px;margin-top:14px}
+.trouble h3{color:var(--ink-2)}
+.note{padding:13px 17px;margin:18px 0;border-radius:5px;max-width:none}
+.note p{max-width:none;margin:5px 0}
+.note .lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.warn .lbl{color:var(--warn)}
+.tip{background:var(--signal-soft);border:1px solid var(--signal)}
+.tip .lbl{color:var(--signal)}
+.kit{background:var(--brass-soft);border:1px solid var(--brass)}
+.kit .lbl{color:var(--brass)}
+figure{margin:22px 0;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:11px;max-width:70ch;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:14px 0}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+td.m,th.m{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 18px;font-size:15px;margin:16px 0;
+       border:1px solid var(--line);border-radius:5px;background:var(--paper);overflow:hidden}
+.sched>div{padding:9px 14px;border-bottom:1px solid var(--line)}
+.sched>div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);font-size:13px;color:var(--brass);font-weight:700;white-space:nowrap}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:6px;width:15px;height:15px;border:2px solid var(--brass);border-radius:3px}
+hr{border:0;border-top:3px solid var(--brass);margin:44px 0 0}
+@media (max-width:520px){.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}.badge{margin-left:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+<div class="masthead">
+  <div class="eyebrow">Cyber Dawn &middot; Day 0, before the controller board</div>
+  <h1>Prove the parts on the free stand-in controller</h1>
+  <div class="sub">Written 2026-10-28 for the bench on 2026-10-29. The <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894">controller board</a> is in transit (DigiKey, ordered 2026-10-28). Everything else for Phase 1 is on hand. Source: <code>docs/DAY0_TEST.md</code>.</div>
+</div>
+
+<p>This is the shortest test that shows the prototype works before anything is soldered together with brass or copper. It runs on the <a href="https://www.adafruit.com/product/5302">stand-in controller</a>, the small Adafruit board that came free with the 2026-10-19 order: it has a STEMMA QT socket, runs at 3.3&nbsp;V like every board in the chain, and needs no soldering. When the controller board arrives, the first QT cable moves from the stand-in to the <a href="https://www.adafruit.com/product/4209">QT-to-header cable</a> on the controller and Phase&nbsp;1 starts. Nothing done here has to be undone.</p>
+
+<div class="note kit"><span class="lbl">On the bench</span>
+<div class="tw"><table>
+<tr><th>Item</th><th>Qty</th><th>Owned as</th></tr>
+<tr><td><a href="https://www.adafruit.com/product/5302">Stand-in controller</a></td><td class="m">1</td><td>the small Adafruit board that came free with the 2026-10-19 order</td></tr>
+<tr><td>USB-C data cable (not charge-only)</td><td class="m">1</td><td>owned</td></tr>
+<tr><td><a href="https://www.adafruit.com/product/4210">QT cable</a>, 100 mm</td><td class="m">4</td><td>Adafruit, 7 owned</td></tr>
+<tr><td><a href="https://www.adafruit.com/product/5188">Real-time clock</a></td><td class="m">1</td><td>Adafruit</td></tr>
+<tr><td><a href="https://www.amazon.com/dp/B0D8T4C5PK">Coin cell</a></td><td class="m">1</td><td>Amazon 10-pack</td></tr>
+<tr><td><a href="https://www.adafruit.com/product/6310">Rotary encoder</a>, QT</td><td class="m">1</td><td>Adafruit</td></tr>
+<tr><td><a href="https://www.adafruit.com/product/4161">Proximity and light sensor</a></td><td class="m">1</td><td>Adafruit. Keep the SparkFun ones in the drawer</td></tr>
+<tr><td><a href="https://www.adafruit.com/product/2809">Accelerometer</a></td><td class="m">1</td><td>Adafruit</td></tr>
+<tr><td><a href="https://www.adafruit.com/product/4566">Temperature and humidity sensor</a></td><td class="m">1</td><td>Adafruit</td></tr>
+<tr><td>Laptop with a serial terminal</td><td class="m">1</td><td>Mu editor, Thonny, or <code>tio /dev/ttyACM0</code></td></tr>
+</table></div>
+<p>Optional, for the two extra steps: the <a href="https://www.adafruit.com/product/2719">OLED display</a> with its header strip, the Pocket AI's <a href="https://www.amazon.com/dp/B0CDWXZZCH">amplifier</a>, one <a href="https://www.adafruit.com/product/1669">speaker</a> of the stereo pair, seven jumper wires.</p>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">STEP 1</span><h2>Two minutes, no computer, no meter</h2><span class="badge">2 min</span></div>
+  <div class="daybody">
+  <ol>
+    <li>Push a coin cell into the real-time clock's holder, marked side up. No need to meter it: a sealed new cell is 3&nbsp;V.</li>
+    <li>Turn the OLED over and <strong>photograph the BS1/BS2 jumpers</strong>. Do not touch them today. Those two jumpers decide I2C or SPI, so the photo is worth having. <strong>Done 2026-11-03:</strong> the board shipped in <strong>8080 parallel</strong>, BS1&nbsp;=&nbsp;1, BS2&nbsp;=&nbsp;1. Both 0&nbsp;Ω links sit in the upper "(1)" row of the R2/R3 and R4/R5 blocks; SPI needs them in the lower "(0)" row, R2&nbsp;&rarr;&nbsp;R3 and R4&nbsp;&rarr;&nbsp;R5, as in Adafruit's SPI photo. The rework is the first step of Optional&nbsp;A. Check the second board the same way.</li>
+  </ol>
+  <p>The multimeter stays in the drawer today. It comes out only where a wrong value would damage something or cannot be read off a label: cell polarity at a holder's leads before a cell meets a board, frame-to-net isolation before power, and the bench supply's set voltage.</p>
+  </div>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">STEP 2</span><h2>CircuitPython onto the stand-in controller</h2><span class="badge">10 min</span></div>
+  <div class="daybody">
+  <ol>
+    <li>Download the stand-in controller's UF2 from <a href="https://circuitpython.org/board/adafruit_kb2040/">circuitpython.org/board/adafruit_kb2040</a>.</li>
+    <li>Hold <strong>BOOT</strong>, plug in USB-C, release when a drive named <strong>RPI-RP2</strong> appears. Drag the UF2 onto it. The drive goes away and <strong>CIRCUITPY</strong> appears.</li>
+    <li>From the <a href="https://circuitpython.org/libraries">library bundle</a> of the same major version, copy into <code>CIRCUITPY/lib/</code>: <code>adafruit_ds3231.mpy</code>, <code>adafruit_register/</code>, <code>adafruit_seesaw/</code>, <code>adafruit_vcnl4040.mpy</code>, <code>adafruit_lis3dh.mpy</code>, <code>adafruit_ahtx0.mpy</code>.</li>
+    <li>Open the serial console. Press Enter and you should see <code>&gt;&gt;&gt;</code>.</li>
+  </ol>
+  <div class="done"><h3>Done 2026-11-03, on the controller board</h3>
+  <p>The DevKitC-1 N8R8 was plugged in first, so the stand-in was never used (see the controller section below). Flash erased and CircuitPython 10.3.1 written with esptool over the UART port (<code>/dev/ttyUSB0</code>, no BOOT button needed); on the USB port the board shows as CIRCUITPY (5.7&nbsp;MB) and <code>/dev/ttyACM0</code>. Bundle 10.x-mpy-20261031: the six libraries plus <code>adafruit_displayio_ssd1306.mpy</code> copied to <code>lib/</code>, all nine imports clean, <code>&gt;&gt;&gt;</code> confirmed. Console: <code>screen /dev/ttyACM0 115200</code>.</p></div>
+  </div>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">STEP 3</span><h2>Build the chain one board at a time</h2><span class="badge">15 min</span></div>
+  <div class="daybody">
+  <p>Plug a QT cable from the stand-in controller's QT socket into the <strong>real-time clock</strong>. In the console:</p>
+<pre><code>import board
+i2c = board.STEMMA_I2C()
+while not i2c.try_lock(): pass
+print([hex(a) for a in i2c.scan()]); i2c.unlock()</code></pre>
+  <p>Add one board with the next cable, scan again. The list grows in this order:</p>
+  <div class="tw"><table>
+  <tr><th>Board added</th><th class="m">New address</th><th class="m">List after the scan</th></tr>
+  <tr><td>Real-time clock</td><td class="m">0x68</td><td class="m">['0x68']</td></tr>
+  <tr><td>Rotary encoder</td><td class="m">0x49</td><td class="m">['0x49', '0x68']</td></tr>
+  <tr><td>Proximity and light sensor</td><td class="m">0x60</td><td class="m">['0x49', '0x60', '0x68']</td></tr>
+  <tr><td>Accelerometer</td><td class="m">0x18</td><td class="m">['0x18', '0x49', '0x60', '0x68']</td></tr>
+  <tr><td>Temperature and humidity sensor</td><td class="m">0x38</td><td class="m">['0x18', '0x38', '0x49', '0x60', '0x68']</td></tr>
+  </table></div>
+  <div class="trouble"><h3>If a board does not appear</h3>
+  <p>Reseat both plugs, then swap in another cable. Still missing: swap in the second board of that type. Adding boards one at a time is what tells you whether a cable or a board is the problem.</p></div>
+  <div class="done"><h3>Done 2026-11-04, on the controller board</h3>
+  <p>All five answered in the table's order: 0x68 at 00:32:58, 0x49 at 00:38:27, 0x60 at 00:41:15, 0x18 at 00:49:31 (the default address, the one <code>code.py</code> uses), 0x38 at about 00:52. Before the header cable was on, the bus would not start: <em>No pull up found on SDA or SCL</em>. The chain boards carry the pull-ups, so that message means the chain is unplugged or unpowered.</p></div>
+  </div>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">STEP 4</span><h2>Set the clock, make every board talk</h2><span class="badge">15 min</span></div>
+  <div class="daybody">
+  <p>Set the time once from the console with today's date and time (year, month, day, hour, minute, second, weekday 0&nbsp;=&nbsp;Monday, yearday, dst):</p>
+<pre><code>import time, board, adafruit_ds3231
+rtc = adafruit_ds3231.DS3231(board.STEMMA_I2C())
+rtc.datetime = time.struct_time((2026, 10, 29, 10, 30, 0, 3, -1, -1))</code></pre>
+  <p>Save this as <code>CIRCUITPY/code.py</code>. It prints one line a second from all five boards. It looks at the buttons about 30 times a second and keeps any press, so a tap shows. (The first version looked once a second and missed every press on 2026-11-04.)</p>
+<pre><code>import time, board
+import adafruit_ds3231, adafruit_vcnl4040, adafruit_lis3dh, adafruit_ahtx0
+from adafruit_seesaw import seesaw, rotaryio
+
+i2c = board.STEMMA_I2C()
+rtc = adafruit_ds3231.DS3231(i2c)
+prox = adafruit_vcnl4040.VCNL4040(i2c)
+acc = adafruit_lis3dh.LIS3DH_I2C(i2c, address=0x18)
+aht = adafruit_ahtx0.AHTx0(i2c)
+
+ss = seesaw.Seesaw(i2c, addr=0x49)
+assert (ss.get_version() &gt;&gt; 16) &amp; 0xFFFF == 5740, "not an ANO encoder"
+names = ["select", "up", "left", "down", "right"]
+pins = (1, 2, 3, 4, 5)
+mask = sum(1 &lt;&lt; p for p in pins)
+for pin in pins:
+    ss.pin_mode(pin, ss.INPUT_PULLUP)
+knob = rotaryio.IncrementalEncoder(ss)
+print("buttons at rest:", hex(ss.digital_read_bulk(mask)), "(0x3e = all five released)")
+
+while True:
+    # Look at the buttons ~30 times over the second and keep any press, so a tap counts.
+    seen, end = set(), time.monotonic() + 1
+    while time.monotonic() &lt; end:
+        low = ~ss.digital_read_bulk(mask) &amp; mask
+        seen.update(n for n, p in zip(names, pins) if low &amp; (1 &lt;&lt; p))
+        time.sleep(0.03)
+    t = rtc.datetime
+    x, y, z = acc.acceleration
+    pressed = [n for n in names if n in seen]
+    print(f"{t.tm_hour:02}:{t.tm_min:02}:{t.tm_sec:02}  "
+          f"knob={knob.position:4d} {pressed}  "
+          f"prox={prox.proximity:4d} lux={prox.lux:5.0f}  "
+          f"g=({x:5.1f},{y:5.1f},{z:5.1f})  "
+          f"{aht.temperature:4.1f}C {aht.relative_humidity:3.0f}%")</code></pre>
+  <div class="done"><h3>Pass when</h3>
+  <ul class="check">
+    <li>the time advances one second per line</li>
+    <li><code>knob</code> changes as you turn the encoder, and each of the five buttons shows its name while pressed</li>
+    <li><code>prox</code> jumps from a few counts to hundreds when your hand covers the sensor, and <code>lux</code> drops</li>
+    <li>one axis of <code>g</code> reads about &plusmn;9.8 and moves to another axis when you tip the board</li>
+    <li>temperature is room-like and humidity rises when you breathe on the sensor</li>
+  </ul></div>
+  <div class="done"><h3>Done 2026-11-04, on the controller board</h3>
+  <p>The clock first read 2000-01-01 with its lost-power flag set, which is what an unset clock reads. It was set from the computer's NTP time to 00:53:11 and read back within a second. Knob 0&nbsp;&rarr;&nbsp;71. Proximity 12&nbsp;&rarr;&nbsp;399 and light 37&nbsp;&rarr;&nbsp;7&nbsp;lux under a hand. Gravity moved from the z to the y axis (9.3&nbsp;m/s²). Humidity 45&nbsp;&rarr;&nbsp;53&nbsp;% from a breath, at 23.6&nbsp;°C. Buttons: left, up, down and right seen; <strong>select (the centre button) not yet seen</strong>. Press it once more next session.</p>
+  <p>An identity check then read each chip's own ID register: clock time advancing and its thermometer 24.25&nbsp;°C, encoder firmware 5740, light sensor ID 0x186, accelerometer WHO_AM_I 0x33 and 9.81&nbsp;m/s² at rest, humidity sensor calibrated at 23.9&nbsp;°C, within 0.4&nbsp;°C of the clock's thermometer: 5 of 5. Re-run it at the REPL with <code>import parts_check</code>; copies of it and <code>code.py</code> are in <code>bench/circuitpython/</code>.</p>
+  <p>If the console says <em>Running in safe mode &hellip; You pressed the BOOT button at start up</em>, press RST once without touching BOOT.</p></div>
+  </div>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">STEP 5</span><h2>The coin cell keeps the time</h2><span class="badge">5 min</span></div>
+  <div class="daybody">
+  <p>Unplug USB. Wait one minute. Plug back in and read the console. The time must be one minute later than when you unplugged, not reset to 2000-01-01. If it reset, the cell is flat or not seated. This is the only test the alarm clock truly depends on.</p>
+  <div class="done"><h3>Passed 2026-11-04</h3>
+  <p>USB was out for 12&nbsp;s (01:05:46 to 01:05:58). A header wire then came loose, so the chain was off the bus until about 01:10:14. The first line back read 01:10:21 on the clock and 01:10:21 on the computer: no time lost. The board also restarted three times while the wires were handled (01:02:54, 01:08:08, 01:10:14). Jumper wires on bare header pins are bench-only; the Phase&nbsp;1 joints are soldered.</p></div>
+  <div class="done"><h3>That is the whole prototype test</h3><p>Leave the chain connected. It goes onto the controller board as one piece.</p></div>
+  </div>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">OPTIONAL A</span><h2>Light the OLED</h2><span class="badge">30 min &middot; header must be soldered</span></div>
+  <div class="daybody">
+  <p><strong>First, move the interface links to SPI.</strong> The photo of 2026-11-03 shows the board shipped in 8080 parallel (BS1&nbsp;=&nbsp;1, BS2&nbsp;=&nbsp;1). With flux and the iron, lift the 0&nbsp;Ω link off the upper "(1)" pads of the R2/R3 block and bridge the lower "(0)" pads (R3) with solder; same for R4/R5 (link off R4, bridge R5). Upper link off <em>before</em> the lower bridge goes on: both rows fitted shorts VDD to VSS. Finish with the meter: pin&nbsp;1 to pin&nbsp;2 must not beep, and pin&nbsp;1 must beep to both lower bridges. The result looks like Adafruit's <a href="https://learn.adafruit.com/1-5-and-2-4-monochrome-128x64-oled-display-module/assembly">SPI photo</a>.</p>
+  <p>Solder the included header strip to the OLED, holding it in a breadboard so it stays square. The header has 20 pins marked by number, not name: glass facing you, header along the bottom, pin&nbsp;1 is on the left and pin&nbsp;20 on the right. Pin&nbsp;20 is tied to the metal frame, so a continuity beep from an end pin to the frame finds pin&nbsp;20; pin&nbsp;1 is the other end. Solder the kit's 220&nbsp;µF across pins 1 and 2, stripe to pin&nbsp;1. Then seven jumpers from the stand-in controller:</p>
+  <div class="tw"><table>
+  <tr><th>OLED pin</th><th>Function</th><th>Stand-in pin</th></tr>
+  <tr><td class="m">1</td><td>GND</td><td class="m">G</td></tr>
+  <tr><td class="m">2</td><td>3 V power in</td><td><span class="m">3V</span>. <strong>Never</strong> RAW or 5 V: the module is 3.3 V only</td></tr>
+  <tr><td class="m">4</td><td>DC</td><td class="m">D9</td></tr>
+  <tr><td class="m">7</td><td>D0 = SPI clock</td><td class="m">CLK</td></tr>
+  <tr><td class="m">8</td><td>D1 = SPI data</td><td class="m">MOSI</td></tr>
+  <tr><td class="m">15</td><td>CS</td><td class="m">D10</td></tr>
+  <tr><td class="m">16</td><td>RESET</td><td class="m">D8</td></tr>
+  </table></div>
+  <p>Leave pins 3, 5, 6, 9&ndash;14 and 17&ndash;20 empty (pin&nbsp;20, frame ground, may also go to GND). Pin map from Adafruit's <a href="https://learn.adafruit.com/1-5-and-2-4-monochrome-128x64-oled-display-module/pinouts">pinouts page</a>.</p>
+  <p>Add <code>adafruit_displayio_ssd1306.mpy</code> to <code>lib/</code>; this display's controller chip is a close relative of the one that library was written for, and takes it. On the console:</p>
+<pre><code>import board, busio, displayio, adafruit_displayio_ssd1306
+try:
+    from fourwire import FourWire        # CircuitPython 9 and later
+except ImportError:
+    from displayio import FourWire       # CircuitPython 8
+displayio.release_displays()
+spi = busio.SPI(board.CLK, board.MOSI)
+bus = FourWire(spi, command=board.D9, chip_select=board.D10, reset=board.D8)
+display = adafruit_displayio_ssd1306.SSD1306(bus, width=128, height=64)</code></pre>
+  <p>Pass when the console text appears on the glass. If it stays dark, re-check the link rework (both bridges in the lower row, no beep between pins 1 and 2) and stop there; Phase&nbsp;1 does this properly on the controller board. Do not spend the evening on it.</p>
+  </div>
+</div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">OPTIONAL B</span><h2>A tone through the amp</h2><span class="badge">15 min</span></div>
+  <div class="daybody">
+  <p>The <a href="https://www.amazon.com/dp/B0CDWXZZCH">amplifier</a> is the Pocket AI's and already has pins. Five jumpers plus the speaker lead:</p>
+  <div class="tw"><table>
+  <tr><th>Amp pin</th><th>Stand-in pin</th></tr>
+  <tr><td class="m">VIN</td><td><span class="m">RAW</span> (USB 5 V; the amp takes 2.7&ndash;5.5 V)</td></tr>
+  <tr><td class="m">GND</td><td class="m">G</td></tr>
+  <tr><td class="m">BCLK</td><td class="m">D2</td></tr>
+  <tr><td class="m">LRC</td><td class="m">D3</td></tr>
+  <tr><td class="m">DIN</td><td class="m">D4</td></tr>
+  <tr><td class="m">OUT+ / OUT&minus;</td><td>one <a href="https://www.adafruit.com/product/1669">speaker</a>, either way round; never to ground</td></tr>
+  </table></div>
+  <p>The stand-in controller needs the word-select pin to be the GPIO right after the bit-clock pin, which D2 and D3 satisfy.</p>
+<pre><code>import board, audiobusio, audiocore, array, math, time
+n = 8000 // 440
+wave = array.array("h", [int(math.sin(2 * math.pi * i / n) * 6000) for i in range(n)])
+out = audiobusio.I2SOut(board.D2, board.D3, board.D4)
+out.play(audiocore.RawSample(wave, sample_rate=8000), loop=True)
+time.sleep(1); out.stop(); out.deinit()</code></pre>
+  <p>Pass when you hear one second of a 440&nbsp;Hz tone. It is deliberately quiet (6000 of 32767); do not raise it on the bare bench.</p>
+  </div>
+</div>
+
+<div class="note warn"><span class="lbl">Not tomorrow</span>
+<ul>
+  <li>Do not touch the OLED's BS1/BS2 links except as Optional&nbsp;A says (upper link off, then lower bridge on; never both).</li>
+  <li>Do not put a SparkFun <a href="https://www.sparkfun.com/products/15177">proximity and light sensor</a> on the chain (2.2&nbsp;kΩ pull-ups).</li>
+  <li>Do not solder anything except the OLED header and its capacitor.</li>
+  <li>Do not power any QT board from RAW / 5 V.</li>
+</ul></div>
+
+<div class="day">
+  <div class="dayhead"><span class="daynum">CONTROLLER</span><h2>If the controller board is already here, run Day 0 on it</h2><span class="badge">Step 2 becomes 15 min</span></div>
+  <div class="daybody">
+  <p>The small Adafruit board was only a stand-in. If the <a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894">controller board</a> has arrived, do Steps 1&ndash;5 on it. Step&nbsp;2 and the line that opens the I²C bus change; nothing else does. Added 2026-10-30.</p>
+  <h3>Step 2 on the controller board</h3>
+  <ol>
+    <li>The board has two USB-C ports, labelled <strong>UART</strong> and <strong>USB</strong>. It ships without a UF2 bootloader, so drag-and-drop does not work the first time.</li>
+    <li>In Chrome, open <a href="https://circuitpython.org/board/espressif_esp32s3_devkitc_1_n8r8/">circuitpython.org/board/espressif_esp32s3_devkitc_1_n8r8</a> (10.3.1 stable on 2026-10-30) and press <strong>OPEN INSTALLER</strong>. Plug the <strong>UART</strong> port into the laptop, hold <strong>BOOT</strong>, tap <strong>RESET</strong>, release BOOT. Pick the serial port and let it write TinyUF2 and CircuitPython.</li>
+    <li>Move the cable to the <strong>USB</strong> port, press RESET. <strong>CIRCUITPY</strong> appears. Copy the same six libraries into <code>CIRCUITPY/lib/</code>. The serial console is on this port too.</li>
+  </ol>
+  <p>From a Linux computer the installer is not needed (done this way 2026-11-03): on the <strong>UART</strong> port, <code>esptool --chip esp32s3 --port /dev/ttyUSB0 erase-flash</code>, then <code>write-flash 0x0</code> with the <code>.bin</code> from the same page. No buttons: the UART bridge works the boot pins itself. Then move to the <strong>USB</strong> port and press RST without touching BOOT, because BOOT held at start-up drops CircuitPython into safe mode.</p>
+  <h3>Wiring</h3>
+  <p>The <a href="https://www.adafruit.com/product/4209">QT-to-header cable</a> replaces the stand-in's socket: red to <strong>3V3</strong>, black to <strong>GND</strong>, blue (SDA) to <strong>GPIO8</strong>, yellow (SCL) to <strong>GPIO9</strong>, the pins <code>board_pins.h</code> already assumes. Its QT plug takes the first QT cable to the real-time clock and the chain grows exactly as in Step&nbsp;3.</p>
+  <h3>Snippets</h3>
+  <p>The controller board has no <code>board.STEMMA_I2C()</code>. Add <code>busio</code> to each snippet's <code>import</code> line and open the bus with this wherever a snippet says <code>board.STEMMA_I2C()</code>:</p>
+<pre>i2c = busio.I2C(board.IO9, board.IO8)   # SCL, SDA</pre>
+  <p>(Corrected 2026-11-04: this used to say "replace the first two lines of every snippet", which drops the Step&nbsp;4 imports.) Addresses, the rest of the Step&nbsp;4 <code>code.py</code> and the Step&nbsp;5 coin-cell test are unchanged. Pass Day 0 this way and the hardware side of Day&nbsp;1 is already done; Phase&nbsp;1 starts at the ESP-IDF toolchain.</p>
+  </div>
+</div>
+
+<div class="note tip"><span class="lbl">When the controller board arrives after a stand-in Day 0</span>
+<p>Unplug the first QT cable from the stand-in controller and plug it into the <a href="https://www.adafruit.com/product/4209">QT-to-header cable</a>; land that on the controller board's 3V3, GND, GPIO8 (SDA) and GPIO9 (SCL). The chain is already proven and the clock already set, so Day&nbsp;1 of Phase&nbsp;1 starts at the toolchain, not at the hardware.</p></div>
+
+<hr>
+</div>

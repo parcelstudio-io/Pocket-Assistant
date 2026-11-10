@@ -1,0 +1,617 @@
+<title>Cyber Dawn Bench Build</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EDEBE7; --paper:#FFFFFF; --ink:#16181C; --ink-2:#5A6068; --line:#CFCBC4;
+  --brass:#8F6114; --brass-soft:#F2E6D2; --signal:#0E5F7A; --signal-soft:#D9EAF1;
+  --ok:#2A6340; --ok-soft:#D9EADF; --warn:#98351E; --warn-soft:#F7E1D9;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+    --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+    --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+  --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+  --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 72px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,6vw,46px);font-weight:900;letter-spacing:-0.015em}
+h2{font-size:clamp(20px,3vw,26px);font-weight:700;margin:0}
+h3{font-size:17px;font-weight:700;margin:0 0 6px;font-family:var(--display);
+   text-transform:uppercase;letter-spacing:.09em;color:var(--brass);font-size:12.5px}
+p{margin:10px 0;max-width:70ch}
+ul,ol{max-width:70ch;padding-left:22px;margin:10px 0}
+li{margin:7px 0}
+a{color:var(--signal)}
+code{font-family:var(--mono);font-size:.88em;background:var(--signal-soft);padding:1.5px 5px;border-radius:3px;white-space:nowrap}
+pre{font-family:var(--mono);font-size:13px;line-height:1.55;background:var(--paper);border:1px solid var(--line);
+    padding:12px 14px;overflow-x:auto;border-radius:5px;margin:10px 0}
+pre code{background:none;padding:0;white-space:pre}
+strong{font-weight:700}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.5}
+.day{background:var(--paper);border:1px solid var(--line);border-radius:6px;margin:26px 0;overflow:hidden}
+.dayhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+         padding:14px 20px;border-bottom:1px solid var(--line);border-left:6px solid var(--brass)}
+.daynum{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--brass);white-space:nowrap}
+.badge{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;
+       background:var(--brass-soft);color:var(--brass);padding:3px 9px;border-radius:999px;margin-left:auto;white-space:nowrap}
+.daybody{padding:4px 20px 20px}
+.block{margin-top:18px}
+.block ol,.block ul{margin-top:6px}
+.done{background:var(--ok-soft);border:1px solid var(--ok);border-radius:5px;padding:12px 16px;margin-top:18px}
+.done h3{color:var(--ok)}
+.done p,.done ul{max-width:none;margin:4px 0}
+.trouble{background:var(--paper);border:1px dashed var(--line);border-radius:5px;padding:12px 16px;margin-top:14px}
+.trouble h3{color:var(--ink-2)}
+.note{padding:13px 17px;margin:18px 0;border-radius:5px;max-width:none}
+.note p{max-width:none;margin:5px 0}
+.note .lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.warn .lbl{color:var(--warn)}
+.tip{background:var(--signal-soft);border:1px solid var(--signal)}
+.tip .lbl{color:var(--signal)}
+.kit{background:var(--brass-soft);border:1px solid var(--brass)}
+.kit .lbl{color:var(--brass)}
+figure{margin:22px 0;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink);font-family:var(--body)}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:11px;max-width:70ch;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:14px 0}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+td.m,th.m{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 18px;font-size:15px;margin:16px 0;
+       border:1px solid var(--line);border-radius:5px;background:var(--paper);overflow:hidden}
+.sched>div{padding:9px 14px;border-bottom:1px solid var(--line)}
+.sched>div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);font-size:13px;color:var(--brass);font-weight:700;white-space:nowrap}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:30px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:6px;width:15px;height:15px;border:2px solid var(--brass);border-radius:3px}
+hr{border:0;border-top:3px solid var(--brass);margin:44px 0 0}
+@media (max-width:520px){.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}.badge{margin-left:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+<div class="masthead">
+  <div class="eyebrow">Cyber Dawn &middot; Phase 1 bench build</div>
+  <h1>Five Hours to an Alarm Clock</h1>
+  <div class="sub">Days 1&ndash;5 &middot; one hour each &middot; USB power only<br>
+  At the end you have a working real-time-clock alarm with sound and snooze. No display, no network, no battery.</div>
+</div>
+
+<div class="note warn"><span class="lbl">Before day 1</span>
+<p><strong>Place the core order and wait for it.</strong> These five sessions assume the bench BOM is on your desk. Nothing here needs the cell, the charger board or the brass cradles &mdash; those wait for the Phase 4 and Phase 6 gates (Rev B, 2026-10-31: no solar).</p>
+<p>Everything runs from the USB cable. There is no lithium cell in this build, so there is no fire risk to manage yet. Keep it that way until the power design is measured.</p>
+</div>
+
+<h2>What you are building</h2>
+
+<p>Five sessions, each one hour, each ending with something that works. You are not assembling the product &mdash; you are proving the one thing it exists to do: <strong>wake up on time without a network</strong>. Everything else is added later, on top of a foundation you have already tested.</p>
+
+<figure>
+<svg viewBox="0 0 640 350" role="img" aria-label="Block diagram of what gets added on each of the five days. Day 1 is the controller board alone, powered by USB. Day 2 adds a chain of six I2C breakout boards connected to GPIO8 and GPIO9. Day 3 adds a dedicated interrupt wire from the real-time clock to GPIO4. Day 4 adds the amplifier on the I2S pins and a speaker. Day 5 adds a snooze button on GPIO18 and an arm switch on GPIO21." xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="b1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--brass)"/></marker>
+    <marker id="b1s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--signal)"/></marker>
+  </defs>
+  <!-- MCU -->
+  <rect x="42" y="130" width="150" height="86" rx="5" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="2"/>
+  <text x="117" y="163" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">controller</text>
+  <text x="117" y="180" font-size="12" fill="currentColor" text-anchor="middle">board</text>
+  <text x="117" y="199" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">8 MB flash &middot; 8 MB PSRAM</text>
+  <text x="117" y="120" font-size="11" style="fill:var(--brass)" font-weight="700" text-anchor="middle" font-family="monospace">DAY 1</text>
+  <!-- USB -->
+  <line x1="117" y1="216" x2="117" y2="248" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="72" y="248" width="90" height="26" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="117" y="266" font-size="11" fill="currentColor" text-anchor="middle">USB-C 5 V</text>
+  <!-- I2C chain -->
+  <rect x="300" y="38" width="300" height="72" rx="5" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="2"/>
+  <text x="450" y="30" font-size="11" style="fill:var(--brass)" font-weight="700" text-anchor="middle" font-family="monospace">DAY 2</text>
+  <text x="450" y="60" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">six breakouts on one I&#178;C chain</text>
+  <text x="450" y="80" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">clock &middot; fuel gauge &middot; proximity</text>
+  <text x="450" y="97" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">accel &middot; temp/humidity &middot; encoder</text>
+  <line x1="192" y1="150" x2="292" y2="86" style="stroke:var(--signal)" stroke-width="2" fill="none" marker-end="url(#b1s)"/>
+  <text x="243" y="108" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">GPIO8/9</text>
+  <!-- clock INT -->
+  <line x1="300" y1="100" x2="220" y2="140" style="stroke:var(--brass)" stroke-width="3" fill="none" marker-end="url(#b1a)"/>
+  <text x="300" y="132" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace">INT &rarr; GPIO4</text>
+  <text x="300" y="147" font-size="10" fill="currentColor" opacity="0.8">the alarm wire</text>
+  <text x="368" y="122" font-size="11" style="fill:var(--brass)" font-weight="700" font-family="monospace">DAY 3</text>
+  <!-- Amp -->
+  <rect x="300" y="178" width="150" height="62" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="375" y="203" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">amplifier</text>
+  <text x="375" y="221" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">I&#178;S amp, 6 dB</text>
+  <text x="375" y="170" font-size="11" style="fill:var(--brass)" font-weight="700" text-anchor="middle" font-family="monospace">DAY 4</text>
+  <line x1="192" y1="190" x2="292" y2="200" style="stroke:var(--signal)" stroke-width="2" fill="none" marker-end="url(#b1s)"/>
+  <text x="242" y="184" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">14/15/16/17</text>
+  <!-- Speaker -->
+  <path d="M500,196 L516,196 L534,180 L534,238 L516,222 L500,222 z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M544,192 Q556,209 544,226" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="522" y="256" font-size="10.5" fill="currentColor" text-anchor="middle">4 &#937; speaker</text>
+  <line x1="450" y1="209" x2="494" y2="209" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <!-- Buttons -->
+  <rect x="300" y="278" width="150" height="54" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="375" y="300" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">snooze + arm</text>
+  <text x="375" y="318" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">GPIO18 &middot; GPIO21</text>
+  <text x="470" y="300" font-size="11" style="fill:var(--brass)" font-weight="700" font-family="monospace">DAY 5</text>
+  <line x1="292" y1="300" x2="196" y2="228" style="stroke:var(--signal)" stroke-width="2" fill="none" marker-end="url(#b1s)"/>
+</svg>
+<figcaption>Each session bolts one more block onto a board that already works. If a session fails, you know exactly which block caused it, because it is the only thing that changed.</figcaption>
+</figure>
+
+<h2>The schedule this fits</h2>
+
+<div class="sched">
+  <div class="t">Mon&ndash;Fri</div><div><strong>1 hour.</strong> One session, one block, one result. Stop when the hour is up even if it works &mdash; the next session assumes a clear head.</div>
+  <div class="t">Saturday</div><div><strong>5 hours.</strong> Long jobs that do not fit an hour: the OLED solder and driver, the scheduler.</div>
+  <div class="t">Sunday</div><div><strong>5 hours.</strong> Test campaigns and the soak runs that need to be started and left alone.</div>
+</div>
+
+<p>These five days are the weekday hours of your first week. The weekend sessions that follow are covered separately &mdash; do not start them until Day 5 passes its check.</p>
+
+<div class="note kit"><span class="lbl">Tools for these five days</span>
+<p>Soldering iron and solder &middot; flux &middot; wire cutters and strippers &middot; multimeter &middot; 22 AWG solid hookup wire &middot; a known-good <strong>USB-C data cable</strong> (a charge-only cable is the single most common Day 1 failure) &middot; the half-size <a href="https://www.adafruit.com/product/1609">solder-in proto board</a> &middot; and a 10 k&#937; resistor from the kit.</p>
+</div>
+
+<hr>
+
+<div class="day">
+<div class="dayhead">
+  <span class="daynum">DAY 1</span>
+  <h2>Toolchain and first light</h2>
+  <span class="badge">1 HOUR &middot; NO SOLDERING</span>
+</div>
+<div class="daybody">
+
+<div class="block"><h3>Goal</h3>
+<p>A board that boots <em>your</em> code and prints to your screen. Nothing is wired to it yet.</p></div>
+
+<div class="block"><h3>On the bench</h3>
+<p><a href="https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N8R8/15295894">Controller board</a> &middot; USB-C data cable &middot; your computer.</p></div>
+
+<div class="block"><h3>Steps</h3>
+<ol>
+<li><strong>Read the silkscreen and write down the revision.</strong> Look near the USB connectors for <code>v1.1</code> or <code>v1.0</code>. This matters: the onboard RGB LED is on <strong>GPIO38 on v1.1</strong> and <strong>GPIO48 on v1.0</strong>. Your pin map avoids both, but you want to know which board you have.</li>
+<li>Install ESP-IDF 5.x and pin the version. Record the exact version in the repo &mdash; a floating toolchain will waste a Saturday later.</li>
+<li><strong>Gate the board on its flash size</strong> before trusting it:
+<pre><code>esptool.py --port /dev/ttyACM0 flash_id</code></pre>
+You need 8 MB. Anything smaller is a mislabelled clone &mdash; set it aside and use another.</li>
+<li>Build and flash the scaffold that is already in the repo:
+<pre><code>cd firmware
+idf.py set-target esp32s3
+idf.py build
+idf.py -p /dev/ttyACM0 flash monitor</code></pre></li>
+</ol></div>
+
+<div class="done"><h3>Done when</h3>
+<p>The monitor prints <code>Cyber Dawn firmware scaffold booted</code>, a free-heap number, and then a heartbeat line once a minute. That is the whole goal. Close the laptop.</p></div>
+
+<div class="trouble"><h3>If it doesn't work</h3>
+<ul>
+<li><strong>No serial port at all.</strong> Nine times out of ten the cable is charge-only. Try a different one before anything else. Check with <code>ls /dev/ttyACM* /dev/ttyUSB*</code>.</li>
+<li><strong>Port exists, flashing fails.</strong> Hold the <code>BOOT</code> button, tap <code>RESET</code>, release <code>BOOT</code>, then flash. This forces download mode by hand.</li>
+<li><strong>Permission denied on Linux.</strong> Add yourself to the <code>dialout</code> group and log out and back in.</li>
+<li><strong>Flash reports under 8 MB.</strong> Do not continue with that board. The partition table needs the full 8 MB.</li>
+</ul></div>
+
+</div>
+</div>
+
+<div class="day">
+<div class="dayhead">
+  <span class="daynum">DAY 2</span>
+  <h2>The I&#178;C chain</h2>
+  <span class="badge">1 HOUR &middot; NO SOLDERING</span>
+</div>
+<div class="daybody">
+
+<div class="block"><h3>Goal</h3>
+<p>Six sensor boards answering on two wires. This is the most satisfying hour of the five and you will not touch the iron.</p></div>
+
+<div class="block"><h3>On the bench</h3>
+<p>1 &times; <a href="https://www.adafruit.com/product/4209">QT-to-header cable</a> &middot; 5 &times; <a href="https://www.adafruit.com/product/4210">QT cables</a> &middot; <a href="https://www.adafruit.com/product/5188">real-time clock</a> &middot; <a href="https://www.amazon.com/dp/B0D8T4C5PK">coin cell</a> &middot; <a href="https://www.adafruit.com/product/5580">fuel gauge</a> &middot; Adafruit <a href="https://www.adafruit.com/product/4161">proximity and light sensor</a> &middot; <a href="https://www.adafruit.com/product/2809">accelerometer</a> &middot; <a href="https://www.adafruit.com/product/4566">temperature and humidity sensor</a> &middot; <a href="https://www.adafruit.com/product/6310">rotary encoder</a>.</p></div>
+
+<figure>
+<svg viewBox="0 0 640 320" role="img" aria-label="Wiring diagram of the I2C chain. Four male header wires leave the controller board: red from 3V3, black from GND, blue from GPIO8 as SDA and yellow from GPIO9 as SCL. They join a STEMMA QT connector that plugs into the real-time clock. Six breakout boards are then daisy chained in a serpentine: the real-time clock at address 0x68, the fuel gauge at 0x36, the proximity and light sensor at 0x60 on the top row, then down to the rotary encoder at 0x49, the temperature and humidity sensor at 0x38 and the accelerometer at 0x18 on the bottom row." xmlns="http://www.w3.org/2000/svg">
+  <!-- controller header -->
+  <rect x="18" y="86" width="92" height="120" rx="4" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.8"/>
+  <text x="64" y="106" font-size="11" font-weight="700" fill="currentColor" text-anchor="middle">controller</text>
+  <g font-size="11" fill="currentColor" font-family="monospace">
+    <text x="30" y="128">3V3</text><text x="30" y="150">GND</text>
+    <text x="30" y="172">IO8</text><text x="30" y="194">IO9</text>
+  </g>
+  <!-- four wires -->
+  <line x1="110" y1="124" x2="168" y2="124" stroke="#C0392B" stroke-width="3" fill="none"/>
+  <line x1="110" y1="146" x2="168" y2="146" stroke="#2C2C2C" stroke-width="3" fill="none"/>
+  <line x1="110" y1="168" x2="168" y2="168" stroke="#2E6FB8" stroke-width="3" fill="none"/>
+  <line x1="110" y1="190" x2="168" y2="190" stroke="#C9A227" stroke-width="3" fill="none"/>
+  <g font-size="10" fill="currentColor" font-family="monospace">
+    <text x="114" y="118">red</text><text x="114" y="140">black</text>
+    <text x="114" y="162">blue = SDA</text><text x="114" y="184">yellow = SCL</text>
+  </g>
+  <!-- JST connector -->
+  <rect x="168" y="112" width="26" height="90" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="181" y="216" font-size="10" fill="currentColor" text-anchor="middle" font-family="monospace">header cable</text>
+  <line x1="194" y1="157" x2="222" y2="157" stroke="currentColor" stroke-width="2" fill="none"/>
+  <!-- top row boards -->
+  <g>
+    <rect x="222" y="40" width="112" height="46" rx="4" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.6"/>
+    <text x="278" y="59" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle">clock</text>
+    <text x="278" y="76" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">0x68</text>
+    <rect x="354" y="40" width="112" height="46" rx="4" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.6"/>
+    <text x="410" y="59" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle">fuel gauge</text>
+    <text x="410" y="76" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">0x36</text>
+    <rect x="486" y="40" width="112" height="46" rx="4" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.6"/>
+    <text x="542" y="59" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle">proximity</text>
+    <text x="542" y="76" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">0x60</text>
+  </g>
+  <!-- bottom row boards -->
+  <g>
+    <rect x="222" y="228" width="112" height="46" rx="4" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.6"/>
+    <text x="278" y="247" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle">accel</text>
+    <text x="278" y="264" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">0x18</text>
+    <rect x="354" y="228" width="112" height="46" rx="4" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.6"/>
+    <text x="410" y="247" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle">temp/humidity</text>
+    <text x="410" y="264" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">0x38</text>
+    <rect x="486" y="228" width="112" height="46" rx="4" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.6"/>
+    <text x="542" y="247" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle">encoder</text>
+    <text x="542" y="264" font-size="11" style="fill:var(--signal)" text-anchor="middle" font-family="monospace">0x49</text>
+  </g>
+  <!-- chain links -->
+  <g stroke="currentColor" stroke-width="2" fill="none">
+    <line x1="222" y1="63" x2="222" y2="63"/>
+    <line x1="334" y1="63" x2="354" y2="63"/>
+    <line x1="466" y1="63" x2="486" y2="63"/>
+    <path d="M598,63 L618,63 L618,251 L598,251"/>
+    <line x1="486" y1="251" x2="466" y2="251"/>
+    <line x1="354" y1="251" x2="334" y2="251"/>
+    <path d="M222,157 L222,63" />
+  </g>
+  <text x="626" y="160" font-size="10" fill="currentColor" text-anchor="middle" font-family="monospace" transform="rotate(90 626 160)">QT cable &times;5</text>
+  <text x="320" y="300" font-size="11.5" fill="currentColor" text-anchor="middle">order along the chain does not matter &mdash; every board sits on the same two wires</text>
+</svg>
+<figcaption>All six boards share SDA and SCL. They are told apart by address, not by wiring, which is why adding a seventh sensor later costs zero GPIO pins.</figcaption>
+</figure>
+
+<div class="block"><h3>Steps</h3>
+<ol>
+<li>Push the <strong>coin cell into the real-time clock</strong>, printed <code>+</code> side facing up. Without it the clock forgets the time every time you unplug.</li>
+<li>Plug the <strong>QT-to-header cable</strong>'s male ends into the controller board: <strong>red&nbsp;&rarr;&nbsp;3V3</strong>, <strong>black&nbsp;&rarr;&nbsp;GND</strong>, <strong>blue&nbsp;&rarr;&nbsp;GPIO8</strong>, <strong>yellow&nbsp;&rarr;&nbsp;GPIO9</strong>.</li>
+<li>Plug its JST end into either QT port on the real-time clock. The two ports on each board are wired together &mdash; there is no in or out.</li>
+<li>Daisy-chain the other five boards with the <strong>QT cables</strong>, in any order.</li>
+<li>Flash a scan that walks addresses <code>0x08</code> to <code>0x77</code> and logs every device that acknowledges.</li>
+</ol></div>
+
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="An i2cdetect style address grid, sixteen columns by eight rows, showing the six addresses that should respond: 0x18 for the accelerometer, 0x36 for the fuel gauge, 0x38 for the temperature and humidity sensor, 0x49 for the rotary encoder, 0x60 for the proximity and light sensor and 0x68 for the real-time clock. All other cells are empty." xmlns="http://www.w3.org/2000/svg">
+  <g font-size="10.5" fill="currentColor" font-family="monospace" opacity="0.75" text-anchor="middle">
+    <text x="85" y="40">0</text><text x="115" y="40">1</text><text x="145" y="40">2</text><text x="175" y="40">3</text>
+    <text x="205" y="40">4</text><text x="235" y="40">5</text><text x="265" y="40">6</text><text x="295" y="40">7</text>
+    <text x="325" y="40">8</text><text x="355" y="40">9</text><text x="385" y="40">a</text><text x="415" y="40">b</text>
+    <text x="445" y="40">c</text><text x="475" y="40">d</text><text x="505" y="40">e</text><text x="535" y="40">f</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" font-family="monospace" opacity="0.75" text-anchor="end">
+    <text x="62" y="62">00:</text><text x="62" y="88">10:</text><text x="62" y="114">20:</text><text x="62" y="140">30:</text>
+    <text x="62" y="166">40:</text><text x="62" y="192">50:</text><text x="62" y="218">60:</text><text x="62" y="244">70:</text>
+  </g>
+  <!-- grid dots -->
+  <g fill="currentColor" opacity="0.18">
+    <rect x="72" y="46" width="480" height="208" fill="none"/>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.28" font-family="monospace" text-anchor="middle">
+    <text x="85" y="62">--</text><text x="205" y="88">--</text><text x="325" y="114">--</text><text x="445" y="140">--</text>
+    <text x="145" y="166">--</text><text x="265" y="192">--</text><text x="385" y="218">--</text><text x="505" y="244">--</text>
+    <text x="235" y="62">--</text><text x="355" y="88">--</text><text x="475" y="114">--</text><text x="115" y="140">--</text>
+    <text x="295" y="166">--</text><text x="415" y="192">--</text><text x="175" y="218">--</text><text x="535" y="244">--</text>
+  </g>
+  <!-- the six hits -->
+  <g>
+    <rect x="322" y="76" width="26" height="20" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <text x="335" y="91" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace" text-anchor="middle">18</text>
+    <rect x="232" y="128" width="26" height="20" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <text x="245" y="143" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace" text-anchor="middle">36</text>
+    <rect x="292" y="128" width="26" height="20" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <text x="305" y="143" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace" text-anchor="middle">38</text>
+    <rect x="352" y="154" width="26" height="20" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <text x="365" y="169" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace" text-anchor="middle">49</text>
+    <rect x="72" y="206" width="26" height="20" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <text x="85" y="221" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace" text-anchor="middle">60</text>
+    <rect x="312" y="206" width="26" height="20" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.5"/>
+    <text x="325" y="221" font-size="10.5" style="fill:var(--brass)" font-weight="700" font-family="monospace" text-anchor="middle">68</text>
+  </g>
+  <text x="320" y="282" font-size="12" fill="currentColor" text-anchor="middle">six hits, nothing else</text>
+</svg>
+<figcaption>What a healthy bus looks like. The accelerometer answers at <code>0x18</code> or <code>0x19</code> depending on its address pin &mdash; either is fine. Nothing should appear that you did not plug in.</figcaption>
+</figure>
+
+<div class="done"><h3>Done when</h3>
+<p>Six addresses appear: <code>0x18</code> (or <code>0x19</code>), <code>0x36</code>, <code>0x38</code>, <code>0x49</code>, <code>0x60</code>, <code>0x68</code>. Write the list into the repo &mdash; it is your baseline for every later fault.</p></div>
+
+<div class="trouble"><h3>If it doesn't work</h3>
+<ul>
+<li><strong>Nothing at all responds.</strong> SDA and SCL are swapped, or the red wire is not on 3V3. Check the colours against the diagram before suspecting a board.</li>
+<li><strong>One address missing.</strong> That board or the cable feeding it. Swap the cable first, it is the cheaper test.</li>
+<li><strong>Addresses appear and vanish between scans.</strong> Too many pull-ups in parallel. Each breakout brings its own 10 k&#937;; six in parallel is about 1.7 k&#937;. Measure SDA to 3V3 with the power off &mdash; if it reads under 1 k&#937;, remove the pull-up jumper on some boards.</li>
+<li><strong>An unexpected address appears.</strong> Note it. Some boards carry a second chip; nothing in this set conflicts, but you want to know it is there.</li>
+</ul></div>
+
+</div>
+</div>
+
+<div class="day">
+<div class="dayhead">
+  <span class="daynum">DAY 3</span>
+  <h2>The alarm wire</h2>
+  <span class="badge">1 HOUR &middot; FIRST SOLDER</span>
+</div>
+<div class="daybody">
+
+<div class="note tip"><span class="lbl">This is the important hour</span>
+<p>Everything else in this product is a feature. This one wire is the product. If it is wrong, the clock does not wake you &mdash; and it fails silently, which is worse.</p></div>
+
+<div class="block"><h3>Goal</h3>
+<p>The real-time clock pulls a pin low at a time you chose, with no code running in between.</p></div>
+
+<div class="block"><h3>On the bench</h3>
+<p>Yesterday's chain, still plugged in &middot; soldering iron &middot; a <strong>10 k&#937;</strong> resistor &middot; two short hookup wires.</p></div>
+
+<figure>
+<svg viewBox="0 0 640 310" role="img" aria-label="Detail of the real-time clock's interrupt wiring. Inside the clock an open drain transistor can only pull the INT/SQW line down to ground; it cannot drive it high. The INT/SQW pad is separate from the two STEMMA QT connectors. A wire runs from that pad to GPIO4, and a 10 kilohm resistor runs from the same node up to 3.3 volts. Without that resistor the line never returns high and the alarm is never seen." xmlns="http://www.w3.org/2000/svg">
+  <!-- clock board -->
+  <rect x="30" y="74" width="212" height="168" rx="6" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="2"/>
+  <text x="136" y="98" font-size="13" font-weight="700" fill="currentColor" text-anchor="middle">real-time clock</text>
+  <!-- QT ports -->
+  <rect x="40" y="112" width="34" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="40" y="140" width="34" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="82" y="127" font-size="10" fill="currentColor">QT port</text>
+  <text x="82" y="155" font-size="10" fill="currentColor">QT port</text>
+  <text x="82" y="172" font-size="10" style="fill:var(--warn)" font-weight="700">INT is NOT on these</text>
+  <!-- open drain -->
+  <line x1="196" y1="196" x2="196" y2="212" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M186,212 L206,212 M190,216 L202,216 M193,220 L199,220" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <rect x="170" y="176" width="52" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="196" y="190" font-size="9.5" fill="currentColor" text-anchor="middle">pull-down</text>
+  <text x="196" y="236" font-size="9.5" fill="currentColor" text-anchor="middle" opacity="0.8">only ever pulls LOW</text>
+  <line x1="196" y1="176" x2="196" y2="152" stroke="currentColor" stroke-width="2" fill="none"/>
+  <!-- INT pad -->
+  <circle cx="242" cy="152" r="6" style="fill:var(--brass)" stroke="none"/>
+  <line x1="196" y1="152" x2="242" y2="152" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="228" y="138" font-size="11" font-weight="700" fill="currentColor" font-family="monospace">INT/SQW</text>
+  <!-- wire to GPIO4 -->
+  <line x1="242" y1="152" x2="452" y2="152" style="stroke:var(--brass)" stroke-width="2.5" fill="none"/>
+  <circle cx="380" cy="152" r="5" fill="currentColor" stroke="none"/>
+  <!-- pull-up -->
+  <line x1="380" y1="152" x2="380" y2="106" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="370" y="66" width="20" height="40" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.8"/>
+  <line x1="380" y1="66" x2="380" y2="44" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="352" y1="44" x2="408" y2="44" stroke="currentColor" stroke-width="2.5" fill="none"/>
+  <text x="380" y="34" font-size="11.5" fill="currentColor" text-anchor="middle" font-family="monospace">3V3</text>
+  <text x="400" y="92" font-size="12" style="fill:var(--brass)" font-weight="700" font-family="monospace">10 k&#937;</text>
+  <text x="400" y="108" font-size="10.5" fill="currentColor">the only thing that</text>
+  <text x="400" y="122" font-size="10.5" fill="currentColor">pulls this line HIGH</text>
+  <!-- GPIO4 -->
+  <rect x="452" y="128" width="116" height="48" rx="5" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="2"/>
+  <text x="510" y="148" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">GPIO4</text>
+  <text x="510" y="165" font-size="10" fill="currentColor" text-anchor="middle">RTC-capable</text>
+  <!-- annotation -->
+  <text x="320" y="272" font-size="11.5" fill="currentColor" text-anchor="middle">idle: 3.3 V (HIGH) &nbsp;&middot;&nbsp; alarm: the clock pulls it to 0 V (LOW) &nbsp;&middot;&nbsp; stays low until firmware clears the flag</text>
+  <text x="320" y="292" font-size="11.5" style="fill:var(--warn)" text-anchor="middle" font-weight="700">no 10 k&#937; = the line never goes HIGH = you never see an edge</text>
+</svg>
+<figcaption>The real-time clock's alarm output is <strong>open-drain</strong>: it contains a switch to ground and nothing else. It is physically incapable of driving the line high, so the 10 k&#937; is not optional hardening &mdash; it is half the circuit.</figcaption>
+</figure>
+
+<div class="block"><h3>Steps</h3>
+<ol>
+<li>Find the pad labelled <code>INT/SQW</code> along the breakout's edge. <strong>It is not carried on the QT connectors</strong> &mdash; this is the connection people miss.</li>
+<li>Solder a wire to it. Tin the pad first, then the wire, then join them; that is three easy joins instead of one hard one.</li>
+<li>Run that wire to <strong>GPIO4</strong>.</li>
+<li>Solder the <strong>10 k&#937;</strong> from the same node up to <strong>3V3</strong>.</li>
+<li><strong>Measure before you trust it.</strong> Power up and put a meter on GPIO4. It must read about <strong>3.3 V</strong> at rest. If it reads 0 V, stop &mdash; the pull-up is missing or you are on the wrong pad.</li>
+<li>Write UTC into the clock, set Alarm 1 for two minutes ahead, and poll GPIO4 in a loop while logging.</li>
+</ol></div>
+
+<div class="done"><h3>Done when</h3>
+<p>GPIO4 sits at 3.3 V, then drops to 0 V at the minute you programmed, and your log prints it. Reset the board mid-wait and confirm it still fires &mdash; the clock does not care that the controller rebooted, and proving that is the entire point.</p></div>
+
+<div class="trouble"><h3>If it doesn't work</h3>
+<ul>
+<li><strong>GPIO4 reads 0 V at rest.</strong> No pull-up, or the wire is on a ground pad. Check with the meter, not by eye.</li>
+<li><strong>It never goes low.</strong> Either the alarm registers are wrong, or a previous alarm flag was never cleared &mdash; the clock holds the line low until you clear it, so a stale flag looks like a dead alarm on the next run.</li>
+<li><strong>It fires immediately.</strong> You wrote a time in the past. The clock stores <strong>UTC</strong>, not your local time; mixing the two by a few hours is the classic mistake here.</li>
+</ul></div>
+
+</div>
+</div>
+
+<div class="day">
+<div class="dayhead">
+  <span class="daynum">DAY 4</span>
+  <h2>Making a noise</h2>
+  <span class="badge">1 HOUR &middot; SOLDERING</span>
+</div>
+<div class="daybody">
+
+<div class="block"><h3>Goal</h3>
+<p>A clean tone from the speaker, generated in code, with a hardware ceiling on how loud it can ever get.</p></div>
+
+<div class="block"><h3>On the bench</h3>
+<p><a href="https://www.adafruit.com/product/3006">Amplifier</a> &middot; header strip &middot; one enclosed 4&nbsp;&#937; <a href="https://www.adafruit.com/product/1669">speaker</a> of the stereo pair &middot; iron &middot; hookup wire.</p></div>
+
+<figure>
+<svg viewBox="0 0 640 330" role="img" aria-label="Wiring diagram for the amplifier. From the controller board, 5V goes to VIN, ground to GND, GPIO14 to BCLK, GPIO15 to LRC, GPIO16 to DIN and GPIO17 to SD. The GAIN pin is wired directly to VIN to select 6 decibels. The speaker connects across OUT plus and OUT minus, and neither speaker lead may touch ground. A warning notes the onboard 1 megohm resistor from SD to VIN." xmlns="http://www.w3.org/2000/svg">
+  <!-- controller stubs -->
+  <rect x="18" y="52" width="86" height="212" rx="5" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="1.8"/>
+  <text x="61" y="72" font-size="11" font-weight="700" fill="currentColor" text-anchor="middle">controller</text>
+  <g font-size="11" fill="currentColor" font-family="monospace">
+    <text x="30" y="98">5V</text><text x="30" y="128">GND</text><text x="30" y="158">IO14</text>
+    <text x="30" y="188">IO15</text><text x="30" y="218">IO16</text><text x="30" y="248">IO17</text>
+  </g>
+  <!-- wires -->
+  <g stroke="currentColor" stroke-width="2" fill="none">
+    <line x1="104" y1="94" x2="252" y2="94"/><line x1="104" y1="124" x2="252" y2="124"/>
+    <line x1="104" y1="154" x2="252" y2="154"/><line x1="104" y1="184" x2="252" y2="184"/>
+    <line x1="104" y1="214" x2="252" y2="214"/><line x1="104" y1="244" x2="252" y2="244"/>
+  </g>
+  <!-- amp -->
+  <rect x="252" y="52" width="164" height="230" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="334" y="42" font-size="12.5" font-weight="700" fill="currentColor" text-anchor="middle">amplifier</text>
+  <g font-size="11" fill="currentColor" font-family="monospace">
+    <text x="262" y="98">VIN</text><text x="262" y="128">GND</text><text x="262" y="158">BCLK</text>
+    <text x="262" y="188">LRC</text><text x="262" y="218">DIN</text><text x="262" y="248">SD</text>
+    <text x="262" y="274">GAIN</text>
+  </g>
+  <!-- gain strap -->
+  <path d="M300,268 L330,268 L330,84 L300,84" style="stroke:var(--brass)" stroke-width="2.5" fill="none"/>
+  <circle cx="300" cy="84" r="4" style="fill:var(--brass)" stroke="none"/>
+  <circle cx="300" cy="268" r="4" style="fill:var(--brass)" stroke="none"/>
+  <text x="342" y="180" font-size="11" style="fill:var(--brass)" font-weight="700">GAIN &rarr; VIN</text>
+  <text x="342" y="196" font-size="11" style="fill:var(--brass)" font-weight="700">= 6 dB ceiling</text>
+  <!-- outputs -->
+  <text x="404" y="128" font-size="11" fill="currentColor" text-anchor="end" font-family="monospace">OUT+</text>
+  <text x="404" y="200" font-size="11" fill="currentColor" text-anchor="end" font-family="monospace">OUT&#8722;</text>
+  <line x1="416" y1="124" x2="486" y2="124" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="416" y1="196" x2="486" y2="196" stroke="currentColor" stroke-width="2" fill="none"/>
+  <!-- speaker -->
+  <path d="M486,112 L502,112 L522,92 L522,228 L502,208 L486,208 z" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="486" y1="196" x2="486" y2="208" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="486" y1="124" x2="486" y2="112" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="530" y="150" font-size="11" fill="currentColor">4 &#937;</text>
+  <text x="530" y="166" font-size="11" fill="currentColor">3 W</text>
+  <!-- floating warning -->
+  <line x1="556" y1="250" x2="596" y2="250" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M562,254 L590,254 M568,258 L584,258 M573,262 L579,262" stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.5"/>
+  <line x1="548" y1="234" x2="604" y2="270" style="stroke:var(--warn)" stroke-width="2.5" fill="none"/>
+  <text x="576" y="290" font-size="10.5" style="fill:var(--warn)" font-weight="700" text-anchor="middle">never to GND</text>
+  <text x="320" y="316" font-size="11.5" fill="currentColor" text-anchor="middle">the speaker floats between OUT+ and OUT&#8722; &mdash; it is a bridge, and neither side is ground</text>
+</svg>
+<figcaption>Six wires, one strap, two speaker leads. The GAIN strap is the whole safety argument: tying it to VIN fixes maximum output at about 1.6 W into 4 &#937;, which a firmware bug cannot raise.</figcaption>
+</figure>
+
+<div class="note warn"><span class="lbl">The one that will surprise you</span>
+<p>The breakout carries a <strong>1 M&#937; resistor from SD to VIN</strong>. That means the amplifier powers up <em>enabled</em> by default. If GPIO17 is left as a floating input at boot, the amp wakes up live and you get a pop &mdash; or worse, noise at full volume.</p>
+<p>Set GPIO17 as an output driven <strong>LOW before you enable anything else</strong>. That ordering is already written into the project's boot sequence; today is when it starts mattering.</p>
+</div>
+
+<div class="block"><h3>Steps</h3>
+<ol>
+<li>Solder the header strip to the amplifier. Seat it flat &mdash; tack one end pin, check it sits square, then do the rest.</li>
+<li><strong>Strap GAIN to VIN</strong> with a short wire. This selects 6&nbsp;dB instead of the 9&nbsp;dB default and is the ceiling that keeps peak current inside what the battery boost can supply in Phase&nbsp;4.</li>
+<li>Wire the six connections from the diagram.</li>
+<li>Connect the speaker across <strong>OUT+</strong> and <strong>OUT&#8722;</strong>. Neither lead touches ground, now or ever.</li>
+<li>In firmware: drive GPIO17 low, bring up I&#178;S, generate a tone in code (not from a file), then raise GPIO17 to enable the amp.</li>
+</ol></div>
+
+<div class="done"><h3>Done when</h3>
+<p>A clean, steady tone. Pulling GPIO17 low silences it instantly. No pop at boot, and no hiss when idle.</p></div>
+
+<div class="trouble"><h3>If it doesn't work</h3>
+<ul>
+<li><strong>Silence.</strong> Check GPIO17 is actually high &mdash; it is the enable, and it is the most common cause.</li>
+<li><strong>Buzzing or crackle rather than a tone.</strong> I&#178;S clock settings do not match what you are feeding it, or BCLK and LRC are swapped.</li>
+<li><strong>A pop every time it boots.</strong> GPIO17 is not being driven low early enough. Move it earlier in your init.</li>
+<li><strong>Very quiet.</strong> That may be correct &mdash; you deliberately chose 6&nbsp;dB. Judge it again once the speaker is in a sealed box; a bare driver on a desk sounds far weaker than a mounted one.</li>
+</ul></div>
+
+</div>
+</div>
+
+<div class="day">
+<div class="dayhead">
+  <span class="daynum">DAY 5</span>
+  <h2>A clock that wakes you</h2>
+  <span class="badge">1 HOUR &middot; LIGHT SOLDERING</span>
+</div>
+<div class="daybody">
+
+<div class="block"><h3>Goal</h3>
+<p>Put the four pieces together: the clock fires, the tone plays, a button snoozes it, a switch disarms it.</p></div>
+
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Button wiring. Inside the controller an internal pull-up resistor holds GPIO18 at 3.3 volts when the button is open, so the pin reads HIGH. Pressing the button connects the pin directly to ground and it reads LOW. The same arrangement is used for the arm switch on GPIO21." xmlns="http://www.w3.org/2000/svg">
+  <rect x="40" y="36" width="230" height="122" rx="6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <text x="52" y="54" font-size="10.5" fill="currentColor">inside the controller</text>
+  <text x="120" y="80" font-size="11" fill="currentColor" text-anchor="end" font-family="monospace">3.3 V</text>
+  <line x1="126" y1="76" x2="170" y2="76" stroke="currentColor" stroke-width="2" fill="none"/>
+  <line x1="170" y1="76" x2="170" y2="88" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <rect x="160" y="88" width="20" height="38" rx="3" style="fill:var(--signal-soft);stroke:var(--signal)" stroke-width="1.8"/>
+  <text x="190" y="104" font-size="10.5" style="fill:var(--signal)" font-weight="700">internal</text>
+  <text x="190" y="118" font-size="10.5" style="fill:var(--signal)" font-weight="700">pull-up</text>
+  <text x="190" y="132" font-size="10" fill="currentColor" opacity="0.8">enabled in code</text>
+  <line x1="170" y1="126" x2="170" y2="186" stroke="currentColor" stroke-width="2" fill="none"/>
+  <circle cx="170" cy="150" r="5" style="fill:var(--brass)" stroke="none"/>
+  <line x1="170" y1="150" x2="290" y2="150" style="stroke:var(--brass)" stroke-width="2.5" fill="none"/>
+  <rect x="290" y="130" width="120" height="40" rx="5" style="fill:var(--brass-soft);stroke:var(--brass)" stroke-width="2"/>
+  <text x="350" y="155" font-size="11.5" font-weight="700" fill="currentColor" text-anchor="middle" font-family="monospace">GPIO18</text>
+  <!-- switch -->
+  <circle cx="170" cy="190" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="173" y1="187" x2="198" y2="172" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <circle cx="170" cy="206" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="208" y="184" font-size="10.5" fill="currentColor">snooze button</text>
+  <line x1="170" y1="210" x2="170" y2="218" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <line x1="152" y1="218" x2="188" y2="218" stroke="currentColor" stroke-width="2.5" fill="none"/>
+  <text x="170" y="228" font-size="10.5" fill="currentColor" text-anchor="middle" font-family="monospace">GND</text>
+  <!-- readings -->
+  <text x="470" y="108" font-size="11.5" fill="currentColor" font-weight="700">released &rarr; reads HIGH</text>
+  <text x="470" y="126" font-size="11" fill="currentColor" opacity="0.85">pull-up wins, nothing else pulls</text>
+  <text x="470" y="156" font-size="11.5" style="fill:var(--brass)" font-weight="700">pressed &rarr; reads LOW</text>
+  <text x="470" y="174" font-size="11" fill="currentColor" opacity="0.85">a direct wire to ground always wins</text>
+  <text x="470" y="200" font-size="11" fill="currentColor" font-family="monospace">pressed = (level == 0)</text>
+</svg>
+<figcaption>Both inputs work this way: the internal pull-up sets a default of HIGH, and the button overrides it by shorting to ground. Wire the arm switch on GPIO21 identically.</figcaption>
+</figure>
+
+<div class="block"><h3>Steps</h3>
+<ol>
+<li>Snooze button: one leg to <strong>GPIO18</strong>, the other to <strong>GND</strong>.</li>
+<li>Arm switch: one leg to <strong>GPIO21</strong>, the other to <strong>GND</strong>.</li>
+<li>Enable the internal pull-up on both pins in firmware. No external resistors on the breadboard.</li>
+<li>Wire the behaviour together:
+  <ul>
+  <li>GPIO4 falls &rarr; start the tone</li>
+  <li>Snooze pressed &rarr; silence, set the clock for one minute ahead, clear the flag</li>
+  <li>Arm switch off &rarr; cancel everything and clear the flag</li>
+  </ul></li>
+<li>Debounce the button in software &mdash; contacts chatter for several milliseconds and will otherwise register many presses.</li>
+</ol></div>
+
+<div class="done"><h3>Done when</h3>
+<p>Set an alarm two minutes out. It rings. You press snooze, it stops, and one minute later it rings again. Flip the arm switch and it stays quiet.</p>
+<p><strong>Then pull the USB cable mid-ring, plug it back in, and confirm the snooze survived.</strong> That is the reset test, and passing it is the moment you actually have an alarm clock.</p></div>
+
+</div>
+</div>
+
+<hr>
+
+<h2>What you have after five hours</h2>
+
+<ul class="check">
+<li>A board you can build and flash reliably, with its revision recorded.</li>
+<li>Six sensors on two wires, with a known-good address baseline.</li>
+<li>A hardware clock that fires an interrupt whether or not your code is running.</li>
+<li>Audio with a ceiling set in hardware, and no boot pop.</li>
+<li>Snooze and arm, surviving a reset.</li>
+</ul>
+
+<p>No display. No Wi-Fi. No battery. That is deliberate: every one of those can fail without stopping the alarm, and you have now proved the alarm works before adding anything that could get in its way.</p>
+
+<div class="note tip"><span class="lbl">Next weekend</span>
+<p><strong>Saturday (5 h):</strong> the OLED &mdash; the largest soldering job in the project &mdash; plus the SPI driver and a first clock face. <strong>Sunday (5 h):</strong> multiple alarms, weekday masks, and persistence in NVS, with host-side tests for the calendar edge cases.</p>
+<p>Do not start either until Day 5 passes, including the reset test.</p>
+</div>
+
+</div>

@@ -1,0 +1,25 @@
+# Display + speaker re-check, bench/circuitpython/speak_show.py, CircuitPython 10.3.1 on the DevKitC, 2026-11-07 21:36 local
+# Board on the USB port (/dev/ttyACM0); code.py interrupted with Ctrl-C, then 'import speak_show' at the REPL.
+
+🐍Wi-Fi: off | BLE:Off | code.py | 10.3.1
+02:36:37  knob=   0 []  prox=   4 lux=   22  g=(  2.8,  8.9,  1.8)  24.4C  33%
+Traceback (most recent call last):
+  File "code.py", line 33, in <module>
+KeyboardInterrupt: 
+🐍Wi-Fi: off | BLE:Off | Done | 10.3.1
+
+Code done running.
+[2K[0GAuto-reload is on. Simply save files over USB to run them or enter REPL to disable.
+
+Press any key to enter the REPL. Use CTRL-D to reload.
+🐍Wi-Fi: off | BLE:Off | REPL | 10.3.1
+
+Adafruit CircuitPython 10.3.1 on 2026-09-14; ESP32-S3-DevKitC-1-N8R8 with ESP32S3
+>>> 
+>>> import speak_show
+DISPLAY ON  21:36:39 local
+SD released from high reads LOW: amp SD wired (pull-down seen)
+WAV 16000 Hz 16-bit 1 ch
+SPOKE say_check.wav in 10.9 s
+CLOCK 21:36:50 Sat 7 Nov 2026
+
