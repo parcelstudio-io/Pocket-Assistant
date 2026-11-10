@@ -1,0 +1,276 @@
+<title>Pocket AI Camera Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+/* layout: one tall column, the 3D figure first, short notes under it; same tokens as the other Pocket AI pages */
+:root{
+  --bg:#EDEBE7; --paper:#FFFFFF; --ink:#16181C; --ink-2:#5A6068; --line:#CFCBC4;
+  --brass:#8F6114; --brass-soft:#F2E6D2; --signal:#0E5F7A; --signal-soft:#D9EAF1;
+  --ok:#2A6340; --ok-soft:#D9EADF; --warn:#98351E; --warn-soft:#F7E1D9;
+  --rod:#9EA4A8; --rod-hi:#D8DCDE; --glass:#0F1216; --eye:#F4F6F8; --floor:#DDD9D2;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+    --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+    --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+    --rod:#B9BFC4; --rod-hi:#F0F2F4; --glass:#090B0E; --eye:#F4F6F8; --floor:#2A2E35; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161A; --paper:#1D2026; --ink:#E8E6E2; --ink-2:#9BA3AC; --line:#333841;
+  --brass:#D69A4E; --brass-soft:#3A2C18; --signal:#5BB8D4; --signal-soft:#15323D;
+  --ok:#6FBF8E; --ok-soft:#1A3325; --warn:#EE8666; --warn-soft:#3B1D14;
+  --rod:#B9BFC4; --rod-hi:#F0F2F4; --glass:#090B0E; --eye:#F4F6F8; --floor:#2A2E35; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0;
+     padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+.wrap{max-width:880px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,6vw,46px);font-weight:900;letter-spacing:-0.015em}
+h2{font-size:clamp(20px,3vw,26px);font-weight:700;margin:34px 0 8px}
+h3{font-size:12.5px;font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:.09em;color:var(--brass)}
+p{margin:10px 0;max-width:70ch} ul{max-width:70ch;padding-left:22px;margin:10px 0} li{margin:7px 0}
+a{color:var(--signal)}
+code{font-family:var(--mono);font-size:.88em;background:var(--signal-soft);padding:1.5px 5px;border-radius:3px;white-space:nowrap}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:700}
+.sub{font-family:var(--mono);font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.5}
+figure{margin:22px 0;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px;overflow:hidden}
+figure svg{width:100%;height:auto;display:block;touch-action:none}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:10px;max-width:70ch;line-height:1.5}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:8px 0 4px;font-size:14px}
+.bar label{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+input[type=range]{width:min(360px,100%);accent-color:var(--brass)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.chip{font-family:var(--mono);font-size:12px;padding:3px 9px;border-radius:999px;background:var(--brass-soft);color:var(--brass);font-weight:700;letter-spacing:.04em}
+.chip.on{background:var(--ok-soft);color:var(--ok)}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+button{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.04em;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.sched{display:grid;grid-template-columns:auto 1fr;gap:0 18px;font-size:15px;margin:16px 0;border:1px solid var(--line);border-radius:5px;background:var(--paper);overflow:hidden}
+.sched>div{padding:9px 14px;border-bottom:1px solid var(--line);min-width:0}
+.sched>div:nth-last-child(-n+2){border-bottom:0}
+.sched .t{font-family:var(--mono);font-size:13px;color:var(--brass);font-weight:700;white-space:nowrap}
+.note{padding:13px 17px;margin:18px 0;border-radius:5px;background:var(--warn-soft);border:1px solid var(--warn)}
+.note .lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700;color:var(--warn)}
+.note p{margin:5px 0;max-width:none}
+@media (max-width:520px){.sched{grid-template-columns:1fr}.sched .t{padding-bottom:0;border-bottom:0}.chips{margin-left:0}}
+@media (prefers-reduced-motion: reduce){.chip{transition:none}}
+</style>
+
+<div class="wrap">
+<div class="masthead"><div class="eyebrow">Pocket AI Assistant &middot; camera build</div>
+<h1>The tower, turning to face you</h1>
+<div class="sub">A concept view of the final build: the wire-cage tower, 45 × 42 × 115 mm, with the head (screen, camera, speaker) turning on the gear motor to follow whoever it sees. Drag the slider to walk around it. Not CAD, not built; the wiring is on the <a href="https://claude.ai/artifact/8ZkGQs8B234B2ohePxHEMg">Pocket AI with Camera</a> sheet.</div></div>
+
+<figure>
+<div class="bar">
+  <label for="pos">you: <input id="pos" type="range" min="-70" max="70" value="28" step="1"></label>
+  <label><input id="walk" type="checkbox"> walk around it</label>
+  <div class="btns" role="group" aria-label="frame finish">
+    <button id="f-ns" aria-pressed="true">nickel silver</button><button id="f-wh" aria-pressed="false">white</button><button id="f-br" aria-pressed="false">brass</button>
+  </div>
+</div>
+<svg id="scene" viewBox="0 0 760 640" role="img" aria-label="Wire-cage tower with a turning head, following a figure"></svg>
+<div class="bar"><div class="chips"><span class="chip" id="c-head">head 0°</span><span class="chip" id="c-target">target 0°</span><span class="chip" id="c-motor">motor holding</span></div></div>
+<figcaption>The body stands still: cell, switch, driver, motor, the home stop and the action button in the lower cage. The head rides on the motor's shaft and carries the XIAO with its camera and microphone, the OLED, the amp and the speaker. The eyes look ahead of the head while it catches up, the way Pip's eyes already do on the first build. Motion is capped at 70°/s, the gear motor at 70 % PWM.</figcaption>
+</figure>
+
+<h2>Next to the first build</h2>
+<p>Same depth, a quarter narrower, three times taller: 45 × 42 × 115 mm against 60 × 42 × 35 mm. About two and a half times the volume, most of it the standing cell and the motor.</p>
+<figure>
+<svg viewBox="0 0 760 330" role="img" aria-label="Front outlines of the first build and the camera tower, to scale">
+<style>.o{fill:none;stroke:var(--rod);stroke-width:3;stroke-linejoin:round} .o2{fill:none;stroke:var(--ink-2);stroke-width:1;stroke-dasharray:4 4} .d{fill:none;stroke:var(--ink-2);stroke-width:1} .l{font:700 12px var(--mono);fill:var(--ink)} .n{font:400 12px var(--body);fill:var(--ink-2)} .g{fill:var(--floor)}</style>
+<rect class="g" x="40" y="286" width="680" height="6"/>
+<rect class="o" x="120" y="209" width="132" height="77" rx="4"/>
+<text class="l" x="186" y="200" text-anchor="middle">first build</text>
+<text class="n" x="186" y="312" text-anchor="middle">60 × 42 × 35 mm</text>
+<rect class="o" x="430" y="33" width="99" height="253" rx="4"/>
+<line class="o2" x1="430" y1="160" x2="529" y2="160"/>
+<rect class="o2" x="458" y="68" width="43" height="43"/>
+<circle class="d" cx="479.5" cy="52" r="6"/>
+<text class="l" x="479" y="22" text-anchor="middle">camera tower</text>
+<text class="n" x="479" y="312" text-anchor="middle">45 × 42 × 115 mm</text>
+<text class="n" x="542" y="100">head, turns</text>
+<text class="n" x="542" y="230">body, still</text>
+<path class="d" d="M600,33 L600,286 M595,33 L605,33 M595,286 L605,286"/>
+<text class="n" x="610" y="164">115</text>
+<path class="d" d="M270,209 L270,286 M265,209 L275,209 M265,286 L275,286"/>
+<text class="n" x="280" y="252">35</text>
+</svg>
+<figcaption>Front outlines at one scale, both standing on the same table. The dashed line is the neck; the small square is the 0.96" screen and the circle the camera lens.</figcaption>
+</figure>
+
+<h2>How it follows you</h2>
+<div class="sched">
+<div class="t">1 · see</div><div>The camera streams 240 × 240 frames into PSRAM. Face detection runs on the S3 itself (Espressif's ESP-WHO models), a few frames a second, no cloud.</div>
+<div class="t">2 · measure</div><div>The face's centre against the frame's centre is the error. Inside a ±5° dead band the head holds still, so it does not twitch while you talk.</div>
+<div class="t">3 · nudge</div><div>Outside it, the firmware pulses IN1 or IN2 (PWM on GPIO7/8) for 60-120 ms at a time and looks again. At 16 rpm a 100 ms pulse is about 10°.</div>
+<div class="t">4 · know where it is</div><div>At boot the head drives to the home stop on GPIO9 and counts from there; it re-homes whenever the count and the camera disagree. Travel is ±90° so the six neck wires never wind up.</div>
+<div class="t">5 · rest</div><div>No face for thirty seconds: the head returns to centre, the eyes idle, the camera drops to one frame a second. That is most of the battery saving.</div>
+</div>
+
+<h2>What you would see</h2>
+<ul>
+<li><strong>A taller, narrower cage.</strong> Two stacked loops-and-posts frames in the owned 1.5 mm brass or the 14-gauge nickel silver, soldered as before. The head is a separate cage on a short neck; nothing structural crosses the joint.</li>
+<li><strong>Bare-rod wiring, as before.</strong> Inside the head and inside the body every connection is 1.0 mm rod at height levels, the way the first harness was built. Only the six connections through the neck are flexible wire, because the head turns.</li>
+<li><strong>The face.</strong> The 0.96" OLED with Pip's eyes, the camera lens above it, the speaker firing down out of the head's floor. The USB-C socket is at the back of the head.</li>
+<li><strong>The body.</strong> The 16340 cell standing in a folded sleeve on the left, the motor on the right with its shaft up through the body's roof, the driver board at the bottom, the toggle switch at the back. The action button and the home stop sit on the body's roof at the front.</li>
+<li><strong>The finish.</strong> Bare nickel silver, white-painted brass, or bare brass; the buttons above switch the render. The cell sleeve stays metal either way, as decided for the first build.</li>
+</ul>
+
+<div class="note"><span class="lbl">What this page is not</span>
+<p>A concept rendering from the target dimensions, not a measured model. Every module is calipered before the frame is cut, the same way the first build did it. Nothing has been built or powered.</p></div>
+
+<p class="sub">Source: <code>pocket_ai_assistant_with_camera/docs/pages/prototype.html</code>. Dimensions and the pin map from <code>docs/WIRING.md</code>.</p>
+</div>
+
+<script>
+(function(){
+  const svg = document.getElementById('scene');
+  const NS = 'http://www.w3.org/2000/svg';
+  // ---- view (mm in, px out). y up, z toward the viewer. Viewer slightly above and to the right.
+  const V = {yaw:-24*Math.PI/180, pitch:17*Math.PI/180, D:520, f:1650, cx:360, cy:265, cyMM:62};
+  function proj(p){
+    let x=p[0], y=p[1]-V.cyMM, z=p[2];
+    const cy=Math.cos(V.yaw), sy=Math.sin(V.yaw);
+    let x1=x*cy+z*sy, z1=-x*sy+z*cy;
+    const cp=Math.cos(V.pitch), sp=Math.sin(V.pitch);
+    let y2=y*cp-z1*sp, z2=y*sp+z1*cp;
+    const zz=V.D-z2, s=V.f/zz;
+    return [V.cx+x1*s, V.cy-y2*s, s, zz];
+  }
+  // ---- the model
+  const W=22.5, Dp=21, BODY_H=62, NECK=4, HEAD_H=50, HEAD_Y=BODY_H+NECK;
+  let theta=0, target=0, finish='ns';
+  const rot = (p)=>{ const c=Math.cos(theta), s=Math.sin(theta); return [p[0]*c+p[2]*s, p[1], -p[0]*s+p[2]*c]; };
+  const id = (p)=>p;
+  function box(y0,y1,tf){
+    const c=[];
+    for(const [x,z] of [[-W,-Dp],[W,-Dp],[W,Dp],[-W,Dp]]) c.push(tf([x,y0,z]), tf([x,y1,z]));
+    const e=[];
+    for(let i=0;i<4;i++){ const j=(i+1)%4; e.push([c[2*i],c[2*j]],[c[2*i+1],c[2*j+1]],[c[2*i],c[2*i+1]]); }
+    return e;
+  }
+  function circle3(cx,cy,cz,r,axis,tf,n){ // points of a circle around an axis ('y' flat, 'z' facing front)
+    const pts=[]; n=n||28;
+    for(let i=0;i<n;i++){ const a=i/n*Math.PI*2;
+      const p = axis==='y' ? [cx+r*Math.cos(a), cy, cz+r*Math.sin(a)] : [cx+r*Math.cos(a), cy+r*Math.sin(a), cz];
+      pts.push(tf(p)); }
+    return pts;
+  }
+  const prims=[];
+  function line(a,b,cls,w){ const A=proj(a),B=proj(b); prims.push({d:(A[3]+B[3])/2, cls, w:w*(A[2]+B[2])/2, pts:[A,B], kind:'line'}); }
+  function poly(pts,cls,close,w,bias){ const P=pts.map(proj); prims.push({d:P.reduce((s,p)=>s+p[3],0)/P.length-(bias||0), cls, w:w?w*P[0][2]:0, pts:P, kind:close?'poly':'path'}); }
+  function dot(p,r,cls){ const P=proj(p); prims.push({d:P[3]-1, cls, r:r*P[2], pts:[P], kind:'dot'}); }
+
+  function build(){
+    prims.length=0;
+    const rodW = 1.5;
+    // floor shadow
+    poly(circle3(0,-0.01,0,120,'y',id,48),'floor',true);
+    // body contents
+    // cell in its sleeve, vertical, left
+    const cx=-9, cz=0, cr=8.6;
+    poly(circle3(cx,8,cz,cr,'y',id),'sleeve',true,0.6); poly(circle3(cx,50,cz,cr,'y',id),'sleeve',true,0.6);
+    for(const a of [0.9,2.3,4.0,5.5]) line([cx+cr*Math.cos(a),8,cz+cr*Math.sin(a)],[cx+cr*Math.cos(a),50,cz+cr*Math.sin(a)],'sleeve',0.6);
+    // motor, right, with gearbox and shaft
+    const mx=10, mz=-2, mr=6;
+    poly(circle3(mx,18,mz,mr,'y',id),'part',true,0.5); poly(circle3(mx,44,mz,mr,'y',id),'part',true,0.5);
+    for(const a of [0.9,2.3,4.0,5.5]) line([mx+mr*Math.cos(a),18,mz+mr*Math.sin(a)],[mx+mr*Math.cos(a),44,mz+mr*Math.sin(a)],'part',0.5);
+    const g=box.call(null,44,56,(p)=>[mx+p[0]*6/W, p[1], mz+p[2]*5/Dp]); for(const [a,b] of g) line(a,b,'part',0.5);
+    line([mx,56,mz],[mx,BODY_H+NECK,mz],'shaft',1.6);
+    // driver board, standing, bottom right-front
+    poly([[3,4,8],[17,4,8],[17,16,8],[3,16,8]],'board',true,0.5);
+    // toggle switch on the back
+    poly([[-14,52,-Dp-0.5],[-6,52,-Dp-0.5],[-6,58,-Dp-0.5],[-14,58,-Dp-0.5]],'part',true,0.5); line([-10,55,-Dp-0.5],[-10,55,-Dp-7],'part',1.2);
+    // action button + home stop on the roof, front
+    dot([14,BODY_H+0.5,12],2.2,'button'); poly([[-2,BODY_H,10],[4,BODY_H,10],[4,BODY_H+3,10],[-2,BODY_H+3,10]],'part',true,0.5);
+    // body cage
+    for(const [a,b] of box(1,BODY_H,id)) line(a,b,'rod',rodW);
+    // neck
+    poly(circle3(0,BODY_H,0,5,'y',id),'part',true,0.5); poly(circle3(0,HEAD_Y,0,5,'y',rot),'part',true,0.5);
+    // head cage (rotated)
+    for(const [a,b] of box(HEAD_Y,HEAD_Y+HEAD_H,rot)) line(a,b,'rod',rodW);
+    // the XIAO inside the head, behind the screen (a small slab)
+    poly([[-10.5,HEAD_Y+18,2],[10.5,HEAD_Y+18,2],[10.5,HEAD_Y+36,2],[-10.5,HEAD_Y+36,2]].map(rot),'board',true,0.5);
+    // speaker under the head floor
+    for(const x of [-6,-2,2,6]) line(rot([x,HEAD_Y+1,-6]),rot([x,HEAD_Y+1,6]),'part',0.5);
+    // USB-C at the back of the head
+    poly([[-4.5,HEAD_Y+14,-Dp-0.5],[4.5,HEAD_Y+14,-Dp-0.5],[4.5,HEAD_Y+17.5,-Dp-0.5],[-4.5,HEAD_Y+17.5,-Dp-0.5]].map(rot),'part',true,0.5);
+    // OLED panel on the front face
+    const zf=Dp+0.6, y0=HEAD_Y+11, y1=HEAD_Y+38;
+    poly([[-13.5,y0,zf],[13.5,y0,zf],[13.5,y1,zf],[-13.5,y1,zf]].map(rot),'glass',true,0.4);
+    // eyes: lead the head by the tracking error
+    const lead = Math.max(-4,Math.min(4,(target-theta)*180/Math.PI*0.35));
+    for(const ex of [-6,6]){
+      const x0=ex-3.6+lead, x1=ex+3.6+lead, ey0=y0+9, ey1=y0+19;
+      poly([[x0,ey0,zf+0.3],[x1,ey0,zf+0.3],[x1,ey1,zf+0.3],[x0,ey1,zf+0.3]].map(rot),'eye',true,0,40);
+    }
+    // camera lens above the screen
+    poly(circle3(0,HEAD_Y+44,zf,3.6,'z',rot),'lens',true,0.5,40); poly(circle3(0,HEAD_Y+44,zf+0.2,1.7,'z',rot),'pupil',true,0,41);
+    // sight line from the lens toward the figure
+    const R = 95;
+    line(rot([0,HEAD_Y+44,zf]), [Math.sin(target)*R, 12, Math.cos(target)*R], 'sight', 0.4);
+  }
+  function render(){
+    build();
+    prims.sort((a,b)=>b.d-a.d);
+    let out='';
+    for(const p of prims){
+      if(p.kind==='line'){ out+=`<line x1="${p.pts[0][0].toFixed(1)}" y1="${p.pts[0][1].toFixed(1)}" x2="${p.pts[1][0].toFixed(1)}" y2="${p.pts[1][1].toFixed(1)}" class="${p.cls}" stroke-width="${p.w.toFixed(2)}"/>`; }
+      else if(p.kind==='dot'){ out+=`<circle cx="${p.pts[0][0].toFixed(1)}" cy="${p.pts[0][1].toFixed(1)}" r="${p.r.toFixed(2)}" class="${p.cls}"/>`; }
+      else { const d=p.pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+','+q[1].toFixed(1)).join('')+(p.kind==='poly'?'Z':''); out+=`<path d="${d}" class="${p.cls}" stroke-width="${p.w.toFixed(2)}"/>`; }
+    }
+    // the figure: a small glyph on an arc in front, placed by the target angle
+    const F = proj([Math.sin(target)*95, 0, Math.cos(target)*95]), fx=F[0], fy=F[1], sc=F[2]/3.2;
+    out += `<g class="figure" transform="translate(${fx.toFixed(1)},${fy.toFixed(1)}) scale(${sc.toFixed(2)})"><circle cx="0" cy="-30" r="9"/><path d="M-11,-16 Q0,-22 11,-16 L13,10 L8,10 L6,-4 L-6,-4 L-8,10 L-13,10 Z"/></g>`;
+    out += `<text x="${fx.toFixed(1)}" y="${(fy+22).toFixed(1)}" class="lab" text-anchor="middle">you</text>`;
+    out += `<text x="20" y="630" class="lab">head ${(theta*180/Math.PI).toFixed(0)}°, travel ±90°, home stop at −90°</text>`;
+    svg.innerHTML = `<style>
+      .rod{stroke:var(--rod);stroke-linecap:round} .shaft{stroke:var(--rod-hi);stroke-linecap:round}
+      .sleeve{fill:none;stroke:var(--brass)} .part{fill:none;stroke:var(--ink-2)} .board{fill:var(--signal-soft);stroke:var(--signal)}
+      .glass{fill:var(--glass);stroke:var(--ink-2)} .eye{fill:var(--eye)} .lens{fill:var(--glass);stroke:var(--ink-2)} .pupil{fill:var(--signal)}
+      .floor{fill:var(--floor);stroke:none} .button{fill:var(--eye);stroke:var(--ink-2);stroke-width:.6}
+      .sight{stroke:var(--signal);stroke-dasharray:4 5}
+      .figure{fill:var(--brass)} .lab{font:700 12px var(--mono);fill:var(--ink-2)}
+      :root[data-finish="wh"] .rod{stroke:#E9E7E1} :root[data-finish="wh"] .shaft{stroke:#FFFFFF}
+      :root[data-finish="br"] .rod{stroke:var(--brass)} :root[data-finish="br"] .shaft{stroke:#D9B46B}
+    </style>` + out;
+    document.getElementById('c-head').textContent = `head ${(theta*180/Math.PI).toFixed(0)}°`;
+    document.getElementById('c-target').textContent = `target ${(target*180/Math.PI).toFixed(0)}°`;
+    const err=(target-theta)*180/Math.PI, m=document.getElementById('c-motor');
+    m.textContent = Math.abs(err)<2 ? 'motor holding' : (err>0 ? 'motor turning right' : 'motor turning left');
+    m.classList.toggle('on', Math.abs(err)>=2);
+  }
+  // ---- controls and motion
+  const pos=document.getElementById('pos'), walk=document.getElementById('walk');
+  const RATE = 70*Math.PI/180; // deg/s cap at 70 % PWM
+  let last=performance.now(), t0=last;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function tick(now){
+    const dt=Math.min(0.05,(now-last)/1000); last=now;
+    if(walk.checked){ pos.value = Math.round(55*Math.sin((now-t0)/2600)); }
+    target = (+pos.value)*Math.PI/180;
+    const err=target-theta, step=RATE*dt;
+    if(reduce || Math.abs(err)<=step) theta=target; else theta+=Math.sign(err)*step;
+    render();
+    requestAnimationFrame(tick);
+  }
+  pos.addEventListener('input', ()=>{ walk.checked=false; });
+  for(const [idn,f] of [['f-ns','ns'],['f-wh','wh'],['f-br','br']]){
+    document.getElementById(idn).addEventListener('click', ()=>{
+      finish=f; document.documentElement.setAttribute('data-finish', f);
+      for(const [j] of [['f-ns'],['f-wh'],['f-br']]) document.getElementById(j).setAttribute('aria-pressed', j===idn ? 'true':'false');
+    });
+  }
+  theta = target = (+pos.value)*Math.PI/180;
+  requestAnimationFrame(tick);
+})();
+</script>
