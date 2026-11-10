@@ -1,0 +1,122 @@
+menu "Desk hologram"
+
+    comment "Network: the same names as the Pocket AI, so its sdkconfig.secrets works here unchanged"
+
+    config POCKET_WIFI_SSID
+        string "Wi-Fi network name"
+        default ""
+        help
+            Put real credentials in sdkconfig.secrets (ignored by git), not here.
+
+    config POCKET_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+
+    config POCKET_SERVER_URL
+        string "Server WebSocket URL"
+        default "ws://192.168.1.171:8790/ws"
+        help
+            The computer running pocket-server (pocket_ai_assistant/character/server), started
+            with --host 0.0.0.0 so the Wi-Fi side can reach it. ws:// only on a trusted LAN.
+
+    config POCKET_TOKEN
+        string "Server token"
+        default ""
+        help
+            Must match POCKET_TOKEN on the server when it binds a LAN address.
+
+    config POCKET_DEVICE_ID
+        string "Device id sent in hello"
+        default "desk-hologram"
+
+    config POCKET_TX_POWER_QDBM
+        int "Wi-Fi transmit power cap, quarter dBm (34 = 8.5 dBm)"
+        range 8 80
+        default 34
+        help
+            The SuperMini's chip antenna only worked once capped at 8.5 dBm on the first Pocket AI
+            (2026-09-21). Same board here, same cap, applied after every radio start.
+
+    config POCKET_MIC_SHIFT
+        int "Microphone 32-bit to 16-bit shift (gain)"
+        range 8 16
+        default 12
+        help
+            The INMP441 puts 24 bits in a 32-bit slot. Shifting by 16 is unity; 12 is 16x gain.
+
+    comment "Display: the cube's reflection flips one axis; which bit depends on how the module is mounted"
+
+    config HOLO_MIRROR_COLUMNS
+        bool "Mirror the columns (SSD1309 segment remap, command 0xA1)"
+        default y
+        help
+            The beam splitter shows the panel's reflection, which reads backwards unless the panel
+            itself draws backwards. On the sheet the module lies face up with its header at the
+            back, and the picture is reflected off the cube's diagonal: that flips left for right,
+            so the columns are mirrored by default. If the text in the glass reads backwards, turn
+            this off; if it stands on its head, turn on "Flip the rows" instead (or as well).
+            Untested until the cube arrives: expect to change one of the two bits once.
+
+    config HOLO_FLIP_ROWS
+        bool "Flip the rows (SSD1309 COM scan direction, command 0xC8)"
+        default n
+        help
+            Scans the rows bottom to top. Off by default: with the header at the back and the
+            viewer in front, the reflection keeps the rows the right way up. Turn it on if the
+            text in the glass is upside down.
+
+    config HOLO_CONTRAST
+        int "Panel contrast (0-255)"
+        range 0 255
+        default 255
+        help
+            The SSD1309's contrast register (command 0x81). Full by default: the cube's half-mirror
+            sends under half the light to the viewer, and a few words on black draw about 10 mA at
+            full contrast. Turn it down if the letters bloom in a dark room.
+
+    config HOLO_SPI_HZ
+        int "Display SPI clock (Hz)"
+        range 1000000 10000000
+        default 4000000
+        help
+            The module is rated 4 MHz and the first Cyber Dawn notes stop there. A 1 KB frame takes
+            2 ms at 4 MHz, so there is no reason to go faster; drop to 1000000 if the 30 AWG wires
+            under the table top ring and the picture tears.
+
+    comment "Lamp: the LED filament on GPIO0 is the only status light"
+
+    config HOLO_LAMP_REST_PCT
+        int "Lamp duty at rest (%)"
+        range 0 100
+        default 5
+
+    config HOLO_LAMP_LISTEN_PCT
+        int "Lamp duty while the button is held (%)"
+        range 0 100
+        default 30
+
+    config HOLO_LAMP_THINK_PCT
+        int "Lamp duty at the top of the breath while the desktop thinks (%)"
+        range 0 100
+        default 30
+        help
+            Thinking breathes between the rest level and this level, one breath every three seconds.
+
+    comment "Text"
+
+    config HOLO_PAGE_MS
+        int "Base time a page of a long answer stays (ms)"
+        range 1000 30000
+        default 4000
+        help
+            Each page also gets 35 ms per character on it, so a full small page stays about 9 s.
+
+    config HOLO_HOLD_S
+        int "How long the last page stays before the glass goes dark (s)"
+        range 5 3600
+        default 90
+        help
+            After this the display is cleared to black: nothing lit means nothing in the cube,
+            and an OLED left on a static page for hours burns in.
+
+endmenu
