@@ -1,6 +1,8 @@
 """Builds docs/pages/frame-jig.html and docs/pages/print/frame-jig.pdf: the ladder frame drawn 1:1 on US Letter.
 
-Geometry from docs/custom-build.md (2026-10-28), with two corrections made 2026-11-06 while drawing it:
+Lift revision, approved 2026-11-10: the ladder in brass (K&S 1.0 mm rod, collars of 1.5 mm rod), axles 50 mm for the
+7 x 20 mm motors on 40 mm props, 7 mm collars on a 7.2 mm former, 7 mm skids. The stainless sheet of 2026-11-06 is in git.
+Geometry from docs/custom-build.md, with two corrections made 2026-11-06 while drawing the first sheet:
   - nose bar 31 mm, not 36: at 36 its ends run into the front collars (9.2 mm outside, centred at ±20, +30).
   - collar blanks 60 mm, not 40: two turns at a 7.7 mm mean diameter take 48 mm of rod, plus a grip to wind with.
 Every coordinate is in millimetres, one SVG unit to one millimetre. Run: python3 docs/pages/gen/frame_jig.py
@@ -14,36 +16,38 @@ PDF_OUT = PAGES / "print" / "frame-jig.pdf"
 
 W, H = 215.9, 279.0          # Letter width; 0.4 mm short of the height so Chrome never spills a blank page 2
 ROD = 1.0                    # frame rod
-COLLAR_ROD, FORMER = 1.5, 6.2
+COLLAR_ROD, FORMER = 1.5, 7.2     # 7 mm can plus clearance; a 7 mm or 9/32 in drill shank is the former
 COLLAR_OD = FORMER + 2 * COLLAR_ROD
 RAIL_X, RAIL_Y = 7, 33       # rails at ±7, ends at ±33  -> 66 mm
-AXLE_X, AXLE_Y = 20, 30      # axles ±20 at ±30          -> 40 mm, ends under the motor centres
+AXLE_X, AXLE_Y = 25, 30      # axles ±25 at ±30          -> 50 mm, ends under the motor centres (lift revision)
 NOSE_X, TAIL_X = 15.5, 7     # nose bar 31 mm at +33, tail bar 14 mm at -33
-PROP_D = 31
+PROP_D = 40
+SKID = 7                     # 7 mm skids: the 20 mm can hangs 4 mm under the axle
+DENSITY = 8.5e-3             # g/mm³, brass
 LIFT = -12                   # everything below the header moves up together
 CX, CY = 66, 110             # plan-view origin on the page; drone y is up (nose), page y is down
 
 CUTS = [  # tag, name, count, length, stock
-    ("R", "rails", 2, 66, "1 mm"), ("A", "axles", 2, 40, "1 mm"), ("N", "nose bar", 1, 31, "1 mm"),
-    ("T", "tail bar", 1, 14, "1 mm"), ("S", "skids", 4, 5, "1 mm"), ("C", "collar blanks", 4, 60, "1.5 mm"),
+    ("R", "rails", 2, 66, "1 mm"), ("A", "axles", 2, 2 * AXLE_X, "1 mm"), ("N", "nose bar", 1, 31, "1 mm"),
+    ("T", "tail bar", 1, 14, "1 mm"), ("S", "skids", 4, SKID, "1 mm"), ("C", "collar blanks", 4, 66, "1.5 mm"),
 ]
 ONE_MM_TOTAL = sum(n * L for _, _, n, L, s in CUTS if s == "1 mm")
 COLLAR_ROD_USED = 2 * math.pi * (FORMER + COLLAR_ROD) / 2 * 2
-MASS = 7.93e-3 * (ONE_MM_TOTAL * math.pi * ROD ** 2 / 4 + 4 * COLLAR_ROD_USED * math.pi * COLLAR_ROD ** 2 / 4)
+MASS = DENSITY * (ONE_MM_TOTAL * math.pi * ROD ** 2 / 4 + 4 * COLLAR_ROD_USED * math.pi * COLLAR_ROD ** 2 / 4)
 
 STEPS = [
-    "Test first. On two 1.5 mm coupons, wind one collar and solder one lap and one T with the stainless flux. "
-    "Bend them hard. A joint that pops off clean means more heat and more flux before the frame.",
+    "Test first. On two offcuts of 1.5 mm brass, wind one collar and solder one lap and one T with rosin flux and "
+    "60/40 tin. Bend them hard. A joint that pops off clean means more heat before the frame.",
     "Cut. Lay each rod on its bar below, mark the end tick, saw 0.5 mm long and sand square to the mark.",
     "Set up. Tape this sheet to the silicone mat (never the cutting mat). Put a Kapton square over each "
     "numbered dot, then hold the rails on their lines with Kapton strips.",
     "Solder 1 to 4: tail bar, then nose bar, both laid across the tops of the rails. Check the rail "
     f"diagonals: {math.hypot(2 * RAIL_X, 2 * RAIL_Y):.1f} mm both ways.",
     "Solder 5 to 8: both axles across the tops of the rails, each end on its motor centre.",
-    "Collars. Set one on each axle end, lower turn on the axle, with the 6 mm former left inside so it "
-    "stays round. Solder, then pull the former out. A motor should push in by hand.",
-    "Flip the frame and solder a 5 mm skid under each axle end, straight down.",
-    f"Wash off every trace of flux (warm water, a pinch of baking soda), dry and weigh: about {MASS:.1f} g.",
+    "Collars. Set one on each axle end, lower turn on the axle, with the 7 mm former (a drill shank) left inside "
+    "so it stays round. Solder, then pull the former out. A 7 × 20 motor should push in by hand.",
+    f"Flip the frame and solder a {SKID} mm skid under each axle end, straight down.",
+    f"Brass needs no washing: wipe the rosin off with alcohol, then weigh: about {MASS:.1f} g.",
 ]
 
 
@@ -110,7 +114,7 @@ def plan():
     s.append(line(ox - 1.5, oy, ox + 1.5, oy, "ink-s", 0.2) + line(ox, oy - 1.5, ox, oy + 1.5, "ink-s", 0.2))
     s.append(text(ox, oy + 4, "balance", "t g", 2, "middle"))
     s.append(text(CX, CY + 52, "Top view, 1:1. Black is rod, laid where it lies. Dots are joints in solder order.", "t", 2.5, "middle"))
-    s.append(text(CX, CY + 55.5, "Grey rings are the collars, dashed circles the 31 mm propellers.", "t", 2.5, "middle"))
+    s.append(text(CX, CY + 55.5, f"Grey rings are the collars, dashed circles the {PROP_D} mm propellers.", "t", 2.5, "middle"))
     return "".join(s)
 
 
@@ -135,13 +139,13 @@ def vbar():
 
 
 def detail():
-    k, x0, base = 3.0, 122, 88               # 3x side view of the right front axle end, drone x 10 to 25
-    X = lambda x: x0 + k * (x - 10)
+    k, x0, base = 3.0, 122, 88               # 3x side view of the right front axle end, the last 10 mm of the axle
+    X = lambda x: x0 + k * (x - (AXLE_X - 10))
     Y = lambda z: base - k * z               # z = 0 is the top of the axle
     s = [text(118, 48, "Axle end, side view, 3 × size", "t b", 2.8),
          text(118, 52, "Not for laying rod: the 1:1 view is on the left.", "t g", 2.3)]
-    s.append(f'<rect class="ink" x="{f(X(10))}" y="{f(Y(0))}" width="{f(k * 10)}" height="{f(k * ROD)}"/>')
-    s.append(f'<rect class="ink" x="{f(X(19))}" y="{f(Y(-ROD))}" width="{f(k * ROD)}" height="{f(k * 5)}"/>')
+    s.append(f'<rect class="ink" x="{f(X(AXLE_X - 10))}" y="{f(Y(0))}" width="{f(k * 10)}" height="{f(k * ROD)}"/>')
+    s.append(f'<rect class="ink" x="{f(X(AXLE_X - ROD))}" y="{f(Y(-ROD))}" width="{f(k * ROD)}" height="{f(k * SKID)}"/>')
     m0, m1, top = X(AXLE_X - 3), X(AXLE_X + 3), Y(8)
     s.append(f'<path class="grey" d="M{f(m0)} {f(Y(0))} V{f(top + 1)} L{f(m0 + 4)} {f(top - 1)} L{f(m0 + 9)} {f(top + 1)} '
              f'L{f(m0 + 14)} {f(top - 1)} L{f(m1)} {f(top + 0.5)} V{f(Y(0))} Z"/>')
@@ -149,14 +153,14 @@ def detail():
     for z in (r, 3 * r):
         for x in (AXLE_X - FORMER / 2 - r, AXLE_X + FORMER / 2 + r):
             s.append(f'<circle class="dark" cx="{f(X(x))}" cy="{f(Y(z))}" r="{f(k * r)}"/>')
-    s.append(line(X(AXLE_X), Y(10), X(AXLE_X), Y(-7), "ink-s", 0.15) + text(X(AXLE_X), Y(10.6), "motor centre", "t g", 2.1, "middle"))
+    s.append(line(X(AXLE_X), Y(10), X(AXLE_X), Y(-SKID - 2), "ink-s", 0.15) + text(X(AXLE_X), Y(10.6), "motor centre", "t g", 2.1, "middle"))
     lx = 174
     for z, ax, label, sub in ((5.5, X(AXLE_X + 3), "motor", "stands on the axle end"),
                               (1.5, X(AXLE_X + FORMER / 2 + 2 * r), "collar", "2 turns of 1.5 mm rod"),
-                              (-3.5, X(19 + ROD), "skid", "5 mm, straight down")):
+                              (-3.5, X(AXLE_X), "skid", f"{SKID} mm, straight down")):
         s.append(line(ax + 0.6, Y(z), lx - 1.2, Y(z), "ink-s", 0.18))
         s.append(text(lx, Y(z) - 0.2, label, "t b", 2.5) + text(lx, Y(z) + 2.8, sub, "t g", 2.2))
-    s.append(text(X(10), Y(-ROD) + 4.2, "axle, on top of the rail", "t g", 2.2))
+    s.append(text(X(AXLE_X - 10), Y(-ROD) + 4.2, "axle, on top of the rail", "t g", 2.2))
     cx, cy = 140, 124                         # 1:1 collar check
     s.append(text(118, 112, "Collar check, 1:1", "t b", 2.8))
     s.append(f'<circle class="grey" cx="{cx}" cy="{cy}" r="{f(COLLAR_OD / 2)}" stroke-width="0.25"/>')
@@ -180,8 +184,8 @@ def cut_list():
         s.append(f'<rect class="bar" x="{x}" y="{f(y)}" width="{L}" height="1"/>')
         for e in (x, x + L):
             s.append(line(e, y - 1.2, e, y + 2.2, "ink-s", 0.25))
-    s.append(text(16, 216.5, f"All ten 1 mm pieces come from one 300 mm rod: {ONE_MM_TOTAL} mm plus the saw cuts. "
-                  "The collars take two 60 mm blanks from each of two 150 mm coupons.", "t g", 2.4))
+    s.append(text(16, 216.5, f"The ten 1 mm pieces take {ONE_MM_TOTAL} mm plus saw cuts: two 300 mm brass rods (the axles from the second). "
+                  "The four 66 mm collar blanks come from one 300 mm rod of 1.5 mm brass.", "t g", 2.4))
     return "".join(s)
 
 
@@ -202,7 +206,7 @@ def steps():
 
 
 def footer():
-    return (text(16, 274, "XS drone · ladder frame jig · 2026-11-06 · from docs/custom-build.md · nose bar 31 mm to clear the front collars",
+    return (text(16, 274, "XS drone · brass ladder frame jig · lift revision 2026-11-10 · from docs/custom-build.md · nose bar 31 mm to clear the front collars",
                   "t g", 2.2))
 
 
@@ -218,9 +222,9 @@ def sheet_svg():
 
 
 LINKS = {
-    "rod": "https://www.amazon.com/dp/B082ZNWQ5Q",
-    "coupon": "https://www.amazon.com/dp/B082ZNMD46",
-    "motor": "https://www.amazon.com/dp/B09J236JJL",
+    "rod": "https://www.amazon.com/dp/B005WPB7YG",
+    "coupon": "https://www.amazon.com/dp/B01C6LUO5Q",
+    "motor": "https://www.amazon.com/dp/B0DJ17L348",
 }
 
 CSS = """
@@ -284,15 +288,15 @@ def page():
   </header>
   <section class="brief screen">
     <p>Print the sheet at <b>Actual size</b> and check both 50 mm bars before cutting. Then lay the
-    <a href="{LINKS['rod']}">1 mm stainless rod</a> straight onto the black lines and solder the joints in number order.
-    The motor collars are wound from the <a href="{LINKS['coupon']}">1.5 mm stainless coupons</a> to fit the
-    <a href="{LINKS['motor']}">6 mm coreless motors</a>.</p>
-    <p>Two changes from the build plan: the nose bar is <b>31 mm</b>, not 36, because at 36 its ends hit the front collars.
-    The collar blanks are <b>60 mm</b>, not 40, because two turns take 48 mm of rod.</p>
+    <a href="{LINKS['rod']}">1.0 mm brass rod</a> straight onto the black lines and solder the joints in number order with rosin flux.
+    The motor collars are wound from the <a href="{LINKS['coupon']}">1.5 mm brass rod</a> on a 7 mm former to fit the
+    <a href="{LINKS['motor']}">7 × 20 mm coreless motors</a>.</p>
+    <p>Lift revision, approved 2026-11-10: brass instead of stainless, axles <b>50 mm</b> for the 40 mm props, collars <b>7 mm</b>,
+    skids <b>7 mm</b>. The nose bar stays <b>31 mm</b> (at 36 its ends hit the front collars) and the collar blanks are <b>66 mm</b>, two turns plus a grip.</p>
   </section>
   <section class="facts screen" aria-label="Frame figures">
-    <div><b>40 × 60</b><span>motor centres, mm</span></div>
-    <div><b>{ONE_MM_TOTAL} mm</b><span>of 1 mm rod, one 300 mm stick</span></div>
+    <div><b>{2 * AXLE_X} × {2 * AXLE_Y}</b><span>motor centres, mm</span></div>
+    <div><b>{ONE_MM_TOTAL} mm</b><span>of 1 mm brass rod, two sticks</span></div>
     <div><b>16</b><span>joints: 8 laps, 4 collars, 4 skids</span></div>
     <div><b>{MASS:.1f} g</b><span>bare frame, before solder</span></div>
   </section>

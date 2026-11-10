@@ -11,7 +11,8 @@ sensor decision in the payload assessment carry over unchanged. What changes is 
 
 **Frame material, settled 2026-11-07.** The builder asked for an all-brass frame wired with copper, then
 withdrew it the same hour, before anything was drawn: stainless stands for the drone and for every project
-after it (DIY/CLAUDE.md, Design language). The wiring stays silicone wire as drawn below.
+after it (DIY/CLAUDE.md, Design language). The wiring stays silicone wire as drawn below. **Reversed for this build on
+2026-11-10:** the builder asked for the drone to match the desk family's brass and ivory, and chose a brass ladder (see More lift).
 
 **Following mode, 2026-11-09.** Whether the drone can follow a person indoors with local processing, and what
 it would look like without the forward ranger (weighed and declined the same day: the ranger stays): [following.md](following.md), web version [XS Drone Following](https://claude.ai/artifact/LYYQRGev8wnFg92FFNJxxc).
@@ -20,6 +21,12 @@ it would look like without the forward ranger (weighed and declined the same day
 already on the controller; the speaker costs the one free pin, one amplifier board to buy and about 4 g. Drawn in
 below under Voice, on the wiring sheet and in the views; approved late the same night. Step two, the science and engineering
 behind it: [voice-physics.md](voice-physics.md), web version [XS Drone Voice Physics](https://claude.ai/artifact/F1GaiD5tUNSf6gDL87SgtG) (2026-11-10).
+
+**More lift, 2026-11-10.** The builder asked for all three features together (voice, a tilting camera, rangers all round) with
+the fewest changes, and for brass and ivory. Drawn below as the lift revision: 7 × 20 mm motors on 40 mm props, a brass ladder with
+50 mm axles and 7 mm collars, a 1.5 g tilt servo, five rangers behind an I2C multiplexer; about 54 g. **Approved 2026-11-10**
+("that sounds good with me, let's build it"); the parts went into the Amazon cart the same night, and step two is
+[lift-physics.md](lift-physics.md), web version [XS Drone Lift Physics](https://claude.ai/artifact/F5seCFLabQZ1cQ4Vtj1Yyx).
 
 ## Battery: nothing owned fits, buy the whoop pack
 
@@ -47,7 +54,7 @@ are often wired opposite to Adafruit's. Keeping the 1.25 plugs also works, but t
 adapter made from one PH 2.0 lead and one of the [1.25 mm leads](https://www.amazon.com/dp/B0GW5WWZTY), and
 the first hover must run through the real plug.
 
-## Buy list for the custom build: one line open
+## Buy list for the custom build: one line open, five more proposed 2026-11-10
 
 Everything was ordered by 2026-10-28; the Amazon order log in
 [INVENTORY.md](../../pocket_ai_assistant/docs/INVENTORY.md) has the rows (Amazon #23 to #32, the DigiKey
@@ -71,7 +78,12 @@ build, with its role:
 | AMC7135, 10 | flashlight regulators | Nov 9 (Orders page 2026-11-09; was Nov 17–20) |
 | Cree XP-G2 stars, 4 (one order of four, not six) | flashlight emitter, three spare | Nov 2, picked up |
 | uxcell 1 mm × 300 mm rod, 20 | frame rails, axles and bars | Nov 4–5, picked up |
-| [PAM8403 class-D amplifier board](https://www.amazon.com/dp/B0DYYX8DF9), 5-pack | the speaker's amplifier; one fitted, four spare (added 2026-11-09) | to buy |
+| [PAM8403 class-D amplifier board](https://www.amazon.com/dp/B0DYYX8DF9), 5-pack | the speaker's amplifier; one fitted, four spare (added 2026-11-09) | ordered 2026-11-09 (114-4918612-8872205, $5.59), arriving Thu 11-12 |
+| [7 × 20 mm coreless motors, 4-pack with JST 1.25 leads](https://www.amazon.com/dp/B0DJ17L348) (the [SpeedyFPV pack](https://www.amazon.com/dp/B0CCHXNKDG) and [BetaFPV 17500KV](https://betafpv.com/products/7x20mm-coreless-brushed-motors-for-beta75) are the alternatives) | lift revision: the four motors; the 615s become spares | in the cart 2026-11-10, $13.83, 3 left |
+| [HQ Prop 40 mm four-blade, grey polycarbonate, 1 mm, set of four](https://www.tinywhoop.com/products/hq-prop-40mm-4-blade-props-grey-1mm-shaft) ×2 | lift revision: one set flying, one spare; grey for the palette (white sold out everywhere; the Gemfan clear grey and red pack was dropped as ugly against the brass) | in the tinywhoop.com cart 2026-11-10, $3.49 a set, guest checkout |
+| [TCA9548A I2C multiplexer, Adafruit](https://www.amazon.com/dp/B017C09ETS) | lift revision: five rangers on one bus, no pin | in the cart 2026-11-10, $9.13 from 3DMakerWorld, free delivery |
+| [TOF400C VL53L1X boards, AITRIP 2-pack](https://www.amazon.com/dp/B09LCHPTNM), ×2 | lift revision: left, right and rear rangers, black, one spare (replaces the Pimoroni at the cart: $43 each) | in the cart 2026-11-10 |
+| [AGFRC 1.5 g linear servo, pair](https://www.amazon.com/dp/B07L3N5C4S) | lift revision: the camera's tilt; one fitted, one spare | in the cart 2026-11-10, $17.99 |
 
 Owned already: 1.5 mm coupons for the collars, resistor kit, 220 µF capacitors, 26 AWG silicone wire,
 Kapton, heat-shrink, flux, iron, saw, bench supply, meter, Adafruit charger; and since 2026-11-09 one of the two spare
@@ -127,7 +139,7 @@ Rebuilt by hand it is this, and it keeps every GPIO the ESP-Drone configuration 
 | I2C SDA | D4 | 5 | GY-521 SDA, VL53L1X SDA, VL53L7CX SDA |
 | I2C SCL | D5 | 6 | GY-521 SCL, VL53L1X SCL, VL53L7CX SCL |
 | Flashlight enable / PWM | D6 | 43 | VDD of both AMC7135 |
-| VL53L7CX LPn | D7 | 44 | LPn pin of the forward sensor |
+| Camera tilt servo, 50 Hz (lift revision 2026-11-10) | D7 | 44 | signal pin of the 1.5 g linear servo; the forward ranger's LPn stays on its pull-up behind the multiplexer. Before the lift revision: LPn of the forward sensor |
 | Motor M1, front right, CCW | D8 | 7 | gate of switch 1 |
 | IMU interrupt | D9 | 8 | GY-521 INT |
 | Speaker audio, sigma-delta DAC | D10 | 9 | 10 kΩ into the filter at the amplifier's left input (added 2026-11-09) |
@@ -219,6 +231,71 @@ therefore takes an analog path from that one pin.
   is applied to anything (no paint, no skins, no sleeves: builder's rule 2026-11-09).
 - **Approved and explained.** Approved late on 2026-11-09. Step two, the science and engineering behind every number here, is [voice-physics.md](voice-physics.md) (web version [XS Drone Voice Physics](https://claude.ai/artifact/F1GaiD5tUNSf6gDL87SgtG), PDF `pages/print/voice-physics.pdf`, 2026-11-10), generated by `pages/gen/voice_page.py`. Two things from it for the firmware: the microphone task asks the I2S driver for the 128× clock ratio (2.05 MHz at 16 kHz; the default 64× gives 1.02 MHz, which falls in a gap between the microphone datasheet's low-power and standard bands), and the playback task keeps the everyday level at ±64 (6 dB under full scale, inside Espressif's ±90 range) and mutes the microphone while it plays. The amplifier link is the knob-less listing in the builder's cart (11-09, $5.59, not ordered); C11's quiescent limit is 20 mA, the datasheet's typical being 10 mA at 3.6 V.
 
+## More lift: 7 × 20 mm motors, 40 mm props and a brass ladder, drawn and approved 2026-11-10
+
+The builder asked on 2026-11-10 for all three features at once: voice (approved 2026-11-09), a camera that tilts about 30°, and
+rangers all round for flying about a room, with the fewest changes that will lift them; and, the same morning, for the drone to
+match the desk family's brass and ivory, with grey, white and black second. The answer is the whoop world's own step from 65 to
+75 mm: bigger motors on bigger propellers, nothing else electrical. The frame changes in three numbers, and it changes metal, to
+brass rod from the family's stock (the builder's choice of 2026-11-10; the stainless rule of 2026-11-07 is reversed for this build).
+Drawn on the wiring sheet and in the views above; approved the same day ("let's build it").
+
+- **Motors.** Four 7 × 20 mm coreless motors, 1 mm shafts, about 3.5 g each: the [SpeedyFPV 4-pack, 2 CW + 2 CCW](https://www.amazon.com/dp/B0CCHXNKDG)
+  or the [4-pack with JST 1.25 leads](https://www.amazon.com/dp/B0DJ17L348); the higher-speed [BetaFPV 7x20 17500KV](https://betafpv.com/products/7x20mm-coreless-brushed-motors-for-beta75) (60 000 rpm
+  at 3.4 V, 3.5 g, 1 mm shaft, JST 1.25) is the stronger choice when its page answers. They run from the same four switch cells:
+  a 7 × 20 draws about 1.1 A in a hover and 3 A at full throttle, inside the AO3400A's 5.7 A and, at hover duty, the SS14's 1 A
+  average; both are measured at step 1. Thrust: no vendor sheet could be read tonight (BetaFPV and SpeedyFPV rate-limited the
+  fetcher); by the usual bench figures for this size on 40 mm four-blade props, 30 to 35 gf each at 3.7 V, 120 to 140 gf in all
+  against 68 today. D02 reads the truth in the first hover.
+- **Props.** 40 mm four-blade, 1.0 mm bore: [HQ Prop grey polycarbonate, sets of four](https://www.tinywhoop.com/products/hq-prop-40mm-4-blade-props-grey-1mm-shaft) from tinywhoop.com, two sets, one
+  flying and one spare; 0.5 g a prop, pitch 1. Chosen 2026-11-10 after the builder found the clear red and grey Gemfan pack ugly against the
+  brass: the white props are sold out everywhere, every ivory or white 1 mm listing was unavailable that night, and a solid grey is the
+  family's secondary colour (black ABS, $2.25 a set at the same shop, is the fallback). The Gemfan pack came out of the Amazon cart.
+  The 31 mm props and the 615 motors already on hand become spares.
+- **Frame: three numbers, and brass.** Axles 40 → 50 mm (motors at ±25), collars 6 → 7 mm (two turns of 1.5 mm rod, 53 mm each,
+  wound on a 7 mm former: a 7 mm or 9/32 in drill shank, or a spare can wrapped in one turn of paper), skids 5 → 7 mm (the 20 mm
+  can hangs 4 mm under the axle and stays 3 mm off the floor). Footprint 90 × 100 mm, diagonal 78 mm; the rails, pan, cabin, nose
+  bar and tail bar do not move. Rod: 305 mm of 1.0 mm brass (one owned K&S rod) and 212 mm of 1.5 mm brass (owned #9862) for the
+  collars: 5.2 g, 0.8 g more than stainless. Brass solders with rosin flux and tin, no acid and no washing; it flexes about twice
+  as much as stainless at the same size, and the strapped pan braces the ladder; it tarnishes toward brown, which is in the
+  palette. Nothing to buy for the frame. The jig is regenerated for the new lengths once this is approved.
+- **Camera tilt.** The camera module (8.5 × 8.5 × 5 mm on its flex) hangs on a 1 mm brass hinge pin through two brass tabs fixed to
+  the cabin's front face with the owned B-7000; a 6 mm brass lever rises from the pin. A 1.5 g single-cell linear servo
+  ([AGFRC C1.5CLS, sold as a pair](https://www.amazon.com/dp/B07L3N5C4S), 21.4 × 15.2 × 6 mm, 9 mm stroke, 3.7 to 6 V) lies on the cabin's roof, arm
+  forward, with a 1 mm brass link to the lever: 6 mm of its stroke is ±30°. Signal from D7 (50 Hz pulses of 1 to 2 ms, 3.3 V
+  logic), power from the VBAT bus. The servo takes the roof, and the drone stands 34 mm to its top.
+- **Rangers all round, and no pin for them.** A [TCA9548A I2C multiplexer, Adafruit](https://www.amazon.com/dp/B017C09ETS) (black, 30.6 × 17.6 × 2.7 mm,
+  1.8 g; [product page](https://www.adafruit.com/product/2717)) lies across the hood, chip down, 8 mm under the prop plane, on the bus at 0x70.
+  Every ranger hangs on its own channel, so all five keep their default 0x29 and nothing is re-addressed at boot: the forward 8×8
+  ([Pololu 3418](https://www.pololu.com/product/3418), channel 0, LPn left to the board's pull-up), the down ranger ([Pololu 3415](https://www.pololu.com/product/3415),
+  channel 1, XSHUT left to its pull-up), and three new single-zone [TOF400C VL53L1X boards, AITRIP 2-pack](https://www.amazon.com/dp/B09LCHPTNM) (black, about 25 × 11 mm, about 1 g each; two packs, one spare;
+  the Pimoroni board drawn first costs $43 each on Amazon, so it was dropped at the cart on 2026-11-10): left and right low beside the rails,
+  outside them at the cabin's foot (channels 2 and 3), back behind the tail bar (4), each on two 1 mm brass posts or a brass tab and
+  B-7000, XSHUT tied to its VIN so it never depends on a pull-up. Low means their tops are 6 mm under the prop plane, so the
+  discs may pass over them and the cabin's back face stays free for the USB port. That frees D7 for the servo. Fields: the side cones look out at rail height and never reach a disc (the discs begin 10 mm fore and aft of the cabin and the
+  cones are 9.6 mm wide at the discs' outer edge); the rear cone looks back from behind the tail bar with nothing in it.
+- **Pack and throttle.** Four 7 × 20 motors at full throttle draw about 12 A and the 250 mAh 30C pack gives 7.5 A, so the firmware
+  caps the thrust command at 75 %, which the pack can feed; D02's hover-command method needs no full punch. A 450 mAh pack
+  (+5 g, about 4 min) is the later upgrade, and at 17 mm wide it would move the rails to ±9.5: not part of this revision.
+- **Mass and flight.** About 54 g: +6.0 motors, +0.8 brass ladder and collars, +0.8 props, +1.8 multiplexer, +3.3 rangers,
+  +2.5 servo and hinge, +1.0 wiring on the 37.5 g voice build. On 120 to 140 gf, thrust to weight 2.3 to 2.6, hover command 62 to
+  67 %. Hover current about 5 A (the bigger discs lift each gram more cheaply; the estimate spans 4.5 to 5.7), 20 C of the pack,
+  about 2.3 min in the air. If the first hover reads under 2.0, the lighter way back is Pololu's green boards for the side rangers
+  (−2.4 g); under 1.8, the 450 mAh pack and wider rails.
+- **Colour.** Brass rod and collars; grey props (the white ones were sold out); the pack's white wrap; black cabin, speaker, servo, multiplexer and side and rear
+  rangers (TOF400C boards); silver cans. Green shows only at the nose (the forward ranger); the down ranger and the amplifier hide under the pan and
+  hood. Brass and ivory-white first, grey and black second, as asked on 2026-11-10. Nothing painted or covered.
+- **To buy, six lines**: the motors, the props, the multiplexer, two 2-packs of TOF400C rangers, one servo pair, and the amplifier.
+  Nothing for the frame. Links in the buy list above; in the builder's Amazon cart on 2026-11-10 except the amplifier, ordered on 11-09, and the props, in the tinywhoop.com cart.
+- **Firmware.** Added to the list: the multiplexer's channel select before each ranger read (one byte), the side and rear rangers at
+  10 to 15 Hz with the rear field at 20°, the servo on LEDC at 50 Hz, the 75 % thrust cap, a PID retune for the heavier craft,
+  and the 128× microphone clock from the physics page.
+- **Step two and the jig, done 2026-11-10.** The science and engineering behind this revision: [lift-physics.md](lift-physics.md), web version
+  [XS Drone Lift Physics](https://claude.ai/artifact/F5seCFLabQZ1cQ4Vtj1Yyx) (generated by `pages/gen/lift_page.py`, PDF in `pages/print/`). The frame jig is regenerated for
+  the brass ladder ([pages/frame-jig.html](pages/frame-jig.html)). A scripted flight of this revision, drawn and not flown, is
+  [pages/flight.html](pages/flight.html), web version [XS Drone Flight](https://claude.ai/artifact/4U1sAiXcM7a1wxaW1djosj), with an MP4 beside it. The following page still draws the 37.5 g build and gets the new geometry
+  when the brass frame is soldered and weighed.
+
 ## The car-like layout
 
 The kit is a square. A car is longer than it is wide, low, with its lights at the nose. The custom
@@ -226,14 +303,14 @@ frame is a ladder: two 1.0 mm stainless rails 14 mm apart running the length of 
 rods at the "axle" positions that carry the motors outboard, a nose bar for the headlights and a tail
 bar. The battery lies between the rails as the floor pan; the XIAO stack sits on it as the cabin.
 
-| Figure | Kit layout | Car layout |
-| --- | ---: | ---: |
-| Motor spacing, lateral × fore-aft | 36.8 × 36.8 mm | 40 × 60 mm |
-| Diagonal wheelbase | 52 mm | 72 mm |
-| Footprint, prop tip to prop tip | 67 × 67 mm | 71 × 91 mm |
-| Height, ground to top of the camera | 35 mm | 26 mm |
-| Prop plane above the rails | 16 mm | 16 mm |
-| Frame mass | 4.5 g | 4.4 g est. |
+| Figure | Kit layout | Car layout | Lift revision (2026-11-10) |
+| --- | ---: | ---: | ---: |
+| Motor spacing, lateral × fore-aft | 36.8 × 36.8 mm | 40 × 60 mm | 50 × 60 mm |
+| Diagonal wheelbase | 52 mm | 72 mm | 78 mm |
+| Footprint, prop tip to prop tip | 67 × 67 mm | 71 × 91 mm | 90 × 100 mm |
+| Height, ground to top of the camera | 35 mm | 26 mm | 34 mm to the servo |
+| Prop plane above the rails | 16 mm | 16 mm | 16.8 mm |
+| Frame mass | 4.5 g | 4.4 g est. | 5.2 g est., brass |
 
 Why 40 × 60 and not smaller: the four prop discs are 31 mm across and must not pass over anything
 taller than 16 mm. Spacing the motors 60 mm fore and aft moves the front discs clear of the cabin,
@@ -250,14 +327,16 @@ Layout, top view, nose up, lateral positions from the centre line:
 
 ```text
    headlight bar at +33 mm:   flashlight star at −9, lens 7 mm proud  |  VL53L7CX at +9, facing forward
-   front axle at +30 mm:      motors at ±20, CW left (M4), CCW right (M1)
+   front axle at +30 mm:      motors at ±20, CW left (M4), CCW right (M1)   [lift revision: ±25, 7 × 20 mm, 40 mm props]
    hood, under the pan, +11 to +29.5 mm: amplifier board, components down (added 2026-11-09)
+   hood, on the pan, +11 to +28.6 mm: multiplexer board across the rails, chip down (lift revision)
    cabin, +10 to −10 mm:      XIAO + Sense on top of the battery, camera on its front face, 10° down
+   lift revision:             camera on a brass hinge, ±30°; servo on the roof; rangers on both sides and the back face
    floor pan, +27 to −27 mm:  the 55 × 12 mm pack between the rails, Kapton-strapped
    tail of the pan, −10.5 to −30.5 mm: speaker on the pan, grille up (added 2026-11-09)
-   rear axle at −30 mm:       motors at ±20, CCW left (M3), CW right (M2)
+   rear axle at −30 mm:       motors at ±20, CCW left (M3), CW right (M2)   [lift revision: ±25]
    tail, −27 to −33 mm:       VL53L1X under the floor pan, looking down; GY-521 under the pan at the centre
-   rails at ±7 mm, 66 mm long; 5 mm skids under the axle ends
+   rails at ±7 mm, 66 mm long; 5 mm skids under the axle ends (7 mm in the lift revision)
 ```
 
 The two headlights are not symmetrical in function, and that is the car reference: a lamp on the
@@ -272,7 +351,8 @@ ran into the front collars, and the collars were costed at 40 mm of rod. Bare fr
 is [pages/frame-jig.html](pages/frame-jig.html) (print [pages/print/frame-jig.pdf](pages/print/frame-jig.pdf),
 generator `pages/gen/frame_jig.py`). Every joint is a
 lap or a T on the stainless procedure in the inventory's Amazon #23 row. The battery is a stressed
-member once strapped: it stops the ladder racking.
+member once strapped: it stops the ladder racking. Lift revision (2026-11-10): axles 2 × 50 mm and skids 4 × 7 mm, 305 mm of
+1.0 mm brass; collars 7 mm, 53 mm each of 1.5 mm brass, 212 mm; 5.2 g; brass joints with rosin flux; the jig is regenerated on approval.
 
 ## Colour and finish
 
@@ -290,9 +370,9 @@ bought were read from the vendors' photos on 2026-11-07.
 
 | Part | As bought | Finish |
 | --- | --- | --- |
-| Frame, collars, skids | stainless | bare; wash the flux off |
+| Frame, collars, skids | stainless (brass in the lift revision, 2026-11-10) | bare; stainless: wash the flux off; brass: rosin flux, left to tarnish toward brown |
 | [Motors](https://www.amazon.com/dp/B09J236JJL) | silver cans; CCW leads black and white, CW leads red and blue | as bought; the CW leads' red and blue run along the collar and the axle rod, out of sight (no sleeves: rule 2026-11-09) |
-| [Props](https://www.amazon.com/dp/B09L4MXXCW) | black | as bought: the black |
+| [Props](https://www.amazon.com/dp/B09L4MXXCW) | black (white 40 mm in the lift revision) | as bought: the black; the lift revision's 40 mm props are bought white |
 | [Controller](https://www.amazon.com/dp/B0C69FFVHH), camera, antenna | black board, silver shield, gold pads | as bought |
 | [Flight packs](https://www.amazon.com/dp/B0FCMLVCN2) | silver-white wrap with a big red "250" | label face down, against the sensors under the pan; the white wrap is what shows |
 | Battery straps | amber Kapton | clear heat tape, 10 mm |
@@ -341,12 +421,20 @@ green as it is.
 | Amplifier board, header pads bare (2026-11-09) | 1.5 g est. | |
 | Filter parts, reservoir capacitor, speaker ties (2026-11-09) | 0.5 g est. | |
 | **Flying mass** | **37.5 g est.** | 33.5 g before the speaker |
+| Lift revision (2026-11-10): four 7 × 20 mm motors in place of the 615s | +6.0 g | 3.5 g each, BetaFPV's figure |
+| Lift revision: 40 mm HQ grey polycarbonate props in place of the 31 mm | +0.8 g | 0.5 g each, the shop's figure |
+| Lift revision: brass ladder, 7 mm collars, 50 mm axles, 7 mm skids | +0.8 g | 5.2 g at 8.5 g/cm³ |
+| Lift revision: multiplexer | 1.8 g | Adafruit's figure |
+| Lift revision: three TOF400C rangers and their posts | 3.3 g est. | about 25 × 11 mm boards, headers left off |
+| Lift revision: servo, hinge, lever, link | 2.5 g est. | AGFRC 1.5 g plus brass |
+| Lift revision: extra wiring | 1.0 g est. | |
+| **Flying mass, lift revision** | **53.7 g est.** | 37.5 + 16.2; approved 2026-11-10 |
 
-| Figure | Kit-based plan, 32 g | Custom, 33.5 g | With voice, 37.5 g |
-| --- | ---: | ---: | ---: |
-| Thrust-to-weight on the vendor's 68 gf | 2.1 | 2.03 | 1.81 |
-| Hover current, scaled as mass^1.5 from 2.4 A at 25 g | 3.5 A | 3.7 A | 4.4 A |
-| Flight time at 80 % of 250 mAh, lamp off | 3.2 min | 3.1 min | 2.6 min |
+| Figure | Kit-based plan, 32 g | Custom, 33.5 g | With voice, 37.5 g | Lift revision, 54 g (2026-11-10) |
+| --- | ---: | ---: | ---: | ---: |
+| Thrust-to-weight on the vendor's 68 gf | 2.1 | 2.03 | 1.81 | 2.3 to 2.6 on 120 to 140 gf est. |
+| Hover current, scaled as mass^1.5 from 2.4 A at 25 g | 3.5 A | 3.7 A | 4.4 A | about 5 A (4.5 to 5.7, bigger discs) |
+| Flight time at 80 % of 250 mAh, lamp off | 3.2 min | 3.1 min | 2.6 min | 2.3 min |
 
 Same aircraft, about a gram apart. The custom column carries the jig's 4.4 g frame (2026-11-06) and the
 0.2 g finish (straps only since 2026-11-09), which together take thrust to weight from 2.06 to 2.03, just over the 2.0 gate. The 68 gf is
@@ -361,7 +449,8 @@ speaker, amplifier and filter, 4.0 g: 1.81, under the gate but inside the 1.5 fl
 1. **Power first.** Packs re-terminated to PH 2.0 (see Battery), then the pigtail, divider, 220 µF, XIAO
    on the bench supply at 3.7 V with the current limit at 0.5 A. The app shows the voltage the meter shows. Then the
    speaker path on the same supply: a 1 kHz tone from the DAC, 0.43 V peak to peak at the filter node on the scope,
-   clean at the speaker (test C11).
+   clean at the speaker (test C11). Lift revision: each 7 × 20 motor's current on the bench supply at a hover duty and at full,
+   and the switch cell's diode warmth; the 75 % cap set before the first hover.
 2. **One switch cell on the bench**, motor without prop, bench supply limited to 1.5 A. PWM sweep from
    the firmware's motor test. The MOSFET stays cold, the motor stops at zero, the diode band points at
    VBAT. Then the other three.
@@ -374,7 +463,7 @@ speaker, amplifier and filter, 4.0 g: 1.81, under the gate but inside the 1.5 fl
    from a low hover, the accelerometer's z log peak in g is the thrust-to-weight ratio; without the log,
    hovering at 70 % thrust or less passes.
 6. Then as the payload assessment says: VL53L1X and height hold, flashlight and beeper, VL53L7CX last, then the
-   voice loop over the Wi-Fi link (test C12).
+   voice loop over the Wi-Fi link (test C12). Lift revision: the multiplexer and the five rangers (test C13), the tilt servo (C14).
 
 ## Sources
 
@@ -383,4 +472,5 @@ Motors and props: [615 for H36/E010, 4-pack](https://www.amazon.com/dp/B09J236JJ
 Battery: [ZEVORO 250 mAh](https://www.amazon.com/dp/B0FQC9MDT6), [GNB 250 mAh](https://amazon.com/dp/B07GVDXVY5), [Adafruit 500 mAh](https://www.adafruit.com/product/1578).
 IMU: [GY-521](https://www.amazon.com/dp/B07MMZ37PT). Diodes: [Chanzon SS14](https://www.amazon.com/dp/B079KJ46ZS), [onsemi SS14 at DigiKey](https://digikey.com/product-detail/en/fairchild-on-semiconductor/SS14/SS14CT-ND/965729).
 MOSFET: [AO3400A](https://www.digikey.com/en/products/detail/evvo/AO3400A-EV/26221089). Kit reference: [Co-Create ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY), [wiring.md](wiring.md), [purchasing.md](purchasing.md).
+Lift revision (2026-11-10): [SpeedyFPV 7 × 20 4-pack](https://www.amazon.com/dp/B0CCHXNKDG), [BetaFPV 7x20 17500KV](https://betafpv.com/products/7x20mm-coreless-brushed-motors-for-beta75), [tinywhoop.com white 40 mm props](https://www.tinywhoop.com/products/white-4-blade-props-40mm), [Adafruit TCA9548A](https://www.adafruit.com/product/2717), [Pimoroni VL53L1X](https://www.amazon.com/dp/B07HCLCTM7), [AGFRC 1.5 g servo](https://www.amazon.com/dp/B07L3N5C4S), [Pololu 3415](https://www.pololu.com/product/3415), [Pololu 3418](https://www.pololu.com/product/3418), the K&S brass rod in the inventory.
 Voice (2026-11-09): [Same Sky CES-20134-088PM datasheet](https://sameskydevices.com/product/resource/ces-20134-088pm.pdf), [PAM8403 board, 5-pack](https://www.amazon.com/dp/B0DYYX8DF9), [ESP-IDF sigma-delta modulator](https://docs.espressif.com/projects/esp-idf/en/v5.3/esp32s3/api-reference/peripherals/sdm.html), [XIAO ESP32-S3 pin multiplexing](https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/), [Sense microphone](https://wiki.seeedstudio.com/xiao_esp32s3_sense_mic/).

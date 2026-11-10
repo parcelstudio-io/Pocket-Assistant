@@ -1,0 +1,444 @@
+<title>XS Drone Flight</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column with a 16:9 canvas; the left of the canvas is the room from above, the right the drone close up with its instruments. */
+:root{
+  --bg:#EEF0F2; --paper:#FFFFFF; --ink:#171B20; --ink-2:#5B6470; --line:#CBD1D8; --steel:#3C5A74; --steel-soft:#DCE6EF;
+  --metal:#7B838B; --metal-soft:#E2E5E8; --matte:#3A3E44; --matte-edge:#141619; --skin:#F4F2EC; --skin-edge:#9C9890;
+  --brass:#9A7B3C; --brass-soft:#E8D9B8; --board:#5E8A6A; --board-edge:#2F4A37; --lamp:#FFF4D6; --blade:#D9DCDF;
+  --floor:#F6F6F4; --wall:#8A8F96; --desk:#C9C2B4; --person:#A3580A; --cone:#2A64B0; --trail:#9A7B3C;
+  --display:"Barlow Semi Condensed","Arial Narrow",Arial,sans-serif; --body:"Source Sans 3","Segoe UI",system-ui,sans-serif; --mono:"Source Code Pro",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#15181C; --paper:#1E2228; --ink:#E6E8EB; --ink-2:#9AA3AE; --line:#343B44; --steel:#8FB3D1; --steel-soft:#1F2F3D;
+  --metal:#A9B1B9; --metal-soft:#3B424A; --matte:#2E3238; --matte-edge:#8D96A0; --skin:#DAD7CF; --skin-edge:#8A877F;
+  --brass:#C9A45C; --brass-soft:#4A3C22; --board:#43634C; --board-edge:#8DB497; --lamp:#FFF1C8; --blade:#B9BEC4;
+  --floor:#22262B; --wall:#5B636D; --desk:#4A4640; --person:#D9A449; --cone:#4F86C8; --trail:#C9A45C; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#15181C; --paper:#1E2228; --ink:#E6E8EB; --ink-2:#9AA3AE; --line:#343B44; --steel:#8FB3D1; --steel-soft:#1F2F3D;
+  --metal:#A9B1B9; --metal-soft:#3B424A; --matte:#2E3238; --matte-edge:#8D96A0; --skin:#DAD7CF; --skin-edge:#8A877F;
+  --brass:#C9A45C; --brass-soft:#4A3C22; --board:#43634C; --board-edge:#8DB497; --lamp:#FFF1C8; --blade:#B9BEC4;
+  --floor:#22262B; --wall:#5B636D; --desk:#4A4640; --person:#D9A449; --cone:#4F86C8; --trail:#C9A45C; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:960px;margin:0 auto;padding-block:28px 72px}
+h1,h2{font-family:var(--display);line-height:1.08;margin:0;text-wrap:balance}
+h1{font-size:clamp(30px,5.5vw,46px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(20px,3vw,26px);font-weight:700;margin-top:40px;padding-top:12px;border-top:3px solid var(--steel)}
+p{margin:10px 0;max-width:70ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);font-weight:600}
+.sub{color:var(--ink-2);font-size:15px;margin-top:10px;max-width:70ch}
+.masthead{border-bottom:4px solid var(--ink);padding-bottom:18px;margin-bottom:18px}
+.stage{background:var(--paper);border:1px solid var(--line);padding:10px;overflow:hidden}
+canvas{display:block;width:100%;height:auto;max-width:100%}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+button{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.02em;padding:7px 14px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:3px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
+input[type=range]{flex:1 1 220px;min-width:0;accent-color:var(--steel)}
+.time{font-family:var(--mono);font-size:14px;color:var(--ink-2);min-width:7ch;text-align:right}
+.phase{font-size:15px;color:var(--ink-2);margin-top:8px;min-height:1.5em}
+.speed{font-family:var(--mono);font-size:13px}
+ul{max-width:70ch;padding-left:22px}
+li{margin:6px 0}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--paper)}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+a{color:var(--steel)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<div class="wrap">
+<div class="masthead">
+  <div class="eyebrow">XS drone &middot; lift revision &middot; how it flies</div>
+  <h1>Thirty-four seconds in the room</h1>
+  <div class="sub">A scripted flight of the drone as drawn on 2026-11-10: arm, climb to the height the down-looking ranger holds, a full turn to look round, a run toward the far wall until the forward ranger says stop, the camera nodding down and up, a person crossing the room and the drone turning and following, then home and down. Left: the room from above with the rangers' fields and the camera's view. Right: the drone close up, with its instruments. The numbers come from the <a href="https://claude.ai/artifact/34eHTqKHJ2gfCkfK2Yb4up">build page</a> and the <a href="https://claude.ai/artifact/F1GaiD5tUNSf6gDL87SgtG">physics</a>: nothing has flown yet, and this is a drawing that moves, not a simulation of the air.</div>
+</div>
+<div class="stage">
+  <canvas id="c" width="1280" height="720" aria-label="Animated flight of the XS drone: a top view of a room on the left, the drone close up on the right"></canvas>
+  <div class="bar">
+    <button id="play" type="button">Pause</button>
+    <input id="scrub" type="range" min="0" max="34" step="0.02" value="0" aria-label="Time in the flight, seconds">
+    <span class="time" id="clock">0.0 s</span>
+    <button id="spd" type="button" class="speed">1×</button>
+  </div>
+  <div class="phase" id="phase"></div>
+</div>
+
+<h2>What the flight shows, phase by phase</h2>
+<ul>
+  <li><strong>0 to 2 s, armed on the floor.</strong> The flashlight blinks twice as the controller boots and the motion sensor settles. Nothing turns.</li>
+  <li><strong>2 to 5 s, spool and climb.</strong> The throttle rises to the 75 % cap and the drone lifts to 1.2 m, where the down-looking ranger takes over and holds the height. Climb current about 6.8 A, the most the pack is ever asked for.</li>
+  <li><strong>5 to 8 s, a turn on the spot.</strong> A full circle at 120° a second: the camera pans the whole room while the body stays level. Hover command about 64 %, about 5 A.</li>
+  <li><strong>8 to 14 s, toward the wall.</strong> The nose dips 8° and the drone crosses the room at half a metre a second. The forward 8×8 ranger watches the wall come in; at 0.8 m it says stop, and the drone holds there.</li>
+  <li><strong>14 to 18 s, the camera nods.</strong> The servo on the roof tilts the camera 30° down to look at the floor ahead, then back up. The body never tilts for it.</li>
+  <li><strong>18 to 26 s, following.</strong> A person crosses behind the drone. The desk computer finds them in the picture, the drone yaws to keep them centred and eases after them, holding about two metres; the side rangers keep the walls at bay.</li>
+  <li><strong>26 to 34 s, home and down.</strong> Back to the start, a slow descent on the down ranger, and the props stop. Thirty-four seconds of a flight the pack can sustain for about two and a quarter minutes.</li>
+</ul>
+
+<h2>The numbers behind the instruments</h2>
+<div class="tw"><table>
+<tr><th>Instrument</th><th>How it is computed here</th></tr>
+<tr><td>Throttle</td><td>the hover command for the estimated 2.5 to one, about 64 %, plus 11 % to climb (capped at 75 %) and minus 6 % to descend; a small addition for forward speed</td></tr>
+<tr><td>Current</td><td>four 7 × 20 motors at 12 A full, scaled as the command squared: about 5 A in a hover, 6.8 A at the cap</td></tr>
+<tr><td>Pack voltage</td><td>3.7 V less the current through 70 mΩ of cell and pigtail, less a slow fall of 0.3 V over a full pack</td></tr>
+<tr><td>Height, speed, yaw</td><td>from the scripted path, which stays inside what the thrust allows: 1.2 m hover, 0.5 m/s cruise, 120°/s yaw</td></tr>
+<tr><td>Rangers</td><td>straight-line distances from the drone to the walls along the forward, left, right and rear fields; the forward one stops the run at 0.8 m</td></tr>
+<tr><td>Camera tilt</td><td>the servo's lever: ±30° about the hinge pin at the cabin's front</td></tr>
+</table></div>
+<p class="sub">Source: <code>xs_drone/docs/pages/flight.html</code>. Geometry of the drone from <code>pages/gen/lift_views.py</code>; the room is 4.0 × 3.0 m with a desk, an ordinary room and not any particular one. The person's path and the following logic are the following page's description, drawn, not run.</p>
+</div>
+
+<script>
+(() => {
+const DUR = 34;
+const Q = new URLSearchParams(location.search);
+const CAPTURE = Q.has('t');
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let C = {};
+function readColors(){
+  for (const k of ['paper','ink','ink-2','line','steel','steel-soft','metal','metal-soft','matte','matte-edge','skin','skin-edge','brass','brass-soft','board','board-edge','lamp','blade','floor','wall','desk','person','cone','trail']) C[k] = css('--' + k);
+}
+readColors();
+
+// ---------------------------------------------------------------- the aircraft, in mm (lift_views.py)
+const AXLE_X = 25, AXLE_Y = 30, RAIL_X = 7, RAIL_Y = 33, NOSE_HALF = 15.5, TAIL_HALF = 7, SKID = 7;
+const MOTOR_R = 3.5, MOTOR_Z0 = -4, MOTOR_Z1 = 16, COLLAR_R = 5, COLLAR_H = 3, PROP_R = 20, PROP_Z = 16.8;
+const BAT = [-5.5, 5.5, -27, 27, 0, 5.8], CABIN = [-8.75, 8.75, -10.5, 10.5, 5.8, 20.8];
+const SERVO = [-7.6, 7.6, -10.7, 10.7, 20.8, 26.8], MUX = [-15.3, 15.3, 11, 28.6, 5.8, 8.5], SPK = [-8, 8, -30.5, -10.5, 5.8, 10.7];
+const SIDE_L = [-11, -8, -12.5, 12.5, 0, 11], SIDE_R = [8, 11, -12.5, 12.5, 0, 11], REAR = [-12.5, 12.5, -36, -33, 0, 11];
+const FWD = [0, 18, 33, 36, 0.5, 13.5];
+const HINGE_Y = 13, HINGE_Z = 17.25;
+const AZ = 34 * Math.PI / 180, EL = 27 * Math.PI / 180;
+const VIEW = [Math.sin(AZ) * Math.cos(EL), Math.cos(AZ) * Math.cos(EL), Math.sin(EL)];   // toward the viewer
+const LIGHT = [0.3, -0.4, 0.86];
+
+// ---------------------------------------------------------------- the flight script
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+function lerp(a, b, u){ return a + (b - a) * u; }
+function ease(u){ u = clamp(u, 0, 1); return u * u * (3 - 2 * u); }
+function seg(t, a, b){ return ease((t - a) / (b - a)); }
+const START = {x: 0.8, y: 0.8};
+const WALL_STOP_X = 3.2;   // 0.8 m short of the far wall at x = 4.0
+function state(t){
+  const s = {t, x: START.x, y: START.y, z: 0, yaw: 0, pitch: 0, tilt: 0, spin: 0, lamp: 0, phase: '', person: null, follow: false};
+  // lamp blinks while arming
+  if (t < 2) { s.lamp = (t % 1) < 0.15 ? 1 : 0; s.phase = 'Armed on the floor: the controller boots, the motion sensor settles, the flashlight blinks twice.'; }
+  // spool
+  s.spin = t < 2 ? 0 : t < 3 ? seg(t, 2, 3) : t > 33 ? 1 - seg(t, 33, 34) : 1;
+  // height
+  if (t >= 2.6 && t < 5) { s.z = 1.2 * seg(t, 2.6, 5); s.phase = 'Climb at the 75 % cap; the down-looking ranger takes the height at 1.2 m.'; }
+  else if (t >= 5 && t < 30) s.z = 1.2;
+  else if (t >= 30 && t < 33) { s.z = 1.2 * (1 - seg(t, 30, 33)); s.phase = 'Descent on the down ranger, 0.4 m/s, then the props stop.'; }
+  else if (t >= 33) s.phase = 'Landed. Thirty-four seconds of a two-and-a-quarter-minute pack.';
+  // yaw sweep
+  if (t >= 5 && t < 8) { s.yaw = 360 * seg(t, 5, 8); s.phase = 'A full turn on the spot at 120° a second: the camera pans the room, the body stays level.'; }
+  else if (t >= 8 && t < 8.8) s.yaw = 90 * seg(t, 8, 8.8);
+  else if (t >= 8.8) s.yaw = 90;
+  // run to the wall
+  if (t >= 8 && t < 13.5) {
+    const u = seg(t, 8.8, 13.5); s.x = lerp(START.x, WALL_STOP_X, u); s.pitch = -8 * Math.sin(Math.PI * clamp((t - 8.8) / 4.7, 0, 1));
+    s.phase = t < 12.5 ? 'Toward the far wall at half a metre a second, nose down 8°; the forward ranger watches the wall come in.' : 'The forward ranger reads 0.8 m: stop and hold.';
+  } else if (t >= 13.5 && t < 26) s.x = WALL_STOP_X;
+  // camera nod
+  if (t >= 14 && t < 18) {
+    s.tilt = t < 15 ? -30 * seg(t, 14, 15) : t < 17 ? -30 : -30 * (1 - seg(t, 17, 18));
+    s.phase = 'The servo tilts the camera 30° down to look at the floor ahead, then back up. The body never tilts for it.';
+  }
+  // following: a person crosses from the right rear to the left rear
+  if (t >= 18 && t < 27) {
+    const u = seg(t, 18.5, 26); const px = lerp(3.4, 1.0, u), py = 2.5;
+    s.person = {x: px, y: py, heading: 180};
+    s.follow = t >= 19;
+    if (t >= 19) {
+      const dx = px - s.x, dy = py - s.y; s.yaw = Math.atan2(dx, dy) * 180 / Math.PI;   // yaw 0 = +y (nose up on the map)
+      const dist = Math.hypot(dx, dy), want = 2.0;
+      if (t >= 20 && dist > want) { const k = seg(t, 20, 26) * 0.9; s.x = lerp(WALL_STOP_X, px + (s.x - px) / dist * want, k); }
+      s.pitch = t >= 20 && t < 26 ? -4 : 0;
+    }
+    s.phase = t < 19 ? 'A person walks in behind. The desk computer finds them in the picture.' : 'Following: yaw to keep them centred, ease after them, hold about two metres; the side rangers keep the walls away.';
+  }
+  if (t >= 26 && t < 30) {
+    const u = seg(t, 26, 30); s.x = lerp(1.9, START.x, u); s.y = lerp(0.95, START.y, u); s.yaw = lerp(-30, 0, u); s.pitch = -5 * Math.sin(Math.PI * u);
+    s.phase = 'Home: back to the start and nose forward again.';
+  }
+  if (t >= 20 && t < 26) { s.y = lerp(0.8, 0.95, seg(t, 20, 26)); }
+  if (t >= 30 && t < 34) { s.x = START.x; s.y = START.y; }
+  // instruments
+  const hoverCmd = 64, climbing = (t > 2.6 && t < 5), descending = (t >= 30 && t < 33);
+  let cmd = 0;
+  if (s.spin > 0 && t < 33.5) cmd = (t < 2.6 ? 15 * s.spin : hoverCmd + (climbing ? 11 : 0) - (descending ? 6 : 0) + Math.abs(s.pitch) * 0.25);
+  if (t >= 33) cmd = 15 * s.spin;
+  cmd = Math.min(75, cmd);
+  const amps = 12 * Math.pow(cmd / 100, 2) + (s.spin > 0 ? 0.25 : 0.2);
+  const soc = 1 - t / 135 * 0.6;
+  s.cmd = cmd; s.amps = amps; s.volts = 3.7 - 0.3 * (1 - soc) - amps * 0.07;
+  s.speed = 0;
+  return s;
+}
+function velocity(t){ const a = state(t - 0.05), b = state(t + 0.05); return Math.hypot(b.x - a.x, b.y - a.y) / 0.1; }
+
+// ---------------------------------------------------------------- rangers: distance to the walls along a heading
+const ROOM = {w: 4.0, h: 3.0};
+function wallDist(x, y, ang){   // ang in degrees, 0 = +y
+  const dx = Math.sin(ang * Math.PI / 180), dy = Math.cos(ang * Math.PI / 180);
+  let d = 1e9;
+  if (dx > 1e-6) d = Math.min(d, (ROOM.w - x) / dx); if (dx < -1e-6) d = Math.min(d, -x / dx);
+  if (dy > 1e-6) d = Math.min(d, (ROOM.h - y) / dy); if (dy < -1e-6) d = Math.min(d, -y / dy);
+  return d;
+}
+
+// ---------------------------------------------------------------- drawing: the room from above
+const MAP = {x: 30, y: 60, px: 150};   // 150 px per metre: 600 × 450
+function mx(x){ return MAP.x + x * MAP.px; }
+function my(y){ return MAP.y + (ROOM.h - y) * MAP.px; }
+function drawRoom(s, t){
+  ctx.save();
+  ctx.fillStyle = C.floor; ctx.fillRect(mx(0), my(ROOM.h), ROOM.w * MAP.px, ROOM.h * MAP.px);
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+  for (let i = 0; i <= 8; i++) { ctx.beginPath(); ctx.moveTo(mx(i * 0.5), my(0)); ctx.lineTo(mx(i * 0.5), my(ROOM.h)); ctx.stroke(); }
+  for (let j = 0; j <= 6; j++) { ctx.beginPath(); ctx.moveTo(mx(0), my(j * 0.5)); ctx.lineTo(mx(ROOM.w), my(j * 0.5)); ctx.stroke(); }
+  ctx.fillStyle = C.desk; ctx.fillRect(mx(2.6), my(0.9), 1.3 * MAP.px, 0.6 * MAP.px);
+  ctx.fillStyle = C['ink-2']; ctx.font = '13px ' + css('--body'); ctx.fillText('desk', mx(3.1), my(0.6) + 5);
+  ctx.strokeStyle = C.wall; ctx.lineWidth = 6; ctx.strokeRect(mx(0), my(ROOM.h), ROOM.w * MAP.px, ROOM.h * MAP.px);
+  // doorway on the left wall
+  ctx.strokeStyle = C.floor; ctx.beginPath(); ctx.moveTo(mx(0), my(2.0)); ctx.lineTo(mx(0), my(2.8)); ctx.stroke();
+  ctx.fillStyle = C['ink-2']; ctx.font = '600 13px ' + css('--display'); ctx.fillText('THE ROOM FROM ABOVE · 4.0 × 3.0 m', mx(0), my(ROOM.h) - 12);
+  ctx.font = '12px ' + css('--body'); ctx.fillText('door', mx(0) + 8, my(2.4) + 4);
+  // trail
+  ctx.strokeStyle = C.trail; ctx.lineWidth = 2; ctx.setLineDash([3, 5]); ctx.beginPath();
+  for (let u = 0; u <= t; u += 0.1) { const q = state(u); const X = mx(q.x), Y = my(q.y); if (u === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y); }
+  ctx.stroke(); ctx.setLineDash([]);
+  // the person
+  if (s.person) {
+    const P = s.person; ctx.fillStyle = C.person; ctx.beginPath(); ctx.arc(mx(P.x), my(P.y), 11, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.person; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(mx(P.x), my(P.y)); ctx.lineTo(mx(P.x) - 18, my(P.y)); ctx.stroke();
+    ctx.fillStyle = C['ink-2']; ctx.font = '12px ' + css('--body'); ctx.fillText('a person, walking', mx(P.x) + 16, my(P.y) + 4);
+  }
+  // fields: forward 60° to 2.5 m, sides 27° to 1.5 m, rear 27° to 1.5 m, camera 62° to 3 m
+  const X = mx(s.x), Y = my(s.y);
+  if (s.z > 0.05) {
+    const fan = (ang, half, len, fill, alpha) => {
+      const a0 = (s.yaw + ang - half) * Math.PI / 180, a1 = (s.yaw + ang + half) * Math.PI / 180;
+      ctx.globalAlpha = alpha; ctx.fillStyle = fill; ctx.beginPath(); ctx.moveTo(X, Y);
+      for (let k = 0; k <= 12; k++) { const a = a0 + (a1 - a0) * k / 12; const d = Math.min(len, wallDist(s.x, s.y, s.yaw + ang - half + 2 * half * k / 12)); ctx.lineTo(X + Math.sin(a) * d * MAP.px, Y - Math.cos(a) * d * MAP.px); }
+      ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+    };
+    fan(0, 31, 3.0, C.brass, 0.14);        // camera
+    fan(0, 30, 2.5, C.cone, 0.16);         // forward 8x8
+    fan(90, 13.5, 1.5, C.cone, 0.2); fan(-90, 13.5, 1.5, C.cone, 0.2); fan(180, 13.5, 1.5, C.cone, 0.2);
+    const df = wallDist(s.x, s.y, s.yaw);
+    if (df < 0.9 && s.t > 12 && s.t < 18) { ctx.fillStyle = C.cone; ctx.font = '600 13px ' + css('--display'); ctx.fillText('forward ranger: ' + df.toFixed(2) + ' m, STOP', X + 14, Y - 26); }
+  }
+  // the drone from above: a small icon rotated by yaw, with four disc circles
+  ctx.save(); ctx.translate(X, Y); ctx.rotate(s.yaw * Math.PI / 180); const k = MAP.px / 1000;   // px per mm
+  ctx.strokeStyle = C.brass; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-AXLE_X * k, -AXLE_Y * k); ctx.lineTo(AXLE_X * k, -AXLE_Y * k); ctx.moveTo(-AXLE_X * k, AXLE_Y * k); ctx.lineTo(AXLE_X * k, AXLE_Y * k);
+  ctx.moveTo(-RAIL_X * k, -RAIL_Y * k); ctx.lineTo(-RAIL_X * k, RAIL_Y * k); ctx.moveTo(RAIL_X * k, -RAIL_Y * k); ctx.lineTo(RAIL_X * k, RAIL_Y * k); ctx.stroke();
+  ctx.fillStyle = C.matte; ctx.fillRect(-8.75 * k, -10.5 * k, 17.5 * k, 21 * k);
+  for (const sx of [-1, 1]) for (const sy of [-1, 1]) { ctx.fillStyle = C.blade; ctx.globalAlpha = s.spin > 0 ? 0.55 : 0.9; ctx.beginPath(); ctx.arc(sx * AXLE_X * k, -sy * AXLE_Y * k, PROP_R * k, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+  ctx.restore();
+  // scale and height bar
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(mx(0), my(0) + 22); ctx.lineTo(mx(1), my(0) + 22); ctx.stroke();
+  ctx.fillStyle = C['ink-2']; ctx.font = '12px ' + css('--body'); ctx.fillText('1 m', mx(1) + 6, my(0) + 26);
+  const bx = mx(ROOM.w) + 22, bh = ROOM.h * MAP.px;
+  ctx.strokeStyle = C.line; ctx.strokeRect(bx, my(ROOM.h), 12, bh);
+  ctx.fillStyle = C.steel; const hh = clamp(s.z / 2.0, 0, 1) * bh; ctx.fillRect(bx, my(ROOM.h) + bh - hh, 12, hh);
+  ctx.fillStyle = C['ink-2']; ctx.save(); ctx.translate(bx + 30, my(ROOM.h) + bh / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('height ' + s.z.toFixed(2) + ' m of 2', 0, 0); ctx.restore();
+  ctx.restore();
+}
+
+// ---------------------------------------------------------------- drawing: the drone close up
+const CU = {cx: 1010, cy: 300, S: 2.6};
+function rot(p, yaw, pitch){
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  let [x, y, z] = p;
+  // pitch about x (nose-down positive lowers +y)
+  let y2 = y * cp - z * sp, z2 = y * sp + z * cp;
+  // yaw about z (drone yaw, right-handed, 0 = nose +y): rotate so that heading angle measured from +y toward +x
+  let x3 = x * cy + y2 * sy, y3 = -x * sy + y2 * cy;
+  return [x3, y3, z2];
+}
+function proj(p){
+  const [x, y, z] = p;
+  const xr = x * Math.cos(AZ) - y * Math.sin(AZ), yr = x * Math.sin(AZ) + y * Math.cos(AZ);
+  return [CU.cx + CU.S * xr, CU.cy - CU.S * (z * Math.cos(EL) - yr * Math.sin(EL)), yr * Math.cos(EL) + z * Math.sin(EL)];
+}
+function shade(hex, f){
+  const m = hex.match(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i); if (!m) return hex;
+  const c = [1, 2, 3].map(i => Math.round(clamp(parseInt(m[i], 16) * f, 0, 255)));
+  return 'rgb(' + c.join(',') + ')';
+}
+function boxFaces(b, fill, edge, R){
+  const [x0, x1, y0, y1, z0, z1] = b;
+  const c = [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]].map(R);
+  const faces = [[[4, 5, 6, 7], [0, 0, 1]], [[0, 3, 2, 1], [0, 0, -1]], [[3, 7, 6, 2], [0, 1, 0]], [[0, 1, 5, 4], [0, -1, 0]], [[1, 2, 6, 5], [1, 0, 0]], [[0, 4, 7, 3], [-1, 0, 0]]];
+  const out = [];
+  for (const [idx, n] of faces) {
+    const nr = R([n[0] * 1000, n[1] * 1000, n[2] * 1000]).map((v, i) => v - R([0, 0, 0])[i]);
+    const len = Math.hypot(...nr); const nn = nr.map(v => v / len);
+    const facing = nn[0] * VIEW[0] + nn[1] * VIEW[1] + nn[2] * VIEW[2];
+    if (facing <= 0.02) continue;
+    const pts = idx.map(i => proj(c[i])); const depth = pts.reduce((a, p) => a + p[2], 0) / 4;
+    const lit = 0.72 + 0.38 * Math.max(0, nn[0] * LIGHT[0] + nn[1] * LIGHT[1] + nn[2] * LIGHT[2]);
+    out.push({depth, draw: () => { ctx.fillStyle = shade(fill, lit); ctx.strokeStyle = edge; ctx.lineWidth = 1; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fill(); ctx.stroke(); }});
+  }
+  return out;
+}
+function circle3(cx, cy, cz, r, R, n = 28){ const pts = []; for (let i = 0; i < n; i++) { const a = 2 * Math.PI * i / n; pts.push(proj(R([cx + r * Math.cos(a), cy + r * Math.sin(a), cz]))); } return pts; }
+function fillPoly(pts, fill, edge){ ctx.fillStyle = fill; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fill(); if (edge) { ctx.strokeStyle = edge; ctx.lineWidth = 1; ctx.stroke(); } }
+function cylinder(cx, cy, r, z0, z1, fill, edge, R){
+  const top = circle3(cx, cy, z1, r, R), bot = circle3(cx, cy, z0, r, R);
+  const depth = proj(R([cx, cy, (z0 + z1) / 2]))[2];
+  return [{depth, draw: () => {
+    // side: hull of the two ellipses' extreme points
+    const n = top.length; let iL = 0, iR = 0; for (let i = 0; i < n; i++) { if (top[i][0] < top[iL][0]) iL = i; if (top[i][0] > top[iR][0]) iR = i; }
+    const side = [top[iL], top[iR], bot[iR], bot[iL]];
+    fillPoly(side, shade(fill, 0.85), edge); fillPoly(top, shade(fill, 1.02), edge);
+  }}];
+}
+function rodSeg(a, b, R, col, w){ const p = proj(R(a)), q = proj(R(b)); return [{depth: (p[2] + q[2]) / 2 - 0.5, draw: () => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); }}]; }
+function prop(cx, cy, spin, phase, R){
+  const out = []; const depth = proj(R([cx, cy, PROP_Z]))[2] + 40;
+  out.push({depth, draw: () => {
+    if (spin > 0.05) { fillPoly(circle3(cx, cy, PROP_Z, PROP_R, R, 36), 'rgba(160,170,180,' + (0.12 + 0.2 * spin) + ')', null); }
+    const a0 = phase, blades = spin > 0.6 ? 2 : 4;
+    for (let k = 0; k < 4; k++) {
+      const a = a0 + k * Math.PI / 2; const w = 3.6;
+      const tip = [cx + PROP_R * 0.95 * Math.cos(a), cy + PROP_R * 0.95 * Math.sin(a)], mid = [cx + PROP_R * 0.5 * Math.cos(a), cy + PROP_R * 0.5 * Math.sin(a)];
+      const nx = -Math.sin(a) * w, ny = Math.cos(a) * w;
+      const pts = [[cx + 1.5 * Math.cos(a), cy + 1.5 * Math.sin(a), PROP_Z], [mid[0] + nx, mid[1] + ny, PROP_Z], [tip[0], tip[1], PROP_Z], [mid[0] - nx, mid[1] - ny, PROP_Z]].map(p => proj(R(p)));
+      ctx.globalAlpha = spin > 0.6 ? 0.35 : 0.95; fillPoly(pts, C.blade, C.metal); ctx.globalAlpha = 1;
+    }
+    fillPoly(circle3(cx, cy, PROP_Z + 0.5, 1.8, R, 12), C.metal, null);
+  }});
+  return out;
+}
+function drawDrone(s, t){
+  const yaw = -s.yaw * Math.PI / 180, pitch = s.pitch * Math.PI / 180;
+  const R = (p) => rot(p, yaw, pitch);
+  let items = [];
+  const brass = C.brass;
+  for (const x of [-RAIL_X, RAIL_X]) items.push(...rodSeg([x, -RAIL_Y, 0], [x, RAIL_Y, 0], R, brass, 2.2));
+  for (const y of [-AXLE_Y, AXLE_Y]) items.push(...rodSeg([-AXLE_X, y, 0], [AXLE_X, y, 0], R, brass, 2.2));
+  items.push(...rodSeg([-NOSE_HALF, RAIL_Y, 0], [NOSE_HALF, RAIL_Y, 0], R, brass, 2.2));
+  items.push(...rodSeg([-TAIL_HALF, -RAIL_Y, 0], [TAIL_HALF, -RAIL_Y, 0], R, brass, 2.2));
+  const phase = (t * 40 * s.spin) % (Math.PI * 2);
+  for (const x of [-AXLE_X, AXLE_X]) for (const y of [-AXLE_Y, AXLE_Y]) {
+    items.push(...rodSeg([x, y, 0], [x, y, -SKID], R, brass, 2.2));
+    items.push(...cylinder(x, y, COLLAR_R, -COLLAR_H / 2, COLLAR_H / 2, C['brass-soft'], C.brass, R));
+    items.push(...cylinder(x, y, MOTOR_R, MOTOR_Z0, MOTOR_Z1, C['metal-soft'], C.metal, R));
+    items.push(...prop(x, y, s.spin, phase * (x * y > 0 ? 1 : -1), R));
+  }
+  items.push(...boxFaces(BAT, C.skin, C['skin-edge'], R));
+  items.push(...boxFaces(SPK, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(MUX, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(REAR, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(SIDE_L, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(SIDE_R, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(CABIN, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(SERVO, C.matte, C['matte-edge'], R));
+  items.push(...boxFaces(FWD, C.board, C['board-edge'], R));
+  // the camera module on its hinge: a 8.5 × 5 × 8.5 box rotated about the pin by the tilt
+  const tl = s.tilt * Math.PI / 180;
+  const camR = (p) => { const [x, y, z] = p; const dy = y - HINGE_Y, dz = z - HINGE_Z; const y2 = HINGE_Y + dy * Math.cos(tl) - dz * Math.sin(tl), z2 = HINGE_Z + dy * Math.sin(tl) + dz * Math.cos(tl); return R([x, y2, z2]); };
+  items.push(...boxFaces([-4.25, 4.25, 10.5, 15.5, 13, 21.5], C.matte, C['matte-edge'], camR));
+  items.push(...rodSeg([0, HINGE_Y, HINGE_Z], [0, HINGE_Y + 6 * Math.sin(tl), HINGE_Z + 6 * Math.cos(tl)], R, brass, 1.6));
+  items.push(...rodSeg([0, 10.7, 24], [0, HINGE_Y + 6 * Math.sin(tl), HINGE_Z + 6 * Math.cos(tl)], R, brass, 1.6));
+  // lamp on the nose bar
+  const lampC = proj(R([-9, 33.5, 7]));
+  items.push({depth: lampC[2] + 2, draw: () => { ctx.fillStyle = C.lamp; ctx.beginPath(); ctx.arc(lampC[0], lampC[1], 5 * CU.S / 2.6 * 1.3, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.metal; ctx.lineWidth = 1; ctx.stroke();
+    if (s.lamp) { ctx.fillStyle = 'rgba(255,240,200,0.35)'; ctx.beginPath(); ctx.arc(lampC[0], lampC[1], 22, 0, Math.PI * 2); ctx.fill(); } }});
+  items.sort((a, b) => a.depth - b.depth);
+  // ground shadow
+  ctx.save();
+  const sh = proj([0, 0, -SKID]);
+  const lift = s.z * 60;
+  ctx.translate(0, lift);
+  ctx.fillStyle = 'rgba(0,0,0,' + (0.18 - 0.1 * clamp(s.z / 1.2, 0, 1)) + ')';
+  ctx.beginPath(); ctx.ellipse(sh[0], sh[1] + 14, 120 - 30 * clamp(s.z / 1.2, 0, 1), 40 - 10 * clamp(s.z / 1.2, 0, 1), 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  ctx.save(); ctx.translate(0, -clamp(s.z, 0, 1.2) * 18);
+  for (const it of items) it.draw();
+  ctx.restore();
+}
+
+// ---------------------------------------------------------------- instruments
+function hud(s, t){
+  const x = 740, y = 470, lh = 22;
+  ctx.fillStyle = C['ink-2']; ctx.font = '600 13px ' + css('--display'); ctx.fillText('THE DRONE, CLOSE UP · 2.6 px per mm', x, 60);
+  const v = velocity(t);
+  const overDesk = s.x > 2.6 && s.x < 3.9 && s.y > 0.3 && s.y < 0.9;
+  const down = s.z > 0.05 ? Math.max(0, s.z - (overDesk ? 0.75 : 0)).toFixed(2) + ' m' + (overDesk ? ' (desk)' : '') : '0.00 m';
+  const rows = [
+    ['time', t.toFixed(1) + ' s'], ['height', s.z.toFixed(2) + ' m'], ['speed', v.toFixed(2) + ' m/s'], ['yaw', ((s.yaw % 360 + 360) % 360).toFixed(0) + '°'],
+    ['throttle', s.cmd.toFixed(0) + ' %' + (s.cmd >= 74.5 ? ' cap' : '')], ['current', s.amps.toFixed(1) + ' A'], ['pack', s.volts.toFixed(2) + ' V'],
+    ['camera', (s.tilt === 0 ? 'level' : (s.tilt < 0 ? s.tilt.toFixed(0) + '° down' : '+' + s.tilt.toFixed(0) + '°'))], ['down', down],
+  ];
+  ctx.font = '13px ' + css('--mono');
+  rows.forEach(([k, val], i) => {
+    const col = i < 3 ? 0 : i < 6 ? 1 : 2; const yy = y + (i % 3) * lh; const xx = x + col * 170;
+    ctx.fillStyle = C['ink-2']; ctx.fillText(k, xx, yy); ctx.fillStyle = C.ink; ctx.fillText(val, xx + (col === 2 ? 58 : 76), yy);
+  });
+  const rf = (ang) => s.z > 0.05 ? Math.min(4, wallDist(s.x, s.y, s.yaw + ang)).toFixed(2) : '—';
+  ctx.fillStyle = C['ink-2']; ctx.fillText('rangers', x, y + 3 * lh + 10); ctx.fillStyle = C.ink;
+  ctx.fillText('F ' + rf(0) + '   L ' + rf(-90) + '   R ' + rf(90) + '   B ' + rf(180) + ' m', x + 80, y + 3 * lh + 10);
+  // a small throttle gauge
+  const gx = 740, gy = 610, gw = 500;
+  ctx.fillStyle = C.line; ctx.fillRect(gx, gy, gw, 8);
+  ctx.fillStyle = C.steel; ctx.fillRect(gx, gy, gw * s.cmd / 100, 8);
+  ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(gx + gw * 0.75, gy - 4); ctx.lineTo(gx + gw * 0.75, gy + 12); ctx.stroke();
+  ctx.fillStyle = C['ink-2']; ctx.font = '12px ' + css('--body'); ctx.fillText('throttle · the mark is the 75 % cap the pack sets', gx, gy + 26);
+  ctx.fillText('53.7 g · 120 to 150 gf est. · hover ≈ 64 % · 250 mAh at 30 C', gx, gy + 44);
+}
+
+function draw(t){
+  const s = state(t);
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = C.paper; ctx.fillRect(0, 0, W, H);
+  drawRoom(s, t);
+  ctx.strokeStyle = C.line; ctx.beginPath(); ctx.moveTo(705, 40); ctx.lineTo(705, 680); ctx.stroke();
+  drawDrone(s, t);
+  hud(s, t);
+  ctx.fillStyle = C['ink-2']; ctx.font = '600 13px ' + css('--display'); ctx.fillText('XS DRONE · LIFT REVISION 2026-11-10 · A SCRIPTED FLIGHT, DRAWN, NOT FLOWN', 740, 30);
+  ctx.fillStyle = C.ink; ctx.font = '15px ' + css('--body');
+  const words = s.phase.split(' '); let lineTxt = '', lines = [];
+  for (const w of words) { if (ctx.measureText(lineTxt + w).width > 640) { lines.push(lineTxt); lineTxt = ''; } lineTxt += w + ' '; }
+  lines.push(lineTxt);
+  lines.slice(0, 2).forEach((l, i) => ctx.fillText(l, 30, 668 + i * 20));
+  const ph = document.getElementById('phase'); if (ph) ph.textContent = s.phase;
+  const clock = document.getElementById('clock'); if (clock) clock.textContent = t.toFixed(1) + ' s';
+}
+
+// ---------------------------------------------------------------- the clock and the controls
+let playing = !CAPTURE, speed = 1, t0 = performance.now(), tAcc = 0;
+const scrub = document.getElementById('scrub'), playBtn = document.getElementById('play'), spdBtn = document.getElementById('spd');
+function now(){ return playing ? tAcc + (performance.now() - t0) / 1000 * speed : tAcc; }
+function frame(){
+  let t = now();
+  if (t >= DUR) { t = 0; tAcc = 0; t0 = performance.now(); }
+  if (scrub && document.activeElement !== scrub) scrub.value = t.toFixed(2);
+  draw(t);
+  if (playing) requestAnimationFrame(frame);
+}
+if (playBtn) playBtn.addEventListener('click', () => { if (playing) { tAcc = now(); playing = false; playBtn.textContent = 'Play'; } else { t0 = performance.now(); playing = true; playBtn.textContent = 'Pause'; requestAnimationFrame(frame); } });
+if (scrub) scrub.addEventListener('input', () => { tAcc = parseFloat(scrub.value); t0 = performance.now(); draw(tAcc); });
+if (spdBtn) spdBtn.addEventListener('click', () => { tAcc = now(); t0 = performance.now(); speed = speed === 1 ? 0.5 : speed === 0.5 ? 2 : 1; spdBtn.textContent = speed + '×'; });
+const mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener && mq.addEventListener('change', () => { readColors(); draw(now()); });
+if (CAPTURE) {
+  document.body.setAttribute('data-capture', '1');
+  const t = clamp(parseFloat(Q.get('t')) || 0, 0, DUR);
+  document.fonts && document.fonts.ready ? document.fonts.ready.then(() => draw(t)) : draw(t);
+  draw(t);
+} else if (matchMedia('(prefers-reduced-motion: reduce)').matches) { playing = false; playBtn.textContent = 'Play'; draw(6.5); }
+else requestAnimationFrame(frame);
+})();
+</script>
+<style>
+body[data-capture] .wrap{padding:0;max-width:none} body[data-capture] .masthead, body[data-capture] .bar, body[data-capture] .phase, body[data-capture] h2, body[data-capture] ul, body[data-capture] .tw, body[data-capture] p{display:none}
+body[data-capture] .stage{border:0;padding:0} body[data-capture] canvas{width:1280px;height:720px}
+</style>
