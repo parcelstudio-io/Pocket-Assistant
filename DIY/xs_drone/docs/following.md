@@ -51,7 +51,7 @@ little lag, never control (the commander levels after 300 ms of silence and cuts
 - **Hold height.** Yes, from the down-looking ranger: 1.2 m, about head height when you are seated. Not sensed by the camera at all.
 - **Follow around a corner.** Yes. It turns with you, and when it cuts the corner the forward ranger sees the wall the camera is not looking at and clamps forward speed to zero under 60 cm. That reflex runs on the drone, with or without the brain.
 - **Hold still when it loses you.** Not on its own. With no optical-flow sensor it has no horizontal position hold, so it hovers level but drifts. The rule: no person for 1 s, hover; 5 s, land. The controller's own 500 ms link timeout sits under that.
-- **Run for how long.** About 3 min a pack, four packs, so 12 min of following per charge round. The limit of this class, not of the brain.
+- **Run for how long.** About 2.6 min a pack with the speaker fitted (3 min before it), four packs, so about 10 min of following per charge round. The limit of this class, not of the brain.
 
 Follow law: box centre off the frame centre → yaw rate (limit 90°/s); box height → range → forward speed (hold 2.5 m,
 limit 0.8 m/s); height setpoint 1.2 m on the down-looking ranger; no person for 1 s → hover, 5 s → land. Camera about
@@ -66,14 +66,14 @@ approved: flashlight left, ranger right.
 
 |  | With the forward ranger (the build) | Camera-only nose (declined 2026-11-09) |
 | --- | --- | --- |
-| Flying mass, est. | 33.7 g | 33.2 g |
-| Thrust to weight on the vendor's 68 gf | 2.02 | 2.05 |
+| Flying mass, est. | 37.5 g | 37.0 g |
+| Thrust to weight on the vendor's 68 gf | 1.81 | 1.84 |
 | Footprint, height | 71 × 91 mm, 26 mm | the same |
 | Nose | flashlight left, ranger right | flashlight on the centre line |
 | Stops before a wall | yes, under 60 cm | no; the brain only sees what the camera sees |
-| Firmware to write | camera task, ST multizone driver, boot re-addressing, lamp | camera task, lamp |
+| Firmware to write | camera task, ST multizone driver, boot re-addressing, lamp; microphone and playback tasks since 2026-11-09 | camera task, lamp; microphone and playback tasks |
 | I²C devices | three, one re-addressed at boot | two, both at their factory addresses |
-| Pins | all ten used | D7 free |
+| Pins | all eleven used; D10 is the speaker's since 2026-11-09 | D7 free |
 | Decision 2026-11-09 | kept | declined |
 
 What the decision costs: ST's multizone driver and the boot re-addressing stay on the firmware list, as the payload

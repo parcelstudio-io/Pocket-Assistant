@@ -16,6 +16,11 @@ after it (DIY/CLAUDE.md, Design language). The wiring stays silicone wire as dra
 **Following mode, 2026-11-09.** Whether the drone can follow a person indoors with local processing, and what
 it would look like without the forward ranger (weighed and declined the same day: the ranger stays): [following.md](following.md), web version [XS Drone Following](https://claude.ai/artifact/LYYQRGev8wnFg92FFNJxxc).
 
+**Voice, 2026-11-09.** The builder asked for a microphone and a small speaker the same evening. The microphone was
+already on the controller; the speaker costs the one free pin, one amplifier board to buy and about 4 g. Drawn in
+below under Voice, on the wiring sheet and in the views; approved late the same night. Step two, the science and engineering
+behind it: [voice-physics.md](voice-physics.md), web version [XS Drone Voice Physics](https://claude.ai/artifact/F1GaiD5tUNSf6gDL87SgtG) (2026-11-10).
+
 ## Battery: nothing owned fits, buy the whoop pack
 
 | Owned cell | Mass | Why not |
@@ -42,11 +47,12 @@ are often wired opposite to Adafruit's. Keeping the 1.25 plugs also works, but t
 adapter made from one PH 2.0 lead and one of the [1.25 mm leads](https://www.amazon.com/dp/B0GW5WWZTY), and
 the first hover must run through the real plug.
 
-## Buy list for the custom build: complete
+## Buy list for the custom build: one line open
 
 Everything was ordered by 2026-10-28; the Amazon order log in
 [INVENTORY.md](../../pocket_ai_assistant/docs/INVENTORY.md) has the rows (Amazon #23 to #32, the DigiKey
-order, and Amazon #34 for the motion-sensor 3-pack). What was bought for the custom build, with its role:
+order, and Amazon #34 for the motion-sensor 3-pack). The speaker's amplifier board was added 2026-11-09 and is the only line left to buy. What was bought for the custom
+build, with its role:
 
 | Part | Role in the drone | Arrives |
 | --- | --- | --- |
@@ -56,7 +62,7 @@ order, and Amazon #34 for the motion-sensor 3-pack). What was bought for the cus
 | JST 1.25 2-pin leads, 30 pairs | battery lead and charger lead, if the 1.25 plugs stay | Nov 1, picked up (was Nov 3) |
 | GY-521 MPU6050, 10 | spares since Nov 7 | Nov 19–Dec 15 |
 | GY-521 MPU6050, 3 (HiLetgo) | tilt and yaw sensor, lands first; Crumb takes one | Nov 9 (Orders page 2026-11-09) |
-| Clear heat tape, 12 rolls 10 mm (MEBMIK) | the finish: straps, and the card skins | Nov 9 (Orders page 2026-11-09) |
+| Clear heat tape, 12 rolls 10 mm (MEBMIK) | the finish: battery and speaker straps; no skins (rule 2026-11-09) | Nov 9 (Orders page 2026-11-09) |
 | SS14 Schottky diodes, 100 | flyback diode across each motor | Oct 30, on hand |
 | XIAO ESP32-S3 Sense | brain, camera, microphone | Nov 8–11 (Orders page 2026-11-09) |
 | AO3400A MOSFETs, 10 (DigiKey) | four motor switches, flashlight fallback | Nov 2, picked up |
@@ -65,9 +71,11 @@ order, and Amazon #34 for the motion-sensor 3-pack). What was bought for the cus
 | AMC7135, 10 | flashlight regulators | Nov 9 (Orders page 2026-11-09; was Nov 17–20) |
 | Cree XP-G2 stars, 4 (one order of four, not six) | flashlight emitter, three spare | Nov 2, picked up |
 | uxcell 1 mm × 300 mm rod, 20 | frame rails, axles and bars | Nov 4–5, picked up |
+| [PAM8403 class-D amplifier board](https://www.amazon.com/dp/B0DYYX8DF9), 5-pack | the speaker's amplifier; one fitted, four spare (added 2026-11-09) | to buy |
 
 Owned already: 1.5 mm coupons for the collars, resistor kit, 220 µF capacitors, 26 AWG silicone wire,
-Kapton, heat-shrink, flux, iron, saw, bench supply, meter, Adafruit charger.
+Kapton, heat-shrink, flux, iron, saw, bench supply, meter, Adafruit charger; and since 2026-11-09 one of the two spare
+[Same Sky enclosed speakers](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) from Pip's stock.
 
 What the kit would have given that this list does not: a factory-made 1 g driver board, props already matched
 to motors, and a baseline flight on a frame that is known to work. The last one matters most; see the
@@ -80,10 +88,10 @@ inventory, the per-project list, Gmail and the desk log: no drone box has been r
 two "online seller" boxes picked up 11-05. They were the two stainless rod orders (shipped 10-28, due 11-05
 to 11-16): the builder named the rods that evening, so all 20 are on hand.
 
-To buy: nothing, as of the evening of 2026-11-07. The 0.01 g scale was dropped (the builder is not buying one):
+To buy: nothing, as of the evening of 2026-11-07, and one line since 2026-11-09, the speaker's amplifier board (see Voice). The 0.01 g scale was dropped (the builder is not buying one):
 acceptance tests A07 and D02 now use a coin balance and the hover test, see [acceptance-tests.md](acceptance-tests.md).
-The finish uses the clear heat tape bought 2026-11-07 over owned white cardstock (see Colour and finish); the tape
-is Amazon order 114-0986744-9273034, read off the Orders page 2026-11-09 and logged in the inventory.
+The finish is the clear heat tape bought 2026-11-07, as straps only: nothing is painted or applied over any part
+(builder's rule 2026-11-09, see Colour and finish). The tape is Amazon order 114-0986744-9273034, read off the Orders page 2026-11-09 and logged in the inventory.
 
 Bought 2026-11-07 (builder-reported): a [motion sensor 3-pack](https://www.amazon.com/dp/B00LP25V1A), so the
 IMU step need not wait for the 11-19 to 12-15 window of the ten already ordered. The drone and Crumb take one
@@ -122,6 +130,7 @@ Rebuilt by hand it is this, and it keeps every GPIO the ESP-Drone configuration 
 | VL53L7CX LPn | D7 | 44 | LPn pin of the forward sensor |
 | Motor M1, front right, CCW | D8 | 7 | gate of switch 1 |
 | IMU interrupt | D9 | 8 | GY-521 INT |
+| Speaker audio, sigma-delta DAC | D10 | 9 | 10 kΩ into the filter at the amplifier's left input (added 2026-11-09) |
 | 3V3 | 3V3 | | VIN of the VL53L1X carrier, VDD of the VL53L7CX carrier (its VIN left open), VCC of the GY-521 |
 | Battery | BAT+ / BAT− pads on the back | | the PH 2.0 pigtail (packs re-terminated, see Battery); VBAT and GND buses |
 
@@ -160,6 +169,56 @@ A 220 µF electrolytic from the owned kit across VBAT near the switches catches 
 Mass of the hand-built board: four SOT-23, four SMA diodes, ten resistors, a capacitor, the GY-521 and
 the wire, about 2.5 g est. against the kit board's 1 g. The frame absorbs the difference; see the ledger.
 
+## Voice: microphone and speaker, added and approved 2026-11-09
+
+The builder asked for a microphone and a small speaker on the evening of 2026-11-09 ("small ones are fine").
+The microphone was already there: the Sense board carries a digital (PDM) [microphone](https://wiki.seeedstudio.com/xiao_esp32s3_sense_mic/) wired inside the
+XIAO on GPIO41 and 42, so it costs no pin and no mass, and the ledger has counted it all along. The speaker is
+new, and the constraint is pins, not size: the XIAO brings out eleven pins and the drone uses ten, so
+[D10, GPIO9](https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/), is the only one free. The owned I²S amplifiers need three pins and are out. The speaker
+therefore takes an analog path from that one pin.
+
+- **DAC.** The ESP32-S3's [sigma-delta modulator](https://docs.espressif.com/projects/esp-idf/en/v5.3/esp32s3/api-reference/peripherals/sdm.html) (ESP-IDF's `sdm` driver, eight channels, any GPIO) runs on
+  GPIO9 at a 1 MHz pulse rate as an 8-bit DAC; a 16 kHz hardware timer updates the density from a ring buffer.
+  Espressif documents exactly this use and asks for a low-pass filter after the pin.
+- **Filter and level.** GPIO9 → 10 kΩ (R1) → node; node → 1.5 kΩ (R2) to GND and 22 nF (C1) to GND; node → the
+  amplifier's left input. R1 and R2 divide the 3.3 V swing to 0.43 V peak to peak at full scale, and with C1 they
+  roll off above 5.6 kHz: speech in, the megahertz pulses out. The amplifier's 24 dB of gain makes that about 6 V
+  peak to peak across the speaker, 0.6 W into 8 Ω at 3.7 V, which is the speaker's rating; the firmware runs 6 dB
+  under that by default. All three parts come from the owned kits.
+- **Amplifier.** A [PAM8403 class-D board](https://www.amazon.com/dp/B0DYYX8DF9) (to buy, a 5-pack; the version without the volume knob; about
+  18.5 × 21 mm, 1.5 g est. with its header pads bare), fed from VBAT, inside its 2.5 to 5.5 V range, with a 47 to
+  100 µF reservoir from the owned kit across its power pads. Left channel only: IN R and both right outputs stay
+  open, and OUT L− never meets GND, because the outputs are bridged. The board has no shutdown pad, so a soft pop
+  at power-up is expected. The listing was not re-read (Amazon blocks the agent); the board is the common one.
+- **Speaker.** One of the two spare [Same Sky enclosed speakers](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) from Pip's stock
+  ([datasheet](https://sameskydevices.com/product/resource/ces-20134-088pm.pdf)): 20 × 16 × 4.9 mm, 21 mm over its two flanges, 2 g typical, 8 Ω, 0.8 W, 91 dB at 10 cm,
+  sealed back, black housing, 60 mm leads. The bare 15 × 11 mm element inside it is 0.5 g but loses the sealed
+  back and would be a DigiKey order; the owned part wins.
+- **Where.** The speaker lies on the tail of the floor pan behind the cabin, grille up, from −10.5 to −30.5 mm, under
+  the rear prop discs with its top at 10.9 mm, 5 mm under the prop plane; two clear-tape straps hold it with the
+  pack and a loop of 30 AWG through each flange hole ties it to the rails. The amplifier hangs under the pan at the
+  nose ahead of the motion sensor, +11 to +29.5 mm, 0.5 mm short of the front axle, components toward the floor,
+  1.5 mm above it on the skids. Its leads to the speaker run along the pan's edge under the straps (no sleeves: rule 2026-11-09).
+  The two masses sit about 20 mm either side of the centre and nearly balance.
+- **Firmware.** Two items join the payload plan's list: a microphone task (I²S PDM in at 16 kHz, streamed up) and a
+  playback task (the ring buffer and the timer). Both speak the WebSocket protocol Pip's character server already
+  serves (`pocket_ai_assistant/character/server/PROTOCOL.md`), over the Wi-Fi link following uses; the desk computer
+  does the listening, thinking and talking.
+- **Honest limit.** In flight the props are centimetres from both. It can announce while flying; it will not hear you
+  over the motors, so voice commands in flight go through the desk computer's own microphone. Talking both ways is
+  for when it has landed or perches next to you.
+- **Cost.** About 4.0 g: the speaker 2.0, the amplifier 1.5 est., filter, reservoir and ties 0.5 est. The estimate
+  goes from 33.5 to 37.5 g and thrust to weight from 2.03 to 1.81, under the 2.0 gate but inside the 1.5 floor that
+  D02 allows (hover command about 74 % instead of 70 %); hover current about 4.4 A, flight about 2.6 min. If the
+  first hover reads under 1.8, the choices are the bare 0.5 g element or the 716 motors already in the plan.
+- **Pin note.** GPIO9 is also the Sense board's SD-card MOSI line. No card ever goes in that slot on this aircraft;
+  the empty socket leaves the line free.
+- **Finish.** The speaker's housing is black, one of the family's colours, so it stays as bought; its red and black
+  leads run under the straps along the pan's edge. The amplifier board is blue and simply hides under the hood; nothing
+  is applied to anything (no paint, no skins, no sleeves: builder's rule 2026-11-09).
+- **Approved and explained.** Approved late on 2026-11-09. Step two, the science and engineering behind every number here, is [voice-physics.md](voice-physics.md) (web version [XS Drone Voice Physics](https://claude.ai/artifact/F1GaiD5tUNSf6gDL87SgtG), PDF `pages/print/voice-physics.pdf`, 2026-11-10), generated by `pages/gen/voice_page.py`. Two things from it for the firmware: the microphone task asks the I2S driver for the 128× clock ratio (2.05 MHz at 16 kHz; the default 64× gives 1.02 MHz, which falls in a gap between the microphone datasheet's low-power and standard bands), and the playback task keeps the everyday level at ±64 (6 dB under full scale, inside Espressif's ±90 range) and mutes the microphone while it plays. The amplifier link is the knob-less listing in the builder's cart (11-09, $5.59, not ordered); C11's quiescent limit is 20 mA, the datasheet's typical being 10 mA at 3.6 V.
+
 ## The car-like layout
 
 The kit is a square. A car is longer than it is wide, low, with its lights at the nose. The custom
@@ -192,8 +251,10 @@ Layout, top view, nose up, lateral positions from the centre line:
 ```text
    headlight bar at +33 mm:   flashlight star at −9, lens 7 mm proud  |  VL53L7CX at +9, facing forward
    front axle at +30 mm:      motors at ±20, CW left (M4), CCW right (M1)
+   hood, under the pan, +11 to +29.5 mm: amplifier board, components down (added 2026-11-09)
    cabin, +10 to −10 mm:      XIAO + Sense on top of the battery, camera on its front face, 10° down
    floor pan, +27 to −27 mm:  the 55 × 12 mm pack between the rails, Kapton-strapped
+   tail of the pan, −10.5 to −30.5 mm: speaker on the pan, grille up (added 2026-11-09)
    rear axle at −30 mm:       motors at ±20, CCW left (M3), CW right (M2)
    tail, −27 to −33 mm:       VL53L1X under the floor pan, looking down; GY-521 under the pan at the centre
    rails at ±7 mm, 66 mm long; 5 mm skids under the axle ends
@@ -217,36 +278,48 @@ member once strapped: it stops the ladder racking.
 
 Decided 2026-11-07 at the builder's request, under the family colour rule in DIY/CLAUDE.md: white, ivory or
 black as much as possible, the frame its own metal, nothing green, blue or red in sight. First drawn that day as
-matte black skins, then redone in white the same evening when the builder put white and ivory first. So:
-stainless, white and black. The frame is bare brushed stainless; every board and label that would show a colour
-goes under a patch of white card held by clear tape; the props and the controller are the black. The headlight
-is white light; the controller's gold pads and the camera's amber ribbon are the only warm notes. Colours as
+matte black skins, redone in white the same evening, and on 2026-11-09 stripped of skins altogether under the
+builder's second rule: **no painting and nothing applied over a part**, no card, no film, no sheet, no sleeve, no custom cover.
+The order of choice is a part that comes in white, ivory, black or bare metal; the same part bought in a matching or
+complementary colour; hiding by placement inside the build. So: stainless, white and black, as bought. The frame is
+bare brushed stainless; the props, the controller, the speaker and the regulators are black; the pack's wrap is
+white and lies label-down; every bare board hides under the pan or the hood. One colour shows: the forward ranger's
+13 mm green board at the nose, recessed between the rails. The headlight is white light; the controller's gold
+pads and the camera's amber ribbon are the only warm notes. Colours as
 bought were read from the vendors' photos on 2026-11-07.
 
 | Part | As bought | Finish |
 | --- | --- | --- |
 | Frame, collars, skids | stainless | bare; wash the flux off |
-| [Motors](https://www.amazon.com/dp/B09J236JJL) | silver cans; CCW leads black and white, CW leads red and blue | CW leads in the owned white heat-shrink |
+| [Motors](https://www.amazon.com/dp/B09J236JJL) | silver cans; CCW leads black and white, CW leads red and blue | as bought; the CW leads' red and blue run along the collar and the axle rod, out of sight (no sleeves: rule 2026-11-09) |
 | [Props](https://www.amazon.com/dp/B09L4MXXCW) | black | as bought: the black |
 | [Controller](https://www.amazon.com/dp/B0C69FFVHH), camera, antenna | black board, silver shield, gold pads | as bought |
-| [Flight packs](https://www.amazon.com/dp/B0FCMLVCN2) | silver-white wrap with a big red "250" | a white card patch over the label under two strips of clear tape; the wrap is already white |
+| [Flight packs](https://www.amazon.com/dp/B0FCMLVCN2) | silver-white wrap with a big red "250" | label face down, against the sensors under the pan; the white wrap is what shows |
 | Battery straps | amber Kapton | clear heat tape, 10 mm |
-| [8×8 laser ranger](https://www.pololu.com/product/3418), at the nose | green board | white card on both faces, held by clear tape, window cut over the sensor |
-| [Down-looking laser ranger](https://www.pololu.com/product/3415) | green board | white card on the faces that show, held by clear tape, window over the sensor |
-| [Motion sensor](https://www.amazon.com/dp/B00LP25V1A) | blue board | white card under clear tape, after test C03 |
-| Wire | six colours per kit | white for everything, black for ground; bundles in the owned white heat-shrink |
+| [8×8 laser ranger](https://www.pololu.com/product/3418), at the nose | green board | as bought: the one colour that shows, a 13 mm square recessed between the rails at the nose; the in-palette swap is below |
+| [Down-looking laser ranger](https://www.pololu.com/product/3415) | green board | as bought, hidden under the pan |
+| [Motion sensor](https://www.amazon.com/dp/B00LP25V1A) | blue board | as bought, hidden under the pan |
+| Wire | six colours per kit | white for everything, black for ground, straight from the kit; no sleeves |
 | [Flashlight](https://www.amazon.com/dp/B00LWU5DWM) | aluminium star, clear lens, black regulators and beeper | as bought; white hot glue on the lens legs |
 | Plugs | white PH 2.0 housings | as bought |
-| Status lights | motion sensor power LED; controller charge and user LEDs | power LED under its card; the charge LED lights only on USB; the user LED stays off in firmware |
+| [Speaker](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/CES-20134-088PM/10821309) (added 2026-11-09) | black ABS housing, red and black leads | as bought: the black; its leads run under the straps along the pan's edge |
+| [Amplifier board](https://www.amazon.com/dp/B0DYYX8DF9) (added 2026-11-09) | blue board | as bought, hidden under the hood |
+| Status lights | motion sensor power LED; controller charge and user LEDs | the motion sensor's power LED faces the floor under the pan; the charge LED lights only on USB; the user LED stays off in firmware |
 
 Materials: the [clear heat tape](https://www.amazon.com/dp/B0BD84GGPV) bought 2026-11-07 (12 rolls of 10 mm × 33 m, polyester film
-with a heat-resistant adhesive), the owned [white cardstock](https://www.amazon.com/dp/B0DSH5V1TT) and the owned white heat-shrink.
-Nothing to buy. Tape rather than heat-shrink on the packs, so no heat goes near a cell. If the white 3M film
-turns out to be among the day's orders, it replaces the card and saves 0.2 g.
+with a heat-resistant adhesive) for the straps. No card, no film, no sleeves, no
+paint. Tape rather than heat-shrink on the packs, so no heat goes near a cell.
 
-The finish goes on last, over tested joints: a skin hides a board's pin labels, so solder and test first.
-It weighs about 0.4 g (card patches 0.2 g, tape 0.2 g), which takes the estimate to 33.7 g and thrust to
-weight to 2.02, still over the 2.0 gate. The hover test decides. The web page's drawings are in these colours.
+**The one swap on offer.** If the green square at the nose must go, the in-palette part is [Pimoroni's VL53L5CX breakout](https://shop.pimoroni.com/products/vl53l5cx-time-of-flight-tof-sensor-breakout):
+a black board, 63° field instead of the VL53L7CX's 90°, 4 m, about 19 mm square, roughly $25 plus shipping, a driver change,
+and more board than the Pololu. Its page could not be read tonight (rate-limited), so check the photo before buying. Not
+recommended: the Pololu is owned, half the size, and the colour is one 13 mm square. SparkFun's mini VL53L5CX is red; the
+colour of ST's own SATEL board is unconfirmed.
+
+The straps go on last, over tested joints. The finish weighs about 0.2 g (tape), which takes the estimate to 33.5 g
+and thrust to weight to 2.03, over the 2.0 gate; the speaker and its amplifier (Voice, 2026-11-09) then take it to
+37.5 g and 1.81. The hover test decides. The web page's drawings are in these colours, the forward ranger's board
+green as it is.
 
 ## Mass ledger and flight numbers
 
@@ -263,25 +336,32 @@ weight to 2.02, still over the 2.0 gate. The hover test decides. The web page's 
 | Flashlight: 14 mm star, lens, two AMC7135, piezo | 2.0 g est. | payload assessment |
 | VL53L1X + VL53L7CX | 1.0 g | Pololu |
 | Wiring, Kapton, solder | 1.5 g est. | |
-| Finish: white card under clear tape, straps, lead sleeves | 0.4 g est. | colour and finish |
-| **Flying mass** | **33.7 g est.** | |
+| Finish: clear-tape straps only; no skins, no sleeves | 0.2 g est. | colour and finish, rule 2026-11-09 |
+| Speaker, Same Sky enclosed (2026-11-09) | 2.0 g | datasheet, typical; 1.5 to 2.5 |
+| Amplifier board, header pads bare (2026-11-09) | 1.5 g est. | |
+| Filter parts, reservoir capacitor, speaker ties (2026-11-09) | 0.5 g est. | |
+| **Flying mass** | **37.5 g est.** | 33.5 g before the speaker |
 
-| Figure | Kit-based plan, 32 g | Custom, 33.7 g |
-| --- | ---: | ---: |
-| Thrust-to-weight on the vendor's 68 gf | 2.1 | 2.02 |
-| Hover current, scaled as mass^1.5 from 2.4 A at 25 g | 3.5 A | 3.8 A |
-| Flight time at 80 % of 250 mAh, lamp off | 3.2 min | 3.0 min |
+| Figure | Kit-based plan, 32 g | Custom, 33.5 g | With voice, 37.5 g |
+| --- | ---: | ---: | ---: |
+| Thrust-to-weight on the vendor's 68 gf | 2.1 | 2.03 | 1.81 |
+| Hover current, scaled as mass^1.5 from 2.4 A at 25 g | 3.5 A | 3.7 A | 4.4 A |
+| Flight time at 80 % of 250 mAh, lamp off | 3.2 min | 3.1 min | 2.6 min |
 
 Same aircraft, about a gram apart. The custom column carries the jig's 4.4 g frame (2026-11-06) and the
-0.4 g finish (2026-11-07), which together take thrust to weight from 2.06 to 2.02, just over the 2.0 gate. The 68 gf is
+0.2 g finish (straps only since 2026-11-09), which together take thrust to weight from 2.06 to 2.03, just over the 2.0 gate. The 68 gf is
 still the ESP-FLY vendor's claim for these motors on 30 mm props; the E010, which flies the same motors on
 these 31 mm props at about 22 g, is the reassurance that the class works, and the hover test (D02) is
-still the gate. If it fails, 716 motors on 40 mm props, with the axles lengthened to 50 mm.
+still the gate. If it fails, 716 motors on 40 mm props, with the axles lengthened to 50 mm. The voice column (2026-11-09) adds the
+speaker, amplifier and filter, 4.0 g: 1.81, under the gate but inside the 1.5 floor D02 allows, hover command about
+74 %, 4.4 A, 2.6 min.
 
 ## Build order and gates
 
 1. **Power first.** Packs re-terminated to PH 2.0 (see Battery), then the pigtail, divider, 220 µF, XIAO
-   on the bench supply at 3.7 V with the current limit at 0.5 A. The app shows the voltage the meter shows.
+   on the bench supply at 3.7 V with the current limit at 0.5 A. The app shows the voltage the meter shows. Then the
+   speaker path on the same supply: a 1 kHz tone from the DAC, 0.43 V peak to peak at the filter node on the scope,
+   clean at the speaker (test C11).
 2. **One switch cell on the bench**, motor without prop, bench supply limited to 1.5 A. PWM sweep from
    the firmware's motor test. The MOSFET stays cold, the motor stops at zero, the diode band points at
    VBAT. Then the other three.
@@ -293,7 +373,8 @@ still the gate. If it fails, 716 motors on 40 mm props, with the axles lengthene
    baseline, the flight the kit would have given for free. Read the thrust gate here: a full-throttle punch
    from a low hover, the accelerometer's z log peak in g is the thrust-to-weight ratio; without the log,
    hovering at 70 % thrust or less passes.
-6. Then as the payload assessment says: VL53L1X and height hold, flashlight and beeper, VL53L7CX last.
+6. Then as the payload assessment says: VL53L1X and height hold, flashlight and beeper, VL53L7CX last, then the
+   voice loop over the Wi-Fi link (test C12).
 
 ## Sources
 
@@ -302,3 +383,4 @@ Motors and props: [615 for H36/E010, 4-pack](https://www.amazon.com/dp/B09J236JJ
 Battery: [ZEVORO 250 mAh](https://www.amazon.com/dp/B0FQC9MDT6), [GNB 250 mAh](https://amazon.com/dp/B07GVDXVY5), [Adafruit 500 mAh](https://www.adafruit.com/product/1578).
 IMU: [GY-521](https://www.amazon.com/dp/B07MMZ37PT). Diodes: [Chanzon SS14](https://www.amazon.com/dp/B079KJ46ZS), [onsemi SS14 at DigiKey](https://digikey.com/product-detail/en/fairchild-on-semiconductor/SS14/SS14CT-ND/965729).
 MOSFET: [AO3400A](https://www.digikey.com/en/products/detail/evvo/AO3400A-EV/26221089). Kit reference: [Co-Create ESP-FLY](https://github.com/Seeed-Projects/Co-Create_ESP-FLY), [wiring.md](wiring.md), [purchasing.md](purchasing.md).
+Voice (2026-11-09): [Same Sky CES-20134-088PM datasheet](https://sameskydevices.com/product/resource/ces-20134-088pm.pdf), [PAM8403 board, 5-pack](https://www.amazon.com/dp/B0DYYX8DF9), [ESP-IDF sigma-delta modulator](https://docs.espressif.com/projects/esp-idf/en/v5.3/esp32s3/api-reference/peripherals/sdm.html), [XIAO ESP32-S3 pin multiplexing](https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/), [Sense microphone](https://wiki.seeedstudio.com/xiao_esp32s3_sense_mic/).

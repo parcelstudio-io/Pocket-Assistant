@@ -33,7 +33,7 @@ RANGER_X = 9.0
 STAR_R, STAR_Y, STAR_Z = 7.0, 33.0, 7.0        # 14 mm star disc, vertical, facing forward
 LENS_R, LENS_LEN = 5.0, 7.0
 
-MASS_WITH, MASS_WITHOUT = 33.7, 33.2
+MASS_WITH, MASS_WITHOUT = 37.5, 37.0   # with the speaker and amplifier added 2026-11-09 (33.7 / 33.2 before)
 TW_WITH, TW_WITHOUT = 68 / MASS_WITH, 68 / MASS_WITHOUT
 
 # ---------------------------------------------------------------- projection for the three-quarter view
@@ -155,14 +155,14 @@ def three_quarter(camera_only=True):
             items.append(cylinder(x, y, COLLAR_R, -COLLAR_H / 2, COLLAR_H / 2, "var(--metal-soft)", "var(--metal)"))
             items.append(cylinder(x, y, MOTOR_R, MOTOR_Z0, MOTOR_Z1, "var(--metal-soft)", "var(--metal)"))
             items.append(prop(x, y))
-    items.append(box(GY, "var(--skin)", "var(--skin-edge)"))
-    items.append(box(VL1, "var(--skin)", "var(--skin-edge)"))
+    items.append(box(GY, "var(--board)", "var(--board-edge)"))
+    items.append(box(VL1, "var(--board)", "var(--board-edge)"))
     items.append(box(BAT, "var(--skin)", "var(--skin-edge)"))
     items.append(box(CABIN, "var(--matte)", "var(--matte-edge)"))
     items.append(box(CAM, "var(--matte)", "var(--matte-edge)"))
     items.append(lamp(LAMP_X_CAMERA_ONLY if camera_only else LAMP_X_APPROVED))
     if not camera_only:
-        items.append(box((RANGER_X - 9, RANGER_X + 9, 33, 36, 0.5, 13.5), "var(--skin)", "var(--skin-edge)"))
+        items.append(box((RANGER_X - 9, RANGER_X + 9, 33, 36, 0.5, 13.5), "var(--board)", "var(--board-edge)"))
     items.sort(key=lambda t: t[0])
     body = "\n".join(f for _, f in items)
     # leader labels
@@ -346,7 +346,7 @@ def geometry_figure():
 
 # ---------------------------------------------------------------- text, shared by page and markdown
 KPIS = [("0 g", "added to the drone for following"), ("~150 ms", "camera-to-motor loop, est."), ("15 Hz", "follow commands"),
-        ("3 min", "a pack; four packs"), ("kept", "the forward ranger stays, decided 2026-11-09")]
+        ("2.6 min", "a pack with the speaker fitted (3 min before it); four packs"), ("kept", "the forward ranger stays, decided 2026-11-09")]
 
 THREE = [
     ("A Raspberry Pi 5 on the drone?", "No. The board alone is 46 g and wants 5 V at up to 5 A, so the aircraft to carry it starts near 300 g with bigger cells and 3-inch props: a different project. Even a Pi Zero 2 W (10 g) drags in a 5 V supply and a camera, about 25 g, and the drone grows into the 716-motor class. None of it is needed: the Wi-Fi link already exists for control, and a video stream rides the same link to the computer on the desk, which has more compute than any flying Pi."),
@@ -360,7 +360,7 @@ CAPABLE = [
     ("Hold height", "Yes, from the down-looking ranger: 1.2 m, about head height when you are seated. Not sensed by the camera at all."),
     ("Follow around a corner", "Yes. It turns with you, and when it cuts the corner the forward ranger sees the wall the camera is not looking at and clamps forward speed to zero under 60 cm. That reflex runs on the drone, with or without the brain."),
     ("Hold still when it loses you", "Not on its own. With no optical-flow sensor it has no horizontal position hold, so it hovers level but drifts. The rule: no person for 1 s, hover; 5 s, land. The controller's own 500 ms link timeout sits under that."),
-    ("Run for how long", "About 3 min a pack, four packs, so 12 min of following per charge round. The limit of this class, not of the brain."),
+    ("Run for how long", "About 2.6 min a pack with the speaker fitted (3 min before it), four packs, so about 10 min of following per charge round. The limit of this class, not of the brain."),
 ]
 
 LATENCY = [("Capture and JPEG on the drone", "40 to 70 ms"), ("Wi-Fi, drone to PC", "10 to 30 ms"), ("Detector", "5 to 10 ms on the GPU; 30 to 60 ms on a laptop CPU"),
@@ -369,8 +369,8 @@ LATENCY = [("Capture and JPEG on the drone", "40 to 70 ms"), ("Wi-Fi, drone to P
 COMPARE = [("Flying mass, est.", f"{MASS_WITH} g", f"{MASS_WITHOUT} g"), ("Thrust to weight on the vendor's 68 gf", f"{TW_WITH:.2f}", f"{TW_WITHOUT:.2f}"),
            ("Footprint, height", "71 × 91 mm, 26 mm", "the same"), ("Nose", "flashlight left, ranger right", "flashlight on the centre line"),
            ("Stops before a wall", "yes, under 60 cm", "no; the brain only sees what the camera sees"),
-           ("Firmware to write", "camera task, ST multizone driver, boot re-addressing, lamp", "camera task, lamp"),
-           ("I²C devices", "three, one re-addressed at boot", "two, both at their factory addresses"), ("Pins", "all ten used", "D7 free"),
+           ("Firmware to write", "camera task, ST multizone driver, boot re-addressing, lamp; microphone and playback tasks since 2026-11-09", "camera task, lamp; microphone and playback tasks"),
+           ("I²C devices", "three, one re-addressed at boot", "two, both at their factory addresses"), ("Pins", "all eleven used; D10 is the speaker's since 2026-11-09", "D7 free"),
            ("Decision 2026-11-09", "kept", "declined")]
 
 WHAT_RUNS = [("Attitude, 500 Hz", "drone", "the motion sensor through ESP-Drone's existing loop"), ("Height hold", "drone", "down-looking ranger into the Kalman estimator, as planned"),
@@ -422,7 +422,7 @@ def build():
 
 <h2>The forward ranger stays</h2>
 <p>Leaving it off was weighed: 0.5 g lighter, a symmetric nose with the flashlight on the centre line, two firmware items instead of four. The builder kept it on 2026-11-09, and following is the reason: the camera looks at the person, not at the wall the drone is about to cut past, and the ranger's stop-before-the-wall reflex covers exactly that blind spot. The nose stays as approved: flashlight left, ranger right.</p>
-<figure>{three_quarter(False)}<figcaption>As approved, in the finished colours: bare stainless, the pan and the boards in white card under clear tape, black props and controller, the flashlight left and the forward ranger right under the front prop discs.</figcaption></figure>
+<figure>{three_quarter(False)}<figcaption>Drawn before the speaker and its amplifier were added later the same evening; those are on the build page. As approved, in the finished colours: bare stainless, the pack's white wrap, the bare boards hidden under it and the forward ranger's green board at the nose (no paint, no skins: rule 2026-11-09), black props and controller, the flashlight left and the forward ranger right under the front prop discs.</figcaption></figure>
 {table(COMPARE, ["", "With the forward ranger (the build)", "Camera-only nose (declined 2026-11-09)"])}
 <p><strong>What the decision costs.</strong> The two bigger firmware items stay on the list: ST's multizone driver ported to ESP-Drone's I&sup2;C layer, and the boot re-addressing of the down-looking ranger. Both were already in the payload plan; following adds nothing to them.</p>
 

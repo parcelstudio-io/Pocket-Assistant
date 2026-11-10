@@ -49,6 +49,8 @@ Bench supplies and long leads can create artifacts. Measure at the board, use a 
 | C08 | App lifecycle | Screen lock, background, force-close, Wi-Fi disable and OS network switching each meet C06/C07 |
 | C09 | Packet validity | Truncated, oversized and bad-checksum packets rejected without crash or motor command; host tests pass and bench replay inspected |
 | C10 | Wi-Fi contention | At planned operating distance, command timing remains acceptable with realistic interference; stale-link action still works |
+| C11 | Speaker path (added 2026-11-09) | A 1 kHz tone from the sigma-delta DAC reads 0.43 V p-p ±20 % at the filter node and plays clean at the speaker with no audible pulse-rate whine; full scale does not clip at a 3.5 V supply; the amplifier's quiescent draw is under 20 mA (its datasheet's typical is 10 mA at 3.6 V) |
+| C12 | Voice loop (added 2026-11-09) | Props off: a spoken sentence from the drone's microphone transcribes correctly on the desk server; the server's reply plays through the speaker and is intelligible at 1 m; both run over the aircraft's own Wi-Fi link while the camera stream is up; the microphone's clock pin reads about 2.05 MHz (the 128× ratio), not 1.02 |
 
 The patched design uses 300 ms stabilization and 500 ms motor-stop thresholds. C06 includes 100 ms scheduling/measurement allowance as a release ceiling, not proof of a measured timing bound. If the patch or build configuration changes, derive the acceptance limit again from the actual source. Host timing tests prove code decisions at selected timestamps; they do not measure FreeRTOS scheduling or phone behavior.
 
@@ -59,7 +61,7 @@ For each lifecycle scenario, hold a nonzero command with props absent, trigger t
 | ID | Test | Pass criterion |
 |---|---|---|
 | D01 | Motor matching | Repeatable current across all four, props on, at the same duty and voltage on the bench supply; investigate >10% mismatch |
-| D02 | Whole-aircraft margin | ≥2:1 thrust/weight fresh, read in flight: a full-throttle punch from a low hover over the bed, the accelerometer z log peak in g is the ratio; without the log, hover at ≤70% thrust command (thrust rises about as duty squared); ≥1.5:1 at the chosen end-of-flight voltage (hover ≤82%) |
+| D02 | Whole-aircraft margin | ≥2:1 thrust/weight fresh, read in flight: a full-throttle punch from a low hover over the bed, the accelerometer z log peak in g is the ratio; without the log, hover at ≤70% thrust command (thrust rises about as duty squared); ≥1.5:1 at the chosen end-of-flight voltage (hover ≤82%); the voice build at 37.5 g est. is designed to 1.8:1, so expect a hover command near 74 % (2026-11-09) |
 | D03 | Thermal endurance | B04–B06 remain satisfied over representative flight duty; motor temperatures compatible with adhesive/frame |
 | D04 | Initial hover | Several short low hovers without flips, strong oscillation, resets or unpredictable command response |
 | D05 | Repeatability | Three controlled flights with logged time/voltage, no new mechanical or thermal defect, reserve on landing |
