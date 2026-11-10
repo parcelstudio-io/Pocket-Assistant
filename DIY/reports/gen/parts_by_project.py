@@ -143,7 +143,8 @@ PROJECTS = [
         "The drone's electronics are all in the building: the DigiKey switches, lens and beepers came by "
         "FedEx and the Pololu rangers by USPS, both at the front desk on 11-02, the same day as the four "
         "flashlight emitters. The frame rod came in two boxes on 11-04 and 11-05. Still in the mail: motors, "
-        "propellers, the regulators and the motion sensor; the controller lands by 11-11.",
+        "propellers, the regulators and the motion sensor; the controller lands by 11-11. Added 2026-11-09 for the voice build: "
+        "a speaker from Pip's stock and an amplifier board to buy.",
         [
             ("1", "controller with camera and microphone", amz("B0C69FFVHH"),
              "Amazon 114-5295722-2709061, 2026-10-27", XIAO_11, "The drone's own board."),
@@ -162,7 +163,7 @@ PROJECTS = [
             ("about 0.3 m of 12 rolls", "clear heat tape, 10 mm", amz("B0BD84GGPV"),
              "Amazon 114-0986744-9273034, 2026-11-07",
              "in transit · arriving 2026-11-09 (Amazon Orders page, read 2026-11-09)",
-             "The finish: battery straps, and white card patches under it on the boards and the pack label. Eleven rolls spare for any project."),
+             "The finish: battery and speaker straps; no card, no skins (builder's rule 11-09). Eleven rolls spare for any project."),
             ("4 of 100", "Schottky diodes", amz("B079KJ46ZS"),
              "Amazon 114-5201101-3840264", "on hand · delivered 2026-10-30", "The satellite takes one."),
             ("4 + 1 of 10", "N-channel MOSFETs", DK_AO3400,
@@ -193,6 +194,12 @@ PROJECTS = [
              "Amazon 2026-09-02", "on hand", ""),
             ("as needed", "26 AWG silicone wire, Kapton, heat-shrink", amz("B07G2LRX68"),
              "bench stock, 2026-09-02", "on hand", ""),
+            ("1 of 6", "enclosed speaker, Same Sky", DK_SPEAKER,
+             "DigiKey 2026-09-02 and 10-01 (Pip's stock)", "on hand",
+             "Added 2026-11-09 for the voice build; one of Pip's two spares. On the pan's tail, grille up."),
+            ("1 of 5", "PAM8403 class-D amplifier board, 5-pack", amz("B0DYYX8DF9"),
+             "nothing bought; in the builder's Amazon cart since 2026-11-09 about 22:00 EST (B0DYYX8DF9, the version without the volume knob, $5.59, sold by YFUSET, 4 left)", "not ordered · in the cart, the checkout is the builder's; added 2026-11-09 for the speaker, the drone's only open line",
+             "Under the pan at the nose, hidden as bought. Four spare."),
             ("1", "USB-C LiPo charger, for the flight packs", ada(4410),
              "Adafruit 2026-09-01", "on hand", "Pip's held part, shared."),
         ],
@@ -386,7 +393,7 @@ PROJECTS = [
              "Amazon 111-4967394-9172244, 2026-11-03", "on hand · delivered 2026-11-06, twelve days early (UPS from the maker, building log); picked up 2026-11-06",
              "Spare since 11-06: on the bench the steel read too white, so the base is the brass coaster below. In the satellite bin for now (sorted 11-07)."),
             ("0 (to buy again)", "brass coaster, 75 × 8 mm, flat top", amz("B0D9DMK3L7"),
-             "Amazon 114-8443990-0476239, 2026-11-06, $12.99 ($14.14 with tax, sold by TOGGOOL)", "not ordered · the one bought 2026-11-06 was delivered 2026-11-09 (mail room) and is the desk lighthouse's at the builder's word; buy another for the satellite when it is built",
+             "Amazon 114-8443990-0476239, 2026-11-06, $12.99 ($14.14 with tax, sold by TOGGOOL)", "not ordered · in the builder's Amazon cart since 2026-11-09 about 22:00 EST ($12.99, TOGGOOL, ships from Amazon); the one bought 2026-11-06 was delivered 2026-11-09 (mail room) and is the desk lighthouse's at the builder's word",
              "The base. Hollow under a thin top, so the printed hub is glued on and about 150 g of steel goes into the hollow."),
             ("0 (was 3)", "mini solar panels, 110 × 60 mm, 6 V, 3-pack", amz("B08THXDWS1"),
              "Amazon 114-9697223-4179439, 2026-11-03", "cancelled · the Orders page says cancelled, not charged",
@@ -416,11 +423,12 @@ PROJECTS = [
         "lines by price and confirmed by the day's two shipping mails; these five orders were first logged as the Mars rover's. The brass coaster bought "
         "2026-11-06 as the satellite's base is this build's since 11-09 and was delivered that day to the mail room. The five Grand Brass lamp parts "
         "are ordered by the builder's word, with no confirmation mail yet. The charger is not ordered: the DigiKey order of 11-09 was the rover's. "
+        "That evening the builder rejected the acrylic tube and dropped the brass sheet (its order came back cancelled by the seller, not charged), so Rev D (awaiting approval) has an open lantern, no house, and its three small brass pieces made from the owned 1 mm rod and tubes. "
         "Everything else comes out of owned stock (`desk_lighthouse/docs/INVENTORY.md`).",
         [
-            ("1", "clear acrylic tube, 25 mm OD × 21 mm ID × 305 mm", amz("B08ZM5BCQJ"),
-             "Amazon 114-1438198-3243448, 2026-11-09, $8.99", "in transit · shipped 2026-11-09 12:13 EST with the reed switches ($20.48), arriving Wed 11-11 (Amazon's mail)",
-             "The lantern glass; cut 48 mm. Clear, 2 mm wall."),
+            ("0 (to return)", "clear acrylic tube, 25 mm OD × 21 mm ID × 305 mm", amz("B08ZM5BCQJ"),
+             "Amazon 114-1438198-3243448, 2026-11-09, $8.99", "in transit · shipped 2026-11-09 12:13 EST with the reed switches ($20.48), arriving Wed 11-11; rejected by the builder that evening (Rev D has no glass): return it or keep it as stock",
+             "Was the lantern glass. Rev D's lantern is open."),
             ("1 of 2", "N20 gearmotor, 6 V, 30 rpm, 3 mm D shaft, 2-pack", amz("B096S475NH"),
              "Amazon 114-1438198-3243448, $15.99", "in transit · shipped 2026-11-09 17:22 EST with the magnets ($38.63), arriving Wed 11-11 (Amazon's mail)",
              "Turns the shutter; the second is the spare. Check: 3 mm D shaft, runs at 3 V."),
@@ -433,9 +441,9 @@ PROJECTS = [
             ("1 of 100", "neodymium disc magnets, 3 × 1 mm, N52, 100-pack", amz("B0BQ3LPGZ1"),
              "Amazon 114-1438198-3243448, $19.49", "in transit · shipped 2026-11-09 with the motors, arriving Wed 11-11",
              "One under the collar; 99 spare for the family."),
-            ("1", "brass sheet, 0.015 in, 4 × 10 in", amz("B0006N6WJE"),
-             "Amazon 114-5648832-0318640, $5.31 + $9.49 delivery (seller bestbrandsupply)", "in transit · arriving Wed 11-18 (Amazon's order mail)",
-             "The house, the shutter's floor, the collar, the bushing; most of one sheet."),
+            ("0 (cancelled)", "brass sheet, 0.015 in, 4 × 10 in", amz("B0006N6WJE"),
+             "Amazon 114-5648832-0318640, $5.31 + $9.49 delivery (seller bestbrandsupply)", "cancelled · by the seller, not charged (Your Orders, read in the builder's Chrome at their word, 2026-11-09 about 22:00 EST); Rev D has no house and no sheet-cut discs anyway. A copy from Blick that had reappeared in the cart was moved to Saved for later",
+             "Was the house and three discs. Rev D makes the shutter's floor, the magnet arm and the deck's bearing from 1 mm rod and tube rings."),
             ("1", "brass round tube, 5/8 in × 0.014 in wall × 12 in", amz("B07DDFNNXY"),
              "Amazon 114-7188491-2312247, $9.89 (seller What America Buys)", "in transit · arriving 11-18 to 11-20 (Amazon's order mail)",
              "The shutter, a 30 mm length; the rest is stock."),
@@ -455,7 +463,7 @@ PROJECTS = [
              "Grand Brass, the same order", "ordered · as above", "Clamps the roof's hardware; the lamp's return."),
             ("1", "charger board with 5 V boost (bq25185)", ada(6106),
              "nothing bought: not in the 2026-11-09 DigiKey order (the rover's); Cyber Dawn's two and Crumb's (DigiKey 102777448, shipped 11-09) are spoken for",
-             "not ordered · one line, Adafruit 6106 or DigiKey 1528-6106-ND, $8.95", "The cell's charger and the 5 V rail. Cut the current jumper."),
+             "not ordered · one line, Adafruit 6106 or DigiKey 1528-6106-ND, $8.95; Amazon has no bq25185 board (searched 2026-11-09 evening)", "The cell's charger and the 5 V rail. Cut the current jumper."),
             ("1", "brass coaster, 75 × 8 mm, flat top", amz("B0D9DMK3L7"),
              "Amazon 114-8443990-0476239, 2026-11-06, $12.99 ($14.14 with tax, sold by TOGGOOL); bought as the satellite's base",
              "on hand · delivered 2026-11-09 12:01 EST to the mail room (Amazon's mail), in one package with the drone's heat tape; pick-up pending its task",
@@ -497,7 +505,7 @@ SHARED = [
     ("LED filaments, 38 mm 2200 K", "10", "Amazon 114-0670386-1613054, delivered 11-03 12:53 in the box with Crumb's gears; the pack is in the satellite bin (sorted 11-03)", "hologram 1 · satellite 1", "8"),
     ("pre-wired warm-white LED chips, 0805", "20", "Amazon 111-9152603-4910637, delivered 11-04, picked up 11-05; the pack is in the satellite bin (sorted 11-07)", "satellite 1 · Mars rover 1", "18"),
     ("I²S amplifiers", "9 on hand + 3 today", "Amazon 2026-09-02 (3), 10-11 (6), 10-31 (3)", "Pip · Cyber Dawn · Crumb · Sphere · camera Pocket AI", "7"),
-    ("enclosed speakers", "6", "DigiKey 2026-09-02 (4) and 10-01 (2); the 09-21 order in the inventory does not exist", "Pip · Crumb · Sphere · camera Pocket AI", "2"),
+    ("enclosed speakers", "6", "DigiKey 2026-09-02 (4) and 10-01 (2); the 09-21 order in the inventory does not exist", "Pip · Crumb · Sphere · camera Pocket AI · drone 1 (added 11-09)", "1"),
     ("0.96 inch OLED displays", "10", "Amazon 2026-09-02 and 10-22", "Pip 1 (soldered) · Sphere 1 · camera Pocket AI 1", "7"),
     ("I²S microphones", "15", "Amazon 2026-09-02, 10-19, 10-23", "Pip 1 (soldered) · hologram 1", "13"),
     ("temperature and humidity sensors", "5", "Adafruit 3765988 (2), DigiKey 2026-10-01 (3)", "Cyber Dawn 1 · Sphere 1", "3"),
@@ -525,12 +533,12 @@ SHARED = [
 MISSING = [
     "XIAO ESP32-S3 Sense boards: none on hand. Crumb's and the drone's are now expected by 11-11, the pair for the camera Pocket AI and the Sphere by 11-15.",
     "Crumb's main box (motors, gears, driver, screen, amplifiers) and the hologram's filament pack: due today, 11-03, not delivered at 06:17.",
-    "Desk satellite: nothing left in the mail. The chips (11-04) and wings (11-05) were picked up 11-05 and are in the satellite bin (sorted 11-07); the steel disc came 11-06 and is spare, in the satellite bin for now. The brass coaster that replaced the disc as the base was ordered 11-06 (delivered 11-09 to the mail room) and given to the desk lighthouse on 11-09; the satellite's is to buy again when it is built. The Eujgoov fallback panels were cancelled.",
-    "Desk lighthouse: everything on Amazon ordered 2026-11-09 04:22 EST in one checkout of five orders ($122.64): the reed switches, acrylic tube, gearmotors and magnets shipped the same day for Wed 11-11, the gel glue comes 11-14, the brass sheet and the 5/8 in tube 11-18 to 11-20, the LED filaments 11-27; the brass coaster (bought 11-06 as the satellite's) was delivered 11-09 to the mail room; the five Grand Brass lamp parts are ordered by the builder's word with no confirmation mail yet; the bq25185 charger is not ordered (the 11-09 DigiKey order is the rover's). These five Amazon orders were first logged as the rover's.",
+    "Desk satellite: nothing left in the mail. The chips (11-04) and wings (11-05) were picked up 11-05 and are in the satellite bin (sorted 11-07); the steel disc came 11-06 and is spare, in the satellite bin for now. The brass coaster that replaced the disc as the base was ordered 11-06 (delivered 11-09 to the mail room) and given to the desk lighthouse on 11-09; the satellite's is in the builder's Amazon cart since 11-09 evening, not ordered. The Eujgoov fallback panels were cancelled.",
+    "Desk lighthouse: everything on Amazon ordered 2026-11-09 04:22 EST in one checkout of five orders ($122.64): the reed switches, acrylic tube, gearmotors and magnets shipped the same day for Wed 11-11, the gel glue comes 11-14, the 5/8 in tube 11-18 to 11-20 (the brass sheet's order: cancelled by the seller, not charged), the LED filaments 11-27; the brass coaster (bought 11-06 as the satellite's) was delivered 11-09 to the mail room; the five Grand Brass lamp parts are ordered by the builder's word with no confirmation mail yet; the bq25185 charger is not ordered (the 11-09 DigiKey order is the rover's). These five Amazon orders were first logged as the rover's. That evening the builder rejected the acrylic tube (to return) and dropped the brass sheet (its order came back cancelled by the seller, not charged): Rev D, open lantern and no house, awaits approval.",
     "Desk hologram: beam-splitter cube 11-08.",
     "Pocket AI with camera: both gear motors came early and were at the bench 2026-11-03; no delivery mail, the Orders page had 11-05 to 11-16.",
-    "XS drone (Orders page read 11-09): controller 11-08 to 11-11; LED regulators, the motion-sensor 3-pack and the clear heat tape all arriving 11-09; motors and propellers 11-13 to 11-24; the 10-pack 11-19 to 12-15 is spare; the 0.01 g scale was dropped the same day (the hover test is the thrust gate).",
-    "Not bought: Cyber Dawn's acrylic face and PETG; the satellite's three printed parts; the optional external 16340 charger; the hologram's optional card and epoxy.",
+    "XS drone (Orders page read 11-09): controller 11-08 to 11-11; LED regulators, the motion-sensor 3-pack and the clear heat tape all arriving 11-09; motors and propellers 11-13 to 11-24; the 10-pack 11-19 to 12-15 is spare; the 0.01 g scale was dropped the same day (the hover test is the thrust gate). Since 11-09 one line is open again: the speaker's amplifier board (PAM8403 5-pack), in the builder's Amazon cart since that evening, not ordered.",
+    "Not bought: Cyber Dawn's acrylic face and PETG; the satellite's three printed parts; the optional external 16340 charger; the hologram's optional card and epoxy; the drone's amplifier board (added 11-09, in the cart).",
 ]
 
 CORRECTIONS = [

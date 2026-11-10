@@ -18,9 +18,12 @@ Design and colour come first on every build, ahead of cost and convenience (buil
 - Few lines: at most 2–3 rods beyond the outline. Wires hidden or routed as deliberate lines.
 - Colour tone: **white, ivory or black as much as possible** (builder's words, 2026-11-07, the latest
   of three that day; they replace the brass/ivory/light-grey line). The frame is its own metal, brass or
-  stainless. Any other colour (blue, green or red boards, coloured wires, tape, labels, cell wraps) is
-  hidden inside the build or under a white, ivory or black cover. The green 2.42" OLED board is the
-  example to avoid. Light is white or warm white only.
+  stainless. **No paint and no covers** (builder's rule 2026-11-09): nothing is sprayed, and no sheet
+  skin, sleeve or film goes over a part to change its colour. Pick parts that already come brass, ivory,
+  white or black; failing that, the same part bought in a matching or complementary colour (builder's
+  order of choice, 2026-11-09). A part sold only in another colour (blue, green or red boards, coloured wires, labels,
+  cell wraps) is bought anyway and placed out of sight. The green 2.42" OLED board is the example to
+  avoid. Light is white or warm white only.
 - When two options work equally well, pick the cleaner-looking one.
 
 ## 3. Step one: the final build diagram (stop for approval)
